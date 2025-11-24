@@ -1,0 +1,16 @@
+<h3>{{ Lang.page.hide-from-menu }}</h3>
+<p>{{ Lang.page.hide-from-menu-desc }}</p>
+<h3>{{ Lang.page.parent-item }}</h3>
+<p>{{ Lang.page.parent-item-desc }}</p>
+<h3>{{ Lang.page.css-class }}</h3>
+<p>{{ Lang.page.css-class-desc }}</p>
+<h3>{{ Lang.page.position }}</h3>
+<p>{{ Lang.page.position-desc }}</p>
+<h3>{{ Lang.page.restrict-access-password }}</h3>
+<p>{{ Lang.page.restrict-access-password-desc }}</p>
+<h3>{{ Lang.page.page-title }}</h3>
+<p>{{ Lang.page.page-title-desc }}</p>
+<h3>{{ Lang.page.include-file }}</h3>
+<p>{{ Lang.page.include-file-desc }}</p>
+<h3>{{ Lang.page.featured-image }}</h3>
+<p>{{ Lang.page.featured-image-desc }}</p>

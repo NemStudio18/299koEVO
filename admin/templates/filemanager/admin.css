@@ -1,0 +1,152 @@
+#fm-view-files {
+    width:100%;
+    display: block;
+    overflow: hidden;
+}
+
+#fm-listview {
+    max-height: 75vh;
+    overflow-y: scroll;
+}
+
+#fm-breadcrumb-container {
+    margin: -30px;
+    margin-bottom: -30px;
+    margin-bottom: 25px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#fm-breadcrumb-container a {
+    cursor: pointer;
+    margin-left:10px;
+    font-size: 14px;
+    align-self: center;
+}
+
+#fm-breadcrumb {
+    display: flex;
+    flex-direction: row;
+}
+
+#fm-breadcrumb a:after {
+    content:'/';
+    margin-left:10px;
+    color:#ccc;
+    cursor: text;
+}
+
+#fm-breadcrumb a:last-child:after {
+    content:'';
+}
+
+#fm-listview .fm-thumb {
+    width:114px;
+    height:140px;
+    display: inline-block;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+    border:1px solid #ddd;
+    margin: 5px;
+    border-radius: 4px;
+}
+
+#fm-listview .fm-thumb .fm-actions {
+    position: absolute;
+    width:100%;
+    bottom: 0;
+    height:25px;
+    margin: 0;
+    font-size:13px;
+    text-align: left;
+    background: #254161;
+    color: #fff;
+    z-index: 11;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow: hidden;
+}
+
+#fm-listview .fm-thumb .fm-actions a {
+    font-size:15px;
+    color: #fff;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+#fm-listview .fm-thumb .fm-actions a:hover {
+    color: #ccc;
+}
+
+#fm-listview .fm-folder {
+    cursor: pointer;
+}
+
+#fm-listview .fm-folder, #fm-listview .fm-picture, #fm-listview .fm-file {
+    height:114px;
+    width:114px;
+    display: block;
+    overflow: hidden;
+}
+
+#fm-listview .fm-thumb .fm-title {
+    position: absolute;
+    display: block;
+    width:100%;
+    bottom: 25px;
+    max-height:15px;
+    margin: 0;
+    font-size:13px;
+    text-align: left;
+    transition: all 0.4s ease;
+    background: #dfe0e4;
+    z-index: 10;
+    overflow: hidden;
+}
+
+#fm-listview .fm-thumb .fm-title:hover {
+    max-height:114px;
+}
+
+#fm-listview .fm-folder > i, #fm-listview .fm-file > i {
+    font-size: 50px;
+    margin-top:25px;
+}
+
+#fm-listview .fm-thumb .fm-actions .fm-link.alert {
+    color: var(--alert-color);
+}
+
+#fm-listview .fm-thumb .fm-actions .fm-link.alert:hover {
+    color: var(--alert-hover-color);
+}
+
+#fm-listview .fm-picture > a.fm-link {
+    display: block;
+    width:100%;
+    height:100%;
+    background-size: cover;
+    background-position: center;
+}
+
+#fmAddAFolder, #fmRedirectFlat {
+    display: none;
+}
+
+#filesProgressAjax {
+    width: 100%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: 15px;
+    display: none;
+}
+
+#filesProgressAjax::-webkit-progress-bar, #filesProgressAjax::-webkit-progress-value, #filesProgressAjax::-moz-progress-bar {
+    background-color: var(--primary-color);
+  }
