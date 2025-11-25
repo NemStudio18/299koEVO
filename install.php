@@ -98,7 +98,7 @@ if (count($_POST) > 0) {
         'cache_duration' => 3600,
         'cache_minify' => false,
         'cache_lazy_loading' => false,
-        'marketplaceUrl' => 'https://299ko.api.flexcb.fr/',
+        'marketplaceUrl' => 'https://299ko-api.flexcb.fr/',
     ];
     $pagesSeed = [
         [
