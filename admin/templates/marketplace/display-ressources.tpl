@@ -30,7 +30,13 @@
                     <strong>{{ Lang.marketplace.list_desc }} :</strong> {{ ressource.description }}
                 </div>
                 <div>
-                    <strong>{{ Lang.marketplace.version }} :</strong> {{ ressource.version }}
+                    <strong>{{ Lang.marketplace.version }} :</strong>
+                    {% if ressource.isInstalled %}
+                        {{ Lang.marketplace.installed_version }} : {{ ressource.version }} /
+                        {{ Lang.marketplace.market_version }} : {{ ressource.lastVersion }}
+                    {% else %}
+                        {{ ressource.lastVersion }}
+                    {% endif %}
                 </div>
                 {% if ressource.authorEmail %}
                     <div>

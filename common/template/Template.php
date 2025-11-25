@@ -75,13 +75,39 @@ class Template {
             \Core\Core::getInstance()->getLogger()->log('ERROR', "Error loading template file ($this->file)");
             return "Error loading template file ($this->file).<br/>";
         }
-        ob_start();
-        $this->get_content();
+        
+        if (!class_exists(TemplateCompiler::class, false)) {
+            require_once __DIR__ . '/TemplateCompiler.php';
+        }
+        $compiler = new TemplateCompiler(DATA . 'cache' . DS . 'templates');
+        $compiledFile = $compiler->getCompiledPath($this->file);
+
+        // Compile si nécessaire
+        if (!$compiler->isFresh($this->file, $compiledFile)) {
+            $this->get_content();
+            $this->addGlobalsToVars();
+            $this->parse();
+            // Remplacer $this-> par $template-> pour que le fichier compilé fonctionne
+            $compiledContent = str_replace('$this->', '$template->', $this->content);
+            $header = "<?php /* Compiled template: {$this->file} */ ?>\n";
+            $compiler->compile($this->file, $compiledFile, $header . $compiledContent);
+        }
+
+        // Toujours injecter les variables globales/données runtime
         $this->addGlobalsToVars();
-        $this->parse();
-        // Uncomment the next line to see parsed template
-        // file_put_contents($this->file . '.cache.php', $this->content);
-        eval('?>' . $this->content);
+
+        // Extraire les variables pour le scope du fichier compilé
+        extract($this->data, EXTR_SKIP);
+        // Passer l'instance Template pour que les méthodes $template-> soient disponibles
+        $template = $this;
+        
+        ob_start();
+        try {
+            include $compiledFile;
+        } catch (\Throwable $e) {
+            \Core\Core::getInstance()->getLogger()->error('Template include failed: ' . $e->getMessage());
+            throw $e;
+        }
         return ob_get_clean();
     }
 

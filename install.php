@@ -98,6 +98,7 @@ if (count($_POST) > 0) {
         'cache_duration' => 3600,
         'cache_minify' => false,
         'cache_lazy_loading' => false,
+        'marketplaceUrl' => 'https:\/\/299ko.api.flexcb.fr\/',
     ];
     $pagesSeed = [
         [
@@ -106,25 +107,6 @@ if (count($_POST) > 0) {
             'position' => 1,
             'isHomepage' => '1',
             'content' => "<p>Félicitations, l'installation de 299ko s'est déroulée avec succès !<br>Par mesure de sécurité, vous devez maintenant supprimer le fichier install.php du répertoire d'installation.</p>",
-            'isHidden' => 0,
-            'file' => null,
-            'mainTitle' => null,
-            'metaDescriptionTag' => null,
-            'metaTitleTag' => null,
-            'targetAttr' => null,
-            'target' => null,
-            'noIndex' => null,
-            'parent' => null,
-            'cssClass' => null,
-            'password' => null,
-            'img' => null,
-        ],
-        [
-            'id' => 2,
-            'name' => 'Exemple',
-            'position' => 2,
-            'isHomepage' => '0',
-            'content' => "<p>Page d'exemple.</p>",
             'isHidden' => 0,
             'file' => null,
             'mainTitle' => null,

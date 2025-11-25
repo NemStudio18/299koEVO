@@ -8,6 +8,7 @@ use Core\Responses\PublicResponse;
 use Core\Auth\UsersManager;
 use Core\Auth\User;
 use Core\Auth\PasswordRecovery;
+use Core\Security\Csrf;
 use Utils\Show;
 use Core\Lang;
 use Utils\Util;
@@ -37,6 +38,10 @@ class UsersLoginController extends PublicController
 
     public function loginSend()
     {
+        if (!Csrf::validate($_POST['_csrf'] ?? null, false)) {
+            Show::msg(Lang::get("users.bad-credentials"), 'error');
+            $this->core->redirect($this->router->generate('login'));
+        }
         if (empty($_POST['adminEmail']) || empty($_POST['adminPwd']) || $_POST['_email'] !== '') {
             // Empty field or robot
             return $this->login();
@@ -92,6 +97,10 @@ class UsersLoginController extends PublicController
 
     public function lostPasswordSend()
     {
+        if (!Csrf::validate($_POST['_csrf'] ?? null, false)) {
+            Show::msg(Lang::get("users.bad-credentials"), 'error');
+            $this->core->redirect($this->router->generate('login'));
+        }
         if (empty($_POST['email']) || $_POST['_email'] !== '') {
             // Empty field or robot
             return $this->login();

@@ -6,6 +6,7 @@ use Core\Storage\Cache;
 use Core\Logger;
 use Core\Core;
 use Core\Extensions\MarketPlaceCurl;
+use ZipArchive;
 
 defined('ROOT') or exit('Access denied!');
 
@@ -103,6 +104,7 @@ class MarketPlaceManager
 
         $curl = $this->makeCurl('repository/api/install-' . $ressource->type);
         $curl->post();
+        $curl->sendAsJson = true;
         $curl->setDatas([
             'type' => $ressource->type,
             'slug' => $ressource->slug,
@@ -121,11 +123,24 @@ class MarketPlaceManager
 
         $zip = new ZipArchive();
         if ($zip->open(CACHE . 'tmp.zip') === true) {
-            if ($ressource->type === MarketPlaceRessource::TYPE_PLUGIN) {
-                $zip->extractTo(PLUGINS);
-            } elseif ($ressource->type === MarketPlaceRessource::TYPE_THEME) {
-                $zip->extractTo(THEMES);
+            $targetDir = $ressource->type === MarketPlaceRessource::TYPE_PLUGIN ? PLUGINS : THEMES;
+            $pluginDir = $targetDir . $ressource->slug . DS;
+            
+            // Vérifier si le ZIP contient déjà le dossier parent ou les fichiers directement
+            $firstEntry = $zip->getNameIndex(0);
+            $hasParentDir = $firstEntry !== false && strpos($firstEntry, $ressource->slug . '/') === 0;
+            
+            if ($hasParentDir) {
+                // Le ZIP contient déjà le dossier parent, extraire directement
+                $zip->extractTo($targetDir);
+            } else {
+                // Le ZIP contient les fichiers à la racine, créer le dossier et extraire dedans
+                if (!is_dir($pluginDir)) {
+                    mkdir($pluginDir, 0755, true);
+                }
+                $zip->extractTo($pluginDir);
             }
+            
             $zip->close();
             unlink(CACHE . 'tmp.zip');
             $this->runAfterUpdatePlugin($ressource);

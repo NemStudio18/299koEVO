@@ -32,6 +32,8 @@ $autoloader = new \Core\Autoloader\HybridAutoloader(
     true                       // Authoritative mode (true = cache activé avec validation automatique)
 );
 
+\Core\Security\Csrf::start();
+
 $router = \Core\Router\Router::getInstance();
 $core = \Core\Core::getInstance();
 $core->init();
@@ -88,6 +90,7 @@ if ($core->isCoreModule($pluginToCall)) {
 \Template\Template::addGlobal('lang', \Core\Lang::class);
 \Template\Template::addGlobal('Util', \Utils\Util::class);
 \Template\Template::addGlobal('util', \Utils\Util::class);
+\Template\Template::addGlobal('_csrfToken', \Core\Security\Csrf::token());
 
 /**
  * Function to display the button to manage files by Ajax

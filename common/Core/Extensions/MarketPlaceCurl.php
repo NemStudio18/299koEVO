@@ -19,7 +19,16 @@ class MarketPlaceCurl extends Curl
     public function __construct(string $url, ExtensionsService $service)
     {
         $this->service = $service;
-        $this->endPoint = Core::getInstance()->getEnv('marketplaceUrl', $this->endPoint);
+        $core = Core::getInstance();
+
+        $configuredEndpoint = $core->getConfigVal('marketplaceUrl');
+        if (!is_string($configuredEndpoint) || $configuredEndpoint === '') {
+            $configuredEndpoint = $core->getEnv('marketplaceUrl', '');
+        }
+        if (is_string($configuredEndpoint) && $configuredEndpoint !== '') {
+            $this->endPoint = rtrim($configuredEndpoint, '/') . '/';
+        }
+
         parent::__construct($this->endPoint . $url);
         $marketConfig = $this->service->getMarketplaceConfig();
         if (!isset($marketConfig['siteID'])) {

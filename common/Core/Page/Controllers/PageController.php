@@ -31,12 +31,17 @@ class PageController extends PublicController
      * pageItem Object
      * @var PageItem
      */
-    protected PageItem $pageItem;
+    protected ?PageItem $pageItem = null;
 
     public function home()
     {
         $this->page = new Page();
-        $this->pageItem = $this->page->createHomepage();
+        $pageItem = $this->page->createHomepage();
+
+        if (!$pageItem instanceof PageItem) {
+            $this->core->error404();
+        }
+        $this->pageItem = $pageItem;
 
         return $this->renderPage();
     }
@@ -44,14 +49,19 @@ class PageController extends PublicController
     public function read($name, $id)
     {
         $this->page = new Page();
-        $this->pageItem = $this->page->create($id);
+        $pageItem = $this->page->create($id);
+
+        if (!$pageItem instanceof PageItem) {
+            $this->core->error404();
+        }
+        $this->pageItem = $pageItem;
 
         return $this->renderPage();
     }
 
     protected function renderPage()
     {
-        if ($this->pageItem->targetIs() != 'page' || $this->pageItem === false) {
+        if (!$this->pageItem instanceof PageItem || $this->pageItem->targetIs() !== 'page') {
             $this->core->error404();
         }
         $action = (isset($_POST['unlock'])) ? 'unlock' : '';

@@ -7,6 +7,8 @@ use Core\Router\Router;
 use Core\Plugin\PluginsManager;
 use Core\Http\Request;
 use Core\Logger;
+use Core\Security\Csrf;
+use Utils\Show;
 
 /**
  * @copyright (C) 2024, 299Ko
@@ -49,6 +51,8 @@ abstract class Controller {
      */
     protected Logger $logger;
 
+    protected bool $enforceCsrf = true;
+
     /**
      * JSON data sent by fetch, used for API
      * @var array
@@ -66,5 +70,44 @@ abstract class Controller {
             $this->jsonData = json_decode($content, true);
         }
         $this->logger = $this->core->getLogger();
+        if ($this->enforceCsrf) {
+            $this->validateCsrfToken();
+        }
+    }
+
+    protected function validateCsrfToken(): void
+    {
+        $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+        if ($method !== 'POST') {
+            return;
+        }
+
+        $token = $_POST['_csrf'] ?? null;
+        if ($token === null && isset($_SERVER['HTTP_X_CSRF_TOKEN'])) {
+            $token = $_SERVER['HTTP_X_CSRF_TOKEN'];
+        }
+        if ($token === null && isset($this->jsonData['_csrf'])) {
+            $token = $this->jsonData['_csrf'];
+        }
+
+        if ($token === null || $token === '') {
+            return;
+        }
+
+        if (Csrf::validate($token, false)) {
+            return;
+        }
+
+        $this->logger->warning('CSRF token mismatch on ' . ($_SERVER['REQUEST_URI'] ?? ''));
+
+        if ($this->request->isAjax() || stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false) {
+            header('Content-Type: application/json', true, 400);
+            echo json_encode(['success' => 0, 'error' => 'Invalid CSRF token']);
+            die();
+        }
+
+        Show::msg('Une erreur de sécurité est survenue, veuillez réessayer.', 'error');
+        $redirect = $_SERVER['HTTP_REFERER'] ?? $this->router->generate('home');
+        $this->core->redirect($redirect);
     }
 }

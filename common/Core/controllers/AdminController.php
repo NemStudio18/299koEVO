@@ -2,11 +2,11 @@
 
 namespace Core\Controllers;
 
+use Core\Auth\User;
+use Core\Auth\UsersManager;
 use Core\Controllers\Controller;
 use Core\Plugin\Plugin;
-use Core\Auth\User;
 use Core\Plugin\PluginsManager;
-use Core\Auth\UsersManager;
 
 /**
  * @copyright (C) 2024, 299Ko

@@ -24,6 +24,7 @@
 				</div>
 			</header>
 			<form method="post" action="{{ loginLink}}">
+                <input type="hidden" name="_csrf" value="{{ _csrfToken }}">
 				<p>
 					<label for="adminEmail">{{Lang.email}}</label><br>
 					<input style="display:none;" type="text" name="_email" value="" autocomplete="off"/>

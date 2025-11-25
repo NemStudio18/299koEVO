@@ -21,6 +21,8 @@ class MarketPlaceRessource
 
     public string $version = '';
 
+    public string $icon = '';
+
     public string $authorEmail = '';
 
     public string $authorWebsite = '';
@@ -43,6 +45,7 @@ class MarketPlaceRessource
         $this->name = $origRessource->name;
         $this->description = $origRessource->description ?? '';
         $this->lastVersion = $origRessource->version ?? '';
+        $this->icon = $origRessource->icon ?? '';
         $this->authorEmail = $origRessource->authorEmail ?? '';
         $this->authorWebsite = $origRessource->authorWebsite ?? '';
         $this->versionsUpdate = $origRessource->versionsUpdate ?? new stdClass();
