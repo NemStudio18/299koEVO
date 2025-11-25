@@ -130,6 +130,14 @@ if (count($_POST) > 0) {
         die();
     }
 
+    $pluginsDir = PLUGINS;
+    if (!is_dir($pluginsDir) && !mkdir($pluginsDir, 0755, true)) {
+        $core->log('Unable to create plugins directory', 'ERROR');
+        Show::msg(Lang::get('install-problem-during-install'), 'error');
+        header('location:' . $core->makeSiteUrl());
+        die();
+    }
+
     $pagesFile = $pagesDir . 'pages.json';
     $existingPages = [];
     if (file_exists($pagesFile)) {
