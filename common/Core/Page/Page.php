@@ -124,24 +124,38 @@ class Page
         $position = floatval($obj->getPosition());
         if ($position < 0.5)
             $position = $this->makePosition();
+        // Récupérer les valeurs avec gestion des null/vides
+        $name = $obj->getName();
+        $content = $obj->getContent();
+        $file = $obj->getFile();
+        $mainTitle = $obj->getMainTitle();
+        $metaDescriptionTag = $obj->getMetaDescriptionTag();
+        $metaTitleTag = $obj->getMetaTitleTag();
+        $targetAttr = $obj->getTargetAttr();
+        $target = $obj->getTarget();
+        $parent = $obj->getParent();
+        $cssClass = $obj->getCssClass();
+        $password = $obj->getPassword();
+        $img = $obj->getImg();
+        
         $data = array(
             'id' => $id,
-            'name' => $obj->getName(),
+            'name' => $name !== null && $name !== false ? $name : '',
             'position' => $position,
-            'isHomepage' => $obj->getIsHomepage(),
-            'content' => $obj->getContent(),
-            'isHidden' => $obj->getIsHidden(),
-            'file' => $obj->getFile(),
-            'mainTitle' => $obj->getMainTitle(),
-            'metaDescriptionTag' => $obj->getMetaDescriptionTag(),
-            'metaTitleTag' => $obj->getMetaTitleTag(),
-            'targetAttr' => $obj->getTargetAttr(),
-            'target' => $obj->getTarget(),
-            'noIndex' => $obj->getNoIndex(),
-            'parent' => $obj->getParent(),
-            'cssClass' => $obj->getCssClass(),
-            'password' => $obj->getPassword(),
-            'img' => $obj->getImg(),
+            'isHomepage' => $obj->getIsHomepage() !== null ? intval($obj->getIsHomepage()) : 0,
+            'content' => $content !== null && $content !== false ? $content : '',
+            'isHidden' => $obj->getIsHidden() !== null ? intval($obj->getIsHidden()) : 0,
+            'file' => ($file !== null && $file !== false && $file !== '') ? $file : null,
+            'mainTitle' => ($mainTitle !== null && $mainTitle !== false && $mainTitle !== '') ? $mainTitle : null,
+            'metaDescriptionTag' => ($metaDescriptionTag !== null && $metaDescriptionTag !== false && $metaDescriptionTag !== '') ? $metaDescriptionTag : null,
+            'metaTitleTag' => ($metaTitleTag !== null && $metaTitleTag !== false && $metaTitleTag !== '') ? $metaTitleTag : null,
+            'targetAttr' => ($targetAttr !== null && $targetAttr !== false && $targetAttr !== '') ? $targetAttr : null,
+            'target' => ($target !== null && $target !== false && $target !== '') ? $target : null,
+            'noIndex' => $obj->getNoIndex() !== null ? intval($obj->getNoIndex()) : 0,
+            'parent' => ($parent !== null && $parent !== false && $parent !== '') ? $parent : null,
+            'cssClass' => ($cssClass !== null && $cssClass !== false && $cssClass !== '') ? $cssClass : null,
+            'password' => ($password !== null && $password !== false && $password !== '') ? $password : null,
+            'img' => ($img !== null && $img !== false && $img !== '') ? $img : null,
         );
         $update = false;
         foreach ($this->items as $k => $v) {
@@ -155,21 +169,68 @@ class Page
         if ($obj->getIsHomepage() > 0)
             $this->initIshomepageVal();
         $pages = $this->loadPages(true);
+        // S'assurer que $pages est toujours un tableau
+        if (!is_array($pages)) {
+            $pages = [];
+        }
+        $found = false;
         if ($update) {
-            if (is_array($pages)) {
-                foreach ($pages as $k => $v) {
-                    if ($v['id'] == $obj->getId()) {
-                        $pages[$k] = $data;
-                        $update = true;
-                    }
+            // Mettre à jour une page existante
+            foreach ($pages as $k => $v) {
+                if (isset($v['id']) && $v['id'] == $obj->getId()) {
+                    $pages[$k] = $data;
+                    $found = true;
+                    break;
                 }
             }
-        } else
+        }
+        // Si c'est une nouvelle page ou si la page n'a pas été trouvée, l'ajouter
+        if (!$update || !$found) {
             $pages[] = $data;
+        }
         $pages = Util::sort2DimArray($pages, 'position', 'num');
-        if (Util::writeJsonFile($this->pagesFile, $pages))
-            return true;
-        return false;
+        // Utiliser JSON_PRETTY_PRINT pour une meilleure lisibilité
+        $json = json_encode($pages, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if ($json === false) {
+            $error = json_last_error_msg();
+            Core::getInstance()->getLogger()->error('Page::save() - Failed to encode JSON: ' . $error);
+            Core::getInstance()->getLogger()->error('Page::save() - Data: ' . print_r($pages, true));
+            return false;
+        }
+        
+        // S'assurer que le dossier existe
+        $dir = dirname($this->pagesFile);
+        if (!is_dir($dir)) {
+            if (!@mkdir($dir, 0755, true)) {
+                Core::getInstance()->getLogger()->error('Page::save() - Failed to create directory: ' . $dir);
+                return false;
+            }
+        }
+        
+        // Écrire le fichier
+        $result = @file_put_contents($this->pagesFile, $json, LOCK_EX);
+        if ($result === false) {
+            $error = error_get_last();
+            $logger = Core::getInstance()->getLogger();
+            $logger->error('Page::save() - Failed to write file: ' . $this->pagesFile);
+            if ($error) {
+                $logger->error('Page::save() - Error: ' . $error['message']);
+            }
+            return false;
+        }
+        
+        // Vérifier que le fichier a bien été écrit
+        if (!file_exists($this->pagesFile) || filesize($this->pagesFile) === 0) {
+            $logger = Core::getInstance()->getLogger();
+            $logger->error('Page::save() - File was not written or is empty: ' . $this->pagesFile);
+            return false;
+        }
+        
+        // Recharger les items après sauvegarde
+        $this->items = $this->loadPages();
+        $logger = Core::getInstance()->getLogger();
+        $logger->info('Page::save() - Successfully saved page ID=' . $id . ' to ' . $this->pagesFile);
+        return true;
     }
 
     public function del($obj)
@@ -202,6 +263,48 @@ class Page
             $pos[] = $pageItem->getPosition();
         }
         return max($pos) + 1;
+    }
+
+    /**
+     * Sauvegarde l'ordre complet des pages
+     * @param array $order Array of page IDs in the desired order
+     * @return bool
+     */
+    public function saveOrder(array $order): bool
+    {
+        if (empty($order)) {
+            return false;
+        }
+        
+        $pages = $this->loadPages(true);
+        if (!is_array($pages)) {
+            return false;
+        }
+        
+        // Créer un mapping des nouvelles positions
+        $positionMap = [];
+        foreach ($order as $index => $pageId) {
+            $positionMap[(int)$pageId] = $index + 1;
+        }
+        
+        // Mettre à jour les positions
+        foreach ($pages as &$page) {
+            if (isset($positionMap[$page['id']])) {
+                $page['position'] = $positionMap[$page['id']];
+            }
+        }
+        
+        // Trier par position
+        $pages = Util::sort2DimArray($pages, 'position', 'num');
+        
+        // Sauvegarder
+        if (Util::writeJsonFile($this->pagesFile, $pages)) {
+            // Recharger les items
+            $this->items = $this->loadPages();
+            return true;
+        }
+        
+        return false;
     }
 
     public function count()
@@ -274,17 +377,31 @@ class Page
         $data = array();
         if (file_exists($this->pagesFile)) {
             $items = Util::readJsonFile($this->pagesFile);
-            $items = Util::sort2DimArray($items, 'position', 'num');
-            for ($i = 0; $i != count($items); $i++) {
-                $pos = $i + 1;
-                $items[$i]['position'] = $pos;
+            // S'assurer que $items est un tableau
+            if (!is_array($items)) {
+                $items = [];
             }
-            Util::writeJsonFile($this->pagesFile, $items);
+            if (!empty($items)) {
+                $items = Util::sort2DimArray($items, 'position', 'num');
+                // Normaliser les positions
+                for ($i = 0; $i < count($items); $i++) {
+                    $pos = $i + 1;
+                    $items[$i]['position'] = $pos;
+                }
+                // Sauvegarder seulement si on a des items (pour éviter d'écraser un fichier vide)
+                if (!empty($items)) {
+                    Util::writeJsonFile($this->pagesFile, $items);
+                }
+            }
             if ($array)
                 return $items;
             foreach ($items as $pageItem) {
                 $data[] = new PageItem($pageItem);
             }
+        } else {
+            // Si le fichier n'existe pas, retourner un tableau vide
+            if ($array)
+                return [];
         }
         return $data;
     }

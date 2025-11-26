@@ -1,5 +1,5 @@
-<form method="post" action="{{ ROUTER.generate("page-admin-save") }}" enctype="multipart/form-data">
-    {{ show::tokenField() }}
+<form method="post" action="{{ ROUTER.generate("page-admin-save") }}" enctype="multipart/form-data" onsubmit="console.log('Form submitted to:', this.action); return true;">
+    <input type="hidden" name="_csrf" value="{{ _csrfToken }}" />
     <section>
         <input type="hidden" name="id" value="{{ pageItem.getId() }}" />
         {% if pluginsManager.isActivePlugin("galerie") %}

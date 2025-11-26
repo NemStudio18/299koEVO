@@ -26,9 +26,17 @@ class User extends JsonActiveRecord
 
     /**
      * Vérifie qu'un token transmis dans la requête correspond à l'utilisateur.
+     * Pour les actions admin, si l'utilisateur est connecté via session, il est automatiquement autorisé.
      */
     public function isAuthorized(): bool
     {
+        // Si on est en mode admin et que l'utilisateur est dans la session, il est autorisé
+        if (defined('IS_ADMIN') && IS_ADMIN === true) {
+            if (isset($_SESSION['email']) && isset($this->attributes['email']) && $_SESSION['email'] === $this->attributes['email']) {
+                return true;
+            }
+        }
+        
         $matches = Router::getInstance()->match();
         if (isset($matches['params']['token'])) {
             return $matches['params']['token'] === $this->attributes['token'];

@@ -44,6 +44,15 @@ class PageAdminController extends AdminController {
         $response = new AdminResponse();
         $tpl = $response->createPluginTemplate('page', 'list');
 
+        // Passer les traductions en JSON pour éviter les problèmes d'échappement dans le JavaScript
+        $translations = [
+            'savingOrder' => Lang::get('page.saving-order'),
+            'orderSaved' => Lang::get('page.order-saved'),
+            'orderNotSaved' => Lang::get('page.order-not-saved'),
+            'dragToReorder' => Lang::get('page.drag-to-reorder')
+        ];
+        $tpl->set('translationsJson', json_encode($translations, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE));
+
         $tpl->set('token', $this->user->token);
         $tpl->set('page', $page);
         $tpl->set('lost', $lost);
@@ -171,13 +180,63 @@ class PageAdminController extends AdminController {
         return $response;
     }
 
+    public function saveOrder() {
+        // Cette route est une API, toujours retourner du JSON
+        header('Content-Type: application/json');
+        
+        if (!$this->user->isAuthorized()) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+            die();
+        }
+        
+        // Vérifier le token CSRF (ne pas régénérer pour cette route non-critique)
+        $csrfToken = $this->request->post('_csrf') ?? null;
+        if (!\Core\Security\Csrf::validate($csrfToken, false)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Invalid CSRF token']);
+            die();
+        }
+        
+        $order = json_decode($this->request->post('order', ''), true);
+        if (!is_array($order) || empty($order)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Invalid order data']);
+            die();
+        }
+        
+        $page = new Page();
+        if ($page->saveOrder($order)) {
+            http_response_code(200);
+            // Retourner le token actuel (non régénéré) pour que le client puisse le réutiliser
+            echo json_encode([
+                'success' => true, 
+                'message' => Lang::get('page.order-saved'),
+                'csrfToken' => \Core\Security\Csrf::token()
+            ]);
+            die();
+        } else {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => Lang::get('page.order-not-saved')]);
+            die();
+        }
+    }
+
     public function save() {
         if (!$this->user->isAuthorized()) {
             return $this->list();
         }
+        
+        // Vérifier le token CSRF
+        $csrfToken = $this->request->post('_csrf') ?? null;
+        if (!\Core\Security\Csrf::validate($csrfToken)) {
+            Show::msg(Lang::get('core-csrf-invalid'), 'error');
+            return $this->list();
+        }
+        
         $page = new Page();
         $contentEditor = new Editor('pageContent', '', Lang::get('page.content'), true);
-        $imgId = (isset($_POST['delImg'])) ? '' : $_REQUEST['imgId'] ?? '';
+        $imgId = (isset($_POST['delImg'])) ? '' : ($_REQUEST['imgId'] ?? '');
         if (isset($_FILES['file']['name']) && $_FILES['file']['name'] != '') {
             if ($this->pluginsManager->isActivePlugin('galerie')) {
                 $galerie = new \galerie();
@@ -188,34 +247,52 @@ class PageAdminController extends AdminController {
                 $imgId = $galerie->getLastId() . '.' . Util::getFileExtension($_FILES['file']['name']);
             }
         }
-        if ($_POST['id'] != '')
-            $pageItem = $page->create($_POST['id']);
-        else
+        // Récupérer ou créer la page
+        $pageId = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        if ($pageId > 0) {
+            $pageItem = $page->create($pageId);
+            if (!$pageItem) {
+                // La page n'existe pas, créer une nouvelle
+                $pageItem = new PageItem();
+            }
+        } else {
             $pageItem = new PageItem();
-        $pageItem->setName($_POST['name']);
-        $pageItem->setPosition($_POST['position']);
+        }
+        
+        // Définir toutes les propriétés
+        $pageItem->setName($_POST['name'] ?? '');
+        $pageItem->setPosition($_POST['position'] ?? '');
         $pageItem->setIsHomepage((isset($_POST['isHomepage'])) ? 1 : 0);
         $pageItem->setContent($contentEditor->getPostContent());
-        $pageItem->setFile((isset($_POST['file'])) ? $_POST['file'] : '');
+        $pageItem->setFile($_POST['file'] ?? '');
         $pageItem->setIsHidden((isset($_POST['isHidden'])) ? 1 : 0);
-        $pageItem->setMainTitle((isset($_POST['mainTitle'])) ? $_POST['mainTitle'] : '');
-        $pageItem->setMetaDescriptionTag((isset($_POST['metaDescriptionTag'])) ? $_POST['metaDescriptionTag'] : '');
-        $pageItem->setMetaTitleTag((isset($_POST['metaTitleTag'])) ? $_POST['metaTitleTag'] : '');
-        $pageItem->setTarget((isset($_POST['target'])) ? $_POST['target'] : '');
-        $pageItem->setTargetAttr((isset($_POST['targetAttr'])) ? $_POST['targetAttr'] : '');
+        $pageItem->setMainTitle($_POST['mainTitle'] ?? '');
+        $pageItem->setMetaDescriptionTag($_POST['metaDescriptionTag'] ?? '');
+        $pageItem->setMetaTitleTag($_POST['metaTitleTag'] ?? '');
+        $pageItem->setTarget($_POST['target'] ?? '');
+        $pageItem->setTargetAttr($_POST['targetAttr'] ?? '_self');
         $pageItem->setNoIndex((isset($_POST['noIndex'])) ? 1 : 0);
-        $pageItem->setParent((isset($_POST['parent'])) ? $_POST['parent'] : '');
-        $pageItem->setCssClass($_POST['cssClass']);
+        $pageItem->setParent($_POST['parent'] ?? '');
+        $pageItem->setCssClass($_POST['cssClass'] ?? '');
         $pageItem->setImg($imgId);
         if (isset($_POST['_password']) && $_POST['_password'] != '')
             $pageItem->setPassword($_POST['_password']);
         if (isset($_POST['resetPassword']))
             $pageItem->setPassword('');
-        if ($page->save($pageItem))
+        
+        $saveResult = $page->save($pageItem);
+        
+        if ($saveResult) {
             Show::msg(Lang::get('core-changes-saved'), 'success');
-        else
+            // Rediriger vers l'édition de la page avec le router
+            $this->core->redirect($this->router->generate('page-admin-edit', ['id' => $pageItem->getId()]));
+        } else {
             Show::msg(Lang::get('core-changes-not-saved'), 'error');
-        header('location:.?p=page&action=edit&id=' . $pageItem->getId());
+            // Vérifier les logs pour plus de détails
+            $this->logger->error('Page save failed. Check logs for details.');
+            // Rediriger vers la liste en cas d'erreur
+            $this->core->redirect($this->router->generate('page-admin-home'));
+        }
         die();
     }
 }

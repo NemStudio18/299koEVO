@@ -678,16 +678,6 @@ class Core
 
     public function executeCallback(Router $router, ?Plugin $runPlugin) {
         $match = $router->match();
-        // Debug temporaire pour diagnostiquer le problème 404
-        $debugData = [
-            'match' => $match,
-            'match_type' => is_array($match) ? 'array' : (is_bool($match) ? ($match ? 'true' : 'false') : gettype($match)),
-            'request_uri' => $_SERVER['REQUEST_URI'] ?? 'N/A',
-            'request_method' => $_SERVER['REQUEST_METHOD'] ?? 'N/A',
-            'base_path' => BASE_PATH ?? 'N/A',
-            'script_name' => $_SERVER['SCRIPT_NAME'] ?? 'N/A',
-            'routes_count' => count($router->getRoutes())
-        ];
         if (is_array($match)) {
             // Charger les contrôleurs du plugin si nécessaire
             if ($runPlugin) {

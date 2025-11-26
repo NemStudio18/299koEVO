@@ -24,4 +24,5 @@ $router->map('GET', '/admin/page/maintenance/[a:id]/[a:token]', 'Core\Page\Contr
 $router->map('GET', '/admin/page/delete/[a:id]/[a:token]', 'Core\Page\Controllers\PageAdminController#delete', 'page-admin-delete');
 $router->map('GET', '/admin/page/page-up/[a:id]/[a:token]', 'Core\Page\Controllers\PageAdminController#pageUp', 'page-admin-page-up');
 $router->map('GET', '/admin/page/page-down/[a:id]/[a:token]', 'Core\Page\Controllers\PageAdminController#pageDown', 'page-admin-page-down');
+$router->map('POST', '/admin/page/save-order', 'Core\Page\Controllers\PageAdminController#saveOrder', 'page-admin-save-order');
 

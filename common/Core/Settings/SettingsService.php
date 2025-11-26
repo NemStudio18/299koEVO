@@ -81,10 +81,10 @@ class SettingsService
     public function checkNewVersion(): void
     {
         $cachedInfos = Util::readJsonFile($this->cacheFile);
-        if ($cachedInfos !== false) {
+        if ($cachedInfos !== false && is_array($cachedInfos) && isset($cachedInfos['lastVersion'])) {
             $lastVersion = $cachedInfos['lastVersion'];
             if ($lastVersion === VERSION) {
-                $lastCheckUpdate = (int) $cachedInfos['lastCheckUpdate'];
+                $lastCheckUpdate = (int) ($cachedInfos['lastCheckUpdate'] ?? 0);
                 if ($lastCheckUpdate + 86400 < time()) {
                     $nextVersion = $this->getNewVersion();
                 } else {

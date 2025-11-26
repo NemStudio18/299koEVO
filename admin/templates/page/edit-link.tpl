@@ -1,7 +1,7 @@
 <section>
     <header>{{ Lang.page.edit-link }}</header>
     <form method="post" action="{{ ROUTER.generate("page-admin-save") }}" enctype="multipart/form-data">
-        {{ show::tokenField() }}
+        <input type="hidden" name="_csrf" value="{{ _csrfToken }}" />
         <input type="hidden" name="id" value="{{ pageItem.getId() }}" />
         <p>
             <input {% if pageItem.getIsHidden() %}checked{% endif %} type="checkbox" name="isHidden" id="isHidden" />
