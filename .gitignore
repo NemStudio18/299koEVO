@@ -24,4 +24,7 @@ Thumbs.db
 *.bak
 *.log
 
-
+# Ignorer tout /theme sauf /theme/default
+/theme/*
+!/theme/default/
+!/theme/default/**
