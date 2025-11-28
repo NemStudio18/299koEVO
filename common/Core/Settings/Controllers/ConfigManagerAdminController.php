@@ -37,6 +37,15 @@ class ConfigManagerAdminController extends AdminController {
         // Get cache statistics
         $cacheManager = new CacheManager();
         $tpl->set('cacheStats', $cacheManager->getStats());
+        $registrationGroups = array_map(static function ($group): array {
+            return [
+                'id' => $group->attributes['id'] ?? null,
+                'slug' => $group->attributes['slug'] ?? '',
+                'name' => $group->attributes['name'] ?? '',
+            ];
+        }, $this->core->auth()->getGroups());
+        $tpl->set('registrationGroups', $registrationGroups);
+        $tpl->set('registrationDefaultGroup', $this->core->getConfigVal('registrationDefaultGroup') ?? 'member');
         
         // Pass available locales and current locale to template
         $availablesLocales = Lang::getAvailablesLocales();
@@ -84,8 +93,19 @@ class ConfigManagerAdminController extends AdminController {
             'cache_enabled' => (isset($_POST['cache_enabled'])) ? true : false,
             'cache_duration' => (int)$_POST['cache_duration'],
             'cache_minify' => (isset($_POST['cache_minify'])) ? true : false,
-            'cache_lazy_loading' => (isset($_POST['cache_lazy_loading'])) ? true : false
+            'cache_lazy_loading' => (isset($_POST['cache_lazy_loading'])) ? true : false,
         ];
+        $config['allowRegistrations'] = isset($_POST['allowRegistrations']);
+        $defaultGroupSlug = $_POST['registrationDefaultGroup'] ?? 'member';
+        if ($this->core->auth()->getGroupBySlug($defaultGroupSlug) === null) {
+            $defaultGroupSlug = 'member';
+        }
+        $config['registrationDefaultGroup'] = $defaultGroupSlug;
+        $validationMode = $_POST['registrationValidationMode'] ?? 'email';
+        if (!in_array($validationMode, ['email', 'admin', 'none'], true)) {
+            $validationMode = 'email';
+        }
+        $config['registrationValidationMode'] = $validationMode;
 
         // Invalidate cache if needed (AVANT la sauvegarde pour avoir l'ancienne config)
         $this->invalidateCacheIfNeeded($config);

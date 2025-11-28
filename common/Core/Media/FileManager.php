@@ -54,6 +54,48 @@ class FileManager
         return $this->subFiles;
     }
 
+    public function getFilesCount(): int
+    {
+        return count($this->subFiles);
+    }
+
+    public function getFoldersCount(): int
+    {
+        return count($this->subDir);
+    }
+
+    public function getPicturesCount(): int
+    {
+        $count = 0;
+        foreach ($this->subFiles as $file) {
+            if ($file->isPicture()) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
+    public function getTotalSize(): int
+    {
+        $size = 0;
+        foreach ($this->subFiles as $file) {
+            $size += $file->getSize();
+        }
+        return $size;
+    }
+
+    public function getStats(): array
+    {
+        $size = $this->getTotalSize();
+        return [
+            'files' => $this->getFilesCount(),
+            'folders' => $this->getFoldersCount(),
+            'pictures' => $this->getPicturesCount(),
+            'size' => $size,
+            'size_formatted' => $this->formatBytes($size),
+        ];
+    }
+
     public function uploadFile(string $arrayName): bool|string
     {
         if (!isset($_FILES[$arrayName])) {
@@ -85,13 +127,30 @@ class FileManager
 
     public function deleteFolder(string $foldername): bool
     {
-        if (isset($this->subDir[$foldername])) {
-            $error = $this->subDir[$foldername]->delete();
-            if (!$error) {
+        // Always check filesystem directly for reliability
+        $target = $this->directory . $foldername;
+        if (!is_dir($target)) {
+            // Folder doesn't exist
+            if (isset($this->subDir[$foldername])) {
                 unset($this->subDir[$foldername]);
-                return true;
             }
+            return false;
         }
+        
+        // Create Folder object and delete it
+        $folder = new Folder($foldername, $this->directory);
+        $success = $folder->delete();
+        
+        if ($success) {
+            // Remove from subDir if it was there
+            if (isset($this->subDir[$foldername])) {
+                unset($this->subDir[$foldername]);
+            }
+            // Reload children to sync with filesystem
+            $this->hydrateChildren();
+            return true;
+        }
+        
         return false;
     }
 
@@ -124,6 +183,16 @@ class FileManager
             return false;
         }
         return @mkdir($this->directory . $safeName, 0755);
+    }
+
+    protected function formatBytes(int $bytes, int $precision = 2): string
+    {
+        $bytes = max(0, $bytes);
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        for ($i = 0; $bytes >= 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+        return round($bytes, $precision) . ' ' . $units[$i];
     }
 }
 

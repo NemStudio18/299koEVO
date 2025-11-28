@@ -24,6 +24,20 @@
 					<ul id="navigation">
 						{{ SHOW.mainNavigation }}
 						{% HOOK.endMainNavigation %}
+						{% if REGISTRATION_ENABLED %}
+							{% if IS_LOGGED == false %}
+								<li class="nav-auth-links">
+									<a class="register-link" href="{{ ROUTER.generate("register") }}">{{ Lang.core-register }}</a>
+									<a class="login-link" href="{{ ROUTER.generate("login") }}">{{ Lang.core-connection }}</a>
+								</li>
+							{% endif %}
+						{% endif %}
+						{% if IS_LOGGED %}
+							<li class="nav-auth-links">
+								<a class="profile-link" href="{{ ROUTER.generate("profile") }}">{{ Lang.core-profile }}</a>
+								<a class="logout-link" href="{{ ROUTER.generate("logout") }}">{{ Lang.core-disconnection }}</a>
+							</li>
+						{% endif %}
 					</ul>
 				</nav>
 			</div>
@@ -36,7 +50,7 @@
 				</div>
 			</div>
 			<main id="body">
-				{% IF CORE.getConfigVal(hideTitles) == 0 %}
+				{% IF CORE.getConfigVal(hideTitles) == 0 and not HIDE_PAGE_TITLE %}
 					<div id="pageTitle">
 						{% if PAGE_TITLE %}
 							<h1>{{ PAGE_TITLE }}</h1>

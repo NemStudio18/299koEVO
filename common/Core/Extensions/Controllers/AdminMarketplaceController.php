@@ -3,6 +3,7 @@
 namespace Core\Extensions\Controllers;
 
 use Core\Controllers\AdminController;
+use Core\Extensions\LegacyPluginsMigrator;
 use Core\Extensions\MarketPlaceManager;
 use Core\Extensions\MarketPlaceRessource;
 use Core\Responses\AdminResponse;
@@ -46,43 +47,109 @@ class AdminMarketplaceController extends AdminController
     }
 
     public function index() {
-        $themes = $this->marketManager->getThemes() ?? [];
-        $plugins = $this->marketManager->getPlugins() ?? [];
-        shuffle($plugins);
-        $randomPlugins = array_slice($plugins, 0, 5);
+        $allThemes = $this->marketManager->getThemes() ?? [];
+        $allPlugins = $this->marketManager->getPlugins() ?? [];
 
-        // Randomly select 5 themes from the cache data
-        shuffle($themes);
-        $randomThemes = array_slice($themes, 0, 5);
+        // Featured plugins and themes (5 random ones for overview)
+        $randomPlugins = $allPlugins;
+        shuffle($randomPlugins);
+        $randomPlugins = array_slice($randomPlugins, 0, 5);
+        
+        $randomThemes = $allThemes;
+        shuffle($randomThemes);
+        $randomThemes = array_slice($randomThemes, 0, 5);
 
-        $plugins = [];
+        $featuredPlugins = [];
         foreach ($randomPlugins as $plugin) {
             $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_PLUGIN, $plugin);
-            $plugins[$plugin->slug] = $r;
+            $featuredPlugins[$plugin->slug] = $r;
         }
 
-        $themes = [];
+        $featuredThemes = [];
         foreach ($randomThemes as $theme) {
             $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_THEME, $theme);
-            $themes[$theme->slug] = $r;
+            $featuredThemes[$theme->slug] = $r;
         }
+
+        // All plugins and themes for dedicated tabs
+        $allPluginsResources = [];
+        foreach ($allPlugins as $plugin) {
+            $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_PLUGIN, $plugin);
+            $allPluginsResources[$plugin->slug] = $r;
+        }
+
+        $allThemesResources = [];
+        foreach ($allThemes as $theme) {
+            $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_THEME, $theme);
+            $allThemesResources[$theme->slug] = $r;
+        }
+
         // Prepare the admin response using the marketplace template
         $response = new AdminResponse();
         $tpl = $response->createPluginTemplate('marketplace', 'admin-marketplace');
         $response->setTitle(Lang::get('marketplace.description'));
-        $pluginsTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
-        $pluginsTpl->set('ressources', $plugins);
-        $pluginsTpl->set('token', $this->user->token);
-        $themesTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
-        $themesTpl->set('ressources', $themes);
-        $themesTpl->set('token', $this->user->token);
-        $tpl->set('PLUGINS_TPL', $pluginsTpl->output());
-        $tpl->set('THEMES_TPL', $themesTpl->output());
-        $tpl->set('havePlugins', !empty($plugins));
-        $tpl->set('haveThemes', !empty($themes));
+        
+        // Featured templates for overview tab
+        $featuredPluginsTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
+        $featuredPluginsTpl->set('ressources', $featuredPlugins);
+        $featuredPluginsTpl->set('token', $this->user->token);
+        $tpl->set('FEATURED_PLUGINS_TPL', $featuredPluginsTpl->output());
+        
+        $featuredThemesTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
+        $featuredThemesTpl->set('ressources', $featuredThemes);
+        $featuredThemesTpl->set('token', $this->user->token);
+        $tpl->set('FEATURED_THEMES_TPL', $featuredThemesTpl->output());
+        
+        // All plugins template for plugins tab
+        $allPluginsTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
+        $allPluginsTpl->set('ressources', $allPluginsResources);
+        $allPluginsTpl->set('token', $this->user->token);
+        $tpl->set('ALL_PLUGINS_TPL', $allPluginsTpl->output());
+        
+        // All themes template for themes tab
+        $allThemesTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
+        $allThemesTpl->set('ressources', $allThemesResources);
+        $allThemesTpl->set('token', $this->user->token);
+        $tpl->set('ALL_THEMES_TPL', $allThemesTpl->output());
+        
+        $tpl->set('havePlugins', !empty($allPlugins));
+        $tpl->set('haveThemes', !empty($allThemes));
+        $pendingLegacy = $this->core->extensions()->getPendingLegacyPlugins();
+        $tpl->set('pendingLegacyPlugins', $pendingLegacy);
+        $tpl->set('pendingLegacyList', implode(', ', $pendingLegacy));
+        $tpl->set('pendingLegacyCount', count($pendingLegacy));
+        $tpl->set('legacyMigrationUrl', $this->router->generate('marketplace-migrate-legacy'));
 
         $tpl->set('pluginsPageUrl', $this->router->generate('marketplace-plugins'));
         $tpl->set('themesPageUrl', $this->router->generate('marketplace-themes'));
+
+        $stats = [
+            'plugins_total' => count($allPlugins),
+            'plugins_installed' => 0,
+            'plugins_updates' => 0,
+            'themes_total' => count($allThemes),
+            'themes_installed' => 0,
+        ];
+
+        foreach ($allPlugins as $plugin) {
+            $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_PLUGIN, $plugin);
+            if ($r->isInstalled) {
+                $stats['plugins_installed']++;
+            }
+            if ($r->updateNeeded()) {
+                $stats['plugins_updates']++;
+            }
+        }
+
+        foreach ($allThemes as $theme) {
+            $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_THEME, $theme);
+            if ($r->isInstalled) {
+                $stats['themes_installed']++;
+            }
+        }
+
+        $tpl->set('stats', $stats);
+
         $response->addTemplate($tpl);
         return $response;
     }
@@ -154,6 +221,30 @@ class AdminMarketplaceController extends AdminController
             } else {
                 Show::msg(Lang::get('marketplace.theme_is_used'), 'error');
             }
+        }
+        $this->core->redirect($this->router->generate('admin-marketplace'));
+    }
+
+    public function migrateLegacyPlugins() {
+        if (!$this->user->isAuthorized()) {
+            $this->core->redirect($this->router->generate('admin-marketplace'));
+        }
+        $pending = $this->core->extensions()->getPendingLegacyPlugins();
+        if (empty($pending)) {
+            Show::msg(Lang::get('marketplace.legacy_plugins_none'), 'info');
+            $this->core->redirect($this->router->generate('admin-marketplace'));
+        }
+        if (!function_exists('curl_init')) {
+            Show::msg(Lang::get('marketplace.curl_not_installed'), 'error');
+            $this->core->redirect($this->router->generate('admin-marketplace'));
+        }
+        $result = LegacyPluginsMigrator::install($pending, $this->marketManager);
+        $failed = array_keys($result['failed']);
+        $this->core->extensions()->savePendingLegacyPlugins($failed);
+        if (empty($failed)) {
+            Show::msg(Lang::get('marketplace.legacy_plugins_success'), 'success');
+        } else {
+            Show::msg(Lang::get('marketplace.legacy_plugins_partial', implode(', ', $failed)), 'error');
         }
         $this->core->redirect($this->router->generate('admin-marketplace'));
     }

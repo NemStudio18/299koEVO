@@ -32,6 +32,8 @@ class PublicResponse extends Response {
 
     protected ?string $title = null;
 
+    protected bool $hidePageTitle = false;
+
     public function __construct() {
         parent::__construct();
         $this->theme = new Theme(Core::getInstance()->getConfigVal('theme'));
@@ -55,16 +57,16 @@ class PublicResponse extends Response {
             $core = Core::getInstance();
             if ($core->isCoreModule($pluginName)) {
                 // Try core template location
-                $coreTemplateFile = COMMON . 'template/' . $pluginName . '/' . $templateName . '.tpl';
+                $coreTemplateFile = COMMON . 'template' . DS . $pluginName . DS . $templateName . '.tpl';
                 if (file_exists($coreTemplateFile)) {
                     $tpl = new Template($coreTemplateFile);
                 } else {
                     // Fallback to plugin location (for backward compatibility during migration)
-                    $tpl = new Template(PLUGINS . $pluginName .'/template/' . $templateName . '.tpl');
+                    $tpl = new Template(PLUGINS . $pluginName . DS . 'template' . DS . $templateName . '.tpl');
                 }
             } else {
                 // Regular plugin
-                $tpl = new Template(PLUGINS . $pluginName .'/template/' . $templateName . '.tpl');
+                $tpl = new Template(PLUGINS . $pluginName . DS . 'template' . DS . $templateName . '.tpl');
             }
         }
         return $tpl;
@@ -103,7 +105,14 @@ class PublicResponse extends Response {
             $content .= $tpl->output();
         }
         $this->layout->set('CONTENT', Core::getInstance()->callHook('publicContent', $content));
-        $this->layout->set('PAGE_TITLE' , $this->title ?? false);
+        $this->layout->set('PAGE_TITLE' , $this->title ?? '');
+        // Also set mainTitle in Core to avoid 404 title
+        if ($this->title !== null && $this->title !== '') {
+            Core::getInstance()->setMainTitle($this->title);
+        }
+        // Hide page title for auth pages (login, register, profile)
+        $hidePageTitle = ($this->hidePageTitle ?? false);
+        $this->layout->set('HIDE_PAGE_TITLE', $hidePageTitle);
         return $this->layout->output();
     }
 
@@ -113,5 +122,13 @@ class PublicResponse extends Response {
      */
     public function setTitle(string $title) {
         $this->title = $title;
+    }
+
+    /**
+     * Hide the page title for this response
+     * @param bool $hide
+     */
+    public function hidePageTitle(bool $hide = true) {
+        $this->hidePageTitle = $hide;
     }
 }

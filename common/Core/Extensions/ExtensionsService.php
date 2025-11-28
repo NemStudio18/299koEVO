@@ -14,6 +14,7 @@ class ExtensionsService
 {
     private string $dir;
     private string $marketplaceConfigFile;
+    private string $legacyPluginsFile;
     private bool $routesRegistered = false;
     private array $adminCss = [
         'templates/marketplace/admin.css',
@@ -37,6 +38,7 @@ class ExtensionsService
     {
         $this->dir = DATA_CORE_EXTENSIONS;
         $this->marketplaceConfigFile = $this->dir . 'marketplace.json';
+        $this->legacyPluginsFile = $this->dir . 'legacy_plugins.json';
 
         $this->bootstrap();
     }
@@ -63,6 +65,39 @@ class ExtensionsService
     public function getMarketplaceConfigFile(): string
     {
         return $this->marketplaceConfigFile;
+    }
+
+    public function getLegacyPluginsFile(): string
+    {
+        return $this->legacyPluginsFile;
+    }
+
+    public function getPendingLegacyPlugins(): array
+    {
+        if (!file_exists($this->legacyPluginsFile)) {
+            return [];
+        }
+        $data = Util::readJsonFile($this->legacyPluginsFile, true);
+        if (!is_array($data)) {
+            return [];
+        }
+        $plugins = $data['plugins'] ?? [];
+        if (!is_array($plugins)) {
+            return [];
+        }
+        return array_values(array_unique(array_filter($plugins)));
+    }
+
+    public function savePendingLegacyPlugins(array $plugins): void
+    {
+        $plugins = array_values(array_unique(array_filter($plugins)));
+        if (empty($plugins)) {
+            if (file_exists($this->legacyPluginsFile)) {
+                @unlink($this->legacyPluginsFile);
+            }
+            return;
+        }
+        Util::writeJsonFile($this->legacyPluginsFile, ['plugins' => $plugins]);
     }
 
     public function getAdminCssUrls(): array
@@ -118,6 +153,7 @@ class ExtensionsService
         $router->map('GET', '/admin/marketplace/themes[/?]', 'Core\Extensions\Controllers\ThemesMarketController#index', 'marketplace-themes');
         $router->map('GET', '/admin/marketplace/install/[a:type]/[a:slug]/[a:token][/?]', 'Core\Extensions\Controllers\AdminMarketplaceController#installRelease', 'marketplace-install-release');
         $router->map('GET', '/admin/marketplace/uninstall/[a:type]/[a:slug]/[a:token][/?]', 'Core\Extensions\Controllers\AdminMarketplaceController#uninstallRessource', 'marketplace-uninstall-ressource');
+        $router->map('POST', '/admin/marketplace/migrate-legacy', 'Core\Extensions\Controllers\AdminMarketplaceController#migrateLegacyPlugins', 'marketplace-migrate-legacy');
     }
 
     public function registerAdminHooks(): void
@@ -145,10 +181,10 @@ class ExtensionsService
         if (!file_exists($this->marketplaceConfigFile)) {
             $legacy = DATA_PLUGIN . 'marketplace' . DS . 'marketplace.json';
             if (file_exists($legacy)) {
-                $payload = util::readJsonFile($legacy, true);
-                util::writeJsonFile($this->marketplaceConfigFile, $payload);
+                $payload = Util::readJsonFile($legacy, true);
+                Util::writeJsonFile($this->marketplaceConfigFile, $payload);
             } else {
-                util::writeJsonFile($this->marketplaceConfigFile, [
+                Util::writeJsonFile($this->marketplaceConfigFile, [
                     'siteID' => uniqid('299ko-', true)
                 ]);
             }

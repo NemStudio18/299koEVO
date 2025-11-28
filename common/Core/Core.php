@@ -686,13 +686,22 @@ class Core
                 // Si pas de runPlugin mais qu'on appelle un contrôleur de plugin, le charger
                 list($controller, $action) = explode('#', $match['target']);
                 if (strpos($controller, 'Controller') !== false && !class_exists($controller)) {
-                    // Essayer de trouver le plugin correspondant
-                    $pluginsManager = \Core\Plugin\PluginsManager::getInstance();
-                    foreach ($pluginsManager->getPlugins() as $plugin) {
-                        if ($plugin->getConfigVal('activate')) {
-                            $plugin->loadControllers();
-                            if (class_exists($controller)) {
-                                break;
+                    // Si c'est un contrôleur core Auth, charger le fichier directement
+                    if (strpos($controller, 'Core\\Auth\\Controllers\\') === 0 || strpos($controller, 'Core\\Page\\Controllers\\') === 0 || strpos($controller, 'Core\\Settings\\Controllers\\') === 0 || strpos($controller, 'Core\\Media\\Controllers\\') === 0) {
+                        $controllerFile = str_replace('\\', DIRECTORY_SEPARATOR, $controller);
+                        $controllerFile = COMMON . $controllerFile . '.php';
+                        if (file_exists($controllerFile)) {
+                            require_once $controllerFile;
+                        }
+                    } else {
+                        // Essayer de trouver le plugin correspondant
+                        $pluginsManager = \Core\Plugin\PluginsManager::getInstance();
+                        foreach ($pluginsManager->getPlugins() as $plugin) {
+                            if ($plugin->getConfigVal('activate')) {
+                                $plugin->loadControllers();
+                                if (class_exists($controller)) {
+                                    break;
+                                }
                             }
                         }
                     }

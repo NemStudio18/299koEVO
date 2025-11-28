@@ -37,12 +37,34 @@ class PluginsManagerController extends AdminController
 
         $plugins = $this->pluginsManager->getPlugins();
         $pluginsToDisplay = [];
+        $stats = [
+            'total' => 0,
+            'active' => 0,
+            'inactive' => 0,
+            'maintenance' => 0,
+        ];
         foreach ($plugins as $plugin) {
-            if (!$plugin->isRequired()) {
-                $pluginsToDisplay[] = $plugin;
+            if ($plugin->isRequired()) {
+                continue;
+            }
+            $pluginsToDisplay[] = $plugin;
+            $stats['total']++;
+            $isActive = (bool) $plugin->getConfigVal('activate');
+            if ($isActive) {
+                $stats['active']++;
+                if (!$plugin->isInstalled()) {
+                    $stats['maintenance']++;
+                }
+            } else {
+                $stats['inactive']++;
             }
         }
+        $legacyPending = $this->core->extensions()->getPendingLegacyPlugins();
         $tpl->set('plugins', $pluginsToDisplay);
+        $tpl->set('pluginStats', $stats);
+        $tpl->set('legacyPluginsPending', $legacyPending);
+        $tpl->set('legacyPluginsCount', count($legacyPending));
+        $tpl->set('legacyPluginsList', implode(', ', $legacyPending));
 
         $tpl->set('priority', $priority);
         $tpl->set('token', $this->user->token);

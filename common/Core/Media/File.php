@@ -53,6 +53,13 @@ class File
     {
         return @unlink($this->directory . $this->name);
     }
+
+    public function getSize(): int
+    {
+        $path = $this->directory . $this->name;
+        $size = filesize($path);
+        return ($size === false) ? 0 : $size;
+    }
 }
 
 

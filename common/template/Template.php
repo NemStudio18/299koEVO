@@ -175,14 +175,49 @@ class Template {
     }
 
     protected function listReplaceVars($matches) {
-        $end = '';
-        $varList = explode(' ',trim($matches));
-        foreach($varList as $v) {
-            if ($v !== '') {
-                $end .= $this->simpleReplaceVar($v);
+        $condition = trim($matches);
+        
+        // Handle "not" keyword at the beginning
+        if (preg_match('#^not\s+(.+)$#i', $condition, $notMatch)) {
+            return '!(' . $this->listReplaceVars($notMatch[1]) . ')';
+        }
+        
+        // Normalize logical operators
+        $condition = str_replace(['&&', '||'], [' and ', ' or '], $condition);
+
+        // Handle "and" / "or" operators (case-insensitive)
+        $parts = preg_split('#\s+(and|or)\s+#i', $condition, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $result = '';
+        
+        foreach ($parts as $part) {
+            $part = trim($part);
+            if ($part === '') continue;
+            
+            if (strtolower($part) === 'and' || strtolower($part) === 'or') {
+                $operator = strtolower($part) === 'and' ? '&&' : '||';
+                $result .= ' ' . $operator . ' ';
+            } else {
+                // Check if it contains comparison operators (==, !=, ===, !==, <, >, <=, >=)
+                if (preg_match('#(.+?)\s*(==|!=|===|!==|<|>|<=|>=)\s*(.+)#', $part, $compMatch)) {
+                    // Comparison expression: left operator right
+                    $left = trim($compMatch[1]);
+                    $operator = $compMatch[2];
+                    $right = trim($compMatch[3]);
+                    $leftExpr = $this->simpleReplaceVar($left);
+                    $rightExpr = $this->simpleReplaceVar($right);
+                    $result .= $leftExpr . ' ' . $operator . ' ' . $rightExpr;
+                } elseif (preg_match('#^[a-zA-Z_][a-zA-Z0-9_.]*\(\)$#', $part) || 
+                          preg_match('#^[a-zA-Z_][a-zA-Z0-9_.]*\.[a-zA-Z_][a-zA-Z0-9_.]*\(\)$#', $part)) {
+                    // Method call - wrap in getVar
+                    $result .= '$this->getVar(\'' . $part . '\', $this->data)';
+                } else {
+                    // Simple variable or expression
+                    $result .= $this->simpleReplaceVar($part);
+                }
             }
         }
-        return $end;
+        
+        return $result ?: $this->simpleReplaceVar($condition);
     }
 
     protected function _ifReplace($matches) {

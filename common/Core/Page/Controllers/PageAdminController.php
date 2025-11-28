@@ -41,6 +41,25 @@ class PageAdminController extends AdminController {
             Show::msg(Lang::get('page.no-homepage-defined'), 'warning');
         }
 
+        $items = $page->getItems();
+        $totalPages = count($items);
+        $visiblePages = 0;
+        $hiddenPages = 0;
+        $parentPages = 0;
+        foreach ($items as $item) {
+            if ($item->getIsHidden()) {
+                $hiddenPages++;
+            } else {
+                $visiblePages++;
+            }
+            if ((int) $item->getParent() === 0) {
+                $parentPages++;
+            }
+        }
+        $childPages = max($totalPages - $parentPages, 0);
+        $lostIds = array_filter(array_map('trim', explode(',', $lost)));
+        $lostCount = count($lostIds);
+
         $response = new AdminResponse();
         $tpl = $response->createPluginTemplate('page', 'list');
 
@@ -56,6 +75,15 @@ class PageAdminController extends AdminController {
         $tpl->set('token', $this->user->token);
         $tpl->set('page', $page);
         $tpl->set('lost', $lost);
+        $tpl->set('lostCount', $lostCount);
+        $tpl->set('pageStats', [
+            'total' => $totalPages,
+            'visible' => $visiblePages,
+            'hidden' => $hiddenPages,
+            'parents' => $parentPages,
+            'children' => $childPages,
+            'lost' => $lostCount,
+        ]);
         
         $response->addTemplate($tpl);
         return $response;

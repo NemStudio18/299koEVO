@@ -269,7 +269,7 @@ abstract class CategoriesManager {
             }
             $categories[$cat['id']] = $cat;
         }
-        util::writeJsonFile(self::$file, $categories);
+        Util::writeJsonFile(self::$file, $categories);
     }
     
     
@@ -287,21 +287,21 @@ abstract class CategoriesManager {
             }
             $categories[$cat['id']] = $cat;
         }
-        util::writeJsonFile(self::$file, $categories);
+        Util::writeJsonFile(self::$file, $categories);
     }
 
     protected static function getMetas() {
         if (!is_file(self::$file)) {
             return [];
         }
-        return util::readJsonFile(self::$file);
+        return Util::readJsonFile(self::$file);
     }
 
     protected function findNextId(): int {
         if (!file_exists(self::$file)) {
             return 1;
         }
-        $cats = util::readJsonFile(self::$file);
+        $cats = Util::readJsonFile(self::$file);
         if (empty($cats)) {
             return 1;
         }

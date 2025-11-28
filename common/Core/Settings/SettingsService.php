@@ -53,7 +53,9 @@ class SettingsService
      */
     public function displayInstallWarning(): void
     {
-        if (file_exists(ROOT . 'install.php')) {
+        $installFile = ROOT . 'install.php';
+        $installCss = ROOT . 'install' . DS . 'install.css';
+        if (file_exists($installFile) || file_exists($installCss)) {
             echo "<div class='msg warning'>
                 <p>" . Lang::get("configmanager-delete-install-msg") . "</p>
                 <div style='text-align:center'><a class='button' href='" .
@@ -68,11 +70,27 @@ class SettingsService
      */
     public function deleteInstallFile(): bool
     {
-        if (!file_exists(ROOT . 'install.php')) {
-            return true;
+        $installFile = ROOT . 'install.php';
+        $installCss = ROOT . 'install' . DS . 'install.css';
+        $success = true;
+
+        if (file_exists($installFile) && !@unlink($installFile)) {
+            $success = false;
         }
 
-        return @unlink(ROOT . 'install.php');
+        if (file_exists($installCss) && !@unlink($installCss)) {
+            $success = false;
+        }
+
+        $installDir = ROOT . 'install';
+        if (is_dir($installDir)) {
+            $remaining = array_diff(scandir($installDir), ['.', '..']);
+            if (empty($remaining)) {
+                @rmdir($installDir);
+            }
+        }
+
+        return $success;
     }
 
     /**
@@ -228,10 +246,10 @@ class SettingsService
 
         // migrate cache
         if (!file_exists($this->cacheFile) && file_exists($this->legacyDir . 'cache.json')) {
-            $payload = util::readJsonFile($this->legacyDir . 'cache.json', true);
-            util::writeJsonFile($this->cacheFile, $payload);
+            $payload = Util::readJsonFile($this->legacyDir . 'cache.json', true);
+            Util::writeJsonFile($this->cacheFile, $payload);
         } elseif (!file_exists($this->cacheFile)) {
-            util::writeJsonFile($this->cacheFile, []);
+            Util::writeJsonFile($this->cacheFile, []);
         }
 
         // migrate backups

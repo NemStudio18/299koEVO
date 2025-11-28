@@ -7,6 +7,8 @@ use Core\Auth\UsersManager;
 use Core\Controllers\Controller;
 use Core\Plugin\Plugin;
 use Core\Plugin\PluginsManager;
+use Utils\Show;
+use Core\Lang;
 
 /**
  * @copyright (C) 2024, 299Ko
@@ -52,6 +54,19 @@ class AdminController extends Controller {
             define('ADMIN_MODE', true);
         }
         $this->user = UsersManager::getCurrentUser();
+
+        if ($this->user === null || !$this->user->hasPermission('admin.access')) {
+            Show::msg(Lang::get('permissions.denied'), 'error');
+            $this->core->redirect($this->router->generate('login'));
+        }
+    }
+
+    protected function requirePermission(string $permission): void
+    {
+        if (!$this->user->hasPermission($permission)) {
+            Show::msg(Lang::get('permissions.denied'), 'error');
+            $this->core->redirect($this->router->generate('admin'));
+        }
     }
         
 }

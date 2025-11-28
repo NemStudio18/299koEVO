@@ -51,6 +51,28 @@
 					</select>
 				</p>
 				<p>
+					<input {% if CORE.getConfigVal("allowRegistrations") %}checked{% endif %} type="checkbox" name="allowRegistrations" id="allowRegistrations"/>
+					<label for="allowRegistrations">{{ Lang.configmanager-allow-registrations }}</label>
+					<br><small>{{ Lang.configmanager-allow-registrations-desc }}</small>
+				</p>
+				<p>
+					<label for="registrationDefaultGroup">{{ Lang.configmanager-registration-default-group }}</label>
+					<select name="registrationDefaultGroup" id="registrationDefaultGroup">
+						{% for group in registrationGroups %}
+							<option value="{{ group.slug }}" {% if group.slug == registrationDefaultGroup %}selected{% endif %}>{{ group.name }}</option>
+						{% endfor %}
+					</select>
+				</p>
+				<p>
+					<label for="registrationValidationMode">{{ Lang.configmanager-registration-validation-mode }}</label>
+					<select name="registrationValidationMode" id="registrationValidationMode">
+						<option value="email" {% if CORE.getConfigVal("registrationValidationMode") == "email" or CORE.getConfigVal("registrationValidationMode") == "" %}selected{% endif %}>{{ Lang.configmanager-registration-validation-mode-email }}</option>
+						<option value="admin" {% if CORE.getConfigVal("registrationValidationMode") == "admin" %}selected{% endif %}>{{ Lang.configmanager-registration-validation-mode-admin }}</option>
+						<option value="none" {% if CORE.getConfigVal("registrationValidationMode") == "none" %}selected{% endif %}>{{ Lang.configmanager-registration-validation-mode-none }}</option>
+					</select>
+					<br><small>{{ Lang.configmanager-registration-validation-mode-desc }}</small>
+				</p>
+				<p>
 					<label for="siteName">{{Lang.configmanager-sitename}}</label>
 					<input type="text" name="siteName" id="siteName" value="{{ CORE.getConfigVal("siteName")}}" required/>
 				</p>

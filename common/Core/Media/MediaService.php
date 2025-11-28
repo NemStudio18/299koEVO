@@ -139,7 +139,7 @@ class MediaService
         $router->map('POST', '/admin/filemanager/view-ajax/upload/[a:token]', 'Core\Media\Controllers\FileManagerAPIController#upload', 'filemanager-upload');
         $router->map('POST', '/admin/filemanager/view-ajax/delete/[a:token]', 'Core\Media\Controllers\FileManagerAPIController#delete', 'filemanager-delete');
         $router->map('POST', '/admin/filemanager/view-ajax/create/[a:token]', 'Core\Media\Controllers\FileManagerAPIController#create', 'filemanager-create');
-        $router->map('POST', '/admin/filemanager/view', 'Core\Media\Controllers\FileManagerAPIController#view', 'filemanager-view');
+        $router->map('GET|POST', '/admin/filemanager/view', 'Core\Media\Controllers\FileManagerAPIController#view', 'filemanager-view');
         $router->map('POST', '/admin/filemanager/view-ajax', 'Core\Media\Controllers\FileManagerAPIController#viewAjax', 'filemanager-view-ajax');
         $router->map('GET', '/admin/filemanager/view-ajax/[a:token]/[*:editor]?', 'Core\Media\Controllers\FileManagerAPIController#viewAjaxHome', 'filemanager-view-ajax-home');
         $router->map('POST', '/admin/filemanager/api/upload/[a:token]', 'Core\Media\Controllers\FileManagerAPIController#uploadAPI', 'filemanager-upload-api');

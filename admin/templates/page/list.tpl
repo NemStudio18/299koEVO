@@ -1,73 +1,123 @@
-<section>
+<section class="module-card">
     <header>{{ Lang.page.page-list }}</header>
-    <a class="button" href="{{ ROUTER.generate("page-admin-new") }}">{{ Lang.page.add-page }}</a>
-    <a class="button" href="{{ ROUTER.generate("page-admin-new-parent") }}">{{ Lang.page.add-parent-item }}</a>
-    <a class="button" href="{{ ROUTER.generate("page-admin-new-link") }}">{{ Lang.page.add-external-link }}</a>
-    {% if lost != "" %}
-        <p>{{ Lang.page.ghost-pages-found }} <a href="{{ ROUTER.generate("page-admin-maintenance", ["id" => lost, "token" => token]) }}">{{ Lang.page.click-here }}</a> {{ Lang.page.to-execute-maintenance-script }}</p>
-    {% endif %}
-    <p class="sortable-hint" style="margin: 10px 0; padding: 8px; background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 4px;">
-        <i class="fa-solid fa-info-circle"></i> {{ Lang.page.drag-to-reorder }}
-    </p>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 30px;"><i class="fa-solid fa-grip-vertical" style="color: #999;"></i></th>
-                <th>{{ Lang.page.page-name }}</th>
-                <th>{{ Lang.page.address }}</th>
-                <th>{{ Lang.page.position }}</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="pages-sortable">
-            {% for pageItem in page.getItems() %}
-                {% if pageItem.getParent() == false && pageItem.isVisibleOnList() %}
-                    <tr data-page-id="{{ pageItem.getId() }}" class="sortable-row">
-                        <td class="drag-handle" style="cursor: move; text-align: center;"><i class="fa-solid fa-grip-vertical" style="color: #999;"></i></td>
-                        <td>{{ pageItem.getName() }}</td>
-                        <td>{% if pageItem.targetIs() != "parent" %}<input readonly="readonly" type="text" value="{{ page.makeUrl(pageItem) }}" />{% endif %}</td>
-                        <td>
-                            <span class="position-display">{{ pageItem.getPosition() }}</span>
-                            <span class="legacy-controls" style="display: none;">
-                                <a class="up" href="{{ ROUTER.generate("page-admin-page-up", ["id" => pageItem.getId() , "token" => token]) }}"><i class="fa-regular fa-circle-up" title="{{ Lang.page.move-up }}"></i></a>
-                                <a class="down" href="{{ ROUTER.generate("page-admin-page-down", ["id" => pageItem.getId() , "token" => token]) }}"><i class="fa-regular fa-circle-down" title="{{ Lang.page.move-down }}"></i></a>
-                            </span>
-                        </td>
-                        <td>
-                            <div role="group">
-                                <a class="button" href="{{ ROUTER.generate("page-admin-edit", ["id" => pageItem.getId()]) }}">{{ Lang.edit }}</a> 
-                                {% if pageItem.getIsHomepage() == false && pageItem.targetIs() != "plugin" %}<a class="button alert" href="{{ ROUTER.generate("page-admin-delete", ["id" => pageItem.getId(), "token" => token]) }}" onclick = "if (!confirm('{{ Lang.confirm.deleteItem }}'))
-                                                                            return false;">{{ Lang.delete }}</a>{% endif %}	
-                            </div>
-                        </td>
-                    </tr>
-                    {% for pageItemChild in page.getItems() %}
-                        {% if pageItemChild.getParent() == pageItem.getId() && pageItemChild.isVisibleOnList() %}
-                            <tr data-page-id="{{ pageItemChild.getId() }}" data-parent-id="{{ pageItem.getId() }}" class="sortable-row sortable-child">
-                                <td class="drag-handle" style="cursor: move; text-align: center;"><i class="fa-solid fa-grip-vertical" style="color: #999;"></i></td>
-                                <td>▸ {{ pageItemChild.getName() }}</td>
-                                <td><input readonly="readonly" type="text" value="{{ page.makeUrl(pageItemChild) }}" /></td>
-                                <td>
-                                    <span class="position-display">{{ pageItemChild.getPosition() }}</span>
-                                    <span class="legacy-controls" style="display: none;">
-                                        <a class="up" href="{{ ROUTER.generate("page-admin-page-up", ["id" => pageItemChild.getId(), "token" => token]) }}"><i class="fa-regular fa-circle-up" title="{{ Lang.page.move-up }}"></i></a>
-                                        <a class="down" href="{{ ROUTER.generate("page-admin-page-down", ["id" => pageItemChild.getId(), "token" => token]) }}"><i class="fa-regular fa-circle-down" title="{{ Lang.page.move-down }}"></i></a>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div role="group">
-                                        <a class="button" href="{{ ROUTER.generate("page-admin-edit", ["id" => pageItemChild.getId()]) }}">{{ Lang.edit }}</a> 
-                                        {% if pageItemChild.getIsHomepage() == false && pageItemChild.targetIs() != "plugin" %}<a class="button alert" href="{{ ROUTER.generate("page-admin-delete", ["id" => pageItemChild.getId(), "token" => token]) }}" onclick = "if (!confirm('{{ Lang.confirm.deleteItem }}'))
-                                                                        return false;">{{ Lang.delete }}</a>{% endif %}	
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endfor %}
+    <div class="tabs-container">
+        <ul class="tabs-header">
+            <li class="default-tab"><i class="fa-solid fa-chart-simple"></i> {{ Lang.core-overview }}</li>
+            <li><i class="fa-solid fa-list"></i> {{ Lang.page.page-list }}</li>
+        </ul>
+        <ul class="tabs">
+            <li class="tab">
+                <div class="module-actions">
+                    <a class="button success" href="{{ ROUTER.generate("page-admin-new") }}">
+                        <i class="fa-solid fa-square-plus"></i> {{ Lang.page.add-page }}
+                    </a>
+                    <a class="button" href="{{ ROUTER.generate("page-admin-new-parent") }}">
+                        <i class="fa-solid fa-diagram-predecessor"></i> {{ Lang.page.add-parent-item }}
+                    </a>
+                    <a class="button" href="{{ ROUTER.generate("page-admin-new-link") }}">
+                        <i class="fa-solid fa-link"></i> {{ Lang.page.add-external-link }}
+                    </a>
+                </div>
+                <div class="module-grid">
+                    <div class="stat-card">
+                        <span class="stat-value">{{ pageStats.total }}</span>
+                        <span class="stat-label">{{ Lang.page.total-pages }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">{{ pageStats.visible }}</span>
+                        <span class="stat-label">{{ Lang.page.visible-pages }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">{{ pageStats.hidden }}</span>
+                        <span class="stat-label">{{ Lang.page.hidden-pages }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">{{ pageStats.parents }}</span>
+                        <span class="stat-label">{{ Lang.page.parent-pages }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">{{ pageStats.children }}</span>
+                        <span class="stat-label">{{ Lang.page.child-pages }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">{{ pageStats.lost }}</span>
+                        <span class="stat-label">{{ Lang.page.ghost-pages }}</span>
+                    </div>
+                </div>
+                {% if lostCount > 0 %}
+                    <div class="info-message warning legacy-message">
+                        <p>{{ Lang.page.ghost-pages-found }} <a href="{{ ROUTER.generate("page-admin-maintenance", ["id" => lost, "token" => token]) }}">{{ Lang.page.click-here }}</a> {{ Lang.page.to-execute-maintenance-script }}</p>
+                    </div>
                 {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
+            </li>
+            <li class="tab">
+                <p class="sortable-hint" style="margin: 10px 0; padding: 8px; background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 4px;">
+                    <i class="fa-solid fa-info-circle"></i> {{ Lang.page.drag-to-reorder }}
+                </p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 30px;"><i class="fa-solid fa-grip-vertical" style="color: #999;"></i></th>
+                                <th>{{ Lang.page.page-name }}</th>
+                                <th>{{ Lang.page.address }}</th>
+                                <th>{{ Lang.page.position }}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="pages-sortable">
+                            {% for pageItem in page.getItems() %}
+                                {% if pageItem.getParent() == false && pageItem.isVisibleOnList() %}
+                                    <tr data-page-id="{{ pageItem.getId() }}" class="sortable-row">
+                                        <td class="drag-handle" style="cursor: move; text-align: center;"><i class="fa-solid fa-grip-vertical" style="color: #999;"></i></td>
+                                        <td><strong>{{ pageItem.getName() }}</strong></td>
+                                        <td>{% if pageItem.targetIs() != "parent" %}<input readonly="readonly" type="text" value="{{ page.makeUrl(pageItem) }}" />{% endif %}</td>
+                                        <td>
+                                            <span class="position-display">{{ pageItem.getPosition() }}</span>
+                                            <span class="legacy-controls" style="display: none;">
+                                                <a class="up" href="{{ ROUTER.generate("page-admin-page-up", ["id" => pageItem.getId() , "token" => token]) }}"><i class="fa-regular fa-circle-up" title="{{ Lang.page.move-up }}"></i></a>
+                                                <a class="down" href="{{ ROUTER.generate("page-admin-page-down", ["id" => pageItem.getId() , "token" => token]) }}"><i class="fa-regular fa-circle-down" title="{{ Lang.page.move-down }}"></i></a>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div role="group">
+                                                <a class="button" href="{{ ROUTER.generate("page-admin-edit", ["id" => pageItem.getId()]) }}">{{ Lang.edit }}</a> 
+                                                {% if pageItem.getIsHomepage() == false && pageItem.targetIs() != "plugin" %}<a class="button alert" href="{{ ROUTER.generate("page-admin-delete", ["id" => pageItem.getId(), "token" => token]) }}" onclick = "if (!confirm('{{ Lang.confirm.deleteItem }}'))
+                                                                            return false;">{{ Lang.delete }}</a>{% endif %}	
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% for pageItemChild in page.getItems() %}
+                                        {% if pageItemChild.getParent() == pageItem.getId() && pageItemChild.isVisibleOnList() %}
+                                            <tr data-page-id="{{ pageItemChild.getId() }}" data-parent-id="{{ pageItem.getId() }}" class="sortable-row sortable-child">
+                                                <td class="drag-handle" style="cursor: move; text-align: center;"><i class="fa-solid fa-grip-vertical" style="color: #999;"></i></td>
+                                                <td>▸ {{ pageItemChild.getName() }}</td>
+                                                <td><input readonly="readonly" type="text" value="{{ page.makeUrl(pageItemChild) }}" /></td>
+                                                <td>
+                                                    <span class="position-display">{{ pageItemChild.getPosition() }}</span>
+                                                    <span class="legacy-controls" style="display: none;">
+                                                        <a class="up" href="{{ ROUTER.generate("page-admin-page-up", ["id" => pageItemChild.getId(), "token" => token]) }}"><i class="fa-regular fa-circle-up" title="{{ Lang.page.move-up }}"></i></a>
+                                                        <a class="down" href="{{ ROUTER.generate("page-admin-page-down", ["id" => pageItemChild.getId(), "token" => token]) }}"><i class="fa-regular fa-circle-down" title="{{ Lang.page.move-down }}"></i></a>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div role="group">
+                                                        <a class="button" href="{{ ROUTER.generate("page-admin-edit", ["id" => pageItemChild.getId()]) }}">{{ Lang.edit }}</a> 
+                                                        {% if pageItemChild.getIsHomepage() == false && pageItemChild.targetIs() != "plugin" %}<a class="button alert" href="{{ ROUTER.generate("page-admin-delete", ["id" => pageItemChild.getId(), "token" => token]) }}" onclick = "if (!confirm('{{ Lang.confirm.deleteItem }}'))
+                                                                        return false;">{{ Lang.delete }}</a>{% endif %}	
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+        </ul>
+    </div>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -211,3 +261,4 @@
     document.head.appendChild(style);
 })();
 </script>
+

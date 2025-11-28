@@ -5,6 +5,7 @@ namespace Core\Auth\Controllers;
 use Core\Controllers\AdminController;
 use Core\Responses\AdminResponse;
 use Core\Auth\User;
+use Core\Auth\Permissions;
 
 /**
  * @copyright (C) 2024, 299Ko
@@ -23,10 +24,22 @@ class UsersAdminController extends AdminController {
         $tpl = $response->createPluginTemplate('users', 'userslist');
 
         $users = User::all();
+        $groups = $this->core->auth()->getGroups();
+        $groupMap = [];
+        foreach ($groups as $group) {
+            $groupMap[$group->attributes['id'] ?? null] = $group;
+        }
+
         foreach ($users as $user) {
             $user->deleteLink = $this->router->generate("users-delete", ["id" => $user->id , "token" => $this->user->token]);
+            $groupId = $user->attributes['group_id'] ?? null;
+            $group = $groupMap[$groupId] ?? null;
+            $user->group_name = $group ? ($group->attributes['name'] ?? '') : '-';
+            $user->group_slug = $group ? ($group->attributes['slug'] ?? '') : null;
         }
         $tpl->set('users', $users);
+        $tpl->set('groups', $groups);
+        $tpl->set('permissionsDefinitions', Permissions::translated());
         $tpl->set('token', $this->user->token);
 
         $response->addTemplate($tpl);

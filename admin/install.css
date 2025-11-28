@@ -1,0 +1,305 @@
+.install,
+.install-body {
+    background: #f4f6fb;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    color: #1f2a37;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+#install {
+    width: 100%;
+    max-width: 600px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 35px 80px rgba(15, 23, 42, 0.15);
+    overflow: hidden;
+}
+
+#install header {
+    background: linear-gradient(135deg, #0083b0, #00b4db);
+    padding: 35px;
+    text-align: center;
+    color: #fff;
+}
+
+#install header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+#install form, #install .messages-wrapper {
+    padding: 35px;
+}
+
+#install p {
+    margin: 0 0 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.95rem;
+}
+
+#install input[type="text"],
+#install input[type="email"],
+#install input[type="password"],
+#install select {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#install input:focus,
+#install select:focus {
+    border-color: #00a2ff;
+    box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.15);
+    outline: none;
+}
+
+#install button, #install a.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: none;
+    background: #0083b0;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#install button.success,
+#install a.button.success {
+    background: #00b894;
+}
+
+#install button.alert,
+#install a.button.alert {
+    background: #ff6b6b;
+}
+
+#install button:hover,
+#install a.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(0, 131, 176, 0.2);
+}
+
+.msg {
+    border-radius: 12px;
+    padding: 15px 18px;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+.msg.error {
+    background: #fdecea;
+    color: #b42318;
+}
+
+.msg.success {
+    background: #ebf8f1;
+    color: #1b7052;
+}
+
+.msg.warning {
+    background: #fff8e6;
+    color: #8a6116;
+}
+
+.text-center {
+    text-align: center;
+}
+
+#alert-msg {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+}
+
+.install-body #alert-msg .msg {
+    margin: 0 auto;
+    max-width: 600px;
+}
+:root {
+    --font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --bg-color: #f5f7fb;
+    --card-bg: #ffffff;
+    --border-color: rgba(32, 44, 57, 0.08);
+    --primary: #0ea5e9;
+    --primary-dark: #0284c7;
+    --text-color: #0f172a;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body.install {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-family);
+    background: radial-gradient(circle at top, #e0f2fe 0%, #f5f7fb 45%, #f5f7fb 100%);
+    color: var(--text-color);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+#install {
+    width: min(640px, 100%);
+    background: var(--card-bg);
+    border-radius: 24px;
+    box-shadow:
+        0 25px 65px rgba(15, 23, 42, 0.1),
+        0 10px 25px rgba(15, 23, 42, 0.05);
+    padding: 40px;
+    border: 1px solid var(--border-color);
+    animation: popIn 0.6s ease;
+}
+
+#install header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#install header h1 {
+    margin: 0;
+    font-size: 1.9rem;
+    color: var(--text-color);
+}
+
+#install form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+#install label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+}
+
+#install input[type="text"],
+#install input[type="email"],
+#install input[type="password"],
+#install select {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #f8fafc;
+}
+
+#install input:focus,
+#install select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    background: #fff;
+}
+
+#install .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#install .button.success {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    padding: 12px 26px;
+    box-shadow: 0 10px 20px rgba(14, 165, 233, 0.25);
+}
+
+#install .button.success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 15px 30px rgba(14, 165, 233, 0.35);
+}
+
+#install .button.alert {
+    background: transparent;
+    border: 1px solid rgba(14, 165, 233, 0.5);
+    color: var(--primary);
+    padding: 10px 24px;
+}
+
+#install .msg {
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+}
+
+#install .msg.success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #166534;
+}
+
+#install .msg.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #7f1d1d;
+}
+
+#install footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+#install footer a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 640px) {
+    #install {
+        padding: 30px 24px;
+    }
+
+    body.install {
+        padding: 20px;
+    }
+}
+

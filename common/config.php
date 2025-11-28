@@ -11,7 +11,7 @@
  * @package 299Ko https://github.com/299Ko/299ko
  */
 
-const VERSION = '2.1.0b';
+const VERSION = '1.0.0';
 const COMMON = ROOT . 'common' . DS;
 const DATA = ROOT . 'data' . DS;
 const DATA_CORE = DATA . 'core' . DS;

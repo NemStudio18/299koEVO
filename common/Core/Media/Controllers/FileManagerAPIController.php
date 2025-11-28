@@ -7,6 +7,7 @@ use Core\Media\FileManager;
 use Core\Media\MediaService;
 use Core\Responses\StringResponse;
 use Core\Responses\AdminResponse;
+use Core\Lang;
 use Utils\Util;
 
 /**
@@ -46,6 +47,31 @@ class FileManagerAPIController extends AdminController {
     }
 
     public function view() {
+        // POST/REDIRECT/GET pattern to avoid resubmission on F5
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $folderToSee = $_POST['fmFolderToSee'] ?? '';
+            $activeTab = $_POST['activeTab'] ?? '';
+            
+            // Build redirect URL with GET parameters
+            // http_build_query() already encodes, so don't use urlencode() before
+            $params = [];
+            if ($folderToSee !== '') {
+                $params['dir'] = $folderToSee;
+            }
+            if ($activeTab !== '') {
+                $params['activeTab'] = $activeTab;
+            }
+            
+            $redirectUrl = $this->router->generate('filemanager-view');
+            if (!empty($params)) {
+                $redirectUrl .= '?' . http_build_query($params);
+            }
+            
+            $this->core->redirect($redirectUrl);
+            return;
+        }
+        
+        // GET request - render normally
         return $this->render();
     }
 
@@ -180,6 +206,10 @@ class FileManagerAPIController extends AdminController {
         $tpl->set('dir', $this->dir);
         $tpl->set('dirParts', $this->dirParts);
         $tpl->set('manager', $this->filemanager);
+        $stats = $this->filemanager->getStats();
+        $stats['path'] = $this->dir === '' ? '/' : $this->dir;
+        $stats['path_label'] = $stats['path'] === '/' ? Lang::get('filemanager.root') : $stats['path'];
+        $tpl->set('stats', $stats);
         $tpl->set('ajaxView', $this->ajaxView);
         $tpl->set('uploadUrl', $this->router->generate('filemanager-upload', ['token' => $this->user->token]));
         $tpl->set('deleteUrl', $this->router->generate('filemanager-delete', ['token' => $this->user->token]));
@@ -187,6 +217,10 @@ class FileManagerAPIController extends AdminController {
         $tpl->set('redirectUrl', $this->router->generate('filemanager-view'));
         $tpl->set('redirectAjaxUrl', $this->router->generate('filemanager-view-ajax'));
         $tpl->set('editor', $this->editor);
+        
+        // Check if we should stay on the "Manage" tab (from GET or POST)
+        $activeTab = $_GET['activeTab'] ?? $_POST['activeTab'] ?? '';
+        $tpl->set('activeTab', $activeTab);
 
         $response->addTemplate($tpl);
         return $response;
@@ -194,7 +228,14 @@ class FileManagerAPIController extends AdminController {
 
     protected function getSentDir() {
         if (!isset($this->dir)) {
-            $this->dir = $_POST['fmFolderToSee'] ?? '';
+            // Priority: POST data (for upload, delete, create actions) > GET parameter (for view after redirect)
+            if (isset($_POST['fmFolderToSee'])) {
+                $this->dir = $_POST['fmFolderToSee'];
+            } elseif (isset($_GET['dir'])) {
+                $this->dir = $_GET['dir'];
+            } else {
+                $this->dir = '';
+            }
         }
         [$this->dir, $this->fullDir] = $this->media->normalizePath($this->dir);
         $this->dirParts = $this->dir === '' ? [] : explode('/', $this->dir);

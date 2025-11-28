@@ -208,15 +208,15 @@ class PluginsManager {
 
     private function createPlugin($name) {
         // Instance du core
-        $core = core::getInstance();
+        $core = Core::getInstance();
         // Infos du plugin
-        $infos = util::readJsonFile(PLUGINS . $name . '/param/infos.json');
+        $infos = Util::readJsonFile(PLUGINS . $name . '/param/infos.json');
         // Configuration du plugin
-        $config = util::readJsonFile(DATA_PLUGIN . $name . '/config.json');
+        $config = Util::readJsonFile(DATA_PLUGIN . $name . '/config.json');
         // Hooks du plugin
-        $hooks = util::readJsonFile(PLUGINS . $name . '/param/hooks.json');
+        $hooks = Util::readJsonFile(PLUGINS . $name . '/param/hooks.json');
         // Config usine
-        $initConfig = util::readJsonFile(PLUGINS . $name . '/param/config.json');
+        $initConfig = Util::readJsonFile(PLUGINS . $name . '/param/config.json');
         // Derniers checks
         if (!is_array($config))
             $config = [];

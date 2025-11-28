@@ -15,8 +15,7 @@ const DS = DIRECTORY_SEPARATOR;
 
 include_once(ROOT . 'common/common.php');
 
-use Core\Auth\User;
-use Core\Auth\UsersManager;
+use Core\Auth\Permissions;
 use Core\Core;
 use Core\Lang;
 use Core\Plugin\PluginsManager;
@@ -65,7 +64,40 @@ $errorDataWrite = !is_writable(DATA);
 
 $availablesLocales = Lang::$availablesLocales;
 
+if (!isset($_SESSION['install_token'])) {
+    $_SESSION['install_token'] = bin2hex(random_bytes(32));
+}
+$installToken = $_SESSION['install_token'];
+
 if (count($_POST) > 0) {
+    $postInstallToken = $_POST['_installToken'] ?? '';
+    if (!hash_equals($_SESSION['install_token'] ?? '', $postInstallToken)) {
+        Show::msg(Lang::get('install-security-token-invalid') ?? 'Invalid security token, please retry.', 'error');
+        header('location:' . $url);
+        die();
+    }
+    $_SESSION['install_token'] = bin2hex(random_bytes(32));
+
+    $adminEmail = filter_var($_POST['adminEmail'] ?? '', FILTER_VALIDATE_EMAIL);
+    $adminPwdPlain = $_POST['adminPwd'] ?? '';
+    $adminUsername = trim($_POST['adminUsername'] ?? '');
+
+    if ($adminEmail === false) {
+        Show::msg(Lang::get('users.bad-mail') ?? 'Invalid email address.', 'error');
+        header('location:' . $url);
+        die();
+    }
+    if (strlen($adminPwdPlain) < 8) {
+        Show::msg(Lang::get('users.registration-password-length') ?? 'Password is too short.', 'error');
+        header('location:' . $url);
+        die();
+    }
+    if ($adminUsername === '' || !preg_match('/^[a-zA-Z0-9_.-]{3,60}$/', $adminUsername)) {
+        Show::msg(Lang::get('users.registration-username-exists') ?? 'Invalid username.', 'error');
+        header('location:' . $url);
+        die();
+    }
+
 	if ($core->install()) {
 		$plugins = $pluginsManager->getPlugins();
 		if ($plugins != false) {
@@ -82,8 +114,7 @@ if (count($_POST) > 0) {
 		}
 	}
 	include(DATA . 'key.php');
-    $adminPwd = UsersManager::encrypt($_POST['adminPwd']);
-    $adminEmail = $_POST['adminEmail'];
+    $adminPwd = hash_hmac('sha1', $adminPwdPlain, KEY);
     $config = [
         'siteName' => "SiteName",
         'siteDesc' => "Description",
@@ -98,7 +129,11 @@ if (count($_POST) > 0) {
         'cache_duration' => 3600,
         'cache_minify' => false,
         'cache_lazy_loading' => false,
-        'marketplaceUrl' => 'https://299ko-api.flexcb.fr/',
+        'marketplaceUrl' => 'http://apimarket.test/',
+        'versionCMS' => VERSION,
+        'allowRegistrations' => false,
+        'registrationDefaultGroup' => 'member',
+        'registrationValidationMode' => 'email',
     ];
     $pagesSeed = [
         [
@@ -106,7 +141,7 @@ if (count($_POST) > 0) {
             'name' => 'Accueil',
             'position' => 1,
             'isHomepage' => '1',
-            'content' => "<p>Félicitations, l'installation de 299ko s'est déroulée avec succès !<br>Par mesure de sécurité, vous devez maintenant supprimer le fichier install.php du répertoire d'installation.</p>",
+            'content' => "<p>Félicitations, l'installation de 299koEVO s'est déroulée avec succès !<br>Par mesure de sécurité, vous devez maintenant supprimer le fichier install.php du répertoire d'installation.</p>",
             'isHidden' => 0,
             'file' => null,
             'mainTitle' => null,
@@ -150,18 +185,95 @@ if (count($_POST) > 0) {
         file_put_contents($pagesFile, json_encode($pagesSeed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 
-    if (!file_put_contents(DATA . 'config.json', json_encode($config)) || !chmod(DATA . 'config.json', 0600)) {
+    $authDir = DATA_CORE_AUTH;
+    if (!is_dir($authDir) && !mkdir($authDir, 0755, true)) {
+        $core->log('Unable to create auth directory', 'ERROR');
+        Show::msg(Lang::get('install-problem-during-install'), 'error');
+        header('location:' . $core->makeSiteUrl());
+        die();
+    }
+
+    $usersFile = $authDir . 'users.json';
+    $groupsFile = $authDir . 'groups.json';
+    $registrationsFile = $authDir . 'registrations.json';
+
+    if (!file_exists($groupsFile)) {
+        $defaultGroups = [
+            [
+                'id' => 1,
+                'slug' => 'admin',
+                'name' => 'Administrators',
+                'permissions' => [Permissions::ALL],
+                'system' => true,
+            ],
+            [
+                'id' => 2,
+                'slug' => 'moderator',
+                'name' => 'Moderators',
+                'permissions' => ['admin.access', 'pages.manage', 'media.manage'],
+                'system' => true,
+            ],
+            [
+                'id' => 3,
+                'slug' => 'member',
+                'name' => 'Members',
+                'permissions' => ['profile.view', 'profile.edit'],
+                'system' => true,
+            ],
+        ];
+        if (file_put_contents($groupsFile, json_encode($defaultGroups, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
+            $core->log('Unable to write default groups file', 'ERROR');
+            Show::msg(Lang::get('install-problem-during-install'), 'error');
+            header('location:' . $core->makeSiteUrl());
+            die();
+        }
+    }
+
+    if (!file_exists($registrationsFile)) {
+        if (file_put_contents($registrationsFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
+            $core->log('Unable to write registrations file', 'ERROR');
+            Show::msg(Lang::get('install-problem-during-install'), 'error');
+            header('location:' . $core->makeSiteUrl());
+            die();
+        }
+    }
+
+    if (!file_exists($usersFile)) {
+        if (file_put_contents($usersFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
+            $core->log('Unable to write users file', 'ERROR');
+            Show::msg(Lang::get('install-problem-during-install'), 'error');
+            header('location:' . $core->makeSiteUrl());
+            die();
+        }
+    }
+
+    $configEncoded = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    if (!file_put_contents(DATA . 'config.json', $configEncoded) || !chmod(DATA . 'config.json', 0600)) {
         $core->log('Error while writing config file', 'ERROR');
         Show::msg(Lang::get('install-problem-during-install'), 'error');
         header('location:' . $core->makeSiteUrl() );
         die();
     } else {
+        $adminUser = [
+            'id' => 1,
+            'email' => $adminEmail,
+            'username' => $adminUsername,
+            'pwd' => $adminPwd,
+            'token' => bin2hex(random_bytes(32)),
+            'group_id' => 1,
+            'status' => 'active',
+            'permissions' => [Permissions::ALL],
+        ];
+
+        if (file_put_contents($usersFile, json_encode([$adminUser], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
+            $core->log('Unable to seed admin user', 'ERROR');
+            Show::msg(Lang::get('install-problem-during-install'), 'error');
+            header('location:' . $core->makeSiteUrl());
+            die();
+        }
+
         $_SESSION['installOk'] = true;
         $core->log('Plugins installation done', 'SUCCESS');
-        $user = new User();
-        $user->email = $adminEmail;
-        $user->pwd = $adminPwd;
-        $user->save();
         $core->log('Admin user created, end of install', 'SUCCESS');
         Show::msg(Lang::get('install-successfull'), 'success');
         header('location:' . $core->makeSiteUrl() );
@@ -176,18 +288,19 @@ if (count($_POST) > 0) {
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>299ko - <?php echo Lang::get('install-installation'); ?></title>
-        <link rel="stylesheet" href="admin/styles.css" media="all">
+        <link rel="stylesheet" href="admin/install.css" media="all">
         <link rel="stylesheet" href="<?php echo FONTICON; ?>" />
     </head>
 
-    <body class="login">
+    <body class="install install-body">
         <div id="alert-msg">
             <?php Show::displayMsg(); ?>
         </div>
         <section id="install">
             <header>
-                <h1 class="text-center"><?php echo Lang::get('install-installation'); ?></h1>
+                <h1 class="text-center">299koEVO <?php echo Lang::get('install-installation'); ?></h1>
             </header>
+                <div class="msg-container">
             <?php
             if ($errorPHP) {
                 echo '<div class="msg error">';
@@ -254,9 +367,12 @@ if (count($_POST) > 0) {
             }
 
             if ($errorDataWrite || $errorPHP || $errorRewrite === true) {
+                echo '<div class="msg error">';
                 echo Lang::get('install-please-check-errors');
+                echo '</div>';
             } else {
                 ?>
+                </div>
                 <form method="post" action="">
                     <?php echo '<h3>'.Lang::get('install-please-fill-fields').'</h3>';
                     ?>
@@ -274,6 +390,10 @@ if (count($_POST) > 0) {
                     </select>
                     </p>
                     <p>
+                        <label for="adminUsername"><?php echo Lang::get('users-username'); ?></label><br>
+                        <input type="text" name="adminUsername" id="adminUsername" required="required" minlength="3" maxlength="60" pattern="[A-Za-z0-9_.\-]+">
+                    </p>
+                    <p>
                         <label for="adminEmail"><?php echo Lang::get('email'); ?></label><br>
                         <input type="email" name="adminEmail" required="required">
                     </p>
@@ -281,6 +401,7 @@ if (count($_POST) > 0) {
                         <label for="adminPwd"><?php echo Lang::get('password'); ?></label><br>
                         <input type="password" name="adminPwd" id="adminPwd" required="required">
                     </p>
+                    <input type="hidden" name="_installToken" value="<?php echo htmlspecialchars($installToken, ENT_QUOTES); ?>">
                     <p>
                         <a id="showPassword" href="javascript:showPassword()" class="button success"><?php echo Lang::get('install-show-password'); ?></a>
                         <button type="submit" class="button success"><?php echo Lang::get('submit'); ?></button>

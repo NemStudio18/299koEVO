@@ -4,9 +4,13 @@ namespace Core\Auth;
 
 use Core\Auth\User;
 use Core\Auth\PasswordRecovery;
+use Core\Auth\Group;
+use Core\Auth\RegistrationRequest;
+use Core\Auth\Permissions;
 use Utils\Util;
 use Core\Router\Router;
 use Core\Lang;
+use Core\Core;
 
 /**
  * @copyright (C) 2025, 299Ko
@@ -24,6 +28,8 @@ class AuthService
     private string $legacyUsersFile;
     private string $tokensFile;
     private string $legacyTokensFile;
+    private string $groupsFile;
+    private string $registrationsFile;
 
     public function __construct()
     {
@@ -31,8 +37,12 @@ class AuthService
         $this->legacyUsersFile = DATA_PLUGIN . 'users/users.json';
         $this->tokensFile = DATA_CORE_AUTH . 'pwd.json';
         $this->legacyTokensFile = DATA_PLUGIN . 'users/pwd.json';
+        $this->groupsFile = DATA_CORE_AUTH . 'groups.json';
+        $this->registrationsFile = DATA_CORE_AUTH . 'registrations.json';
 
         $this->bootstrapStorage();
+        $this->bootstrapGroups();
+        $this->bootstrapRegistrations();
     }
 
     /**
@@ -42,6 +52,10 @@ class AuthService
     {
         $user = User::find('email', $mail);
         if ($user === null) {
+            return false;
+        }
+
+        if (($user->status ?? 'active') !== 'active') {
             return false;
         }
 
@@ -118,6 +132,13 @@ class AuthService
         return new PasswordRecovery($this->tokensFile, $this->legacyTokensFile);
     }
 
+    public function forceLogin(User $user): void
+    {
+        $user->token = $this->generateToken();
+        $user->save();
+        $this->logon($user);
+    }
+
     private function bootstrapStorage(): void
     {
         $this->ensureDirectory(DATA_CORE_AUTH);
@@ -126,6 +147,8 @@ class AuthService
         $this->mirrorLegacyFile($this->legacyTokensFile, $this->tokensFile);
 
         User::setFilePath($this->usersFile);
+        Group::setFilePath($this->groupsFile);
+        RegistrationRequest::setFilePath($this->registrationsFile);
     }
 
     private function ensureDirectory(string $dir): void
@@ -148,6 +171,131 @@ class AuthService
         }
 
         Util::writeJsonFile($target, []);
+    }
+
+    private function bootstrapGroups(): void
+    {
+        if (!file_exists($this->groupsFile)) {
+            Util::writeJsonFile($this->groupsFile, []);
+        }
+
+        $groups = Util::readJsonFile($this->groupsFile, true);
+        if (!is_array($groups) || count($groups) === 0) {
+            $groups = [
+                [
+                    'id' => 1,
+                    'slug' => 'admin',
+                    'name' => 'Administrators',
+                    'permissions' => [Permissions::ALL],
+                    'system' => true,
+                ],
+                [
+                    'id' => 2,
+                    'slug' => 'moderator',
+                    'name' => 'Moderators',
+                    'permissions' => ['admin.access', 'pages.manage', 'media.manage'],
+                    'system' => true,
+                ],
+                [
+                    'id' => 3,
+                    'slug' => 'member',
+                    'name' => 'Members',
+                    'permissions' => ['profile.view', 'profile.edit'],
+                    'system' => true,
+                ],
+            ];
+            Util::writeJsonFile($this->groupsFile, $groups);
+        } else {
+            $this->ensureEssentialGroups($groups);
+        }
+    }
+
+    private function ensureEssentialGroups(array $groups): void
+    {
+        $slugs = array_map(fn ($group) => $group['slug'] ?? null, $groups);
+        $changed = false;
+
+        $ensure = function (array $definition) use (&$groups, &$slugs, &$changed): void {
+            if (!in_array($definition['slug'], $slugs, true)) {
+                $definition['id'] = $this->generateNextGroupId($groups);
+                $groups[] = $definition;
+                $slugs[] = $definition['slug'];
+                $changed = true;
+            }
+        };
+
+        $ensure([
+            'slug' => 'admin',
+            'name' => 'Administrators',
+            'permissions' => [Permissions::ALL],
+            'system' => true,
+        ]);
+
+        $ensure([
+            'slug' => 'moderator',
+            'name' => 'Moderators',
+            'permissions' => ['admin.access', 'pages.manage', 'media.manage'],
+            'system' => true,
+        ]);
+
+        $ensure([
+            'slug' => 'member',
+            'name' => 'Members',
+            'permissions' => ['profile.view', 'profile.edit'],
+            'system' => true,
+        ]);
+
+        if ($changed) {
+            Util::writeJsonFile($this->groupsFile, $groups);
+        }
+    }
+
+    private function generateNextGroupId(array $groups): int
+    {
+        $ids = array_map(fn ($group) => (int) ($group['id'] ?? 0), $groups);
+        return empty($ids) ? 1 : max($ids) + 1;
+    }
+
+    private function bootstrapRegistrations(): void
+    {
+        if (!file_exists($this->registrationsFile)) {
+            Util::writeJsonFile($this->registrationsFile, []);
+        }
+    }
+
+    public function getGroups(): array
+    {
+        return Group::all();
+    }
+
+    public function getGroupBySlug(string $slug): ?Group
+    {
+        return Group::find('slug', $slug);
+    }
+
+    public function getDefaultGroupSlug(): string
+    {
+        return $this->coreConfig('registrationDefaultGroup') ?? 'member';
+    }
+
+    public function getDefaultGroupId(): int
+    {
+        $group = $this->getGroupBySlug($this->getDefaultGroupSlug());
+        if ($group !== null) {
+            return $group->attributes['id'];
+        }
+        $first = Group::first();
+        return $first ? ($first->attributes['id'] ?? 1) : 1;
+    }
+
+    private function coreConfig(string $key)
+    {
+        return Core::getInstance()->getConfigVal($key);
+    }
+
+    public function isRegistrationEnabled(): bool
+    {
+        return (bool) $this->coreConfig('allowRegistrations');
     }
 
     private function logon(User $user): void
