@@ -1,0 +1,27 @@
+# Dossiers à exclure du dépôt Git
+
+# Dossier des plugins installés (générés dynamiquement)
+/plugin/
+
+# Dossier des données (config, uploads, cache, logs)
+/data/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Fichiers d'éditeur
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Fichiers temporaires
+*.tmp
+*.bak
+*.log
+
+

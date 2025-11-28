@@ -67,7 +67,7 @@ switch ($catDisplay) {
                 let data = {
                     label: document.querySelector('#category-list-add-label').value,
                     parentId: document.querySelector('#category-list-add-parentId').value,
-                    token: '<?php echo UsersManager::getCurrentUser()->token; ?>'
+                    token: '<?php echo \Core\Auth\UsersManager::getCurrentUser()->token; ?>'
                 };
                 let response = await fetch(url, {
                     method: 'POST',
@@ -104,7 +104,7 @@ switch ($catDisplay) {
                     let url = '<?php echo $this->getDeleteUrl(); ?>';
                     let data = {
                         id: id,
-                        token: '<?php echo UsersManager::getCurrentUser()->token; ?>'
+                        token: '<?php echo \Core\Auth\UsersManager::getCurrentUser()->token; ?>'
                     };
                     let response = await fetch(url, {
                         method: 'POST',
