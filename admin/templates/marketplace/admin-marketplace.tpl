@@ -1,5 +1,10 @@
 <section class="module-card">
-    <header>{{ Lang.marketplace.description }}</header>
+    <header>
+        {{ Lang.marketplace.description }}
+        <a href="{{ refreshCacheUrl }}" class="button small" style="float: right; margin-top: -5px;" title="{{ Lang.marketplace.refresh_cache }}">
+            <i class="fa-solid fa-rotate"></i> {{ Lang.marketplace.refresh_cache }}
+        </a>
+    </header>
     <div class="tabs-container">
         <ul class="tabs-header">
             <li class="default-tab"><i class="fa-solid fa-chart-pie"></i> {{ Lang.marketplace.tab-overview }}</li>

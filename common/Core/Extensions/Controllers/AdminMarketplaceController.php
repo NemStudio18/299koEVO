@@ -122,6 +122,7 @@ class AdminMarketplaceController extends AdminController
 
         $tpl->set('pluginsPageUrl', $this->router->generate('marketplace-plugins'));
         $tpl->set('themesPageUrl', $this->router->generate('marketplace-themes'));
+        $tpl->set('refreshCacheUrl', $this->router->generate('marketplace-refresh-cache', ['token' => $this->user->token]));
 
         $stats = [
             'plugins_total' => count($allPlugins),
@@ -246,6 +247,15 @@ class AdminMarketplaceController extends AdminController
         } else {
             Show::msg(Lang::get('marketplace.legacy_plugins_partial', implode(', ', $failed)), 'error');
         }
+        $this->core->redirect($this->router->generate('admin-marketplace'));
+    }
+
+    public function refreshCache(string $token) {
+        if (!$this->user->isAuthorized()) {
+            $this->core->redirect($this->router->generate('admin-marketplace'));
+        }
+        $this->marketManager->clearCache();
+        Show::msg(Lang::get('marketplace.cache_refreshed'), 'success');
         $this->core->redirect($this->router->generate('admin-marketplace'));
     }
 

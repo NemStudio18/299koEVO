@@ -151,6 +151,7 @@ class ExtensionsService
         $router->map('GET', '/admin/marketplace[/?]', 'Core\Extensions\Controllers\AdminMarketplaceController#index', 'admin-marketplace');
         $router->map('GET', '/admin/marketplace/plugins[/?]', 'Core\Extensions\Controllers\PluginsMarketController#index', 'marketplace-plugins');
         $router->map('GET', '/admin/marketplace/themes[/?]', 'Core\Extensions\Controllers\ThemesMarketController#index', 'marketplace-themes');
+        $router->map('GET', '/admin/marketplace/refresh/[a:token][/?]', 'Core\Extensions\Controllers\AdminMarketplaceController#refreshCache', 'marketplace-refresh-cache');
         $router->map('GET', '/admin/marketplace/install/[a:type]/[a:slug]/[a:token][/?]', 'Core\Extensions\Controllers\AdminMarketplaceController#installRelease', 'marketplace-install-release');
         $router->map('GET', '/admin/marketplace/uninstall/[a:type]/[a:slug]/[a:token][/?]', 'Core\Extensions\Controllers\AdminMarketplaceController#uninstallRessource', 'marketplace-uninstall-ressource');
         $router->map('POST', '/admin/marketplace/migrate-legacy', 'Core\Extensions\Controllers\AdminMarketplaceController#migrateLegacyPlugins', 'marketplace-migrate-legacy');

@@ -41,7 +41,8 @@ class MarketPlaceManager
                 return [];
             }
             $themes = json_decode($resp['body']);
-            $this->cache->set('marketplace-themes', $themes, 3600);
+            // Cache réduit à 5 minutes (300 secondes) pour avoir des mises à jour plus rapides
+            $this->cache->set('marketplace-themes', $themes, 300);
         }
         return $themes;
     }
@@ -57,9 +58,21 @@ class MarketPlaceManager
                 return [];
             }
             $plugins = json_decode($resp['body']);
-            $this->cache->set('marketplace-plugins', $plugins, 3600);
+            // Cache réduit à 5 minutes (300 secondes) pour avoir des mises à jour plus rapides
+            $this->cache->set('marketplace-plugins', $plugins, 300);
         }
         return $plugins;
+    }
+
+    /**
+     * Force le rafraîchissement du cache marketplace
+     * 
+     * @return void
+     */
+    public function clearCache(): void
+    {
+        $this->cache->delete('marketplace-plugins');
+        $this->cache->delete('marketplace-themes');
     }
 
     public function getPlugin(string $slug)
