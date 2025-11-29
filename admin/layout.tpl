@@ -84,16 +84,7 @@
 							</div>
 						{% ENDIF %}
 						{% HOOK.adminToolsTemplates %}
-						<div id="page-infos">
-							<h2>{% if PAGE_TITLE %}
-								{{ PAGE_TITLE }}
-							{% elseif runPlugin %}
-								{{ runPlugin.getTranslatedName() }}
-							{% else %}
-								{{ Lang.core-administration }}
-							{% endif %} </h2>
-							{% HOOK.afterAdminTitle %}
-						</div>
+						{% HOOK.afterAdminTitle %}
 						{{ CONTENT }}
 					</div>
 				</div>

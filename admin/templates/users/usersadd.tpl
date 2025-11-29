@@ -1,7 +1,7 @@
 <section class="module-card">
 	<header>{{Lang.users-add}}</header>
 	<form method="POST" action="{{link}}" class="user-form-grid">
-		{{SHOW.tokenField}}
+		{{ SHOW.tokenField }}
 		<div class="form-grid">
 			<p>
 				<label for="username">{{ Lang.users-username }}</label>

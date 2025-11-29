@@ -1,7 +1,7 @@
 <section class="module-card">
 	<header>{{Lang.users-edit}}</header>
 	<form method="POST" action="{{link}}" class="user-form-grid">
-		{{SHOW.tokenField}}
+		{{ SHOW.tokenField }}
 		<input type="hidden" name="id" value="{{user.id}}" />
 		<div class="form-grid">
 			<p>

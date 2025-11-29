@@ -1,5 +1,7 @@
-<form id="configForm" method="post" action="{{link}}" autocomplete="off">
-	{{SHOW.tokenField}}
+<section class="module-card">
+    <header>{{ Lang.configmanager.name }}</header>
+    <form id="configForm" method="post" action="{{link}}" autocomplete="off">
+	{{ SHOW.tokenField }}
 
 	<div class='tabs-container'>
 		<ul class="tabs-header">
@@ -152,3 +154,4 @@
 		<button type="submit" class="button success">{{Lang.submit}}</button>
 	</p>
 </form>
+</section>

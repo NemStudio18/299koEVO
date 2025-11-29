@@ -42,7 +42,7 @@
             </li>
             <li class="tab">
         <form method="post" action="{{ ROUTER.generate("pluginsmanager-save") }}" id="pluginsmanagerForm">
-            {{ show.tokenField() }}
+            {{ SHOW.tokenField }}
             <div class="table-responsive">
                 <table>
                     <thead>

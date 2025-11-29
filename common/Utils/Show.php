@@ -150,14 +150,10 @@ class Show {
         echo $str;
     }
 
-    ## Affiche un champ de formulaire contenant le jeton de session (admin)
+    ## Affiche un champ de formulaire contenant le jeton CSRF
 
     public static function tokenField() {
-        $user = \Core\Auth\UsersManager::getCurrentUser();
-        if ($user === null) {
-            return "";
-        }
-        echo '<input type="hidden" name="token" value="' . $user->token . '" />';
+        echo \Core\Security\Csrf::hiddenField();
     }
 
     ## Affiche le contenu de la meta title (theme)
