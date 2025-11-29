@@ -4,6 +4,7 @@ namespace Core\Extensions;
 
 use Core\Plugin\PluginsManager;
 use Core\Theme;
+use stdClass;
 
 defined('ROOT') or exit('Access denied!');
 
@@ -69,7 +70,9 @@ class MarketPlaceRessource
     protected function checkIsInstallable(): void
     {
         $this->isInstallable = true;
-        $min299koVersion = $this->origRessource->required299koVersion ?? '1.0.0';
+        // Par défaut, utiliser '0.0.0' pour être compatible avec toutes les versions
+        // sauf si une version minimale est explicitement requise
+        $min299koVersion = $this->origRessource->required299koVersion ?? '0.0.0';
         if (!version_compare(VERSION, $min299koVersion, '>=')) {
             $this->isInstallable = false;
         }
