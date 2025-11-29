@@ -41,6 +41,10 @@ class AdminController extends Controller {
         $pluginName = $this->core->getPluginToCall();
         if (PluginsManager::isActivePlugin($pluginName)) {
             $this->runPlugin = $this->pluginsManager->getPlugin($pluginName);
+            // Charger les traductions du plugin
+            if ($this->runPlugin) {
+                $this->runPlugin->loadLangFile();
+            }
         } elseif (
             !$this->core->isCoreModule($pluginName)
             && !$this->core->extensions()->isCoreAdminModule($pluginName)

@@ -17,6 +17,10 @@
         <i class="fa-solid fa-gauge-high"></i>
         {{Lang.configmanager-cache-settings}}
       </li>
+      <li>
+        <i class="fa-solid fa-chart-line"></i>
+        {{Lang.configmanager-telemetry-settings}}
+      </li>
 		</ul>
     
 		<ul class="tabs">
@@ -147,6 +151,57 @@
              <p><strong>{{Lang.configmanager-cache-total-size}}:</strong> {{cacheStats.total_size_formatted}}</p>
         </div>
         {% endif %}
+      </li>
+      <li class="tab">
+        <p>
+          <strong>{{Lang.configmanager-telemetry-title}}</strong>
+          <br><small>{{Lang.configmanager-telemetry-desc}}</small>
+        </p>
+        <p>
+          <input type="radio" name="telemetry_level" id="telemetry_level_0" value="0" {% if telemetryLevel == 0 %}checked{% endif %}/>
+          <label for="telemetry_level_0">{{Lang.configmanager-telemetry-level-0}}</label>
+          <br><small>{{Lang.configmanager-telemetry-level-0-desc}}</small>
+        </p>
+        <p>
+          <input type="radio" name="telemetry_level" id="telemetry_level_1" value="1" {% if telemetryLevel == 1 %}checked{% endif %}/>
+          <label for="telemetry_level_1">{{Lang.configmanager-telemetry-level-1}}</label>
+          <br><small>{{Lang.configmanager-telemetry-level-1-desc}}</small>
+        </p>
+        <p>
+          <input type="radio" name="telemetry_level" id="telemetry_level_2" value="2" {% if telemetryLevel == 2 %}checked{% endif %}/>
+          <label for="telemetry_level_2">{{Lang.configmanager-telemetry-level-2}}</label>
+          <br><small>{{Lang.configmanager-telemetry-level-2-desc}}</small>
+        </p>
+        {% if installationId %}
+        <p>
+          <strong>{{Lang.configmanager-telemetry-installation-id}}:</strong>
+          <br><code style="font-size: 0.9em; word-break: break-all;">{{installationId}}</code>
+          <br><small>{{Lang.configmanager-telemetry-installation-id-desc}}</small>
+        </p>
+        {% endif %}
+        {% if lastSync %}
+        <p>
+          <strong>{{Lang.configmanager-telemetry-last-sync}}:</strong>
+          <br>{{lastSync}}
+        </p>
+        {% else %}
+        <p>
+          <strong>{{Lang.configmanager-telemetry-last-sync}}:</strong>
+          <br><span style="color: #dc3545;">{{Lang.configmanager-telemetry-never-synced}}</span>
+        </p>
+        {% endif %}
+        <p>
+          <a href="{{ forceSyncUrl }}" class="button">
+            <i class="fa-solid fa-sync"></i> {{Lang.configmanager-telemetry-force-sync}}
+          </a>
+          <br><small>{{Lang.configmanager-telemetry-force-sync-desc}}</small>
+        </p>
+        <p>
+          <a href="{{ ROUTER.generate("configmanager-report") }}" class="button">
+            <i class="fa-solid fa-bug"></i> {{Lang.configmanager-report-title}}
+          </a>
+          <br><small>{{Lang.configmanager-report-desc-short}}</small>
+        </p>
       </li>
 		</ul>
 	</div>

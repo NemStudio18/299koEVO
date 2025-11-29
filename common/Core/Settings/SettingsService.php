@@ -172,6 +172,9 @@ class SettingsService
         $router->map('GET', '/admin/configmanager/create-backup/[a:token]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#create', 'configmanager-create-backup');
         $router->map('GET', '/admin/configmanager/dl-backup/[a:token]/[i:timestamp]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#download', 'configmanager-dl-backup');
         $router->map('POST', '/admin/configmanager/delete-backup', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#delete', 'configmanager-delete-backup');
+        $router->map('GET', '/admin/configmanager/report[/?]', 'Core\Settings\Controllers\ConfigManagerAdminController#report', 'configmanager-report');
+        $router->map('POST', '/admin/configmanager/report/send', 'Core\Settings\Controllers\ConfigManagerAdminController#sendReport', 'configmanager-report-send');
+        $router->map('GET', '/admin/configmanager/telemetry/force-sync/[a:token]', 'Core\Settings\Controllers\ConfigManagerAdminController#forceTelemetrySync', 'configmanager-telemetry-force-sync');
     }
 
     public function registerHooks(): void

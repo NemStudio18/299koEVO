@@ -185,6 +185,10 @@ class Core
         require_once COMMON . 'Core/Page/hooks.php';
         $this->addHook('endFrontHead', '\Core\Page\pageEndFrontHead');
         \Core\Page\Page::addToNavigation();
+        
+        // Télémétrie : vérifier la synchronisation avant chaque exécution
+        require_once COMMON . 'Core/Telemetry/hooks.php';
+        $this->addHook('beforeRunPlugin', '\Core\Telemetry\telemetryCheckSync');
         $this->media();
         $this->media()->registerRoutes(Router::getInstance());
         $this->settings();

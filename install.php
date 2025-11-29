@@ -254,6 +254,17 @@ if (count($_POST) > 0) {
         header('location:' . $core->makeSiteUrl() );
         die();
     } else {
+        // Générer l'installation_id et envoyer les données minimales (même en mode 0)
+        try {
+            $telemetryService = new \Core\Telemetry\TelemetryService();
+            $telemetryService->getInstallationId(); // Génère l'UUID si nécessaire
+            // Envoyer les données minimales lors de l'installation (même si mode 0)
+            $telemetryService->send(0, true);
+        } catch (\Exception $e) {
+            // Ne pas bloquer l'installation en cas d'erreur de télémétrie
+            $core->log('Telemetry: Failed to send installation data - ' . $e->getMessage(), 'WARNING');
+        }
+        
         $adminUser = [
             'id' => 1,
             'email' => $adminEmail,

@@ -88,6 +88,9 @@ class CoreController extends Controller
         
         // Handle regular plugins
         if ($this->defaultPlugin && $this->defaultPlugin->getIsCallableOnAdmin()) {
+            // Charger les contrôleurs et les traductions du plugin avant d'instancier
+            $this->defaultPlugin->loadLangFile();
+            $this->defaultPlugin->loadControllers();
             $callback = $this->defaultPlugin->getCallableAdmin();
             if (method_exists($callback[0], $callback[1])) {
                 $obj = new $callback[0]();

@@ -66,9 +66,54 @@ class ConfigManagerAdminController extends AdminController {
         $tpl->set('defaultPlugin', $defaultPlugin === null || $defaultPlugin === false || $defaultPlugin === '' ? 'page' : $defaultPlugin);
         $defaultAdminPlugin = $this->core->getConfigVal('defaultAdminPlugin');
         $tpl->set('defaultAdminPlugin', $defaultAdminPlugin === null || $defaultAdminPlugin === false || $defaultAdminPlugin === '' ? 'configmanager' : $defaultAdminPlugin);
+        
+        // Télémétrie
+        $telemetryService = new \Core\Telemetry\TelemetryService();
+        $tpl->set('telemetryLevel', (int) ($this->core->getConfigVal('telemetry_level') ?? 0));
+        $tpl->set('installationId', $telemetryService->getInstallationId());
+        
+        // Vérifier si jamais synchronisé
+        $hasSynced = $telemetryService->hasSynced();
+        $lastSync = null;
+        if ($hasSynced) {
+            $lastSyncTimestamp = $telemetryService->getLastSync();
+            if ($lastSyncTimestamp !== null) {
+                $lastSync = date('Y-m-d H:i:s', $lastSyncTimestamp);
+            }
+        }
+        $tpl->set('lastSync', $lastSync);
+        $tpl->set('hasSynced', $hasSynced);
+        $tpl->set('forceSyncUrl', $this->router->generate('configmanager-telemetry-force-sync', ['token' => $this->user->token]));
 
         $response->addTemplate($tpl);
         return $response;
+    }
+
+    /**
+     * Force la synchronisation de la télémétrie
+     */
+    public function forceTelemetrySync(string $token)
+    {
+        if (!$this->user->isAuthorized() || $this->user->token !== $token) {
+            Show::msg(Lang::get('core-not-authorized'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-admin'));
+            return;
+        }
+
+        try {
+            $telemetryService = new \Core\Telemetry\TelemetryService();
+            $success = $telemetryService->forceSend();
+            
+            if ($success) {
+                Show::msg(Lang::get('configmanager-telemetry-sync-success'), 'success');
+            } else {
+                Show::msg(Lang::get('configmanager-telemetry-sync-error'), 'error');
+            }
+        } catch (\Exception $e) {
+            Show::msg(Lang::get('configmanager-telemetry-sync-error') . ': ' . $e->getMessage(), 'error');
+        }
+
+        $this->core->redirect($this->router->generate('configmanager-admin'));
     }
 
     public function save() {
@@ -106,6 +151,13 @@ class ConfigManagerAdminController extends AdminController {
             $validationMode = 'email';
         }
         $config['registrationValidationMode'] = $validationMode;
+        
+        // Télémétrie
+        $telemetryLevel = (int) ($_POST['telemetry_level'] ?? 0);
+        if ($telemetryLevel < 0 || $telemetryLevel > 2) {
+            $telemetryLevel = 0;
+        }
+        $config['telemetry_level'] = $telemetryLevel;
 
         // Invalidate cache if needed (AVANT la sauvegarde pour avoir l'ancienne config)
         $this->invalidateCacheIfNeeded($config);
@@ -117,6 +169,89 @@ class ConfigManagerAdminController extends AdminController {
         }
         //$this->core->saveHtaccess($_POST['htaccess']);
         $this->core->redirect($this->router->generate('configmanager-admin'));
+    }
+
+    public function report() {
+        if (!$this->user->isAuthorized()) {
+            return $this->home();
+        }
+
+        $response = new AdminResponse();
+        $tpl = $response->createPluginTemplate('configmanager', 'report');
+        $response->setTitle(Lang::get('configmanager-report-title'));
+
+        // Récupérer la liste des plugins pour le select
+        $pluginsManager = PluginsManager::getInstance();
+        $plugins = [];
+        foreach ($pluginsManager->getPlugins() as $plugin) {
+            $plugins[] = [
+                'slug' => $plugin->getName(),
+                'name' => $plugin->getInfoVal('name') ?? $plugin->getName()
+            ];
+        }
+        $tpl->set('plugins', $plugins);
+        $tpl->set('sendUrl', $this->router->generate('configmanager-report-send'));
+
+        $response->addTemplate($tpl);
+        return $response;
+    }
+
+    public function sendReport() {
+        if (!$this->user->isAuthorized()) {
+            return $this->home();
+        }
+
+        $type = $_POST['type'] ?? '';
+        $title = trim($_POST['title'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $plugin = trim($_POST['plugin'] ?? '');
+        $screenshot = $_POST['screenshot'] ?? null;
+
+        // Validation
+        if (!in_array($type, ['bug', 'feature', 'question', 'other'], true)) {
+            Show::msg(Lang::get('configmanager-report-invalid-type'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-report'));
+            return;
+        }
+
+        if (empty($title) || strlen($title) < 3) {
+            Show::msg(Lang::get('configmanager-report-title-required'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-report'));
+            return;
+        }
+
+        if (empty($description) || strlen($description) < 10) {
+            Show::msg(Lang::get('configmanager-report-description-required'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-report'));
+            return;
+        }
+
+        // Validation email si fourni
+        if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Show::msg(Lang::get('configmanager-report-invalid-email'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-report'));
+            return;
+        }
+
+        // Envoyer le rapport
+        $reportService = new \Core\Telemetry\ReportService();
+        $result = $reportService->sendReport(
+            $type,
+            $title,
+            $description,
+            !empty($email) ? $email : null,
+            !empty($plugin) ? $plugin : null,
+            $screenshot
+        );
+
+        if ($result['success']) {
+            Show::msg(Lang::get('configmanager-report-sent-success'), 'success');
+        } else {
+            Show::msg(Lang::get('configmanager-report-sent-error') . ': ' . $result['message'], 'error');
+        }
+
+        $this->core->redirect($this->router->generate('configmanager-report'));
     }
 
     public function deleteInstall($token) {

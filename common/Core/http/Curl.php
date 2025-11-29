@@ -129,14 +129,26 @@ class Curl
             } else {
                 curl_setopt($this->ch, CURLOPT_POST, true);
             }
+            $headers = [];
             if ($this->sendAsJson) {
                 curl_setopt($this->ch, CURLOPT_POSTFIELDS, json_encode($this->datas));
-                curl_setopt($this->ch, CURLOPT_HTTPHEADER, [
+                $headers = [
                     'Content-Type: application/json',
                     'Content-Length: ' . strlen(json_encode($this->datas))
-                ]);
+                ];
             } else {
                 curl_setopt($this->ch, CURLOPT_POSTFIELDS, http_build_query($this->datas));
+            }
+            
+            // Fusionner les headers personnalisés avec les headers par défaut
+            if (isset($this->options[CURLOPT_HTTPHEADER])) {
+                $customHeaders = $this->options[CURLOPT_HTTPHEADER];
+                unset($this->options[CURLOPT_HTTPHEADER]);
+                $headers = array_merge($headers, is_array($customHeaders) ? $customHeaders : [$customHeaders]);
+            }
+            
+            if (!empty($headers)) {
+                curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
             }
         }
         foreach ($this->options as $option => $value) {
