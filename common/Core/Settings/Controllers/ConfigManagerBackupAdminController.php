@@ -46,9 +46,12 @@ class ConfigManagerBackupAdminController extends AdminController {
             '/.*\.git.*/i'
         ];
         $result = Zip::createZipFromFolder(ROOT, $filename, $ignore);
+        $actor = $this->user->email ?? 'unknown';
         if ($result) {
+            $this->logger->info('Config backup created by ' . $actor . ' at ' . $filename);
             Show::msg(Lang::get('configmanager-backup-done-success'), 'success');
         } else {
+            $this->logger->error('Config backup creation failed for ' . $actor);
             Show::msg(Lang::get('configmanager-backup-done-error'), 'error');
         }
         $this->core->redirect($this->router->generate('configmanager-backup'));
@@ -75,15 +78,20 @@ class ConfigManagerBackupAdminController extends AdminController {
         }
         $backups = ConfigManagerBackupsManager::getAll();
         $id = (int) $this->jsonData['timestamp'] ?? 0;
+        $actor = $this->user->email ?? 'unknown';
+        $res = false;
         if (isset($backups[$id])) {
             $res = $backups[$id]->delete();
         } else {
+            $this->logger->warning('Config backup deletion failed for ' . $actor . ' - backup not found (' . $id . ')');
             $response->status = ApiResponse::STATUS_NOT_FOUND;
             return $response;
         }
         if ($res) {
+            $this->logger->info('Config backup deleted by ' . $actor . ' timestamp ' . $id);
             $response->status = ApiResponse::STATUS_NO_CONTENT;
         } else {
+            $this->logger->warning('Config backup deletion failed for ' . $actor . ' timestamp ' . $id);
             $response->status = ApiResponse::STATUS_BAD_REQUEST;
         }
         return $response;

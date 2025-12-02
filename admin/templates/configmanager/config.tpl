@@ -87,6 +87,20 @@
 					<input type="text" name="siteDesc" value="{{ CORE.getConfigVal("siteDesc")}}"/>
 				</p>
 				<p>
+					<label for="siteLogo">{{Lang.configmanager-theme-logo}}</label>
+					<input type="text" name="siteLogo" id="siteLogo" value="{{ CORE.getConfigVal("siteLogo")}}"/>
+					<br><small>{{Lang.configmanager-theme-logo-desc}}</small>
+				</p>
+				<p>
+					<label for="siteLogoPlacement">{{Lang.configmanager-theme-logo-placement}}</label>
+					<select name="siteLogoPlacement" id="siteLogoPlacement">
+						<option value="none" {% if CORE.getConfigVal("siteLogoPlacement") == "" or CORE.getConfigVal("siteLogoPlacement") == "none" %}selected{% endif %}>{{Lang.configmanager-theme-logo-placement-none}}</option>
+						<option value="siteName" {% if CORE.getConfigVal("siteLogoPlacement") == "siteName" %}selected{% endif %}>{{Lang.configmanager-theme-logo-placement-site-name}}</option>
+						<option value="header" {% if CORE.getConfigVal("siteLogoPlacement") == "header" %}selected{% endif %}>{{Lang.configmanager-theme-logo-placement-header}}</option>
+					</select>
+					<br><small>{{Lang.configmanager-theme-logo-placement-desc}}</small>
+				</p>
+				<p>
 					<label for="siteLang">{{Lang.configmanager-sitelang}}</label>
 					<select name="siteLang">
 						{{langOptions}}

@@ -105,11 +105,14 @@ class ConfigManagerAdminController extends AdminController {
             $success = $telemetryService->forceSend();
             
             if ($success) {
+                $this->logger->info('Telemetry: forced sync succeeded for ' . ($this->user->email ?? 'unknown'));
                 Show::msg(Lang::get('configmanager-telemetry-sync-success'), 'success');
             } else {
+                $this->logger->warning('Telemetry: forced sync failed for ' . ($this->user->email ?? 'unknown'));
                 Show::msg(Lang::get('configmanager-telemetry-sync-error'), 'error');
             }
         } catch (\Exception $e) {
+            $this->logger->error('Telemetry: forced sync exception for ' . ($this->user->email ?? 'unknown') . ' - ' . $e->getMessage());
             Show::msg(Lang::get('configmanager-telemetry-sync-error') . ': ' . $e->getMessage(), 'error');
         }
 
@@ -125,6 +128,13 @@ class ConfigManagerAdminController extends AdminController {
         } else {
             $lang = Lang::getLocale();
         }
+        $siteLogo = trim($_POST['siteLogo'] ?? '');
+        $logoPlacement = $_POST['siteLogoPlacement'] ?? 'none';
+        $allowedLogoPlacements = ['none', 'siteName', 'header'];
+        if (!in_array($logoPlacement, $allowedLogoPlacements, true)) {
+            $logoPlacement = 'none';
+        }
+
         $config = [
             'siteName' => (trim($_POST['siteName']) != '') ? trim($_POST['siteName']) : 'Demo',
             'siteDesc' => (trim($_POST['siteDesc']) != '') ? trim($_POST['siteDesc']) : '',
@@ -139,6 +149,8 @@ class ConfigManagerAdminController extends AdminController {
             'cache_duration' => (int)$_POST['cache_duration'],
             'cache_minify' => (isset($_POST['cache_minify'])) ? true : false,
             'cache_lazy_loading' => (isset($_POST['cache_lazy_loading'])) ? true : false,
+            'siteLogo' => $siteLogo,
+            'siteLogoPlacement' => $logoPlacement,
         ];
         $config['allowRegistrations'] = isset($_POST['allowRegistrations']);
         $defaultGroupSlug = $_POST['registrationDefaultGroup'] ?? 'member';
@@ -162,9 +174,12 @@ class ConfigManagerAdminController extends AdminController {
         // Invalidate cache if needed (AVANT la sauvegarde pour avoir l'ancienne config)
         $this->invalidateCacheIfNeeded($config);
         
+        $actor = $this->user->email ?? 'unknown';
         if (!$this->core->saveConfig($config, $config)) {
+            $this->logger->error('Config: save failed for ' . $actor);
             Show::msg(Lang::get("core-changes-not-saved"), 'error');
         } else {
+            $this->logger->info('Config: settings saved by ' . $actor);
             Show::msg(Lang::get("core-changes-saved"), 'success');
         }
         //$this->core->saveHtaccess($_POST['htaccess']);
@@ -247,8 +262,10 @@ class ConfigManagerAdminController extends AdminController {
 
         if ($result['success']) {
             Show::msg(Lang::get('configmanager-report-sent-success'), 'success');
+            $this->logger->info('Config report sent by ' . ($this->user->email ?? 'unknown') . ' type ' . $type);
         } else {
             Show::msg(Lang::get('configmanager-report-sent-error') . ': ' . $result['message'], 'error');
+            $this->logger->warning('Config report failed for ' . ($this->user->email ?? 'unknown') . ' - ' . ($result['message'] ?? 'unknown'));
         }
 
         $this->core->redirect($this->router->generate('configmanager-report'));
@@ -259,8 +276,10 @@ class ConfigManagerAdminController extends AdminController {
             return $this->home();
         }
         if ($this->core->settings()->deleteInstallFile()) {
+            $this->logger->info('Config: install files removed by ' . ($this->user->email ?? 'unknown'));
             Show::msg(Lang::get('configmanager-deleted-install'), 'success');
         } else {
+            $this->logger->warning('Config: install file removal failed for ' . ($this->user->email ?? 'unknown'));
             Show::msg(Lang::get('configmanager-error-deleting-install'), 'error');
         }
         return $this->home();
@@ -272,8 +291,10 @@ class ConfigManagerAdminController extends AdminController {
         }
         $cacheManager = new CacheManager();
         if ($cacheManager->clearCache()) {
+            $this->logger->info('Config: cache cleared by ' . ($this->user->email ?? 'unknown'));
             Show::msg(Lang::get('configmanager-cache-clear-success'), 'success');
         } else {
+            $this->logger->warning('Config: cache clear failed for ' . ($this->user->email ?? 'unknown'));
             Show::msg(Lang::get('configmanager-cache-clear-error'), 'error');
         }
         return $this->home();

@@ -7,10 +7,11 @@ use Core\Auth\PasswordRecovery;
 use Core\Auth\Group;
 use Core\Auth\RegistrationRequest;
 use Core\Auth\Permissions;
-use Utils\Util;
-use Core\Router\Router;
-use Core\Lang;
 use Core\Core;
+use Core\Logger;
+use Core\Lang;
+use Core\Router\Router;
+use Utils\Util;
 
 /**
  * @copyright (C) 2025, 299Ko
@@ -30,6 +31,7 @@ class AuthService
     private string $legacyTokensFile;
     private string $groupsFile;
     private string $registrationsFile;
+    private Logger $logger;
 
     public function __construct()
     {
@@ -43,6 +45,7 @@ class AuthService
         $this->bootstrapStorage();
         $this->bootstrapGroups();
         $this->bootstrapRegistrations();
+        $this->logger = Core::getInstance()->getLogger();
     }
 
     /**
@@ -50,16 +53,29 @@ class AuthService
      */
     public function login(string $mail, string $password, bool $useCookies = false): bool
     {
+        if ($mail === '') {
+            $this->logger->warning('Auth: login failed - empty email');
+            return false;
+        }
+
+        if ($password === '') {
+            $this->logger->warning('Auth: login failed - empty password for ' . $mail);
+            return false;
+        }
+
         $user = User::find('email', $mail);
         if ($user === null) {
+            $this->logger->warning('Auth: login failed - user not found for ' . $mail);
             return false;
         }
 
         if (($user->status ?? 'active') !== 'active') {
+            $this->logger->warning('Auth: login failed - account status "' . ($user->status ?? 'unknown') . '" for ' . $mail);
             return false;
         }
 
-        if ($user->pwd !== $this->encrypt($password)) {
+        if (!$this->verifyPassword($password, $user->pwd, $user)) {
+            $this->logger->warning('Auth: login failed - wrong password for ' . $mail);
             return false;
         }
 
@@ -67,6 +83,7 @@ class AuthService
         $user->save();
 
         $this->logon($user);
+        $this->logger->info('Auth: user logged in - ' . $mail);
 
         if ($useCookies) {
             $this->setRememberCookies($user);
@@ -113,7 +130,37 @@ class AuthService
      */
     public function encrypt(string $data): string
     {
-        return hash_hmac('sha1', $data, KEY);
+        return password_hash($data, PASSWORD_DEFAULT);
+    }
+
+    public function verifyPassword(string $password, string $hash, ?User $user = null): bool
+    {
+        if ($hash === '') {
+            return false;
+        }
+
+        if (password_verify($password, $hash)) {
+            if ($user !== null && password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+                $user->pwd = $this->encrypt($password);
+                $user->save();
+            }
+            return true;
+        }
+
+        if ($this->isLegacyHash($hash) && hash_hmac('sha1', $password, KEY) === $hash) {
+            if ($user !== null) {
+                $user->pwd = $this->encrypt($password);
+                $user->save();
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function isLegacyHash(string $hash): bool
+    {
+        return preg_match('/^[0-9a-f]{40}$/i', $hash) === 1;
     }
 
     /**
@@ -312,11 +359,13 @@ class AuthService
 
         $user = User::find('email', $mail);
         if ($user === null) {
+            $this->logger->warning('Auth: auto-login failed - user not found for ' . $mail);
             setcookie('koAutoConnect', '/', 1, '/');
             return false;
         }
 
         if ($user->pwd !== $cryptedPwd) {
+            $this->logger->warning('Auth: auto-login failed - password mismatch for ' . $mail);
             setcookie('koAutoConnect', '/', 1, '/');
             return false;
         }

@@ -20,6 +20,7 @@ defined('ROOT') or exit('Access denied!');
 class ConfigManagerUpdateController extends AdminController {
 
     public function process($token) {
+        $actor = $this->user->email ?? 'unknown';
         $updaterManager = new UpdaterManager();
         if ($updaterManager->isReady) {
             $nextVersion = $updaterManager->getNextVersion();
@@ -28,6 +29,7 @@ class ConfigManagerUpdateController extends AdminController {
         }
         if ($nextVersion && $this->user->isAuthorized()) {
             $updaterManager->update();
+            $this->logger->info('Config update applied to ' . $nextVersion . ' by ' . $actor);
             show::msg(Lang::get('configmanager-updated', $nextVersion), 'success');
             $updaterManager->clearCache();
             $this->core->redirect($this->router->generate('configmanager-admin'));
@@ -35,10 +37,13 @@ class ConfigManagerUpdateController extends AdminController {
     }
 
     public function processManual($token) {
+        $actor = $this->user->email ?? 'unknown';
         if (!$this->user->isAuthorized()) {
+            $this->logger->warning('Config manual update attempt blocked for unauthorized user ' . $actor);
             $this->core->redirect($this->router->generate('configmanager-admin'));
         }
         if (!is_dir(ROOT .'update')) {
+            $this->logger->warning('Config manual update failed - update directory missing for ' . $actor);
             show::msg(Lang::get('configmanager-update-dir-not-found'), 'error');
             $this->core->redirect($this->router->generate('configmanager-admin'));
         }
@@ -46,9 +51,11 @@ class ConfigManagerUpdateController extends AdminController {
         if ($updater->check()) {
             $nextVersion = $updater->getNextVersion();
             $updater->update();
+            $this->logger->info('Config manual update applied to ' . $nextVersion . ' by ' . $actor);
             show::msg(Lang::get('configmanager-updated', $nextVersion ), 'success');
             $this->core->redirect($this->router->generate('configmanager-admin'));
         } else {
+            $this->logger->warning('Config manual update failed during check for ' . $actor);
             show::msg(Lang::get('configmanager-update-error'), 'error');
             $this->core->redirect($this->router->generate('configmanager-admin'));
         }

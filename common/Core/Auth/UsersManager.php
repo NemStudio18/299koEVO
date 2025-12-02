@@ -3,9 +3,9 @@
 namespace Core\Auth;
 
 use Core\Auth\AuthService;
-use Core\Core;
 use Core\Auth\User;
 use Core\Auth\PasswordRecovery;
+use Core\Core;
 
 /**
  * Façade statique conservée pour compatibilité.
@@ -38,6 +38,11 @@ class UsersManager
     public static function encrypt(string $data): string
     {
         return self::service()->encrypt($data);
+    }
+
+    public static function verify(string $password, string $hash, ?User $user = null): bool
+    {
+        return self::service()->verifyPassword($password, $hash, $user);
     }
 
     public static function generateToken(): string

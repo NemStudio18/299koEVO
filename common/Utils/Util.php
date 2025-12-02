@@ -383,40 +383,49 @@ class Util
         $toc = '';
         $current_level = 0;
         $items = 0;
+        $baseLevel = null;
+
         foreach ($headings as $heading) {
             $id = $heading[2];
             $text = $heading[3];
             $link = '<a href="#' . $id . '">' . $text . '</a>';
-            $level = $heading[1];
+            $level = (int) $heading[1];
 
-            if ($level > $current_level) {
+            if ($baseLevel === null) {
+                $baseLevel = $level;
+            }
+
+            $normalizedLevel = max(1, ($level - $baseLevel) + 1);
+            $classLevel = max(1, min(6, $normalizedLevel));
+
+            if ($normalizedLevel > $current_level) {
                 // Create new ol and up to higher level
-                for ($a = 0; $a < $level - $current_level; $a++) {
-                    $toc .= "\n" . str_repeat("\t", $current_level * 2) . '<ol class="toc-level-' . $level . '">' . "\n" . str_repeat("\t", ($current_level * 2) + 1) . '<li>';
+                for ($a = 0; $a < $normalizedLevel - $current_level; $a++) {
+                    $toc .= "\n" . str_repeat("\t", $current_level * 2) . '<ol class="toc-level-' . $classLevel . '">' . "\n" . str_repeat("\t", ($current_level * 2) + 1) . '<li>';
                 }
                 $toc .= $link;
                 $items = 1;
-            } elseif ($level === $current_level) {
-                $toc .= ($items ? '</li>' . "\n" : '') . str_repeat("\t", ($level * 2) - 1) . '<li>' . $link;
+            } elseif ($normalizedLevel === $current_level) {
+                $toc .= ($items ? '</li>' . "\n" : '') . str_repeat("\t", ($normalizedLevel * 2) - 1) . '<li>' . $link;
                 $items++;
             } else {
                 // Close ol and down level
-                for ($a = 0; $a < $current_level - $level; $a++) {
-                    $toc .= "\n" . str_repeat("\t", ($level * 2) + 1) . '</li>' .
-                        "\n" . str_repeat("\t", $level * 2) . '</ol>';
+                for ($a = 0; $a < $current_level - $normalizedLevel; $a++) {
+                    $toc .= "\n" . str_repeat("\t", (($current_level - $a) * 2) - 1) . '</li>' .
+                        "\n" . str_repeat("\t", (($current_level - $a) * 2) - 2) . '</ol>';
                 }
-                $toc .= "\n" . str_repeat("\t", ($level * 2) - 1) . '</li>' . "\n" . str_repeat("\t", ($level * 2) - 1) . '<li>' . $link;
+                $toc .= "\n" . str_repeat("\t", ($normalizedLevel * 2) - 1) . '</li>' . "\n" . str_repeat("\t", ($normalizedLevel * 2) - 1) . '<li>' . $link;
                 $items = 0;
             }
-            $current_level = $level;
+            $current_level = $normalizedLevel;
         }
 
-        if (!isset($level)) {
+        if ($baseLevel === null) {
             // No heading
             return false;
         }
         // Close all opened ol
-        for ($a = $level - 1; $a >= 0; $a--) {
+        for ($a = $current_level - 1; $a >= 0; $a--) {
             $toc .= "\n" . str_repeat("\t", ($a * 2) + 1) . '</li>' .
                 "\n" . str_repeat("\t", $a * 2) . '</ol>';
         }

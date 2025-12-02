@@ -346,7 +346,7 @@ class UsersLoginController extends PublicController
                 Show::msg(Lang::get('users.registration-password-mismatch'), 'error');
                 $this->core->redirect($this->router->generate('profile'));
             }
-            if (UsersManager::encrypt($currentPassword) !== $this->user->pwd) {
+            if (!UsersManager::verify($currentPassword, $this->user->pwd, $this->user)) {
                 Show::msg(Lang::get('users.profile-current-password-invalid'), 'error');
                 $this->core->redirect($this->router->generate('profile'));
             }

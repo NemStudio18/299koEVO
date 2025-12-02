@@ -250,6 +250,28 @@ class Show {
         }
     }
 
+    public static function siteLogoUrl() {
+        if (function_exists('siteLogoUrl')) {
+            call_user_func('siteLogoUrl');
+            return;
+        }
+        $core = Core::getInstance();
+        $logo = trim((string) ($core->getConfigVal('siteLogo') ?? ''));
+        if ($logo === '') {
+            return;
+        }
+        echo Util::urlBuild($logo);
+    }
+
+    public static function siteLogoPlacement() {
+        if (function_exists('siteLogoPlacement')) {
+            call_user_func('siteLogoPlacement');
+            return;
+        }
+        $core = Core::getInstance();
+        echo $core->getConfigVal('siteLogoPlacement') ?? 'none';
+    }
+
     ## Affiche la navigation principale (theme)
 
     public static function mainNavigation($format = '<li><a class="[cssClass]" href="[target]" target="[targetAttribut]">[label]</a>[childrens]</li>') {
