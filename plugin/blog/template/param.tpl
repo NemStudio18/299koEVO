@@ -1,4 +1,4 @@
-﻿<form method="post" action="{ ROUTER.generate("admin-blog-save-config") }">
+<form method="post" action="{ ROUTER.generate("admin-blog-save-config") }">
     {{SHOW.tokenField}}
     <script>
         function onCheckAuthor() {
@@ -32,13 +32,13 @@
         <input type="text" name="label" id="label" value="{{ runPlugin.getConfigVal("label") }}" />
     </div>
     <div class='form'>
-        <label for="items_per_page">{{Lang.blog-entries-per-page|default("Articles par page")}}</label><br>
+        <label for="items_per_page">{{Lang.blog-entries-per-page}}</label><br>
         <input type="number" name="items_per_page" id="items_per_page" value="{{ runPlugin.getConfigVal("items_per_page") ?: runPlugin.getConfigVal("itemsByPage") ?: 10 }}" />
     </div>
     <div class='form'>
-        <label for="notify_admin_email">{{Lang.blog-notify-admin-email|default("Email de notification admin")}}</label><br>
+        <label for="notify_admin_email">{{Lang.blog-notify-admin-email}}</label><br>
         <input type="email" name="notify_admin_email" id="notify_admin_email" value="{{ runPlugin.getConfigVal("notify_admin_email") }}" placeholder="admin@example.com" />
-        <small>{{Lang.blog-notify-admin-help|default("Laissez vide pour désactiver les alertes email.")}}</small>
+        <small>{{Lang.blog-notify-admin-help}}</small>
     </div>
     <div class='form'>
         <label for="displayTOC">{{Lang.blog-display-toc}}</label><br>
