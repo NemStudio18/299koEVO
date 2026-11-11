@@ -1,4 +1,4 @@
-﻿<section class="module-card pages-editorial-wrap">
+<section class="module-card pages-editorial-wrap">
     <header class="pages-editorial-header">
         <div>
             <h1 class="pages-editorial-title"><i class="fa-regular fa-file-lines"></i> Pages CMS</h1>

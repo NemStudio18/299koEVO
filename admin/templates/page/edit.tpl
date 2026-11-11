@@ -1,4 +1,4 @@
-﻿<form method="post" action="{ ROUTER.generate("page-admin-save") }" enctype="multipart/form-data">
+<form method="post" action="{ ROUTER.generate("page-admin-save") }" enctype="multipart/form-data">
     <input type="hidden" name="_csrf" value="{{_csrfToken}}" />
     <input type="hidden" name="target" value="{{pageItem.getTarget()}}" />
     <input type="hidden" name="id" value="{{pageItem.getId()}}" />

@@ -9,3 +9,4 @@ $router->map('POST', '/admin/menus/add[/?]',        'Core\Navigation\Controllers
 $router->map('POST', '/admin/menus/update[/?]',     'Core\Navigation\Controllers\MenuAdminController#updateItem', 'menu-admin-update');
 $router->map('POST', '/admin/menus/delete[/?]',     'Core\Navigation\Controllers\MenuAdminController#deleteItem', 'menu-admin-delete');
 $router->map('POST', '/admin/menus/save-order[/?]', 'Core\Navigation\Controllers\MenuAdminController#saveOrder',  'menu-admin-save-order');
+
