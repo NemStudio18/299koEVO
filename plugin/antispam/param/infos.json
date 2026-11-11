@@ -5,6 +5,6 @@
     "description": "Protège vos formulaires des robots spammeurs",
     "authorEmail": "mx.koder@gmail.com",
     "authorWebsite": "https://kodercloud.ovh",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "homeAdminMethod": "AntispamAdminController#home"
 }

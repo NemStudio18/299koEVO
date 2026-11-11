@@ -149,18 +149,23 @@ class AntispamStats
     {
         return [
             'honeypot'             => 'Pot-de-miel rempli (robot)',
+            'rate_limited'         => 'Trop de tentatives (rate limit)',
             'missing_session'      => 'Session absente / sans cookies',
             'invalid_nonce'        => 'Jeton session invalide ou rejeu',
+            'invalid_signature'    => 'Signature de challenge invalide',
             'server_too_fast'      => 'Soumission < 1s (serveur)',
-            'expired'              => 'Session expirée (> 1h)',
+            'expired'              => 'Challenge expiré (> 5 min)',
+            'missing_pow'          => 'Preuve de travail SHA-256 manquante',
+            'invalid_pow'          => 'Preuve de travail SHA-256 invalide',
             'wrong_answer'         => 'Calcul de contrôle incorrect',
             'not_clicked'          => 'Case non cliquée / JS absent',
             'webdriver'            => 'Navigateur automatisé (webdriver)',
             'client_too_fast'      => 'Clic trop rapide (< 0,8s)',
             'no_human_interaction' => 'Aucune interaction humaine détectée',
             'wrong_captcha'        => 'Réponse captcha incorrecte',
-            'human_behavior'       => 'Comportement humain validé',
-            'fallback_answer'      => 'Calcul complémentaire réussi',
+            'human_behavior'       => 'Comportement humain + PoW validés',
+            'fallback_answer'      => 'Calcul complémentaire + PoW réussis',
+            'noscript_answer'      => 'Calcul sans JavaScript réussi',
             'valid_captcha'        => 'Captcha validé',
         ][$reason] ?? $reason;
     }
