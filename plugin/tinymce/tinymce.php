@@ -416,7 +416,7 @@ function initTinyMceSafe() {
         browser_spellcheck: true,
         image_advtab: true,
         sandbox_iframes: false,
-        extended_valid_elements: 'iframe[src|title|width|height|allowfullscreen|frameborder|allow|referrerpolicy|loading|class|style]',
+        extended_valid_elements: 'iframe[src|title|width|height|allowfullscreen|frameborder|allow|referrerpolicy|loading|class|style],#i[class|style|aria-hidden],#span[class|style|aria-hidden]',
         plugins: 'advlist anchor autolink autoresize charmap code codesample emoticons fullscreen help image insertdatetime link lists media nonbreaking searchreplace table visualblocks visualchars wordcount',
         toolbar: 'blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | forecolor backcolor removeformat | insertfile image media link{$mascotToolbar} | dialog-add-icon{$mapToolbar} charmap emoticons codesample | fullscreen',
         max_height: 600,

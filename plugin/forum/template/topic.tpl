@@ -1,4 +1,4 @@
-{% INCLUDE 'forum/breadcrumb.tpl' %}
+{% INCLUDE PLUGINS ~ 'forum/template/breadcrumb.tpl' %}
 
 <section class="forum-topic">
     <div class="forum-topic-main-card">
@@ -160,7 +160,7 @@
                             <i class="fa-solid fa-edit"></i> Modifier
                         </a>
                         {% ENDIF %}
-                        {% INCLUDE 'forum/like-button.tpl' %}
+                        {% INCLUDE PLUGINS ~ 'forum/template/like-button.tpl' %}
                         {% HOOK.forum:topic-post-actions(post) %}
 
                         {% IF isModerator %}

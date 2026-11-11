@@ -1,4 +1,4 @@
-{% INCLUDE 'forum/breadcrumb.tpl' %}
+{% INCLUDE PLUGINS ~ 'forum/template/breadcrumb.tpl' %}
 
 <section class="forum-reply-topic">
     <header>

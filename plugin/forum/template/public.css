@@ -54,6 +54,11 @@
     text-decoration: underline;
 }
 
+.breadcrumb-current {
+    color: var(--evo-text-muted);
+    font-weight: 600;
+}
+
 .breadcrumb-separator {
     margin: 0 0.4rem;
     color: var(--evo-text-muted);

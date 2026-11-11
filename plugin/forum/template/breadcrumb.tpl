@@ -1,9 +1,9 @@
-<nav class="forum-breadcrumb mb-medium padding-y-small border-bottom">
+<nav class="forum-breadcrumb" aria-label="Fil d'Ariane">
     <ol class="breadcrumb-list">
         {% FOR item IN breadcrumb %}
         <li class="breadcrumb-item">
             {% IF item.is_active %}
-            <span class="color-secondary font-medium">{{item.label}}</span>
+            <span class="breadcrumb-current">{{item.label}}</span>
             {% ELSE %}
             <a href="{{item.url}}" class="breadcrumb-link">
                 {{item.label}}

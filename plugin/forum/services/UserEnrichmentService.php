@@ -105,20 +105,40 @@ class UserEnrichmentService
         $cmsUsersById = [];
         $cmsUsersByEmail = [];
 
+        // 1. Charger les utilisateurs du cœur (data/core/auth/users.json ou SQL users)
         try {
-            $allUsers = User::all();
-            foreach ($allUsers as $u) {
+            $coreUsers = \Core\Auth\User::all();
+            foreach ($coreUsers as $u) {
                 $uid = $u->id ?? ($u->attributes['id'] ?? null);
                 $uemail = $u->email ?? ($u->attributes['email'] ?? null);
                 if ($uid !== null) {
                     $cmsUsersById[(int) $uid] = $u;
                 }
                 if (!empty($uemail)) {
-                    $cmsUsersByEmail[(string) $uemail] = $u;
+                    $cmsUsersByEmail[strtolower((string) $uemail)] = $u;
                 }
             }
         } catch (\Throwable $e) {
-            // Ignorer si le plugin auth n'est pas chargé
+            // Ignorer si indisponible
+        }
+
+        // 2. Enrichir/compléter avec les profils étendus du plugin Auth s'il est présent
+        if (class_exists(User::class)) {
+            try {
+                $allUsers = User::all();
+                foreach ($allUsers as $u) {
+                    $uid = $u->id ?? ($u->attributes['id'] ?? null);
+                    $uemail = $u->email ?? ($u->attributes['email'] ?? null);
+                    if ($uid !== null && !isset($cmsUsersById[(int) $uid])) {
+                        $cmsUsersById[(int) $uid] = $u;
+                    }
+                    if (!empty($uemail) && !isset($cmsUsersByEmail[strtolower((string) $uemail)])) {
+                        $cmsUsersByEmail[strtolower((string) $uemail)] = $u;
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Ignorer si le plugin auth n'est pas chargé
+            }
         }
 
         foreach ($userIdentifiers as $key => $identifier) {
@@ -128,8 +148,8 @@ class UserEnrichmentService
             $cmsData = null;
             if ($userId !== null && isset($cmsUsersById[$userId])) {
                 $cmsData = $cmsUsersById[$userId];
-            } elseif ($email !== null && isset($cmsUsersByEmail[$email])) {
-                $cmsData = $cmsUsersByEmail[$email];
+            } elseif ($email !== null && isset($cmsUsersByEmail[strtolower((string) $email)])) {
+                $cmsData = $cmsUsersByEmail[strtolower((string) $email)];
             }
 
             $results[$key] = $this->buildEnrichedUser($userId, $email, $cmsData);

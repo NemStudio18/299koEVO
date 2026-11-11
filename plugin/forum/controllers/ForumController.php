@@ -42,6 +42,34 @@ class ForumController extends PublicController
         $this->forumTableHeaderLabel = !empty($this->config['forum_table_header_label']) ? $this->config['forum_table_header_label'] : (!empty($this->config['forum_home_label']) ? $this->config['forum_home_label'] : 'Forum');
     }
 
+    private function resolveAuthor(array $record, array $enrichedUsers, bool $isAdmin): array
+    {
+        $authorId = $record['author_id'] ?? null;
+        if ($authorId && isset($enrichedUsers[$authorId]) && !empty($enrichedUsers[$authorId]['has_cms_data'])) {
+            $author = $enrichedUsers[$authorId];
+            if (!$isAdmin && isset($author['email'])) {
+                $author['email'] = \Utils\Util::maskEmail($author['email']);
+            }
+        } else {
+            $fallbackName = trim((string)($record['author_name'] ?? ''));
+            $author = [
+                'id' => $authorId,
+                'username' => $fallbackName !== '' ? $fallbackName : 'Anonyme',
+                'email' => $isAdmin ? ($record['author_email'] ?? '') : \Utils\Util::maskEmail($record['author_email'] ?? ''),
+                'avatar' => null,
+                'has_mysql_data' => false,
+            ];
+        }
+
+        if (isset($author['avatar'])) {
+            $avatarValue = $author['avatar'];
+            if ($avatarValue === '/avatar' || $avatarValue === 'avatar' || trim((string)$avatarValue) === '/avatar') {
+                $author['avatar'] = null;
+            }
+        }
+        return $this->enrichAuthorAvatar($author);
+    }
+
     public function index()
     {
         $response = new PublicResponse();
@@ -147,30 +175,7 @@ class ForumController extends PublicController
 
             // Ajouter les données utilisateurs enrichies aux topics
             foreach ($topicsPrepared as &$topicData) {
-                if ($topicData['author_id'] && isset($enrichedUsers[$topicData['author_id']])) {
-                    $topicData['author'] = $enrichedUsers[$topicData['author_id']];
-                    if (!$isAdmin && isset($topicData['author']['email'])) {
-                        $topicData['author']['email'] = \Utils\Util::maskEmail($topicData['author']['email']);
-                    }
-                } else {
-                    $topicData['author'] = [
-                        'id' => $topicData['author_id'],
-                        'username' => $topicData['author_name'],
-                        'email' => $isAdmin ? ($topicData['author_email'] ?? '') : \Utils\Util::maskEmail($topicData['author_email'] ?? ''),
-                        'avatar' => null,
-                        'has_mysql_data' => false,
-                    ];
-                }
-
-                // Enrichir avec les données d'avatar généré
-                // Forcer la validation de l'avatar avant l'enrichissement
-                if (isset($topicData['author']['avatar'])) {
-                    $avatarValue = $topicData['author']['avatar'];
-                    if ($avatarValue === '/avatar' || $avatarValue === 'avatar' || trim($avatarValue) === '/avatar') {
-                        $topicData['author']['avatar'] = null;
-                    }
-                }
-                $topicData['author'] = $this->enrichAuthorAvatar($topicData['author']);
+                $topicData['author'] = $this->resolveAuthor($topicData, $enrichedUsers, $isAdmin);
 
                 // Formater les dates
                 if (!empty($topicData['created_at'])) {
@@ -386,32 +391,7 @@ class ForumController extends PublicController
         // Préparer le premier post
         if (!empty($firstPostRaw)) {
             $postData = $firstPostRaw[0]->toArray();
-
-            // Enrichir avec les données utilisateur
-            if ($postData['author_id'] && isset($enrichedUsers[$postData['author_id']])) {
-                $postData['author'] = $enrichedUsers[$postData['author_id']];
-                if (!$isAdmin && isset($postData['author']['email'])) {
-                    $postData['author']['email'] = \Utils\Util::maskEmail($postData['author']['email']);
-                }
-            } else {
-                $postData['author'] = [
-                    'id' => $postData['author_id'],
-                    'username' => $postData['author_name'],
-                    'email' => $isAdmin ? ($postData['author_email'] ?? '') : \Utils\Util::maskEmail($postData['author_email'] ?? ''),
-                    'avatar' => null,
-                    'has_mysql_data' => false,
-                ];
-            }
-
-            // Enrichir avec les données d'avatar généré
-            // Forcer la validation de l'avatar avant l'enrichissement
-            if (isset($postData['author']['avatar'])) {
-                $avatarValue = $postData['author']['avatar'];
-                if ($avatarValue === '/avatar' || $avatarValue === 'avatar' || trim($avatarValue) === '/avatar') {
-                    $postData['author']['avatar'] = null;
-                }
-            }
-            $postData['author'] = $this->enrichAuthorAvatar($postData['author']);
+            $postData['author'] = $this->resolveAuthor($postData, $enrichedUsers, $isAdmin);
 
             // Formater les dates
             if ($postData['created_at']) {
@@ -476,32 +456,7 @@ class ForumController extends PublicController
         $replies = [];
         foreach ($repliesRaw as $post) {
             $postData = $post->toArray();
-
-            // Enrichir avec les données utilisateur
-            if ($postData['author_id'] && isset($enrichedUsers[$postData['author_id']])) {
-                $postData['author'] = $enrichedUsers[$postData['author_id']];
-                if (!$isAdmin && isset($postData['author']['email'])) {
-                    $postData['author']['email'] = \Utils\Util::maskEmail($postData['author']['email']);
-                }
-            } else {
-                $postData['author'] = [
-                    'id' => $postData['author_id'],
-                    'username' => $postData['author_name'],
-                    'email' => $isAdmin ? ($postData['author_email'] ?? '') : \Utils\Util::maskEmail($postData['author_email'] ?? ''),
-                    'avatar' => null,
-                    'has_mysql_data' => false,
-                ];
-            }
-
-            // Enrichir avec les données d'avatar généré
-            // Forcer la validation de l'avatar avant l'enrichissement
-            if (isset($postData['author']['avatar'])) {
-                $avatarValue = $postData['author']['avatar'];
-                if ($avatarValue === '/avatar' || $avatarValue === 'avatar' || trim($avatarValue) === '/avatar') {
-                    $postData['author']['avatar'] = null;
-                }
-            }
-            $postData['author'] = $this->enrichAuthorAvatar($postData['author']);
+            $postData['author'] = $this->resolveAuthor($postData, $enrichedUsers, $isAdmin);
 
             // Formater les dates
             if ($postData['created_at']) {
