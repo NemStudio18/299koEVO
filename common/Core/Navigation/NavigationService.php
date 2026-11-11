@@ -79,10 +79,11 @@ class NavigationService
         $ctx = new ConditionContext($user);
         $this->ctx = $ctx;
 
-        // Calcul du hash des rôles pour le cache
+        // Calcul du hash des rôles + état auth pour le cache
         $roles = $ctx->getRoles();
         sort($roles);
-        $roleHash = md5(implode('|', $roles));
+        $authState = $user ? 'logged' : 'guest';
+        $roleHash = md5($authState . '|' . implode('|', $roles));
         $cacheFile = \CACHE . 'nav_tree_' . $roleHash . '.json';
         
         // 1. Essayer de charger depuis le cache (FS)
@@ -100,38 +101,94 @@ class NavigationService
         
         if (!$hasRegisteredItems) {
             $this->tree->clear();
-            $this->loadFromJson();
-            $this->loadFromPage();
+            $this->loadFromMenuItems();
         }
 
-        // 3. Appeler le hook pour injection plugins
-        $this->callBuildHook();
-
-        // 3b. Appliquer les positions sauvegardées (force l'ordre admin même pour les items ajoutés par hook)
-        $this->applySavedPositions();
+        // 3. Hook optionnel pour items dynamiques runtime (navigation:render-tree)
+        $core = Core::getInstance();
+        $core->callHook('navigation:render-tree', [$this->tree]);
 
         // 4. Construire l'arbre hiérarchique
         $this->tree->build();
 
-        // 5. Appliquer les positions relatives
+        // 5. Appliquer les positions relatives éventuelles
         $this->tree->applyRelativePositions();
 
         // 6. Nettoyer (désactiver plugins inactifs)
         $this->tree->cleanup($this->getActivePluginSources());
 
         // 7. Évaluer les conditions
-        // evaluateConditions désactive (enabled=false) les items non-auto dont les conditions échouent.
-        // Les items 'auto' restent actifs pour que filterByChannel puisse les router.
         $this->tree->evaluateConditions($ctx);
 
-        // 9. Sauvegarder dans le cache si possible
-        // Note: On ne cache que si aucune condition n'est marquée comme "non-cacheable"
-        // (Pour l'instant on cache tout, mais on pourrait affiner)
+        // 8. Sauvegarder dans le cache
         if (!is_dir(\CACHE)) @mkdir(\CACHE, 0755, true);
         Util::writeJsonFile($cacheFile, $this->tree->toArray());
 
         $this->built = true;
         return $this->tree;
+    }
+
+    /**
+     * Charge la navigation depuis le système unifié MenuItem (table menu_items).
+     */
+    private function loadFromMenuItems(): void
+    {
+        $menuService = MenuService::getInstance();
+        $menuService->ensureMigrated();
+
+        $menuItems = MenuItem::queryBuilder()
+            ->where('is_enabled', 1)
+            ->orderBy('position', 'asc')
+            ->get();
+
+        if (empty($menuItems)) {
+            return;
+        }
+
+        $pageManager = new Page();
+        $pagesById = [];
+        foreach ($pageManager->getItems() as $p) {
+            $pagesById[(int)$p->getId()] = $p;
+        }
+
+        foreach ($menuItems as $menuItem) {
+            $resolved = $menuService->resolveMenuItemTarget($menuItem, $pagesById, $pageManager);
+            if (!$resolved['active']) {
+                continue;
+            }
+
+            $source = 'core';
+            if ($menuItem->getType() === 'plugin') {
+                $parts = explode(':', $menuItem->getTargetRef(), 2);
+                $pluginName = trim($parts[0]);
+                if ($pluginName !== '') {
+                    $source = 'plugin:' . $pluginName;
+                }
+            }
+
+            $parentId = $menuItem->getParentId() > 0 ? 'menu.' . $menuItem->getParentId() : null;
+            $visibility = $menuItem->toNavigationVisibility($resolved['conditions']);
+
+            try {
+                $navItem = new NavigationItem(
+                    'menu.' . $menuItem->getId(),
+                    $menuItem->getLabel(),
+                    $resolved['url'],
+                    $menuItem->getTargetAttr(),
+                    $menuItem->getCssClass(),
+                    $menuItem->getIcon() !== '' ? $menuItem->getIcon() : null,
+                    $menuItem->getPosition(),
+                    null,
+                    $source,
+                    $parentId,
+                    $visibility,
+                    $menuItem->getLocation()
+                );
+                $this->tree->addItem($navItem);
+            } catch (\Exception $e) {
+                Core::getInstance()->getLogger()->error('NavigationService: Failed to add MenuItem: ' . $e->getMessage());
+            }
+        }
     }
 
     /**

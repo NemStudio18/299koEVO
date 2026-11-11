@@ -9,5 +9,6 @@
     "search:get-results": "sondageSearchResultsHook",
     "user:notification-preferences": "sondageUserProfileNotificationPreferences",
     "user:profile-allowed-settings": "sondageUserProfileAllowedSettings",
-    "poll:get-stats": "sondageGetStats"
+    "poll:get-stats": "sondageGetStats",
+    "navigation:catalog": "sondageNavigationCatalog"
 }

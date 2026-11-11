@@ -35,388 +35,64 @@ class PageAdminController extends AdminController {
 
     public function list() {
         $page = new Page();
-        // Recherche des pages perdues
-        $parents = [];
-        $lost = '';
-        foreach ($page->getItems() as $k => $v)
-            if ((int) $v->getParent() == 0) {
-                $parents[] = $v->getId();
-            }
-        foreach ($page->getItems() as $k => $v)
-            if ((int) $v->getParent() > 0) {
-                if (!in_array($v->getParent(), $parents))
-                    $lost .= $v->getId() . ',';
-            }
-        // Suite...
         if (!$page->createHomepage() && $this->core->getConfigVal('defaultPlugin') === 'page') {
             Show::msg(Lang::get('page.no-homepage-defined'), 'warning');
         }
 
-        $items = $page->getItems();
-        
-        // Filter out items targeting inactive plugins
-        $pluginsManager = \Core\Plugin\PluginsManager::getInstance();
-        $items = array_filter($items, function($item) use ($pluginsManager) {
-            if ($item->targetIs() === 'plugin') {
-                $targetPlugin = $item->getTarget();
-                // Handle cases where target might be "plugin:name" or just "name"
-                $pluginName = str_replace('plugin:', '', $targetPlugin);
-                $p = $pluginsManager->getPlugin($pluginName);
-                if (!$p || !$p->getConfigVal('activate')) {
-                    return false;
-                }
+        $menuService = \Core\Navigation\MenuService::getInstance();
+        $locationLabels = [
+            'main'   => 'Menu principal',
+            'avatar' => 'Menu Avatar',
+            'footer' => 'Pied de page',
+        ];
+
+        $cmsPages = [];
+        $editorialStats = [
+            'totalPages'     => 0,
+            'publishedPages' => 0,
+            'draftPages'     => 0,
+            'protectedPages' => 0,
+        ];
+
+        foreach ($page->getItems() as $item) {
+            if ($item->targetIs() !== 'page') {
+                continue;
             }
-            return true;
-        });
-        
-        $totalPages = count($items);
-        $visiblePages = 0;
-        $hiddenPages = 0;
-        $parentPages = 0;
-        foreach ($items as $item) {
-            if ($item->getIsHidden()) {
-                $hiddenPages++;
+
+            $isDraft = (bool)$item->getIsHidden();
+            $hasPassword = trim((string)$item->getPassword()) !== '';
+            $editorialStats['totalPages']++;
+            if ($isDraft) {
+                $editorialStats['draftPages']++;
             } else {
-                $visiblePages++;
+                $editorialStats['publishedPages']++;
             }
-            if ((int) $item->getParent() === 0) {
-                $parentPages++;
+            if ($hasPassword || $item->getNoIndex()) {
+                $editorialStats['protectedPages']++;
             }
+
+            $locs = $menuService->getMenuLocationsForPage((int)$item->getId());
+            $locBadges = array_map(fn($loc) => $locationLabels[$loc] ?? $loc, $locs);
+
+            $cmsPages[] = [
+                'id'            => (int)$item->getId(),
+                'name'          => (string)$item->getName(),
+                'mainTitle'     => (string)$item->getMainTitle(),
+                'url'           => $page->makeUrl($item),
+                'isHomepage'    => (bool)$item->getIsHomepage(),
+                'isHidden'      => $isDraft,
+                'hasPassword'   => $hasPassword,
+                'noIndex'       => (bool)$item->getNoIndex(),
+                'menuLocations' => $locBadges,
+            ];
         }
-        $childPages = max($totalPages - $parentPages, 0);
-        $lostIds = array_filter(array_map('trim', explode(',', $lost)));
-        $lostCount = count($lostIds);
 
         $response = new AdminResponse();
         $tpl = $response->createPluginTemplate('page', 'list');
-
-        // Passer les traductions en JSON pour éviter les problèmes d'échappement dans le JavaScript
-        $translations = [
-            'savingOrder' => Lang::get('page.saving-order'),
-            'orderSaved' => Lang::get('page.order-saved'),
-            'orderNotSaved' => Lang::get('page.order-not-saved'),
-            'dragToReorder' => Lang::get('page.drag-to-reorder')
-        ];
-        $tpl->set('translationsJson', json_encode($translations, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE));
-
-        // Récupérer aussi les items de navigation des plugins
-        $navigationService = \Core\Navigation\NavigationService::getInstance();
-        $navigationService->reset();
-        
-        // S'assurer que les pages sont chargées dans Core
-        \Core\Page\Page::addToNavigation();
-        
-        // Construire l'arbre
-        $navigationTree = $navigationService->build();
-        $allNavItems = $navigationTree->getAllItems();
-        
-        // Groupage pour les onglets
-        $accessibilityGroups = ['active' => [], 'inactive' => []];
-        $sortingGroups = ['main' => [], 'avatar' => [], 'footer' => []];
-        $listByType = ['pages' => [], 'links' => [], 'folders' => [], 'plugins' => []];
-        
-        $advancedStats = [
-            'totalItems' => 0,
-            'realPages' => 0,
-            'links' => 0,
-            'folders' => 0,
-            'plugins' => 0,
-            'hidden' => 0,
-            'mainLevel' => 0,
-            'subItems' => 0,
-            'orphans' => $lostCount,
-            'menus' => ['main' => 0, 'avatar' => 0, 'footer' => 0]
-        ];
-
-        // 1. Traiter les PageItems (CMS)
-        $pluginsManager = \Core\Plugin\PluginsManager::getInstance();
-        foreach ($page->getItems() as $item) {
-            // Fix: Exclure les items ciblant des plugins inactifs
-            if ($item->targetIs() === 'plugin' && !$pluginsManager->isActivePlugin($item->getTarget())) {
-                continue;
-            }
-
-            $wrapper = ['type' => 'page', 'item' => $item];
-            $advancedStats['totalItems']++;
-
-            // Icône avec fallback
-            $icon = $item->getIcon();
-            if (empty($icon) && $item->targetIs() === 'plugin') {
-                $p = $pluginsManager->getPlugin($item->getTarget());
-                if ($p) $icon = $p->getInfoVal('icon');
-            }
-            $wrapper['icon'] = $icon ?: 'fa-solid fa-file';
-
-            // Stats par Cible
-            $targetType = $item->targetIs();
-            if ($targetType === 'page') $advancedStats['realPages']++;
-            elseif ($targetType === 'url') $advancedStats['links']++;
-            elseif ($targetType === 'parent') $advancedStats['folders']++;
-            elseif ($targetType === 'plugin') $advancedStats['plugins']++;
-
-            // Stats Hiérarchie
-            if ((int)$item->getParent() === 0) $advancedStats['mainLevel']++;
-            else $advancedStats['subItems']++;
-
-            if ($item->getIsHidden()) $advancedStats['hidden']++;
-
-            // Groupage par Type pour "Gestion"
-            if ($targetType === 'page') $listByType['pages'][] = $wrapper;
-            elseif ($targetType === 'url') $listByType['links'][] = $wrapper;
-            elseif ($targetType === 'parent') $listByType['folders'][] = $wrapper;
-            elseif ($targetType === 'plugin') $listByType['plugins'][] = $wrapper;
-            
-            // Groupage Accessibilité
-            if ($item->getIsHidden()) {
-                $accessibilityGroups['inactive'][] = $wrapper;
-            } else {
-                $accessibilityGroups['active'][] = $wrapper;
-            }
-
-            // Groupage Tri & Stats Menus
-            $contextsStr = $item->getNavContext() ?: 'main';
-            $contexts = array_map('trim', explode(',', $contextsStr));
-            foreach ($contexts as $context) {
-                if ($context === 'auto' || $context === 'menu' || $context === 'default') $context = 'main';
-                if (isset($advancedStats['menus'][$context])) {
-                    $advancedStats['menus'][$context]++;
-                }
-                if (!$item->getIsHidden() && isset($sortingGroups[$context])) {
-                    $sortingGroups[$context][] = $wrapper;
-                }
-            }
-        }
-
-        // Pre-calcul des comptes pour le template (car |count n'est pas supporté)
-        $accessibilityGroups['activeCount'] = count($accessibilityGroups['active']);
-        $accessibilityGroups['inactiveCount'] = count($accessibilityGroups['inactive']);
-        
-        $listByType['pagesCount'] = count($listByType['pages']);
-        $listByType['linksCount'] = count($listByType['links']);
-        $listByType['foldersCount'] = count($listByType['folders']);
-        $listByType['pluginsCount'] = 0; // Sera calculé après
-
-        // 2. Traiter les Plugin items
-        foreach ($allNavItems as $navItem) {
-            $source = $navItem->getSource();
-            if (strpos($source, 'plugin:') === 0) {
-                // Filter out disabled items (inactive plugins)
-                if (!$navItem->isEnabled()) {
-                    continue;
-                }
-                $wrapper = ['type' => 'plugin', 'item' => $navItem];
-                $wrapper['icon'] = $navItem->getIcon() ?: 'fa-solid fa-puzzle-piece';
-                $advancedStats['totalItems']++;
-                $advancedStats['plugins']++;
-                $listByType['plugins'][] = $wrapper;
-                
-                // Plugins: Accessibilité -> Actif par défaut
-                $accessibilityGroups['active'][] = $wrapper;
-
-                $context = $navItem->getNavContext() ?: 'main';
-                if ($context === 'auto' || $context === 'menu' || $context === 'default') $context = 'main';
-                if (isset($advancedStats['menus'][$context])) {
-                    $advancedStats['menus'][$context]++;
-                }
-                if (isset($sortingGroups[$context])) {
-                    $sortingGroups[$context][] = $wrapper;
-                } else {
-                    $sortingGroups['main'][] = $wrapper;
-                }
-            }
-        }
-        
-        $listByType['pagesCount'] = count($listByType['pages']);
-        $listByType['linksCount'] = count($listByType['links']);
-        $listByType['foldersCount'] = count($listByType['folders']);
-        $listByType['pluginsCount'] = count($listByType['plugins']);
-        // Mettre à jour les comptes d'accessibilité car les plugins y sont ajoutés
-        $accessibilityGroups['activeCount'] = count($accessibilityGroups['active']);
-
-        // Types à afficher dans l'onglet "Gestion" (uniquement ceux qui ont des items)
-        $managedGroups = [];
-        $typeMeta = [
-            'pages' => ['label' => 'Vraies Pages CMS', 'icon' => 'fa-solid fa-file'],
-            'links' => ['label' => 'Liens Externes', 'icon' => 'fa-solid fa-link'],
-            'folders' => ['label' => 'Dossiers / Catégories', 'icon' => 'fa-solid fa-folder'],
-            'plugins' => ['label' => 'Éléments de Plugins', 'icon' => 'fa-solid fa-plug']
-        ];
-        foreach ($typeMeta as $tk => $meta) {
-            if (count($listByType[$tk]) > 0) {
-                // Trier les items par position
-                usort($listByType[$tk], function($a, $b) {
-                    return $a['item']->getPosition() <=> $b['item']->getPosition();
-                });
-                
-                $managedGroups[] = [
-                    'key' => $tk,
-                    'label' => $meta['label'],
-                    'icon' => $meta['icon'],
-                    'items' => $listByType[$tk],
-                    'count' => count($listByType[$tk])
-                ];
-            }
-        }
-        $tpl->set('managedGroups', $managedGroups);
-
-        // Trier chaque groupe par position
-        foreach ($sortingGroups as &$group) {
-            usort($group, function($a, $b) {
-                return $a['item']->getPosition() <=> $b['item']->getPosition();
-            });
-        }
-
-        // Optimisation: Pré-indexer les items par Parent ID pour éviter le O(N^2)
-        $itemsByParent = [];
-        foreach ($page->getItems() as $item) {
-            // Fix: Exclure aussi ici les items ciblant des plugins inactifs
-            if ($item->targetIs() === 'plugin' && !$pluginsManager->isActivePlugin($item->getTarget())) {
-                continue;
-            }
-
-            $pid = (string)$item->getParent();
-            if ($pid === '0' || $pid === '') $pid = '0'; // Normalize root
-
-            if (!isset($itemsByParent[$pid])) {
-                $itemsByParent[$pid] = [];
-            }
-            $itemsByParent[$pid][] = $item;
-        }
-
-        // Fonction récursive optimisée
-        $buildTree = function($parentId, $context, $depth = 0) use (&$buildTree, &$itemsByParent, $allNavItems, $pluginsManager) {
-            if ($depth > 20) return []; // Safety guard
-
-            $branch = [];
-            
-            // 1. Pages CMS pour ce parent et contexte
-            // On récupère directement les enfants, plus de boucle sur tout le tableau
-            $children = $itemsByParent[(string)$parentId] ?? [];
-            
-            foreach ($children as $item) {
-                if (!$item->getIsHidden()) {
-                    $contextsStr = $item->getNavContext() ?: 'main';
-                    $contexts = array_map('trim', explode(',', $contextsStr));
-                    
-                    // Si contexte 'auto', 'menu', 'default' -> 'main'
-                    $inContext = false;
-                    foreach ($contexts as $ctx) {
-                        if ($ctx === 'auto' || $ctx === 'menu' || $ctx === 'default') $ctx = 'main';
-                        if ($ctx === $context) {
-                            $inContext = true;
-                            break;
-                        }
-                    }
-
-                    if ($inContext) {
-                        // Icône
-                        $icon = $item->getIcon();
-                        if (empty($icon) && $item->targetIs() === 'plugin') {
-                            $p = $pluginsManager->getPlugin($item->getTarget());
-                            if ($p) $icon = $p->getInfoVal('icon') ?: 'fa-solid fa-puzzle-piece';
-                        }
-                        
-                        $node = [
-                            'id' => $item->getId(),
-                            'type' => 'page',
-                            'label' => $item->getName() ?: $item->getLabel(),
-                            'icon' => $icon ?: 'fa-solid fa-file',
-                            'url' => $item->targetIs() == 'page' ? 'page/edit?id='.$item->getId() : $item->getTarget(), // URL simplifiée pour l'admin
-                            'targetType' => $item->targetIs(),
-                            'position' => $item->getPosition(),
-                            'children' => $buildTree($item->getId(), $context, $depth + 1)
-                        ];
-                        
-                        // Badge Type
-                        if ($item->targetIs() === 'plugin') $node['badge'] = 'plugin';
-                        elseif ($item->targetIs() === 'parent') $node['badge'] = 'folder';
-                        elseif ($item->targetIs() === 'url') $node['badge'] = 'link';
-                        else $node['badge'] = 'page';
-
-                        $branch[] = $node;
-                    }
-                }
-            }
-
-            // 2. Plugins (Toujours au niveau racine pour l'instant)
-            if ($parentId == 0) {
-                foreach ($allNavItems as $navItem) {
-                    $source = $navItem->getSource();
-                    if (strpos($source, 'plugin:') === 0) {
-                        $pContext = $navItem->getNavContext() ?: 'main';
-                        if ($pContext === 'auto' || $pContext === 'menu' || $pContext === 'default') $pContext = 'main';
-                        
-                        if ($pContext === $context) {
-                            $node = [
-                                'id' => $navItem->getId(),
-                                'type' => 'plugin',
-                                'label' => $navItem->getLabel(),
-                                'icon' => $navItem->getIcon() ?: 'fa-solid fa-puzzle-piece',
-                                'url' => $navItem->getTarget(),
-                                'targetType' => 'plugin',
-                                'position' => $navItem->getPosition(),
-                                'badge' => 'plugin',
-                                'children' => []
-                            ];
-                            $branch[] = $node;
-                        }
-                    }
-                }
-            }
-
-            // Trier par position
-            usort($branch, function($a, $b) {
-                return $a['position'] <=> $b['position'];
-            });
-
-            return $branch;
-        };
-
-        // Initialiser le tableau des arbres
-        $sortingTrees = ['main' => [], 'avatar' => [], 'footer' => []];
-
-        // Construire les arbres pour chaque contexte
-        foreach (array_keys($sortingTrees) as $ctx) {
-            $sortingTrees[$ctx] = $buildTree(0, $ctx, 0);
-        }
-
-        // Structure pour le template (similaire à avant mais avec 'tree' au lieu de 'items')
-        $sortingGroupsFlat = [
-            [
-                'key' => 'main',
-                'label' => 'Menu Principal',
-                'icon' => 'fa-bars',
-                'tree' => $sortingTrees['main'],
-                'treeHtml' => $this->renderTreeHtml($sortingTrees['main']),
-                'count' => count($sortingTrees['main'])
-            ],
-            [
-                'key' => 'avatar',
-                'label' => 'Menu Avatar',
-                'icon' => 'fa-user-circle',
-                'tree' => $sortingTrees['avatar'],
-                'treeHtml' => $this->renderTreeHtml($sortingTrees['avatar']),
-                'count' => count($sortingTrees['avatar'])
-            ],
-            [
-                'key' => 'footer',
-                'label' => 'Pied de page',
-                'icon' => 'fa-shoe-prints',
-                'tree' => $sortingTrees['footer'],
-                'treeHtml' => $this->renderTreeHtml($sortingTrees['footer']),
-                'count' => count($sortingTrees['footer'])
-            ]
-        ];
-
         $tpl->set('token', $this->user->token);
         $tpl->set('page', $page);
-        $tpl->set('lost', $lost);
-        $tpl->set('lostCount', $lostCount);
-        $tpl->set('pageStats', $advancedStats);
-        $tpl->set('accessibilityGroups', $accessibilityGroups);
-        $tpl->set('listByType', $listByType);
-        $tpl->set('sortingGroups', $sortingGroupsFlat);
-        
+        $tpl->set('cmsPages', $cmsPages);
+        $tpl->set('editorialStats', $editorialStats);
         $response->addTemplate($tpl);
         return $response;
     }
@@ -474,6 +150,15 @@ class PageAdminController extends AdminController {
         $page = new Page();
         $pageItem = $page->create($id);
         if ($page->del($pageItem)) {
+            $linkedMenuItems = \Core\Navigation\MenuItem::queryBuilder()
+                ->where('type', 'page')
+                ->where('target_ref', (string)$id)
+                ->get();
+            $menuService = \Core\Navigation\MenuService::getInstance();
+            foreach ($linkedMenuItems as $mi) {
+                $menuService->deleteItem($mi->getId());
+            }
+
             // Réinitialiser le cache de navigation après suppression
             $navigationService = \Core\Navigation\NavigationService::getInstance();
             $navigationService->reset();
@@ -683,11 +368,11 @@ class PageAdminController extends AdminController {
     }
 
     public function newLink() {
-        return $this->new();
+        $this->core->redirect($this->router->generate('menu-admin-home'));
     }
 
     public function newParent() {
-        return $this->new();
+        $this->core->redirect($this->router->generate('menu-admin-home'));
     }
 
     public function edit($id) {
@@ -1075,9 +760,12 @@ class PageAdminController extends AdminController {
         $imgId = $imageData['currentImgId'] ?? $imgId;
         // Récupérer ou créer la page
         $pageId = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        $isNewPage = true;
         if ($pageId > 0) {
             $pageItem = $page->create($pageId);
-            if (!$pageItem) {
+            if ($pageItem) {
+                $isNewPage = false;
+            } else {
                 // La page n'existe pas, créer une nouvelle
                 $pageItem = new PageItem();
             }
@@ -1085,9 +773,13 @@ class PageAdminController extends AdminController {
             $pageItem = new PageItem();
         }
         
-        // Définir toutes les propriétés
+        // Définir toutes les propriétés éditoriales (la navigation est gérée dans /admin/menus)
         $pageItem->setName($_POST['name'] ?? '');
-        $pageItem->setPosition($_POST['position'] ?? '');
+        if (isset($_POST['position']) && $_POST['position'] !== '') {
+            $pageItem->setPosition($_POST['position']);
+        } elseif ($isNewPage) {
+            $pageItem->setPosition($page->makePosition());
+        }
         $pageItem->setIsHomepage((isset($_POST['isHomepage'])) ? 1 : 0);
         $pageItem->setContent($contentEditor->getPostContent());
         $pageItem->setFile($_POST['file'] ?? '');
@@ -1095,22 +787,34 @@ class PageAdminController extends AdminController {
         $pageItem->setMainTitle($_POST['mainTitle'] ?? '');
         $pageItem->setMetaDescriptionTag($_POST['metaDescriptionTag'] ?? '');
         $pageItem->setMetaTitleTag($_POST['metaTitleTag'] ?? '');
-        $pageItem->setTarget($_POST['target'] ?? '');
-        $pageItem->setTargetAttr($_POST['targetAttr'] ?? '_self');
+        if (isset($_POST['target'])) {
+            $pageItem->setTarget($_POST['target']);
+        }
+        if (isset($_POST['targetAttr'])) {
+            $pageItem->setTargetAttr($_POST['targetAttr']);
+        }
         $pageItem->setNoIndex((isset($_POST['noIndex'])) ? 1 : 0);
-        $pageItem->setParent($_POST['parent'] ?? '');
-        $pageItem->setCssClass($_POST['cssClass'] ?? '');
+        if (isset($_POST['parent'])) {
+            $pageItem->setParent($_POST['parent']);
+        }
+        if (isset($_POST['cssClass'])) {
+            $pageItem->setCssClass($_POST['cssClass']);
+        }
         
-        // Navigation Context Engine
-        $navContext = $_POST['navContext'] ?? 'main';
-        $pageItem->setNavContext($navContext);
-        
-        // Sync legacy navPosition with navContext for backward compatibility
-        $pageItem->setNavPosition($navContext === 'footer' ? 'footer' : 'menu');
+        // Conserver navContext existant si transmis, sinon défaut 'main'
+        if (isset($_POST['navContext'])) {
+            $navContext = $_POST['navContext'];
+            $pageItem->setNavContext($navContext);
+            $pageItem->setNavPosition($navContext === 'footer' ? 'footer' : 'menu');
+        }
         
         $pageItem->setLegalType($_POST['legalType'] ?? 'none');
-        $pageItem->setShowIcon(isset($_POST['showIcon']) && (int)$_POST['showIcon'] === 1);
-        $pageItem->setIcon($_POST['icon'] ?? '');
+        if (isset($_POST['showIcon'])) {
+            $pageItem->setShowIcon((int)$_POST['showIcon'] === 1);
+        }
+        if (isset($_POST['icon'])) {
+            $pageItem->setIcon($_POST['icon']);
+        }
         $pageItem->setImg($imgId);
         $conditionsJson = $_POST['conditions'] ?? '[]';
         $conditions = json_decode($conditionsJson, true);
@@ -1127,6 +831,16 @@ class PageAdminController extends AdminController {
         $saveResult = $page->save($pageItem);
         
         if ($saveResult) {
+            if ($isNewPage && $pageItem->targetIs() === 'page' && !empty($_POST['addToMainMenu'])) {
+                \Core\Navigation\MenuService::getInstance()->createItem([
+                    'location'   => 'main',
+                    'type'       => 'page',
+                    'target_ref' => (string)$pageItem->getId(),
+                    'label'      => $pageItem->getName(),
+                    'is_enabled' => 1,
+                ]);
+            }
+
             // Réinitialiser le cache de navigation pour que le nouveau système prenne en compte les changements
             $navigationService = \Core\Navigation\NavigationService::getInstance();
             $navigationService->reset();

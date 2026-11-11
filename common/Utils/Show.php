@@ -415,6 +415,11 @@ class Show
                 $arrPlugins[$entry['label']]['icon'] = $entry['icon'];
                 $arrPlugins[$entry['label']]['label'] = $entry['label'];
             }
+            foreach (Core::getInstance()->menus()->getAdminNavigationEntries() as $entry) {
+                $arrPlugins[$entry['label']]['name'] = $entry['name'];
+                $arrPlugins[$entry['label']]['icon'] = $entry['icon'];
+                $arrPlugins[$entry['label']]['label'] = $entry['label'];
+            }
             ksort($arrPlugins, SORT_STRING);
             $currentPlugin = Core::getInstance()->getPluginToCall();
             foreach ($arrPlugins as $label) {
