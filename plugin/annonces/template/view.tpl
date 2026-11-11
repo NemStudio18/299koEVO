@@ -14,13 +14,13 @@
             <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px;">
                 <span class="annonce-badge annonce-badge-{{annonce.status}}">{{annonce.status_label}}</span>
                 {% if annonce.category %}
-                    <span style="font-size: 0.86rem; color: #475569;"><i class="fa-solid fa-folder"></i> {{annonce.category}}</span>
+                    <span class="annonce-detail-meta"><i class="fa-solid fa-folder"></i> {{annonce.category}}</span>
                 {% endif %}
                 {% if annonce.item_condition %}
-                    <span style="font-size: 0.86rem; color: #475569;"><i class="fa-solid fa-circle-check"></i> {{annonce.item_condition}}</span>
+                    <span class="annonce-detail-meta"><i class="fa-solid fa-circle-check"></i> {{annonce.item_condition}}</span>
                 {% endif %}
                 {% if annonce.location %}
-                    <span style="font-size: 0.86rem; color: #475569;"><i class="fa-solid fa-location-dot"></i> {{annonce.location}}</span>
+                    <span class="annonce-detail-meta"><i class="fa-solid fa-location-dot"></i> {{annonce.location}}</span>
                 {% endif %}
             </div>
 
@@ -31,7 +31,7 @@
             </div>
 
             {% if annonce.contact_info %}
-                <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; font-size: 0.9rem; color: #334155;">
+                <div class="annonce-detail-contact">
                     <strong><i class="fa-solid fa-address-card"></i> Informations complémentaires :</strong> {{annonce.contact_info}}
                 </div>
             {% endif %}
@@ -79,7 +79,7 @@
                     </button>
                 </form>
             {% elseif annonce.is_reserved %}
-                <div class="annonce-notice" style="background: #fffbeb; border-color: #fde68a; color: #92400e;">
+                <div class="annonce-notice annonce-notice-reserved">
                     <i class="fa-solid fa-lock"></i> Cette annonce est actuellement <strong>réservée</strong>. Aucune nouvelle demande ne peut être envoyée pour le moment.
                 </div>
             {% else %}
@@ -90,3 +90,4 @@
         </aside>
     </div>
 </section>
+

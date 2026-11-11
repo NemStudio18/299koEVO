@@ -50,9 +50,10 @@
             {% endfor %}
         </div>
     {% else %}
-        <div style="padding: 2rem; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; color: #64748b;">
-            <i class="fa-solid fa-tags" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+        <div class="annonces-empty">
+            <i class="fa-solid fa-tags"></i>
             {{Lang.annonces.empty}}
         </div>
     {% endif %}
 </section>
+
