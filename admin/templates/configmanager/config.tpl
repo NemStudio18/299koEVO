@@ -1,4 +1,4 @@
-﻿<section class="module-card">
+<section class="module-card">
     <header>{{Lang.configmanager.name}}</header>
     <form id="configForm" method="post" action="{{link}}" autocomplete="off">
 	{{SHOW.tokenField}}
