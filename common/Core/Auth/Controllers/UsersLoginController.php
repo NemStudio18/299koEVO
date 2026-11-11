@@ -254,13 +254,8 @@ class UsersLoginController extends PublicController
             }
             
             if ($isAdmin) {
-                // Admin : rediriger vers l'administration
-                $defaultAdminPlugin = $this->core->getConfigVal('defaultAdminPlugin');
-                if ($defaultAdminPlugin) {
-                    $this->core->redirect(rtrim($this->router->generate('admin'), '/') . '/' . ltrim($defaultAdminPlugin, '/'));
-                } else {
-                    $this->core->redirect($this->router->generate('admin'));
-                }
+                // Admin : rediriger systématiquement vers le tableau de bord général
+                $this->core->redirect($this->router->generate('admin'));
             } else {
                 // Utilisateur normal : rediriger vers l'URL de retour ou le profil
                 $returnUrl = $_SESSION['login_return_url'] ?? null;

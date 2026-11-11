@@ -44,8 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    window.addEventListener("resize", resizeListener);
-    resizeListener();
+    initAdminTopNav();
 
     document.querySelectorAll(".list-item-list li i").forEach(function (item) {
         item.addEventListener('click', function () {
@@ -55,21 +54,53 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function resizeListener() {
-    var nav = document.querySelector('#adminNav');
-    if (!nav.classList.contains('manuallyChanged')) {
-        if (window.innerWidth > 1279) {
-            nav.classList.remove('withoutText');
-        } else {
-            nav.classList.add('withoutText');
-        }
-    }
-}
+function initAdminTopNav() {
+    const burgerBtn = document.getElementById('admBurgerBtn');
+    const collapse = document.getElementById('admNavCollapse');
 
-function changeMainNav() {
-    var nav = document.querySelector('#adminNav');
-    nav.classList.toggle('withoutText');
-    nav.classList.add('manuallyChanged');
+    if (burgerBtn && collapse) {
+        burgerBtn.addEventListener('click', function () {
+            const open = collapse.classList.toggle('is-mobile-open');
+            burgerBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+    }
+
+    document.querySelectorAll('.adm-has-drop > .adm-drop-btn, .adm-has-drop > .adm-avatar-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const parent = btn.closest('.adm-has-drop');
+            const willOpen = !parent.classList.contains('is-open');
+            document.querySelectorAll('.adm-has-drop.is-open').forEach(function (other) {
+                other.classList.remove('is-open');
+                const ob = other.querySelector('button[aria-expanded]');
+                if (ob) ob.setAttribute('aria-expanded', 'false');
+            });
+            if (willOpen) {
+                parent.classList.add('is-open');
+                btn.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.adm-has-drop')) {
+            document.querySelectorAll('.adm-has-drop.is-open').forEach(function (el) {
+                el.classList.remove('is-open');
+                const b = el.querySelector('button[aria-expanded]');
+                if (b) b.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.adm-has-drop.is-open').forEach(function (el) {
+                el.classList.remove('is-open');
+                const b = el.querySelector('button[aria-expanded]');
+                if (b) b.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
 }
 
 function fadeOut(el) {

@@ -63,6 +63,11 @@ class CoreController extends Controller
 
     public function renderAdminHome()
     {
+        // Toujours afficher le Tableau de bord général à la racine /admin
+        if ($this->defaultModule === 'dashboard' || $this->defaultModule === null) {
+            $controller = new AdminDashboardController();
+            return $controller->index();
+        }
         // Handle core modules
         if ($this->defaultModule !== null) {
             // Redirect to the specific admin route for the core module

@@ -54,22 +54,6 @@
 					</select>
 				</p>
 				<p>
-					<label for="defaultAdminPlugin">{{Lang.configmanager-admin-default-plugin}}</label>
-					<select name="defaultAdminPlugin">
-						<option value="configmanager" {% IF defaultAdminPlugin == "configmanager" %}selected{% ENDIF %}>{{Lang.configmanager.name}}</option>
-						<option value="page" {% IF defaultAdminPlugin == "page" %}selected{% ENDIF %}>{{Lang.page.name}}</option>
-						<option value="users" {% IF defaultAdminPlugin == "users" %}selected{% ENDIF %}>{{Lang.users.name}}</option>
-						<option value="filemanager" {% IF defaultAdminPlugin == "filemanager" %}selected{% ENDIF %}>{{Lang.filemanager.name}}</option>
-						<option value="pluginsmanager" {% IF defaultAdminPlugin == "pluginsmanager" %}selected{% ENDIF %}>{{Lang.pluginsmanager.name}}</option>
-						<option value="marketplace" {% IF defaultAdminPlugin == "marketplace" %}selected{% ENDIF %}>{{Lang.marketplace.name}}</option>
-						{% FOR plugin IN pluginsManager.getPlugins %}
-							{% IF plugin.getConfigVal("activate") && plugin.getIsCallableOnAdmin %}
-								<option {% IF plugin.getIsDefaultAdminPlugin %} selected {% ENDIF %} value="{{plugin.getName}}">{{plugin.getInfoVal("name")}}</option>
-							{% ENDIF %}
-						{% ENDFOR %}
-					</select>
-				</p>
-				<p>
 					<input {% if CORE.getConfigVal("allowRegistrations") %}checked{% endif %} type="checkbox" name="allowRegistrations" id="allowRegistrations"/>
 					<label for="allowRegistrations">{{Lang.configmanager-allow-registrations}}</label>
 					<br><small>{{Lang.configmanager-allow-registrations-desc}}</small>
