@@ -502,7 +502,7 @@ if (count($_POST) > 0) {
     <head>
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>299ko - <?php echo Lang::get('install-installation'); ?></title>
+        <title>299koEVO - <?php echo Lang::get('install-installation'); ?></title>
         <link rel="stylesheet" href="admin/install.css" media="all">
         <link rel="stylesheet" href="<?php echo FONTICON; ?>" />
     </head>

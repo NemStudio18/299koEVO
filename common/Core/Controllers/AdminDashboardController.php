@@ -37,10 +37,36 @@ class AdminDashboardController extends AdminController
         $tpl->set('siteName', (string)$this->core->getConfigVal('siteName'));
         $tpl->set('phpVersion', PHP_VERSION);
         $tpl->set('cmsVersion', defined('VERSION') ? VERSION : '0.1.0');
-        $tpl->set('storageDriver', (string)(\Core\Database::getInstance()->getConfig('driver') ?? 'json'));
+        $tpl->set('storageDriver', $this->resolveStorageLabel());
         $response->addTemplate($tpl);
 
         return $response;
+    }
+
+    private function resolveStorageLabel(): string
+    {
+        $db = \Core\Database::getInstance();
+        $full = $db->getFullConfig();
+        $storage = $full['storage'] ?? [];
+        $sqlDriver = (string) ($full['database']['driver'] ?? 'json');
+
+        $hasSql = false;
+        $hasJson = false;
+        foreach ($storage as $val) {
+            if ($val === 'json') {
+                $hasJson = true;
+            } elseif ($val !== '' && $val !== null) {
+                $hasSql = true;
+            }
+        }
+
+        if (!$hasSql) {
+            return 'json';
+        }
+        if ($hasJson) {
+            return $sqlDriver . ' + json';
+        }
+        return $sqlDriver;
     }
 
     private function collectCoreStats(): array
@@ -91,6 +117,13 @@ class AdminDashboardController extends AdminController
     private function collectPluginStats(): array
     {
         $cards = [];
+        $needsDb = PluginsManager::isActivePlugin('LiveChat')
+            || PluginsManager::isActivePlugin('contact')
+            || PluginsManager::isActivePlugin('blog')
+            || PluginsManager::isActivePlugin('newsletter');
+        if (!$needsDb) {
+            return $cards;
+        }
         $pdo = null;
         try {
             $pdo = \Core\Database::getInstance()->getPdo();
