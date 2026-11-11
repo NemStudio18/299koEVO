@@ -420,7 +420,7 @@ class ForumController extends PublicController
                 $postData['created_at_formatted'] = '';
             }
 
-            if ($postData['updated_at'] && $postData['updated_at'] !== $postData['created_at']) {
+            if (!empty($postData['updated_at']) && $postData['updated_at'] !== ($postData['created_at'] ?? '')) {
                 try {
                     $postData['updated_at_formatted'] = date('d/m/Y à H:i', strtotime($postData['updated_at']));
                     $postData['edited_at_formatted'] = $postData['updated_at_formatted'];
@@ -510,7 +510,7 @@ class ForumController extends PublicController
                 $postData['created_at_formatted'] = '';
             }
 
-            if ($postData['updated_at'] && $postData['updated_at'] !== $postData['created_at']) {
+            if (!empty($postData['updated_at']) && $postData['updated_at'] !== ($postData['created_at'] ?? '')) {
                 try {
                     $postData['updated_at_formatted'] = date('d/m/Y à H:i', strtotime($postData['updated_at']));
                     $postData['has_update'] = true;
