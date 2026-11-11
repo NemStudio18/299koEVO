@@ -225,6 +225,7 @@ summary {
     --evo-input-border: var(--form-border-color);
     --evo-accent: var(--primary-color);
     --evo-accent-hover: var(--primary-hover-color);
+    --evo-accent-text: var(--primary-inverse-color);
 }
 
 /* BASIC */
@@ -397,7 +398,7 @@ button,
     border: 0;
     cursor: pointer;
     background: var(--primary-color);
-    color: #fff;
+    color: var(--evo-accent-text, #fff);
     border-radius: var(--section-radius);
     transition: background-color 0.5s ease;
     border: 1px solid rgba(0, 0, 0, 0.1);
@@ -420,7 +421,7 @@ button:hover,
 .button:hover,
 [type="file"]::file-selector-button:hover {
     background: var(--primary-hover-color);
-    color: #fff;
+    color: var(--evo-accent-text, #fff);
 }
 
 input[type=submit].alert,
@@ -443,6 +444,7 @@ input[type=button].success,
 button.success,
 .button.success {
     background: var(--success-color);
+    color: #fff;
 }
 
 input[type=submit].success:hover,
@@ -450,6 +452,25 @@ input[type=button].success:hover,
 button.success:hover,
 .button.success:hover {
     background: var(--success-hover-color);
+    color: #fff;
+}
+
+input[type=submit].secondary,
+input[type=button].secondary,
+button.secondary,
+.button.secondary {
+    background: var(--evo-surface);
+    color: var(--font-color);
+    border: 1px solid var(--form-border-color);
+}
+
+input[type=submit].secondary:hover,
+input[type=button].secondary:hover,
+button.secondary:hover,
+.button.secondary:hover {
+    background: var(--section-head-bg-color);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 
@@ -1247,6 +1268,8 @@ body.theme-dark {
     --evo-input-border: var(--dark-form-border-color);
     --evo-accent: var(--dark-primary-color);
     --evo-accent-hover: var(--dark-primary-hover-color);
+    --evo-accent-text: var(--dark-primary-inverse-color);
+    --primary-inverse-color: var(--dark-primary-inverse-color);
     color: var(--dark-font-color);
     background: var(--dark-background-color);
 }
@@ -1397,6 +1420,8 @@ body.theme-light #footer {
         --evo-input-border: var(--dark-form-border-color);
         --evo-accent: var(--dark-primary-color);
         --evo-accent-hover: var(--dark-primary-hover-color);
+        --evo-accent-text: var(--dark-primary-inverse-color);
+        --primary-inverse-color: var(--dark-primary-inverse-color);
         color: var(--dark-font-color);
     }
 

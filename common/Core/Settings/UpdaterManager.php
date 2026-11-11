@@ -17,18 +17,42 @@ class UpdaterManager
     protected $metaDatas;
     public bool $isReady;
     protected $tempExtractPath = null;
+    protected string $baseUrl = '';
     const REMOTE = 'https://raw.githubusercontent.com/NemStudio18/299koEVO_Versions/main/';
     const MAIN_REPO = 'https://api.github.com/repos/NemStudio18/299koEVO/zipball/';
 
+    protected function resolveApiBaseUrl(): string
+    {
+        if ($this->baseUrl !== '') {
+            return $this->baseUrl;
+        }
+        $base = '';
+        if (class_exists('\Core\Core')) {
+            $core = \Core\Core::getInstance();
+            $configured = $core->getConfigVal('marketplaceUrl');
+            if (!is_string($configured) || trim($configured) === '') {
+                $configured = $core->getEnv('marketplaceUrl', '');
+            }
+            if (is_string($configured) && trim($configured) !== '') {
+                $base = rtrim(trim($configured), '/') . '/';
+            }
+        }
+        if ($base === '') {
+            $base = 'https://299ko-api.flexcb.fr/';
+        }
+        $this->baseUrl = $base;
+        return $this->baseUrl;
+    }
+
     public function __construct()
     {
-        if (!ini_get('allow_url_fopen')) {
+        if (!ini_get('allow_url_fopen') && !function_exists('curl_init')) {
             logg("Can't get remotes files", 'INFO');
             $this->isReady = false;
             return;
         }
 
-        $fileContent = $this->getRemoteFileContent(self::REMOTE . 'core/versions.json');
+        $fileContent = $this->getRemoteFileContent($this->resolveApiBaseUrl() . 'repository/api/core/versions');
 
         if (!$fileContent) {
             $this->isReady = false;
@@ -106,7 +130,7 @@ class UpdaterManager
             return false;
         }
 
-        $rawFiles = $this->getRemoteFileContent(self::REMOTE . 'core/' . $nextVersion . '/files.json', 'ERROR');
+        $rawFiles = $this->getRemoteFileContent($this->resolveApiBaseUrl() . 'repository/api/core/files?version=' . rawurlencode((string) $nextVersion), 'ERROR');
         if ($rawFiles === false) {
             return false;
         }
@@ -173,7 +197,7 @@ class UpdaterManager
      */
     protected function downloadAndExtractVersion($version)
     {
-        $zipUrl = self::MAIN_REPO . 'v' . $version;
+        $zipUrl = $this->resolveApiBaseUrl() . 'repository/api/core/download?version=' . rawurlencode(ltrim((string) $version, 'vV'));
         $tempDir = CACHE . 'update_temp_' . $version . '_' . time() . '/';
         
         // Créer le dossier temporaire
@@ -432,6 +456,27 @@ class UpdaterManager
 
     protected function getRemoteFileContent($remoteFileUrl, $severity = 'INFO')
     {
+        if (function_exists('curl_init')) {
+            $ch = curl_init($remoteFileUrl);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_USERAGENT => '299KoEVO-Updater/1.0',
+            ]);
+            $content = curl_exec($ch);
+            $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            if ($httpCode === 404) {
+                logg("Remote file $remoteFileUrl dont exist", $severity);
+                return false;
+            }
+            if ($content === false || $httpCode >= 300 || $content === '404: Not Found') {
+                logg("Cant open $remoteFileUrl (HTTP $httpCode)", $severity);
+                return false;
+            }
+            return $content;
+        }
         $headers = @get_headers($remoteFileUrl);
         if (!$headers || strpos($headers[0], '404') !== false) {
             logg("Remote file $remoteFileUrl dont exist", $severity);
@@ -441,10 +486,9 @@ class UpdaterManager
         if (!$handle) {
             logg("Cant open $remoteFileUrl", $severity);
             return false;
-        } else {
-            $content = stream_get_contents($handle);
-            fclose($handle);
         }
+        $content = stream_get_contents($handle);
+        fclose($handle);
         if ($content === '404: Not Found') {
             logg("Remote file $remoteFileUrl dont exist", $severity);
             return false;
@@ -454,7 +498,7 @@ class UpdaterManager
 
     protected function runBeforeChangeFiles($nextVersion)
     {
-        $remoteFile = self::REMOTE . 'core/' . $nextVersion . '/_beforeChangeFiles.php';
+        $remoteFile = $this->resolveApiBaseUrl() . 'repository/api/core/hook?version=' . rawurlencode((string) $nextVersion) . '&name=before';
         $content = $this->getRemoteFileContent($remoteFile);
         if ($content === false) {
             return true;
@@ -470,7 +514,7 @@ class UpdaterManager
 
     protected function runAfterChangeFiles($nextVersion)
     {
-        $remoteFile = self::REMOTE . 'core/' . $nextVersion . '/_afterChangeFiles.php';
+        $remoteFile = $this->resolveApiBaseUrl() . 'repository/api/core/hook?version=' . rawurlencode((string) $nextVersion) . '&name=after';
         $content = $this->getRemoteFileContent($remoteFile);
         if ($content === false) {
             return true;
