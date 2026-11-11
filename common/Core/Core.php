@@ -48,6 +48,7 @@ class Core
     private ?MediaService $mediaService = null;
     private ?SettingsService $settingsService = null;
     private ?ExtensionsService $extensionsService = null;
+    private bool $forcePublicRender = false;
 
     private ?Env $env;
 
@@ -803,6 +804,16 @@ class Core
         die();
     }
 
+    public function setForcePublicRender(bool $force): void
+    {
+        $this->forcePublicRender = $force;
+    }
+
+    public function isForcePublicRender(): bool
+    {
+        return $this->forcePublicRender;
+    }
+
     /**
      * Affiche une page d'erreur HTTP unifiée sans jamais exposer le layout admin aux non-admins.
      */
@@ -826,6 +837,8 @@ class Core
                 $canUseAdminLayout = $evaluator->isAdmin(new \Core\Navigation\ConditionContext($currentUser));
             }
         }
+
+        $this->setForcePublicRender(!$canUseAdminLayout);
 
         $response = $canUseAdminLayout
             ? new \Core\Responses\AdminResponse()

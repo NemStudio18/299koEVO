@@ -83,6 +83,11 @@ class Show
         unset($_SESSION['flash_msg']);
     }
 
+    private static function isAdminAssetsMode(): bool
+    {
+        return defined('ADMIN_MODE') && \ADMIN_MODE && !Core::getInstance()->isForcePublicRender();
+    }
+
     ## Affiche les balises "link" type css (admin + theme)
 
     public static function linkTags()
@@ -94,9 +99,10 @@ class Show
             $theme = new Theme($core->getConfigVal('theme'));
             $pluginsManager = PluginsManager::getInstance();
             $activePlugin = $core->getPluginToCall();
+            $isAdminAssets = self::isAdminAssetsMode();
             foreach ($core->getCss() as $k => $v) {
                 $ver = file_exists($v) ? ('?v=' . filemtime($v)) : '';
-                if (!\ADMIN_MODE) {
+                if (!$isAdminAssets) {
                     echo '<link href="' . Util::urlBuild($v) . $ver . '" rel="stylesheet" type="text/css" media="print" onload="this.media=\'all\'" /><noscript><link href="' . Util::urlBuild($v) . $ver . '" rel="stylesheet" type="text/css" /></noscript>';
                 } else {
                     echo '<link href="' . Util::urlBuild($v) . $ver . '" rel="stylesheet" type="text/css" />';
@@ -104,7 +110,7 @@ class Show
             }
             foreach ($pluginsManager->getPlugins() as $k => $plugin)
                 if ($plugin->getConfigval('activate') == 1) {
-                    if (!\ADMIN_MODE && $plugin->getConfigVal('activate') && $plugin->getPublicCssFile()) {
+                    if (!$isAdminAssets && $plugin->getConfigVal('activate') && $plugin->getPublicCssFile()) {
                         $cssFile = $plugin->getPublicCssFile();
                         if (file_exists($cssFile)) {
                             $ver = '?v=' . filemtime($cssFile);
@@ -117,13 +123,13 @@ class Show
                                 echo '<link href="' . Util::urlBuild($cssFile) . $ver . '" rel="stylesheet" type="text/css" media="print" onload="this.media=\'all\'" /><noscript><link href="' . Util::urlBuild($cssFile) . $ver . '" rel="stylesheet" type="text/css" /></noscript>';
                             }
                         }
-                    } elseif (\ADMIN_MODE && $plugin->getConfigVal('activate') && $plugin->getAdminCssFile()) {
+                    } elseif ($isAdminAssets && $plugin->getConfigVal('activate') && $plugin->getAdminCssFile()) {
                         $cssFile = $plugin->getAdminCssFile();
                         $ver = file_exists($cssFile) ? ('?v=' . filemtime($cssFile)) : '';
                         echo '<link href="' . $plugin->getAdminCssFile() . $ver . '" rel="stylesheet" type="text/css" />';
                     }
                 }
-            if (\ADMIN_MODE) {
+            if ($isAdminAssets) {
                 foreach (Core::getInstance()->extensions()->getAdminCssUrls() as $cssUrl) {
                     echo '<link href="' . $cssUrl . '" rel="stylesheet" type="text/css" />';
                 }
@@ -134,7 +140,7 @@ class Show
                     echo '<link href="' . $cssUrl . '" rel="stylesheet" type="text/css" />';
                 }
             }
-            if (!\ADMIN_MODE)
+            if (!$isAdminAssets)
                 echo $theme->getCSSLinks();
         }
     }
@@ -149,7 +155,8 @@ class Show
             $core = Core::getInstance();
             $theme = new Theme($core->getConfigVal('theme'));
             $pluginsManager = PluginsManager::getInstance();
-            $isFront = !\ADMIN_MODE;
+            $isAdminAssets = self::isAdminAssetsMode();
+            $isFront = !$isAdminAssets;
             $deferAttr = $isFront ? ' defer' : '';
             foreach ($core->getJs() as $k => $v) {
                 $ver = file_exists($v) ? ('?v=' . filemtime($v)) : '';
@@ -157,19 +164,19 @@ class Show
             }
             foreach ($pluginsManager->getPlugins() as $k => $plugin)
                 if ($plugin->getConfigval('activate') == 1) {
-                    if (!\ADMIN_MODE && $plugin->getConfigVal('activate') && $plugin->getPublicJsFile()) {
+                    if (!$isAdminAssets && $plugin->getConfigVal('activate') && $plugin->getPublicJsFile()) {
                         $jsFile = $plugin->getPublicJsFile();
                         if (file_exists($jsFile)) {
                             $ver = '?v=' . filemtime($jsFile);
                             echo '<script type="text/javascript" src="' . Util::urlBuild($jsFile) . $ver . '" defer></script>';
                         }
-                    } elseif (\ADMIN_MODE && $plugin->getConfigVal('activate') && $plugin->getAdminJsFile()) {
+                    } elseif ($isAdminAssets && $plugin->getConfigVal('activate') && $plugin->getAdminJsFile()) {
                         $jsFile = $plugin->getAdminJsFile();
                         $ver = file_exists($jsFile) ? ('?v=' . filemtime($jsFile)) : '';
                         echo '<script type="text/javascript" src="' . $plugin->getAdminJsFile() . $ver . '"></script>';
                     }
                 }
-            if (\ADMIN_MODE) {
+            if ($isAdminAssets) {
                 foreach (Core::getInstance()->extensions()->getAdminJsUrls() as $jsUrl) {
                     echo '<script type="text/javascript" src="' . $jsUrl . '"></script>';
                 }
@@ -180,7 +187,7 @@ class Show
                     echo '<script type="text/javascript" src="' . $jsUrl . '"></script>';
                 }
             }
-            if (!\ADMIN_MODE)
+            if (!$isAdminAssets)
                 echo $theme->getJSLinks();
         }
     }
