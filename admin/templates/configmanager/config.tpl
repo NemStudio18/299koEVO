@@ -43,6 +43,11 @@
 					<br><small>Affiche ou masque la section bannière (#banner) sur le site</small>
 				</p>
 				<p>
+					<input {% if not CORE.getConfigVal("hideBannerTitle") %} checked {% endif %} type="checkbox" name="showBannerTitle" id="showBannerTitle"/>
+					<label for="showBannerTitle">Afficher le titre du site dans la bannière</label>
+					<br><small>Affiche ou masque le nom du site au-dessus de la description dans l'en-tête (#banner)</small>
+				</p>
+				<p>
 					<label for="defaultPlugin">{{Lang.configmanager-public-default-plugin}}</label>
 					<select name="defaultPlugin">
 						<option value="page" {% IF defaultPlugin == "page" %}selected{% ENDIF %}>{{Lang.page.name}}</option>

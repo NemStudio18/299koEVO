@@ -15,6 +15,9 @@
             <li data-tab="components">
                 <i class="fa-solid fa-layer-group"></i> Gestion par Composant
             </li>
+            <li data-tab="info">
+                <i class="fa-solid fa-circle-info"></i> Informations
+            </li>
         </ul>
 
         <ul class="tabs">
@@ -287,6 +290,48 @@
             </div>
         </div>
         <p class="help-warning"><strong>Attention :</strong> Assurez-vous que le driver SQL cible est bien configuré (testez la connexion) avant de migrer des données sensibles.</p>
+                </div>
+            </li>
+
+            <!-- TAB 3 : Informations -->
+            <li class="tab">
+                <div class="storage-section" style="margin-bottom: 1.5rem;">
+                    <h3><i class="fa-solid fa-circle-info"></i> Comment fonctionne le Stockage</h3>
+                    <p class="section-desc">Le CMS peut stocker ses entités (Utilisateurs, Pages, Menus, Galerie, Redirections SEO…) soit dans des <strong>fichiers JSON locaux</strong> (<code>data/</code>), soit dans une <strong>base SQL</strong> (<strong>SQLite</strong>, <strong>MySQL</strong> ou <strong>PostgreSQL</strong>) configurée dans <code>data/env.json</code>.</p>
+
+                    <div class="help-grid" style="margin-bottom: 1.5rem;">
+                        <div class="storage-help">
+                            <h4><i class="fa-solid fa-database"></i> 1. Connexions SQL</h4>
+                            <p>La connexion <strong>Défaut</strong> est la base principale du site. Vous pouvez aussi déclarer des connexions secondaires nommées si vous voulez isoler un module sur une autre base.</p>
+                        </div>
+                        <div class="storage-help">
+                            <h4><i class="fa-solid fa-layer-group"></i> 2. Affectation par composant</h4>
+                            <p>Chaque composant possède sa propre cible : <code>JSON (local)</code> ou <code>Défaut (sql)</code>. C'est ici que vous choisissez quel composant lit/écrit dans JSON ou dans votre base SQL.</p>
+                        </div>
+                        <div class="storage-help">
+                            <h4><i class="fa-solid fa-arrows-rotate"></i> 3. Migration sécurisée</h4>
+                            <p>Lorsque vous changez la cible d'un composant dans le tableau, un bouton <strong>Migrer</strong> apparaît pour copier les enregistrements existants vers la nouvelle cible avant d'enregistrer.</p>
+                        </div>
+                    </div>
+
+                    <h3><i class="fa-solid fa-book"></i> Exemples concrets de paramétrage</h3>
+                    <div class="help-grid">
+                        <div class="db-config-grid">
+                            <strong style="display: block; margin-bottom: 6px; color: #0f172a;">Exemple A — Site standard autonome (Recommandé)</strong>
+                            <ul style="margin: 0 0 0 18px; line-height: 1.6; font-size: 0.9rem;">
+                                <li><strong>Connexion Défaut :</strong> Driver <code>SQLite</code>, chemin <code>/home/.../data/database.sqlite</code> (aucun serveur MySQL externe nécessaire).</li>
+                                <li><strong>Composants principaux :</strong> <code>User</code>, <code>PageItem</code>, <code>MenuItem</code>, <code>ContactMessage</code>, <code>GalerieItem</code>, <code>Redirect</code> sur <code>Défaut (SQL)</code>.</li>
+                                <li><strong>Stockage par défaut :</strong> <code>JSON</code> pour les petits réglages et caches légers.</li>
+                            </ul>
+                        </div>
+                        <div class="db-config-grid">
+                            <strong style="display: block; margin-bottom: 6px; color: #0f172a;">Exemple B — Site à fort trafic (MySQL dédié)</strong>
+                            <ul style="margin: 0 0 0 18px; line-height: 1.6; font-size: 0.9rem;">
+                                <li><strong>Connexion Défaut :</strong> Driver <code>MySQL</code> (<code>localhost</code>, base dédiée, utilisateur &amp; mot de passe).</li>
+                                <li><strong>Procédure :</strong> 1) Enregistrer la connexion MySQL et vérifier le voyant vert, 2) Cliquer sur <em>Migrer</em> pour chaque composant souhaité dans l'onglet <em>Gestion par Composant</em>, 3) Enregistrer les affectations.</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </li>
         </ul>

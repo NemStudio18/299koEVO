@@ -116,6 +116,64 @@ function tinymceGetEditorHeadHtml(bool $isAdmin = false): string {
     $warningTitle = addslashes(\Core\Lang::get('warning.warning'));
     $errorTitle = addslashes(\Core\Lang::get('warning.error'));
     $infoTitle = addslashes(\Core\Lang::get('warning.info'));
+    $mapToolbar = '';
+    $mapDialogJs = '';
+    $mapSetupJs = '';
+
+    if ($isAdmin) {
+        $mapConfig = \Core\Core::getInstance()->callHook('map:editor-config', []);
+        if (is_array($mapConfig) && !empty($mapConfig['enabled'])) {
+            $defLat = htmlspecialchars((string)($mapConfig['lat'] ?? 47.0833), ENT_QUOTES, 'UTF-8');
+            $defLon = htmlspecialchars((string)($mapConfig['lon'] ?? 2.4), ENT_QUOTES, 'UTF-8');
+            $defZoom = (int)($mapConfig['zoom'] ?? 13);
+            $mapToolbar = ' dialog-add-map';
+            $mapDialogJs = <<<JS
+const dialogMap = {
+    title: "Insérer une carte [map]",
+    body: {
+      type: "panel",
+      items: [
+        { type: "input", name: "lat", label: "Latitude (ex : 47.0810)" },
+        { type: "input", name: "lon", label: "Longitude (ex : 2.3986)" },
+        { type: "input", name: "zoom", label: "Zoom (1 à 21)" },
+        { type: "input", name: "title", label: "Titre du marqueur (optionnel)" },
+        { type: "input", name: "height", label: "Hauteur en px (optionnel, ex : 360)" }
+      ]
+    },
+    initialData: {
+      lat: "{$defLat}",
+      lon: "{$defLon}",
+      zoom: "{$defZoom}",
+      title: "",
+      height: ""
+    },
+    buttons: [
+      { type: "cancel", name: "closeButton", text: "{$btnCancel}" },
+      { type: "submit", name: "submitButton", buttonType: "primary", text: "{$btnValidate}" }
+    ],
+    onSubmit: (api) => {
+      const d = api.getData();
+      const escAttr = (v) => String(v || '').replace(/"/g, '').trim();
+      const parts = [];
+      if (escAttr(d.lat)) parts.push('lat="' + escAttr(d.lat) + '"');
+      if (escAttr(d.lon)) parts.push('lon="' + escAttr(d.lon) + '"');
+      if (escAttr(d.zoom)) parts.push('zoom="' + escAttr(d.zoom) + '"');
+      if (escAttr(d.title)) parts.push('title="' + escAttr(d.title) + '"');
+      if (escAttr(d.height)) parts.push('height="' + escAttr(d.height) + '"');
+      const shortcode = '[map' + (parts.length ? ' ' + parts.join(' ') : '') + ']';
+      tinymce.activeEditor.execCommand('InsertHTML', false, '<p>' + shortcode + '</p>');
+      api.close();
+    }
+};
+JS;
+            $mapSetupJs = "            editor.ui.registry.addButton('dialog-add-map', {\n" .
+                "              text: 'Carte',\n" .
+                "              tooltip: 'Insérer une carte [map]',\n" .
+                "              onAction: () => editor.windowManager.open(dialogMap)\n" .
+                "            });\n";
+        }
+    }
+
     $locale = \Core\Lang::getLocale();
     $siteUrl = \Core\Core::getInstance()->getConfigVal('siteUrl') . '/';
     $editorCss = \Utils\Util::urlBuild(PLUGINS . 'tinymce/template/editor.css');
@@ -161,6 +219,7 @@ const dialogIcon = {
       api.close();
     }
 };
+{$mapDialogJs}
 
 function initTinyMceSafe() {
     if (typeof tinymce === 'undefined') {
@@ -183,7 +242,7 @@ function initTinyMceSafe() {
         sandbox_iframes: false,
         extended_valid_elements: 'iframe[src|title|width|height|allowfullscreen|frameborder|allow|referrerpolicy|loading|class|style]',
         plugins: 'advlist anchor autolink autoresize charmap code codesample emoticons fullscreen help image insertdatetime link lists media nonbreaking searchreplace table visualblocks visualchars wordcount',
-        toolbar: 'blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | forecolor backcolor removeformat | insertfile image media link{$mascotToolbar} | dialog-add-icon charmap emoticons codesample | fullscreen',
+        toolbar: 'blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | forecolor backcolor removeformat | insertfile image media link{$mascotToolbar} | dialog-add-icon{$mapToolbar} charmap emoticons codesample | fullscreen',
         max_height: 600,
         image_caption: true,
         content_css: [
@@ -196,7 +255,7 @@ function initTinyMceSafe() {
               tooltip: '{$titleChooseIcon}',
               onAction: () => editor.windowManager.open(dialogIcon)
             });
-            {$mascotSetupJs}
+            {$mascotSetupJs}{$mapSetupJs}
         },
         style_formats: [
             { name: 'success', title: '{$successTitle}', block: 'div', classes: [ 'success' ]},

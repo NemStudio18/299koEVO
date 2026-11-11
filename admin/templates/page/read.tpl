@@ -1,7 +1,7 @@
 ﻿<section>
 	{% if page.isUnlocked(pageItem) %}
 		{% HOOK.page:content-header(pageItem) %}
-		{{htmlspecialchars_decode(pageItem.getContent)}}
+		{{pageItem.getParsedContent}}
 	{% else %}
 		<header>
 			<div class="item-head">

@@ -168,6 +168,7 @@ class ConfigManagerAdminController extends AdminController {
             'defaultPlugin' => $_POST['defaultPlugin'],
             'hideTitles' => (isset($_POST['hideTitles'])) ? true : false,
             'showBanner' => (isset($_POST['showBanner'])) ? true : false,
+            'hideBannerTitle' => !isset($_POST['showBannerTitle']),
             'debug' => (isset($_POST['debug'])) ? true : false,
             'defaultAdminPlugin' => 'dashboard',
             'cache_enabled' => (isset($_POST['cache_enabled'])) ? true : false,

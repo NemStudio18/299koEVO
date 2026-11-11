@@ -339,6 +339,18 @@ class PageItem extends \Core\Storage\JsonActiveRecord implements ResourceInterfa
         return $this->attributes['content'] ?? '';
     }
 
+    /**
+     * Retourne le contenu HTML décodé et interprété via ContentParser (shortcodes).
+     */
+    public function getParsedContent(): string
+    {
+        $decoded = htmlspecialchars_decode((string) $this->getContent());
+        if (class_exists('\Content\ContentParser')) {
+            return (new \Content\ContentParser($decoded))->getParsedContent();
+        }
+        return $decoded;
+    }
+
     public function getIsHidden()
     {
         return $this->attributes['isHidden'] ?? $this->attributes['is_hidden'] ?? 0;
