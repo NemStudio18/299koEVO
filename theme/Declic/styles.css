@@ -636,7 +636,13 @@ hr { border: 0; border-top: 1px solid var(--dc-border); margin: 2rem 0; }
     box-shadow: 0 0 0 3px var(--dc-accent-soft);
 }
 
-:where(button, .button, input[type="submit"], input[type="button"]) {
+:where(button, input[type="submit"], input[type="button"]),
+.button,
+a.button,
+a.button:visited,
+button.button,
+input[type="submit"].button,
+input[type="button"].button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -651,38 +657,92 @@ hr { border: 0; border-top: 1px solid var(--dc-border); margin: 2rem 0; }
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
-    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, filter 0.18s ease;
 }
 
-:where(button, .button, input[type="submit"], input[type="button"]):hover {
+:where(button, input[type="submit"], input[type="button"]):hover,
+.button:hover,
+a.button:hover,
+button.button:hover,
+input[type="submit"].button:hover,
+input[type="button"].button:hover {
     background: var(--dc-accent-hover);
     color: var(--evo-accent-text);
 }
 
-:where(button, .button, input[type="submit"], input[type="button"]).secondary {
+:is(button, .button, input[type="submit"], input[type="button"]).small,
+a.button.small {
+    padding: 6px 12px;
+    font-size: 0.84rem;
+}
+
+:is(button, .button, input[type="submit"], input[type="button"]).primary,
+a.button.primary,
+a.button.primary:visited {
+    background: var(--dc-accent);
+    color: var(--evo-accent-text);
+}
+
+:is(button, .button, input[type="submit"], input[type="button"]).primary:hover,
+a.button.primary:hover {
+    background: var(--dc-accent-hover);
+    color: var(--evo-accent-text);
+}
+
+:is(button, .button, input[type="submit"], input[type="button"]).secondary,
+a.button.secondary,
+a.button.secondary:visited {
     background: var(--dc-surface);
     color: var(--dc-text);
     border-color: var(--dc-border-strong);
 }
 
-:where(button, .button, input[type="submit"], input[type="button"]).secondary:hover {
+:is(button, .button, input[type="submit"], input[type="button"]).secondary:hover,
+a.button.secondary:hover {
     background: var(--dc-surface);
     border-color: var(--dc-accent);
     color: var(--dc-accent);
 }
 
-:where(button, .button, input[type="submit"], input[type="button"]).success {
+:is(button, .button, input[type="submit"], input[type="button"]).success,
+a.button.success,
+a.button.success:visited {
     background: var(--evo-success);
     color: var(--evo-accent-text);
 }
 
-:where(button, .button, input[type="submit"], input[type="button"]).alert {
+:is(button, .button, input[type="submit"], input[type="button"]).success:hover,
+a.button.success:hover {
+    background: var(--evo-success);
+    filter: brightness(0.92);
+    color: var(--evo-accent-text);
+}
+
+:is(button, .button, input[type="submit"], input[type="button"]).alert,
+a.button.alert,
+a.button.alert:visited {
     background: var(--evo-danger);
     color: var(--evo-accent-text);
 }
 
-:where(button, .button, input[type="submit"], input[type="button"]).warning {
+:is(button, .button, input[type="submit"], input[type="button"]).alert:hover,
+a.button.alert:hover {
+    background: var(--evo-danger);
+    filter: brightness(0.92);
+    color: var(--evo-accent-text);
+}
+
+:is(button, .button, input[type="submit"], input[type="button"]).warning,
+a.button.warning,
+a.button.warning:visited {
     background: var(--evo-warning);
+    color: var(--evo-accent-text);
+}
+
+:is(button, .button, input[type="submit"], input[type="button"]).warning:hover,
+a.button.warning:hover {
+    background: var(--evo-warning);
+    filter: brightness(0.92);
     color: var(--evo-accent-text);
 }
 
