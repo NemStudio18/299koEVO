@@ -52,10 +52,12 @@ class SearchMapsHooks
         }
         $defaults = self::getDefaults();
         return array_merge($result, [
-            'enabled' => true,
-            'lat'     => $defaults['lat'],
-            'lon'     => $defaults['lon'],
-            'zoom'    => $defaults['zoom'],
+            'enabled'    => true,
+            'lat'        => $defaults['lat'],
+            'lon'        => $defaults['lon'],
+            'zoom'       => $defaults['zoom'],
+            'leafletCss' => Util::urlBuild('plugin/SearchMaps/assets/vendor/leaflet.css?v=11'),
+            'leafletJs'  => Util::urlBuild('plugin/SearchMaps/assets/vendor/leaflet.js?v=11'),
         ]);
     }
 
