@@ -39,6 +39,38 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+    // Compteur dynamique de téléchargements (si présent sur la page)
+    var dlBadges = document.querySelectorAll(".js-evo-dl-count");
+    if (dlBadges.length > 0) {
+        fetch("/download.php?stats=1", { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (data) {
+                if (data && typeof data.downloads !== "undefined") {
+                    dlBadges.forEach(function (el) {
+                        el.textContent = data.downloads;
+                    });
+                }
+            })
+            .catch(function () {});
+
+        document.querySelectorAll('a[href*="download.php"]').forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                setTimeout(function () {
+                    fetch("/download.php?stats=1", { cache: "no-store" })
+                        .then(function (r) { return r.ok ? r.json() : null; })
+                        .then(function (data) {
+                            if (data && typeof data.downloads !== "undefined") {
+                                dlBadges.forEach(function (el) {
+                                    el.textContent = data.downloads;
+                                });
+                            }
+                        })
+                        .catch(function () {});
+                }, 800);
+            });
+        });
+    }
 });
 
 function fadeOut(el) {
