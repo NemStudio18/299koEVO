@@ -77,7 +77,7 @@
                            class="feed-action-btn btn-fb-share" 
                            title="Partager cette publication sur Facebook"
                            aria-label="Partager cette publication sur Facebook">
-                            <i class="fa-brands fa-facebook" style="color: #1877F2;"></i>
+                            <i class="fa-brands fa-facebook"></i>
                             <span>Facebook</span>
                         </a>
 
@@ -91,12 +91,12 @@
 
         <?php elseif ($item['type'] === 'event'): ?>
             <article class="feed-card event-card <?= !empty($item['is_cgr']) ? 'cgr-feed-card' : '' ?>" id="feed-event-<?= $item['id'] ?>">
-                <div class="feed-card-badge event-badge" style="<?= !empty($item['is_cgr']) ? 'background: linear-gradient(135deg, #ea580c, #c2410c); color: #fff;' : '' ?>">
+                <div class="feed-card-badge event-badge <?= !empty($item['is_cgr']) ? 'is-cgr' : '' ?>">
                     <i class="fa-solid <?= !empty($item['is_cgr']) ? 'fa-film' : 'fa-calendar-check' ?>"></i> 
                     <?= !empty($item['is_cgr']) ? 'À l\'Affiche • Méga CGR Bourges' : 'Sortie & Événement Ville de Bourges' ?>
                 </div>
                 <div class="feed-card-header">
-                    <div class="feed-author-avatar event-avatar" style="<?= !empty($item['is_cgr']) ? 'background: #ea580c;' : '' ?>">
+                    <div class="feed-author-avatar event-avatar <?= !empty($item['is_cgr']) ? 'is-cgr' : '' ?>">
                         <i class="fa-solid <?= !empty($item['is_cgr']) ? 'fa-film' : 'fa-champagne-glasses' ?>"></i>
                     </div>
                     <div class="feed-author-meta">
@@ -110,16 +110,16 @@
 
                 <div class="feed-card-body">
                     <?php if (!empty($item['is_cgr']) && !empty($item['cgr_movies'])): ?>
-                        <div class="feed-cgr-movies-carousel" style="display: flex; gap: 12px; overflow-x: auto; padding: 6px 2px 14px 2px; margin-bottom: 12px; scrollbar-width: thin; -webkit-overflow-scrolling: touch;">
+                        <div class="feed-cgr-movies-carousel">
                             <?php foreach (array_slice($item['cgr_movies'], 0, 10) as $cm): ?>
-                                <a href="/agenda/event/<?= $item['id'] ?>" style="flex: 0 0 95px; width: 95px; text-decoration: none; color: inherit; display: block;" title="<?= htmlspecialchars($cm['title']) ?>">
-                                    <div style="width: 95px; height: 135px; border-radius: 10px; overflow: hidden; background: #e2e8f0; position: relative; box-shadow: 0 3px 8px rgba(0,0,0,0.12);">
-                                        <img src="<?= htmlspecialchars($cm['image']) ?>" alt="<?= htmlspecialchars($cm['title']) ?>" width="95" height="135" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="width: 100%; height: 100%; object-fit: cover;">
+                                <a href="/agenda/event/<?= $item['id'] ?>" class="feed-cgr-movie-link" title="<?= htmlspecialchars($cm['title']) ?>">
+                                    <div class="feed-cgr-poster">
+                                        <img src="<?= htmlspecialchars($cm['image']) ?>" alt="<?= htmlspecialchars($cm['title']) ?>" width="95" height="135" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                                         <?php if (!empty($cm['tag'])): ?>
-                                            <span style="position: absolute; bottom: 3px; left: 3px; right: 3px; background: rgba(15,23,42,0.85); color: #fef08a; font-size: 0.62rem; font-weight: 700; padding: 2px 3px; border-radius: 4px; text-align: center; display: block;"><?= htmlspecialchars($cm['tag']) ?></span>
+                                            <span class="feed-cgr-tag"><?= htmlspecialchars($cm['tag']) ?></span>
                                         <?php endif; ?>
                                     </div>
-                                    <div style="font-size: 0.78rem; font-weight: 700; color: #0f172a; margin-top: 5px; line-height: 1.25; max-height: 2.5em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;"><?= htmlspecialchars($cm['title']) ?></div>
+                                    <div class="feed-cgr-title"><?= htmlspecialchars($cm['title']) ?></div>
                                 </a>
                             <?php endforeach; ?>
                         </div>
@@ -169,7 +169,7 @@
                            class="feed-action-btn btn-fb-share" 
                            title="Partager cet événement sur Facebook"
                            aria-label="Partager cet événement sur Facebook : <?= htmlspecialchars($item['title']) ?>">
-                            <i class="fa-brands fa-facebook" style="color: #1877F2;"></i>
+                            <i class="fa-brands fa-facebook"></i>
                             <span>Facebook</span>
                         </a>
 
@@ -213,7 +213,7 @@
                        class="feed-action-btn btn-fb-share" 
                        title="Partager ce bon plan sur Facebook"
                        aria-label="Partager ce bon plan sur Facebook">
-                        <i class="fa-brands fa-facebook" style="color: #1877F2;"></i>
+                        <i class="fa-brands fa-facebook"></i>
                         <span>Facebook</span>
                     </a>
 
@@ -227,17 +227,17 @@
             </article>
 
         <?php elseif ($item['type'] === 'blog'): ?>
-            <article class="feed-card blog-card" id="feed-blog-<?= $item['id'] ?>" style="border-top: 4px solid #0284c7;">
-                <div class="feed-card-badge blog-badge" style="background: rgba(3, 105, 161, 0.12); color: #0369a1; font-weight: 700; padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 0.85rem;">
+            <article class="feed-card blog-card" id="feed-blog-<?= $item['id'] ?>">
+                <div class="feed-card-badge blog-badge">
                     <i class="fa-solid fa-newspaper"></i> Le Journal de Vivre-Bourges
                 </div>
                 <div class="feed-card-header">
-                    <div class="feed-author-avatar blog-avatar" style="background: #0284c7; color: #fff; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                    <div class="feed-author-avatar blog-avatar">
                         <i class="fa-solid fa-feather-pointed"></i>
                     </div>
                     <div class="feed-author-meta">
-                        <h3 class="feed-card-title" style="margin: 0; font-size: 1.15rem;">
-                            <a href="<?= htmlspecialchars($item['url']) ?>" style="color: #0f172a; text-decoration: none;">
+                        <h3 class="feed-card-title">
+                            <a href="<?= htmlspecialchars($item['url']) ?>">
                                 <?= htmlspecialchars($item['title']) ?>
                             </a>
                         </h3>
@@ -249,20 +249,20 @@
                 </div>
 
                 <?php if (!empty($item['media_url'])): ?>
-                    <div class="feed-card-media" style="margin-top: 12px; border-radius: 8px; overflow: hidden;">
+                    <div class="feed-card-media">
                         <a href="<?= htmlspecialchars($item['url']) ?>">
-                            <img src="<?= htmlspecialchars($item['media_url']) ?>" alt="Illustration article" width="650" height="320" loading="lazy" decoding="async" style="width: 100%; max-height: 320px; object-fit: cover; aspect-ratio: 650/320;" />
+                            <img src="<?= htmlspecialchars($item['media_url']) ?>" alt="Illustration article" width="650" height="320" loading="lazy" decoding="async" />
                         </a>
                     </div>
                 <?php endif; ?>
 
-                <div class="feed-card-body" style="margin-top: 10px;">
+                <div class="feed-card-body">
                     <p><?= nl2br(htmlspecialchars($item['content'])) ?></p>
                 </div>
 
-                <div class="feed-card-footer" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #f1f5f9;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <a href="<?= htmlspecialchars($item['url']) ?>" class="feed-action-btn btn-visit" aria-label="Lire l'article complet : <?= htmlspecialchars($item['title']) ?>" style="background: #0369a1; color: #ffffff; padding: 7px 14px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;">
+                <div class="feed-card-footer">
+                    <div class="blog-card-footer-left">
+                        <a href="<?= htmlspecialchars($item['url']) ?>" class="feed-action-btn btn-visit" aria-label="Lire l'article complet : <?= htmlspecialchars($item['title']) ?>">
                             <i class="fa-solid fa-book-open-reader"></i> Lire l'article complet
                         </a>
                         <button class="feed-action-btn btn-like <?= (($item['user_reaction'] ?? '') === 'like') ? 'active' : '' ?>"
@@ -282,15 +282,13 @@
                        rel="noopener noreferrer" 
                        class="feed-action-btn btn-fb-share" 
                        title="Partager cet article sur Facebook"
-                       aria-label="Partager cet article sur Facebook"
-                       style="display: inline-flex; align-items: center; gap: 6px; color: #1877F2; text-decoration: none; font-weight: 500; font-size: 0.9rem;">
-                        <i class="fa-brands fa-facebook" style="font-size: 1.1rem;"></i>
+                       aria-label="Partager cet article sur Facebook">
+                        <i class="fa-brands fa-facebook"></i>
                         <span>Facebook</span>
                     </a>
                     <button type="button" class="feed-action-btn btn-copy-link" 
                             onclick="vbCopyLink('<?= htmlspecialchars($blogFullUrl) ?>', this)"
-                            title="Copier le lien de cet article"
-                            style="display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; color: #475569; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 0.88rem; cursor: pointer;">
+                            title="Copier le lien de cet article">
                         <i class="fa-solid fa-link"></i>
                         <span>Copier</span>
                     </button>
@@ -299,12 +297,12 @@
 
         <?php elseif ($item['type'] === 'weather'): $wb = $item['bulletin']; ?>
             <article class="feed-card weather-card <?= $wb['is_morning'] ? 'weather-morning' : 'weather-evening' ?>" id="feed-weather-<?= (int)$item['id'] ?>">
-                <div class="weather-card-top" style="cursor: pointer;" onclick="toggleWeatherAccordion(<?= (int)$item['id'] ?>)">
+                <div class="weather-card-top" onclick="toggleWeatherAccordion(<?= (int)$item['id'] ?>)">
                     <div class="weather-card-badge">
                         <i class="fa-solid fa-cloud-sun"></i> Bulletin météo de <?= $wb['is_morning'] ? '6h00' : '20h00' ?>
                         <?php if (!empty($item['is_latest'])): ?><span class="weather-live-dot" title="Bulletin en cours"></span><?php endif; ?>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="weather-card-top-meta">
                         <span class="feed-post-time"><i class="fa-regular fa-clock"></i> <?= htmlspecialchars($item['time_ago']) ?></span>
                         <button type="button" class="weather-toggle-pill" id="weather-toggle-btn-<?= (int)$item['id'] ?>" title="Réduire ou afficher les détails de la météo" aria-label="Réduire ou afficher les détails de la météo">
                             <i class="fa-solid fa-chevron-up"></i>
@@ -312,7 +310,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="weather-card-hero" style="cursor: pointer;" onclick="toggleWeatherAccordion(<?= (int)$item['id'] ?>)">
+                <div class="weather-card-hero" onclick="toggleWeatherAccordion(<?= (int)$item['id'] ?>)">
                     <?php
                     $mascot = $wb['mascot'] ?? [
                         'webp' => '/images/mascot/what_ensoleille.webp',
@@ -333,7 +331,7 @@
                     <div class="weather-card-range">
                         <span class="wmax"><?= (int)$wb['tmax'] ?>°</span>
                         <span class="wmin"><?= (int)$wb['tmin'] ?>°</span>
-                        <span class="weather-card-icon" style="font-size: 1.4rem; margin-top: 4px;"><?= $wb['main_icon'] ?></span>
+                        <span class="weather-card-icon"><?= $wb['main_icon'] ?></span>
                     </div>
                 </div>
                 <div class="weather-collapsible-body" id="weather-body-<?= (int)$item['id'] ?>">
@@ -362,7 +360,7 @@
                 if (localStorage.getItem('vb_weather_collapsed') === '1') {
                     (function() {
                         var b = document.getElementById('weather-body-<?= (int)$item['id'] ?>');
-                        if (b) b.style.display = 'none';
+                        if (b) b.classList.add('is-collapsed');
                         var btn = document.getElementById('weather-toggle-btn-<?= (int)$item['id'] ?>');
                         if (btn) btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> <span class="wth-toggle-text">Détails</span>';
                     })();

@@ -31,31 +31,31 @@
 /* Calendar container */
 #agenda-calendar {
     margin-bottom: 3rem;
-    background: var(--section-bg-color, #fff);
+    background: var(--evo-card-bg);
     padding: 1.5rem;
-    border-radius: var(--section-radius, 8px);
-    border: 1px solid var(--form-border-color);
+    border-radius: var(--evo-radius-sm);
+    border: 1px solid var(--evo-border);
     margin: 0 auto 3rem auto;
     max-width: 900px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--evo-shadow-sm);
 }
 
 /* Past events styles */
 .agenda-past-events {
     margin-top: 4rem;
     padding-top: 2rem;
-    border-top: 1px dashed var(--form-border-color);
+    border-top: 1px dashed var(--evo-border-strong);
     opacity: 0.8;
 }
 
 .agenda-past-events h3 {
-    color: var(--font-secondary);
+    color: var(--evo-text-muted);
     margin-bottom: 1.5rem;
 }
 
 .agenda-event-card.past-card {
-    background: var(--section-head-bg-color, #f9f9f9);
-    border-color: var(--border-color, #eee);
+    background: var(--evo-surface);
+    border-color: var(--evo-border);
     filter: grayscale(100%);
     transition: filter 0.3s, transform 0.2s;
 }
@@ -70,7 +70,7 @@
 }
 
 .agenda-index .header-info h3 {
-    color: var(--font-secondary);
+    color: var(--evo-text-muted);
     margin-top: 0.5rem;
     font-size: 1.1rem;
     font-weight: 400;
@@ -85,11 +85,12 @@
 }
 
 .agenda-event-card {
-    background: var(--section-bg-color, #fff);
-    border-radius: var(--section-radius, 8px);
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
+    border-radius: var(--evo-radius-sm);
     padding: 1.5rem;
-    border: 1px solid var(--form-border-color);
-    border-left: 5px solid var(--primary-color);
+    border: 1px solid var(--evo-border);
+    border-left: 5px solid var(--evo-accent);
     transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
@@ -97,7 +98,7 @@
 
 .agenda-event-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--evo-shadow-md);
 }
 
 .agenda-event-card h3 {
@@ -107,7 +108,7 @@
 }
 
 .agenda-event-card h3 a {
-    color: var(--primary-color);
+    color: var(--evo-accent);
     text-decoration: none;
 }
 
@@ -126,11 +127,11 @@
     gap: 0.5rem;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
-    color: var(--font-secondary);
+    color: var(--evo-text-muted);
 }
 
 .meta-item i {
-    color: var(--primary-color);
+    color: var(--evo-accent);
     width: 16px;
     text-align: center;
 }
@@ -138,7 +139,7 @@
 .event-description {
     font-size: 0.95rem;
     line-height: 1.5;
-    color: var(--font-color);
+    color: var(--evo-text);
     opacity: 0.9;
     margin-bottom: 1rem;
     overflow: hidden;
@@ -152,9 +153,9 @@
 .event-mini-map {
     height: 150px;
     margin-top: 1.5rem;
-    border-radius: var(--section-radius, 6px);
+    border-radius: var(--evo-radius-sm);
     overflow: hidden;
-    border: 1px solid var(--form-border-color, #eee);
+    border: 1px solid var(--evo-border);
     z-index: 1;
 }
 
@@ -163,7 +164,7 @@
     max-width: 800px;
     margin: 2rem auto;
     border-left: none;
-    border-top: 5px solid var(--primary-color);
+    border-top: 5px solid var(--evo-accent);
 }
 
 .agenda-event-detail .event-description {
@@ -183,49 +184,49 @@
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 500;
-    color: #fff;
-    background: var(--primary-color);
+    color: var(--evo-accent-text);
+    background: var(--evo-accent);
 }
 
 .badge.warning {
-    background-color: var(--warning-color, #f4511e);
+    background-color: var(--evo-warning);
 }
 
 .badge.success {
-    background-color: var(--success-color);
+    background-color: var(--evo-success);
 }
 
 .badge.alert {
-    background-color: var(--alert-color);
+    background-color: var(--evo-danger);
 }
 
 /* Button styles to match theme */
 .button.success {
-    background-color: var(--success-color, #43a047);
-    color: #fff;
+    background-color: var(--evo-success);
+    color: var(--evo-accent-text);
 }
 
 .button.alert {
-    background-color: var(--alert-color, #e53935);
-    color: #fff;
+    background-color: var(--evo-danger);
+    color: var(--evo-accent-text);
 }
 
 .button.warning {
-    background-color: var(--warning-color, #f4511e);
-    color: #fff;
+    background-color: var(--evo-warning);
+    color: var(--evo-accent-text);
 }
 
 .button.primary {
-    background-color: var(--primary-color) !important;
-    color: #fff !important;
+    background-color: var(--evo-accent) !important;
+    color: var(--evo-accent-text) !important;
 }
 
 /* Calendar Popups */
 .calendar-popup {
     font-size: 0.8rem;
     padding: 0.2rem 0.5rem;
-    border-bottom: 1px solid var(--form-border-color, #eee);
-    color: var(--font-color);
+    border-bottom: 1px solid var(--evo-border);
+    color: var(--evo-text);
 }
 
 .calendar-popup:last-child {
@@ -236,19 +237,20 @@
 .agenda-event-form {
     max-width: 800px;
     margin: 2rem auto;
-    background: var(--section-bg-color, #fff);
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
     padding: 2rem;
-    border-radius: var(--section-radius, 8px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: var(--evo-radius-sm);
+    box-shadow: var(--evo-shadow-sm);
 }
 
 .info-box {
-    background: var(--section-head-bg-color);
-    color: var(--font-color);
+    background: var(--evo-surface);
+    color: var(--evo-text);
     padding: 1rem;
     border-radius: 4px;
     margin-bottom: 2rem;
-    border: 1px solid var(--form-border-color);
+    border: 1px solid var(--evo-border);
 }
 
 .date-grid {
@@ -265,7 +267,7 @@
     border-radius: 50%;
     vertical-align: middle;
     margin-right: 0.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--evo-border);
 }
 
 .button-group {
@@ -276,7 +278,7 @@
 
 .event-footer {
     margin-top: 2rem;
-    border-top: 1px solid var(--form-border-color, #eee);
+    border-top: 1px solid var(--evo-border);
     padding-top: 1rem;
 }
 
@@ -284,8 +286,8 @@
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    color: var(--font-color);
-    opacity: 0.5;
+    color: var(--evo-text);
+    opacity: 0.7;
 }
 
 .empty-state i {
@@ -297,7 +299,7 @@
 .attendance-section {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--form-border-color, #eee);
+    border-top: 1px solid var(--evo-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -310,11 +312,11 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 1rem;
-    color: var(--font-color);
+    color: var(--evo-text);
 }
 
 .attendance-count i {
-    color: var(--primary-color);
+    color: var(--evo-accent);
 }
 
 .attendance-details {
@@ -371,18 +373,18 @@
 
 .agenda-event-form .info-box {
     padding: 1.25rem;
-    background: var(--dc-accent-soft, rgba(29, 78, 216, 0.09));
-    border-left: 4px solid var(--primary-color);
-    border-radius: var(--section-radius);
+    background: var(--evo-accent-soft);
+    border-left: 4px solid var(--evo-accent);
+    border-radius: var(--evo-radius-sm);
     margin-bottom: 2rem;
-    color: var(--font-color);
+    color: var(--evo-text);
 }
 
 .agenda-event-form form {
-    background: var(--section-bg-color);
+    background: var(--evo-card-bg);
     padding: 2.5rem;
-    border-radius: var(--section-radius);
-    border: 1px solid var(--form-border-color);
+    border-radius: var(--evo-radius-sm);
+    border: 1px solid var(--evo-border);
     max-width: 800px;
     margin: 0 auto;
 }
@@ -395,11 +397,11 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: var(--font-color);
+    color: var(--evo-text);
 }
 
 .agenda-event-form label .required {
-    color: var(--alert-color);
+    color: var(--evo-danger);
 }
 
 .agenda-event-form label small {
@@ -414,17 +416,17 @@
 .agenda-event-form textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid var(--form-border-color);
-    border-radius: var(--section-radius, 4px);
-    background: var(--form-bg-color);
-    color: var(--font-color);
+    border: 1px solid var(--evo-input-border);
+    border-radius: var(--evo-radius-sm);
+    background: var(--evo-input-bg);
+    color: var(--evo-text);
     font-family: inherit;
 }
 
 .agenda-event-form input:focus,
 .agenda-event-form textarea:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(0, 172, 193, 0.1);
+    border-color: var(--evo-accent);
+    box-shadow: 0 0 0 3px var(--evo-accent-soft);
 }
 
 .agenda-event-form .date-grid {
@@ -437,7 +439,7 @@
     width: 60px;
     height: 40px;
     padding: 2px;
-    border: 1px solid var(--form-border-color);
+    border: 1px solid var(--evo-input-border);
     border-radius: 4px;
     cursor: pointer;
 }
@@ -445,7 +447,7 @@
 .agenda-event-form .form-actions {
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--form-border-color);
+    border-top: 1px solid var(--evo-border);
     display: flex;
     gap: 1rem;
     justify-content: flex-end;
@@ -455,25 +457,270 @@
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    background: var(--section-bg-color);
-    border: 1px solid var(--form-border-color);
-    border-radius: var(--section-radius);
+    background: var(--evo-card-bg);
+    border: 1px solid var(--evo-border);
+    border-radius: var(--evo-radius-sm);
 }
 
 .empty-state i {
     font-size: 3.5rem;
-    color: var(--form-border-color);
+    color: var(--evo-border-strong);
     margin-bottom: 1rem;
     display: block;
 }
 
 .empty-state p {
-    color: var(--font-color);
-    opacity: 0.6;
+    color: var(--evo-text-muted);
 }
 
 @media (max-width: 600px) {
     .agenda-event-form .date-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Détail événement & Programmation CGR (migrés de event.tpl) */
+.agenda-event-detail .event-image {
+    width: 100%;
+    max-height: 440px;
+    overflow: hidden;
+    border-radius: 14px;
+    margin-bottom: 22px;
+    background: var(--evo-surface-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--evo-shadow-sm);
+}
+.agenda-event-detail .event-image img {
+    max-width: 100%;
+    max-height: 440px;
+    object-fit: contain;
+    display: block;
+}
+.cgr-programming-section {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 2px dashed var(--evo-border);
+}
+.cgr-programming-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.cgr-programming-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--evo-accent-soft);
+    color: var(--evo-accent);
+    border: 1px solid var(--evo-accent);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.cgr-programming-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--evo-text);
+}
+.cgr-search-wrap {
+    flex: 1;
+    max-width: 320px;
+    min-width: 220px;
+}
+.cgr-search-input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--evo-input-border);
+    background: var(--evo-input-bg);
+    color: var(--evo-text);
+    font-size: 0.9rem;
+}
+.cgr-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.cgr-movie-detail-card {
+    display: flex;
+    gap: 20px;
+    background: var(--evo-card-bg);
+    border: 1.5px solid var(--evo-border);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: var(--evo-shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.cgr-movie-detail-card.is-hidden {
+    display: none;
+}
+.cgr-movie-poster {
+    width: 105px;
+    min-width: 105px;
+    height: 148px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    background: var(--evo-surface-alt);
+    flex-shrink: 0;
+}
+.cgr-movie-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.cgr-movie-tag {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    right: 4px;
+    background: rgba(15, 23, 42, 0.88);
+    color: #fef08a;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 4px;
+    border-radius: 4px;
+    text-align: center;
+}
+.cgr-movie-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.cgr-movie-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--evo-text);
+}
+.cgr-movie-synopsis {
+    margin: 0;
+    font-size: 0.87rem;
+    color: var(--evo-text-muted);
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.cgr-movie-showtimes {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.cgr-showtimes-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--evo-text-muted);
+}
+.cgr-showtimes-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.cgr-showtime-chip {
+    background: var(--evo-surface);
+    color: var(--evo-text);
+    border: 1px solid var(--evo-border-strong);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.cgr-showtime-chip:hover {
+    border-color: var(--evo-accent);
+    color: var(--evo-accent);
+}
+.cgr-showtimes-fallback {
+    font-size: 0.82rem;
+    color: var(--evo-text-muted);
+    font-style: italic;
+}
+.cgr-movie-cta-wrap {
+    margin-top: auto;
+    padding-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+.cgr-movie-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--evo-accent);
+    text-decoration: none;
+}
+.cgr-empty-note {
+    text-align: center;
+    padding: 30px;
+    color: var(--evo-text-muted);
+}
+.agenda-event-detail .event-share-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+.agenda-event-detail .btn-facebook-share {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #1877F2;
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--evo-shadow-sm);
+}
+.agenda-event-detail .btn-facebook-share i {
+    font-size: 1.2rem;
+}
+.agenda-event-detail .btn-copy-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
+    border: 1.5px solid var(--evo-border-strong);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.agenda-event-detail .btn-copy-link:hover {
+    border-color: var(--evo-accent);
+    color: var(--evo-accent);
+}
+.agenda-event-detail .event-external-link {
+    margin-top: 15px;
+}
+.agenda-event-detail .event-map-container {
+    margin-top: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--evo-shadow-sm);
+}
+#event-map-picker {
+    height: 300px;
+    border-radius: 8px;
+    border: 1px solid var(--evo-input-border);
+    margin-bottom: 10px;
+    background: var(--evo-surface);
 }

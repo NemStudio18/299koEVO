@@ -194,13 +194,21 @@ class Page
     public function isUnlocked($obj)
     {
         if ($obj->getPassword() == '') return true;
-        return (isset($_SESSION['pagePassword']) && sha1($obj->getId()) . $obj->getPassword() . sha1($_SERVER['REMOTE_ADDR']) == $_SESSION['pagePassword']);
+        $ipHash = sha1((string) ($_SERVER['REMOTE_ADDR'] ?? ''));
+        $expected = sha1((string) $obj->getId()) . $obj->getPassword() . $ipHash;
+        if (isset($_SESSION['pagePasswords'][$obj->getId()]) && hash_equals((string) $_SESSION['pagePasswords'][$obj->getId()], $expected)) {
+            return true;
+        }
+        return (isset($_SESSION['pagePassword']) && hash_equals((string) $_SESSION['pagePassword'], $expected));
     }
 
     public function unlock($obj, $password)
     {
-        if (sha1(trim($password)) == $obj->getPassword()) {
-            $_SESSION['pagePassword'] = sha1($obj->getId()) . $obj->getPassword() . sha1($_SERVER['REMOTE_ADDR']);
+        if (hash_equals((string) $obj->getPassword(), sha1(trim((string) $password)))) {
+            $ipHash = sha1((string) ($_SERVER['REMOTE_ADDR'] ?? ''));
+            $token = sha1((string) $obj->getId()) . $obj->getPassword() . $ipHash;
+            $_SESSION['pagePassword'] = $token;
+            $_SESSION['pagePasswords'][$obj->getId()] = $token;
             return true;
         }
         return false;

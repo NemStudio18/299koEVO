@@ -50,7 +50,9 @@ function annoncesEndFrontHead(string $param = ''): string
         return $param;
     }
     $siteUrl = Core::getInstance()->getConfigVal('siteUrl');
-    return $param . '<link rel="stylesheet" href="' . $siteUrl . '/plugin/annonces/template/public.css?v=' . VERSION . '">' . "\n";
+    $cssFile = __DIR__ . '/template/public.css';
+    $v = is_file($cssFile) ? (string) filemtime($cssFile) : VERSION;
+    return $param . '<link rel="stylesheet" href="' . $siteUrl . '/plugin/annonces/template/public.css?v=' . $v . '">' . "\n";
 }
 
 /**
@@ -83,3 +85,4 @@ function annoncesSearchResultsHook(array $data): array
     }
     return $data;
 }
+

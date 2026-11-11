@@ -35,24 +35,22 @@
 	{{TOC}}
 	{{generatedHtml}}
 
-	<section class="blog-share-section" style="margin: 28px 0 20px 0; padding: 16px 20px; background: var(--section-head-bg-color, #f3f1ec); border: 1px solid var(--border-color, #e2e8f0); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
-		<div style="font-weight: 600; color: var(--font-color, #1e293b); display: flex; align-items: center; gap: 8px;">
-			<i class="fa-solid fa-share-nodes" style="color: var(--primary-color, #1d4ed8);"></i> Vous avez aimé cet article ? Partagez-le !
+	<section class="blog-share-section">
+		<div class="blog-share-label">
+			<i class="fa-solid fa-share-nodes"></i> Vous avez aimé cet article ? Partagez-le !
 		</div>
-		<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+		<div class="blog-share-actions">
 			<a class="btn-facebook-share" 
 			   target="_blank" 
 			   rel="noopener noreferrer" 
 			   href="{{ fb_share_url }}"
-			   aria-label="Partager cet article sur Facebook"
-			   style="display: inline-flex; align-items: center; gap: 8px; background: #1877F2; color: #ffffff; padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; box-shadow: 0 2px 8px rgba(24,119,242,0.25); transition: opacity 0.2s;">
-				<i class="fa-brands fa-facebook" style="font-size: 1.2rem;"></i> Partager sur Facebook
+			   aria-label="Partager cet article sur Facebook">
+				<i class="fa-brands fa-facebook"></i> Partager sur Facebook
 			</a>
 			<button type="button" 
 			        class="btn-copy-link"
 			        onclick="vbCopyLink(window.location.href, this)"
-			        title="Copier le lien direct vers cet article"
-			        style="display: inline-flex; align-items: center; gap: 8px; background: var(--section-bg-color, #ffffff); color: var(--font-color, #475569); border: 1px solid var(--form-border-color, #cbd5e1); padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;">
+			        title="Copier le lien direct vers cet article">
 				<i class="fa-solid fa-link"></i> <span>Copier le lien</span>
 			</button>
 		</div>

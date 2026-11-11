@@ -287,11 +287,14 @@ class PageController extends PublicController
         $action = (isset($_POST['unlock'])) ? 'unlock' : '';
         $url = $this->page->makeUrl($this->pageItem);
         if ($action === 'unlock') {
-            // quelques contrôle et temps mort volontaire avant le send...
-            sleep(2);
-        
-            if (isset($_POST['password']) && $_SERVER['HTTP_REFERER'] === Util::urlBuild($url)) {
-                $this->page->unlock($this->pageItem, $_POST['password']);
+            usleep(350000);
+
+            if (!\Core\Security\Csrf::validate($_POST['_csrf'] ?? null, false)) {
+                \Utils\Show::msg(\Core\Lang::get('core-not-authorized') ?: 'Action non autorisée.', 'error');
+            } elseif (isset($_POST['password']) && $this->page->unlock($this->pageItem, (string) $_POST['password'])) {
+                \Utils\Show::msg('Page déverrouillée.', 'success');
+            } else {
+                \Utils\Show::msg('Mot de passe incorrect.', 'error');
             }
             header('location:' . $url);
             die();
@@ -360,6 +363,7 @@ class PageController extends PublicController
         $tpl->set('page', $this->page);
         $tpl->set('pageItem', $this->pageItem);
         $tpl->set('sendUrl', $url);
+        $tpl->set('_csrfToken', \Core\Security\Csrf::token());
 
         $response->addTemplate($tpl);
         return $response;

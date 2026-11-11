@@ -64,7 +64,7 @@
         <div class="form-group">
             <label>Position sur la carte (facultatif)</label>
             <p class="help-text">Cliquez sur la carte pour définir précisément le lieu.</p>
-            <div id="event-map-picker" style="height: 300px; border-radius: 8px; border: 1px solid var(--form-border-color); margin-bottom: 10px;"></div>
+            <div id="event-map-picker"></div>
             <input type="hidden" name="latitude" value="">
             <input type="hidden" name="longitude" value="">
         </div>

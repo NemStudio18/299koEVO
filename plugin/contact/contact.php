@@ -70,72 +70,121 @@ function contactInjectTemplateVars(): void
 }
 
 function contactSave($email) {
-    $data = Util::readJsonFile(DATA_PLUGIN . 'contact/emails.json');
+    $dir = DATA_PLUGIN . 'contact';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0755, true);
+    }
+    $emailsFile = $dir . DS . 'emails.json';
+    $data = file_exists($emailsFile) ? Util::readJsonFile($emailsFile) : [];
+    if (!is_array($data)) {
+        $data = [];
+    }
     $data[] = $email;
-    Util::writeJsonFile(DATA_PLUGIN . 'contact/emails.json', array_unique($data));
+    Util::writeJsonFile($emailsFile, array_values(array_unique($data)));
+}
+
+/**
+ * Résout l'utilisateur destinataire des messages de contact (configuré ou premier admin).
+ */
+function contactResolveRecipientUser(): ?User
+{
+    $plugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('contact');
+    $userMailId = $plugin ? $plugin->getConfigVal('userMailId') : null;
+    if ($userMailId) {
+        $user = User::findPK($userMailId);
+        if ($user instanceof User) {
+            return $user;
+        }
+    }
+    try {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        foreach (User::all() as $candidate) {
+            if ($evaluator->isAdmin(new \Core\Navigation\ConditionContext($candidate))) {
+                return $candidate;
+            }
+        }
+        $all = User::all();
+        if (!empty($all) && $all[0] instanceof User) {
+            return $all[0];
+        }
+    } catch (\Throwable $e) {
+    }
+    return null;
 }
 
 function contactSend() {
     global $runPlugin;
     $core = Core::getInstance();
-    $from = '299ko@' . $_SERVER['SERVER_NAME'];
-    $reply = strip_tags(trim($_POST['email']));
-    $name = strip_tags(trim($_POST['name']));
-    $firstName = strip_tags(trim($_POST['firstname']));
-    $msg = strip_tags(trim($_POST['message']));
-    $topic = strip_tags(trim($_POST['topic'] ?? ''));
-    if (!Util::isEmail($reply) || $name == '' || $firstName == '' || $msg == '' || $topic == '')
+    $host = preg_replace('/[^a-zA-Z0-9.-]/', '', (string) ($_SERVER['SERVER_NAME'] ?? $_SERVER['HTTP_HOST'] ?? 'localhost')) ?: 'localhost';
+    $from = '299ko@' . $host;
+    $reply = strip_tags(trim((string) ($_POST['email'] ?? '')));
+    $name = strip_tags(trim((string) ($_POST['name'] ?? '')));
+    $firstName = strip_tags(trim((string) ($_POST['firstname'] ?? '')));
+    $msg = strip_tags(trim((string) ($_POST['message'] ?? '')));
+    $topic = strip_tags(trim((string) ($_POST['topic'] ?? '')));
+
+    $paramFile = DATA_PLUGIN . 'contact/param.json';
+    $params = file_exists($paramFile) ? Util::readJsonFile($paramFile) : [];
+    $configuredTopics = (is_array($params) && !empty($params['topics']) && is_array($params['topics'])) ? $params['topics'] : [];
+    if ($topic === '') {
+        if (!empty($configuredTopics)) {
+            return false;
+        }
+        $topic = 'Message de contact';
+    }
+
+    if (!Util::isEmail($reply) || $name === '' || $msg === '') {
         return false;
-    
+    }
+
     contactSave($reply);
-    
+
     // Save full message to JSON
     $messageData = [
-        'id' => uniqid(),
-        'date' => date('Y-m-d H:i:s'),
-        'name' => $name,
+        'id'        => bin2hex(random_bytes(8)),
+        'date'      => date('Y-m-d H:i:s'),
+        'name'      => $name,
         'firstname' => $firstName,
-        'email' => $reply,
-        'topic' => $topic,
-        'message' => $msg,
-        'ip' => $_SERVER['REMOTE_ADDR']
+        'email'     => $reply,
+        'topic'     => $topic,
+        'message'   => $msg,
+        'ip'        => $_SERVER['REMOTE_ADDR'] ?? ''
     ];
-    
+
     $messagesFile = DATA_PLUGIN . 'contact/messages.json';
     $messages = [];
     if (file_exists($messagesFile)) {
         $messages = Util::readJsonFile($messagesFile);
-        if (!is_array($messages)) $messages = [];
+        if (!is_array($messages)) {
+            $messages = [];
+        }
     }
-    // Prepend new message
     array_unshift($messages, $messageData);
-    Util::writeJsonFile($messagesFile, $messages);
+    if (!Util::writeJsonFile($messagesFile, $messages)) {
+        return false;
+    }
 
     // Déclencher le hook de domaine pour notification (Découplé)
     $core->callHook('contact:message-received', $messageData);
 
     $plugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('contact');
-    if (!$plugin) return false;
-
-    $userMailId = $plugin->getConfigVal('userMailId');
-    if (!$userMailId) {
-        return false;
-    }
-    /** @var User|null $user */
-    $user = User::findPK($userMailId);
-    if (!$user || !isset($user->email)) {
-        return false;
-    }
-    // @phpstan-ignore-next-line - $user vérifié non-null ci-dessus
-    $to = $user->email;
+    $user = contactResolveRecipientUser();
+    $to = ($user && isset($user->email) && Util::isEmail((string) $user->email)) ? (string) $user->email : '';
     $subject = 'Contact [' . $topic . '] ' . $core->getConfigVal('siteName');
-    $msg = $msg . "\n\n----------\n\n" . $name . " " . $firstName . " (" . $reply . ")";
-    $copy = $plugin->getConfigVal('copy');
-    // @phpstan-ignore-next-line - $copy est vérifié non-null et string ci-dessous
+    $senderLabel = trim($name . ' ' . $firstName);
+    $mailBody = $msg . "\n\n----------\n\n" . $senderLabel . " (" . $reply . ")";
+
+    $copy = $plugin ? $plugin->getConfigVal('copy') : '';
     if ($copy !== false && $copy !== null && is_string($copy) && Util::isEmail($copy)) {
-        Util::sendEmail($from, $reply, $copy, $subject, $msg);
+        @Util::sendEmail($from, $reply, $copy, $subject, $mailBody);
     }
-    return Util::sendEmail($from, $reply, $to, $subject, $msg);
+    if ($to !== '') {
+        $sent = @Util::sendEmail($from, $reply, $to, $subject, $mailBody);
+        if (!$sent) {
+            $core->getLogger()->log(\Core\Logger::LEVEL_WARNING, 'Contact: message sauvegardé dans messages.json mais Util::sendEmail() a échoué vers ' . $to);
+        }
+    }
+    return true;
 }
 
 /**
@@ -181,13 +230,13 @@ function contactEndFooter(): void
  */
 function contactOnMessageReceived(array $data): void
 {
-    $core = Core::getInstance();
     $plugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('contact');
     if (!$plugin) return;
 
-    // Le destinataire est l'admin configuré dans le plugin
-    $targetUserId = (int)$plugin->getConfigVal('userMailId');
-    if (!$targetUserId) $targetUserId = 1; // Fallback admin
+    $recipient = contactResolveRecipientUser();
+    $targetUserId = $recipient ? ($recipient->id ?? ($recipient->attributes['id'] ?? 1)) : ((int)$plugin->getConfigVal('userMailId') ?: 1);
+    $senderName = trim(($data['firstname'] ?? '') . ' ' . ($data['name'] ?? '')) ?: ($data['email'] ?? 'Visiteur');
+    $topic = (string) ($data['topic'] ?? 'Message de contact');
 
     \Core\Core::getInstance()->callHook('notifications:send', [
         'user_id' => $targetUserId,
@@ -195,13 +244,11 @@ function contactOnMessageReceived(array $data): void
         'source_plugin' => 'contact',
         'data' => [
             'key' => 'contact.message',
-            'params' => [
-                'actor' => ($data['firstname'] ?? '') . ' ' . ($data['name'] ?? ''),
-                'topic' => $data['topic'] ?? 'Sujet inconnu'
-            ],
-            'url' => '/admin/contact', // TODO: URL vers la gestion des messages contact
+            'params' => [$senderName, $topic],
+            'fallback_title' => 'Nouveau message de contact de %s (%s)',
+            'url' => '/admin/contact',
             'actor' => [
-                'name' => ($data['firstname'] ?? '') . ' ' . ($data['name'] ?? ''),
+                'name' => $senderName,
                 'email' => $data['email'] ?? null
             ],
             'entity' => [
@@ -209,7 +256,6 @@ function contactOnMessageReceived(array $data): void
                 'id' => $data['id'] ?? null
             ]
         ],
-        // Pas d'external_id spécifique ici (chaque message est unique)
     ]);
 }
 

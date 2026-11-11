@@ -7,8 +7,8 @@
     bottom: 24px;
     right: 24px;
     z-index: 9998;
-    background: linear-gradient(135deg, var(--primary-color, #1d4ed8) 0%, var(--primary-hover-color, #1e40af) 100%);
-    color: var(--primary-inverse-color, #ffffff);
+    background: linear-gradient(135deg, var(--evo-accent) 0%, var(--evo-accent-hover) 100%);
+    color: var(--evo-accent-text);
     border: none;
     border-radius: 50px;
     width: 52px;
@@ -17,7 +17,7 @@
     font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: var(--dc-shadow-md, 0 4px 18px rgba(0, 0, 0, 0.25));
+    box-shadow: var(--evo-shadow-md);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -83,15 +83,15 @@
     max-width: calc(100vw - 32px);
     height: 520px;
     max-height: calc(100vh - 80px);
-    background: var(--section-bg-color, #ffffff);
-    color: var(--font-color, #16181d);
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
     border-radius: 20px;
-    box-shadow: var(--dc-shadow-md, 0 12px 40px rgba(15, 23, 42, 0.22));
+    box-shadow: var(--evo-shadow-md);
     z-index: 9999;
     display: none;
     flex-direction: column;
     overflow: hidden;
-    border: 1px solid var(--border-color, #e2e8f0);
+    border: 1px solid var(--evo-border);
     font-family: inherit;
     transform: translateY(20px);
     opacity: 0;
@@ -104,8 +104,8 @@
 }
 
 .vb-chat-header {
-    background: linear-gradient(135deg, var(--primary-color, #1d4ed8) 0%, var(--primary-hover-color, #1e40af) 100%);
-    color: var(--primary-inverse-color, #ffffff);
+    background: linear-gradient(135deg, var(--evo-accent) 0%, var(--evo-accent-hover) 100%);
+    color: var(--evo-accent-text);
     padding: 14px 18px;
     display: flex;
     align-items: center;
@@ -130,7 +130,7 @@
     margin: 0;
     font-size: 0.98rem;
     font-weight: 800;
-    color: var(--primary-inverse-color, #ffffff);
+    color: var(--evo-accent-text);
 }
 .vb-chat-status {
     font-size: 0.76rem;
@@ -142,14 +142,14 @@
 .vb-chat-status-dot {
     width: 9px;
     height: 9px;
-    background: #22c55e;
-    border: 1.5px solid #ffffff;
+    background: var(--evo-success);
+    border: 1.5px solid var(--evo-accent-text);
     border-radius: 50%;
 }
 .vb-chat-close-btn {
     background: rgba(255, 255, 255, 0.15);
     border: none;
-    color: var(--primary-inverse-color, #ffffff);
+    color: var(--evo-accent-text);
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -171,7 +171,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: var(--background-color, #faf9f6);
+    background: var(--evo-bg);
 }
 .vb-chat-msg-row {
     display: flex;
@@ -189,14 +189,14 @@
     word-break: break-word;
 }
 .msg-admin .vb-chat-bubble {
-    background: var(--section-bg-color, #ffffff);
-    color: var(--font-color, #0f172a);
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
     border-bottom-left-radius: 3px;
-    border: 1px solid var(--border-color, #e2e8f0);
+    border: 1px solid var(--evo-border);
 }
 .msg-visitor .vb-chat-bubble {
-    background: linear-gradient(135deg, var(--primary-color, #1d4ed8) 0%, var(--primary-hover-color, #1e40af) 100%);
-    color: var(--primary-inverse-color, #ffffff);
+    background: linear-gradient(135deg, var(--evo-accent) 0%, var(--evo-accent-hover) 100%);
+    color: var(--evo-accent-text);
     border-bottom-right-radius: 3px;
 }
 .vb-bubble-time {
@@ -206,12 +206,12 @@
     text-align: right;
 }
 .msg-admin .vb-bubble-time {
-    color: var(--font-secondary, #64748b);
+    color: var(--evo-text-muted);
 }
 
 .vb-chat-user-banner {
-    background: var(--section-head-bg-color, #f3f1ec);
-    border-bottom: 1px solid var(--border-color, #e2e8f0);
+    background: var(--evo-surface);
+    border-bottom: 1px solid var(--evo-border);
     padding: 8px 14px;
     display: flex;
     gap: 8px;
@@ -220,19 +220,19 @@
 }
 .vb-chat-user-input {
     flex: 1;
-    border: 1px solid var(--form-border-color, #cbd5e1);
+    border: 1px solid var(--evo-input-border);
     border-radius: 6px;
     padding: 4px 8px;
     font-size: 0.82rem;
-    background: var(--form-bg-color, #ffffff);
-    color: var(--font-color, #16181d);
+    background: var(--evo-input-bg);
+    color: var(--evo-text);
     outline: none;
 }
 
 .vb-chat-footer {
     padding: 12px 14px;
-    border-top: 1px solid var(--border-color, #e2e8f0);
-    background: var(--section-bg-color, #ffffff);
+    border-top: 1px solid var(--evo-border);
+    background: var(--evo-card-bg);
 }
 .vb-chat-form {
     display: flex;
@@ -241,25 +241,25 @@
 }
 .vb-chat-input {
     flex: 1;
-    border: 1.5px solid var(--form-border-color, #cbd5e1);
+    border: 1.5px solid var(--evo-input-border);
     border-radius: 12px;
     padding: 9px 12px;
     font-size: 0.92rem;
-    background: var(--form-bg-color, #ffffff);
-    color: var(--font-color, #16181d);
+    background: var(--evo-input-bg);
+    color: var(--evo-text);
     outline: none;
     font-family: inherit;
     transition: border-color 0.15s;
 }
 .vb-chat-input:focus {
-    border-color: var(--primary-color, #1d4ed8);
+    border-color: var(--evo-accent);
 }
 .vb-chat-send-btn {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-color, #1d4ed8) 0%, var(--primary-hover-color, #1e40af) 100%);
-    color: var(--primary-inverse-color, #ffffff);
+    background: linear-gradient(135deg, var(--evo-accent) 0%, var(--evo-accent-hover) 100%);
+    color: var(--evo-accent-text);
     border: none;
     display: flex;
     align-items: center;

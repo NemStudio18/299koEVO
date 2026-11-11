@@ -473,50 +473,50 @@ namespace {
 
         $html = '<div class="profile-tab-content" id="tab-notifications" role="tabpanel" aria-labelledby="tab-button-notifications">';
         $html .= '<div class="profile-stats">';
-        $html .= '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">';
-        $html .= '<h2 style="margin: 0; font-size: 1.5rem;">Mes Notifications</h2>';
+        $html .= '<div class="notif-profile-head">';
+        $html .= '<h2>Mes Notifications</h2>';
         
         if ($unreadCount > 0) {
-            $html .= '<form method="POST" action="/notifications/mark-all-read" style="margin: 0;">';
+            $html .= '<form method="POST" action="/notifications/mark-all-read" class="notif-profile-markall-form">';
             $html .= '<input type="hidden" name="token" value="' . \Core\Security\Csrf::token() . '" />';
-            $html .= '<button type="submit" class="btn-mark-all" style="padding: 8px 15px; font-size: 0.85rem;">Tout marquer comme lu</button>';
+            $html .= '<button type="submit" class="btn-mark-all notif-profile-markall-btn">Tout marquer comme lu</button>';
             $html .= '</form>';
         }
         $html .= '</div>';
 
         if (empty($notifications)) {
-            $html .= '<div style="padding: 3rem; text-align: center; background: var(--panel-bg); border-radius: var(--panel-radius); border: 1px dashed var(--panel-border);">';
-            $html .= '<i class="fa-solid fa-bell-slash" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>';
-            $html .= '<p style="color: #6c757d;">Aucune notification pour le moment.</p>';
+            $html .= '<div class="notif-empty-box">';
+            $html .= '<i class="fa-solid fa-bell-slash"></i>';
+            $html .= '<p>Aucune notification pour le moment.</p>';
             $html .= '</div>';
         } else {
-            $html .= '<div class="notifications-list" style="display: flex; flex-direction: column; gap: 0.75rem;">';
+            $html .= '<div class="notifications-list notif-profile-list">';
             foreach ($notifications as $notif) {
                 $isUnread = empty($notif['is_read']);
                 $unreadClass = $isUnread ? 'unread' : '';
                 $data = $notif['data'] ?? [];
                 $title = (string) ($notif['title'] ?? \Notifications\Entities\NotificationManager::formatTitle((string) ($notif['type'] ?? ''), is_array($data) ? $data : []));
                 
-                $html .= '<div class="notification ' . $unreadClass . '" id="profile-notif-' . htmlspecialchars((string) $notif['id']) . '" style="background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 8px; padding: 1rem; display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: start;">';
+                $html .= '<div class="notification notif-profile-card ' . $unreadClass . '" id="profile-notif-' . htmlspecialchars((string) $notif['id']) . '">';
                 
                 // Badge source
-                $html .= '<div class="notif-source" style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; font-weight: 700;">' . htmlspecialchars((string) ($notif['source_plugin'] ?? 'core')) . '</div>';
+                $html .= '<div class="notif-source notif-profile-source">' . htmlspecialchars((string) ($notif['source_plugin'] ?? 'core')) . '</div>';
                 
                 $html .= '<div class="notif-content">';
-                $html .= '<strong style="display: block; margin-bottom: 0.25rem; color: var(--primary-color);">' . htmlspecialchars($title) . '</strong>';
+                $html .= '<strong class="notif-profile-title">' . htmlspecialchars($title) . '</strong>';
                 
                 if (!empty($data['url'])) {
-                    $html .= '<a href="' . htmlspecialchars($data['url']) . '" class="notif-link" style="display: inline-block; margin-top: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--primary-color);">Détails <i class="fa-solid fa-external-link" style="font-size: 0.75rem;"></i></a>';
+                    $html .= '<a href="' . htmlspecialchars($data['url']) . '" class="notif-link notif-profile-link">Détails <i class="fa-solid fa-external-link"></i></a>';
                 }
                 $html .= '</div>';
                 
-                $html .= '<div class="notif-meta" style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">';
+                $html .= '<div class="notif-meta notif-profile-meta">';
                 $createdAt = $notif['created_at'] ?? null;
-                $html .= '<span style="font-size: 0.75rem; color: var(--text-muted);">' . ($createdAt ? date('d/m/Y H:i', strtotime($createdAt)) : '—') . '</span>';
+                $html .= '<span class="notif-profile-date">' . ($createdAt ? date('d/m/Y H:i', strtotime($createdAt)) : '—') . '</span>';
 
                 
                 if ($isUnread) {
-                    $html .= '<button class="mark-read" data-id="' . htmlspecialchars((string) $notif['id']) . '" data-token="' . \Core\Security\Csrf::token() . '" style="background: none; border: 1px solid var(--primary-color); color: var(--primary-color); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Lue</button>';
+                    $html .= '<button class="mark-read notif-profile-read-btn" data-id="' . htmlspecialchars((string) $notif['id']) . '" data-token="' . \Core\Security\Csrf::token() . '">Lue</button>';
                 }
                 $html .= '</div>';
                 $html .= '</div>';

@@ -22,7 +22,15 @@ class AntispamTextCaptcha extends AntispamAbstractCaptcha {
     }
 
     public function isValid() {
-        return (isset($_SESSION['antispam_result']) && isset($_POST['antispam']) && $_SESSION['antispam_result'] === sha1($_POST['antispam']) && $this->isGenericValid());
+        if (!$this->isGenericValid()) {
+            return false;
+        }
+        if (isset($_SESSION['antispam_result']) && isset($_POST['antispam']) && $_SESSION['antispam_result'] === sha1((string) $_POST['antispam'])) {
+            $this->lastReason = 'valid_captcha';
+            return true;
+        }
+        $this->lastReason = 'wrong_captcha';
+        return false;
     }
 
     protected function generate() {

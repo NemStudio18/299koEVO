@@ -3,3 +3,124 @@
     text-decoration: none;
     color: inherit;
 }
+
+.meteo-forecast-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.meteo-forecast-item {
+    background: var(--evo-card-bg);
+    border: 1px solid var(--evo-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--evo-shadow-sm);
+    transition: transform 0.2s ease;
+}
+
+.meteo-forecast-item:hover {
+    transform: translateY(-5px);
+}
+
+.meteo-forecast-date {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--evo-text);
+    text-transform: capitalize;
+}
+
+.meteo-forecast-icon {
+    font-size: 3rem;
+    margin: 1rem 0;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.temp-max {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--evo-danger);
+}
+
+.temp-min {
+    font-size: 1.1rem;
+    color: var(--evo-accent);
+    margin-left: 0.75rem;
+    opacity: 0.85;
+}
+
+.meteo-hourly-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding: 1.5rem 0.5rem;
+    margin-top: 1rem;
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.meteo-hourly-item {
+    flex: 0 0 90px;
+    background: var(--evo-card-bg);
+    border-radius: 12px;
+    padding: 1rem 0.5rem;
+    text-align: center;
+    box-shadow: var(--evo-shadow-sm);
+    border: 1px solid var(--evo-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.meteo-hourly-item.temp-hot { background: var(--evo-warning-bg); border-color: var(--evo-warning-border); }
+.meteo-hourly-item.temp-cold { background: var(--evo-info-bg); border-color: var(--evo-info-border); }
+
+.meteo-hourly-time {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--evo-text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.meteo-hourly-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.meteo-hourly-temp {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--evo-text);
+}
+
+.meteo-hourly-precip {
+    font-size: 0.7rem;
+    color: var(--evo-accent);
+    margin-top: 0.25rem;
+    font-weight: 600;
+}
+
+.meteo-hourly-day-header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--evo-surface);
+    color: var(--evo-text-muted);
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    padding: 0 0.75rem;
+    border-radius: 20px;
+    height: 32px;
+    align-self: center;
+    margin-right: 0.5rem;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    box-shadow: var(--evo-shadow-sm);
+}

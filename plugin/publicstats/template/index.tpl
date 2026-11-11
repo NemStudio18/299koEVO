@@ -1,36 +1,5 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-    /* Styling complementary to reused profile classes */
-    .chart-container {
-        position: relative;
-        height: 250px;
-        width: 100%;
-        margin: auto;
-    }
-    .chart-container-sm {
-        position: relative;
-        height: 200px;
-        width: 100%;
-        margin: auto;
-    }
-    .stat-card-icon {
-        font-size: 1.5rem;
-        opacity: 0.8;
-    }
-    .stat-value {
-        font-size: 2rem;
-        font-weight: 700;
-        line-height: 1.2;
-    }
-    .stat-label {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--font-secondary);
-    }
-</style>
-
 <div class="public-stats-section">
 
     <div class="d-flex justify-content-between align-items-center mb-4">

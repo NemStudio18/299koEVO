@@ -8,14 +8,14 @@
 .poi-popup-title {
     margin-bottom: 10px;
     font-size: 16px;
-    color: var(--font-color, #333);
+    color: var(--evo-text);
     display: block;
     font-weight: bold;
 }
 
 .poi-popup-info {
     margin-bottom: 8px;
-    color: var(--font-secondary, #666);
+    color: var(--evo-text-muted);
     font-size: 13px;
     line-height: 1.4;
     display: flex;
@@ -23,32 +23,32 @@
 }
 
 .poi-popup-icon {
-    color: var(--primary-color, #1d4ed8);
+    color: var(--evo-accent);
     margin-right: 8px;
     width: 16px;
     text-align: center;
 }
 
 .poi-popup-link {
-    color: var(--font-secondary, #666);
+    color: var(--evo-text-muted);
     text-decoration: none;
 }
 
 .poi-popup-link:hover {
-    color: var(--primary-color);
+    color: var(--evo-accent);
 }
 
 .poi-popup-footer {
     margin-top: 12px;
     padding-top: 12px;
-    border-top: 1px solid var(--form-border-color, #e0e0e0);
+    border-top: 1px solid var(--evo-border);
 }
 
 .poi-popup-button {
     display: block;
     padding: 10px;
-    background-color: var(--primary-color, #1d4ed8);
-    color: var(--primary-inverse-color, #ffffff) !important;
+    background-color: var(--evo-accent);
+    color: var(--evo-accent-text) !important;
     text-decoration: none;
     border-radius: 8px;
     font-size: 13px;
@@ -59,7 +59,7 @@
 }
 
 .poi-popup-button:hover {
-    background-color: var(--primary-hover-color, #1e40af);
+    background-color: var(--evo-accent-hover);
 }
 
 .poi-popup-button i {
@@ -72,7 +72,7 @@
     height: 400px;
     width: 100%;
     z-index: 1;
-    background: var(--section-head-bg-color, #f8f9fa);
+    background: var(--evo-surface);
     /* Prevents white flash on mobile */
     min-height: 200px;
 }
@@ -95,9 +95,9 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3) !important;
-    border: 2px solid white !important;
-    background-color: var(--primary-color, #1d4ed8) !important;
+    box-shadow: var(--evo-shadow-md) !important;
+    border: 2px solid var(--evo-accent-text) !important;
+    background-color: var(--evo-accent) !important;
     /* Base fallback */
     transition: transform 0.2s ease !important;
     z-index: 500;

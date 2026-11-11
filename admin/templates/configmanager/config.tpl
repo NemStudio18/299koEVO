@@ -85,7 +85,7 @@
 					<label for="antispamLogin">{{Lang.configmanager-antispam-login}}</label>
 					<br><small>{{Lang.configmanager-antispam-login-desc}}</small>
 					{% if not antispamPluginActive %}
-						<br><small style="color: #b45309;"><i class="fa-solid fa-triangle-exclamation"></i> {{Lang.configmanager-antispam-inactive-note}}</small>
+						<br><small class="cfg-warn-note"><i class="fa-solid fa-triangle-exclamation"></i> {{Lang.configmanager-antispam-inactive-note}}</small>
 					{% endif %}
 				</p>
 				<p>
@@ -93,7 +93,7 @@
 					<label for="antispamRegister">{{Lang.configmanager-antispam-register}}</label>
 					<br><small>{{Lang.configmanager-antispam-register-desc}}</small>
 					{% if not antispamPluginActive %}
-						<br><small style="color: #b45309;"><i class="fa-solid fa-triangle-exclamation"></i> {{Lang.configmanager-antispam-inactive-note}}</small>
+						<br><small class="cfg-warn-note"><i class="fa-solid fa-triangle-exclamation"></i> {{Lang.configmanager-antispam-inactive-note}}</small>
 					{% endif %}
 				</p>
 				<p>
@@ -137,8 +137,8 @@
 				</p>
 				<p>
 					<label id="label_theme" for="theme">{{Lang.configmanager-theme}}</label>
-					<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
-						<select name="theme" id="theme" style="flex: 1 1 240px; margin: 0;">
+					<div class="cfg-theme-row">
+						<select name="theme" id="theme" class="cfg-theme-select">
 							{% for th in themesList %}
 								<option {% if CORE.getConfigVal("theme") == th.slug %} selected {% endif %} value="{{th.slug}}">{{th.name}}</option>
 							{% endfor %}
@@ -147,7 +147,7 @@
 							<i class="fa-solid fa-eye"></i> {{Lang.configmanager-theme-preview}}
 						</button>
 					</div>
-					<small id="themeMetaLine" style="display: block; margin-top: 6px; color: #64748b;"></small>
+					<small id="themeMetaLine" class="cfg-theme-meta"></small>
 				</p>
 			</li>
 			<li class="tab">
@@ -212,7 +212,7 @@
               <strong>Configuration du Stockage & Bases de données</strong>
               <br><small>La configuration de la base de données principale et des connexions SQL est désormais centralisée dans le module de gestion du stockage.</small>
           </p>
-          <div style="margin: 20px 0;">
+          <div class="cfg-storage-cta">
               <a href="{ ROUTER.generate('storage-admin') }" class="button primary">
                   <i class="fa-solid fa-database"></i> Accéder à la Gestion du Stockage
               </a>
@@ -247,7 +247,7 @@
         {% if installationId %}
         <p>
           <strong>{{Lang.configmanager-telemetry-installation-id}}:</strong>
-          <br><code style="font-size: 0.9em; word-break: break-all;">{{installationId}}</code>
+          <br><code class="cfg-install-id">{{installationId}}</code>
           <br><small>{{Lang.configmanager-telemetry-installation-id-desc}}</small>
         </p>
         {% endif %}
@@ -259,7 +259,7 @@
         {% else %}
         <p>
           <strong>{{Lang.configmanager-telemetry-last-sync}}:</strong>
-          <br><span style="color: #dc3545;">{{Lang.configmanager-telemetry-never-synced}}</span>
+          <br><span class="cfg-danger-note">{{Lang.configmanager-telemetry-never-synced}}</span>
         </p>
         {% endif %}
         <p>
@@ -281,7 +281,7 @@
               <br><small>Activez ce mode pour empêcher l'accès au site public pendant vos travaux.</small>
           </p>
           {% IF maintenanceMode %}
-          <div class="msg warning" style="margin-bottom: 20px;">
+          <div class="msg warning cfg-maint-alert">
               <i class="fa-solid fa-triangle-exclamation"></i>
               <strong>Le site est actuellement en maintenance.</strong>
               <br>Seuls les administrateurs peuvent y accéder.
@@ -314,22 +314,22 @@
 	</p>
 </form>
 
-<div id="themePreviewModal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.72); align-items: center; justify-content: center; padding: 20px;">
-	<div style="width: min(1160px, 100%); height: min(86vh, 840px); background: #ffffff; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0,0,0,0.35);">
-		<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap;">
-			<div style="display: flex; align-items: center; gap: 10px;">
-				<i class="fa-solid fa-palette" style="color: #1f62a9;"></i>
-				<strong id="themePreviewTitle" style="color: #0f172a;">{{Lang.configmanager-theme-preview-title}}</strong>
+<div id="themePreviewModal" class="cfg-preview-modal">
+	<div class="cfg-preview-dialog">
+		<div class="cfg-preview-head">
+			<div class="cfg-preview-title-wrap">
+				<i class="fa-solid fa-palette"></i>
+				<strong id="themePreviewTitle">{{Lang.configmanager-theme-preview-title}}</strong>
 			</div>
-			<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+			<div class="cfg-preview-controls">
 				<button type="button" id="themePreviewDesktopBtn" class="button small primary"><i class="fa-solid fa-desktop"></i> Bureau</button>
 				<button type="button" id="themePreviewMobileBtn" class="button small"><i class="fa-solid fa-mobile-screen-button"></i> Mobile</button>
 				<a id="themePreviewNewTab" href="#" target="_blank" class="button small"><i class="fa-solid fa-arrow-up-right-from-square"></i> Nouvel onglet</a>
 				<button type="button" id="themePreviewCloseBtn" class="button small alert"><i class="fa-solid fa-xmark"></i> Fermer</button>
 			</div>
 		</div>
-		<div style="flex: 1; background: #e2e8f0; display: flex; justify-content: center; align-items: stretch; padding: 12px; overflow: auto;">
-			<iframe id="themePreviewIframe" src="about:blank" title="{{Lang.configmanager-theme-preview-title}}" style="width: 100%; height: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #ffffff; transition: width 0.2s ease;"></iframe>
+		<div class="cfg-preview-stage">
+			<iframe id="themePreviewIframe" class="cfg-preview-iframe" src="about:blank" title="{{Lang.configmanager-theme-preview-title}}"></iframe>
 		</div>
 	</div>
 </div>
@@ -378,13 +378,13 @@
 		if (titleEl) titleEl.textContent = 'Aperçu en direct : ' + (info ? info.name : slug);
 		if (newTabEl) newTabEl.href = url;
 		iframe.src = url;
-		iframe.style.width = '100%';
-		modal.style.display = 'flex';
+		iframe.classList.remove('is-mobile');
+		modal.classList.add('is-open');
 	}
 
 	function closePreview() {
 		if (!modal || !iframe) return;
-		modal.style.display = 'none';
+		modal.classList.remove('is-open');
 		iframe.src = 'about:blank';
 	}
 
@@ -400,18 +400,18 @@
 		});
 	}
 	document.addEventListener('keydown', function(e) {
-		if (e.key === 'Escape' && modal && modal.style.display === 'flex') closePreview();
+		if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) closePreview();
 	});
 	if (desktopBtn && iframe) {
 		desktopBtn.addEventListener('click', function() {
-			iframe.style.width = '100%';
+			iframe.classList.remove('is-mobile');
 			desktopBtn.classList.add('primary');
 			if (mobileBtn) mobileBtn.classList.remove('primary');
 		});
 	}
 	if (mobileBtn && iframe) {
 		mobileBtn.addEventListener('click', function() {
-			iframe.style.width = '390px';
+			iframe.classList.add('is-mobile');
 			mobileBtn.classList.add('primary');
 			if (desktopBtn) desktopBtn.classList.remove('primary');
 		});

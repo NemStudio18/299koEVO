@@ -64,6 +64,21 @@
     --infos-color: var(--dc-info);
     --vb-blue: var(--dc-accent);
     --vb-gold: var(--dc-accent);
+
+    /* Contrat Core --evo-* */
+    --evo-bg: var(--dc-bg);
+    --evo-surface: var(--dc-surface-alt);
+    --evo-surface-alt: var(--dc-border);
+    --evo-card-bg: var(--dc-surface);
+    --evo-text: var(--dc-text);
+    --evo-text-muted: var(--dc-text-muted);
+    --evo-border: var(--dc-border);
+    --evo-border-strong: var(--dc-border-strong);
+    --evo-input-bg: var(--dc-surface);
+    --evo-input-border: var(--dc-border-strong);
+    --evo-accent: var(--dc-accent);
+    --evo-accent-hover: var(--dc-accent-hover);
+    --evo-accent-soft: var(--dc-accent-soft);
 }
 
 /* Mode Sombre Automatique */

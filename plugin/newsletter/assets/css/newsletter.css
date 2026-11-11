@@ -54,13 +54,13 @@
 
 .newsletter-modal-content {
     position: relative;
-    background: var(--section-bg-color, #ffffff);
-    color: var(--font-color, #16181d);
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
     width: 90%;
     max-width: 500px;
     border-radius: 12px;
-    border: 1px solid var(--border-color, transparent);
-    box-shadow: var(--dc-shadow-md, 0 10px 30px rgba(0, 0, 0, 0.2));
+    border: 1px solid var(--evo-border);
+    box-shadow: var(--evo-shadow-md);
     overflow: hidden;
     transform: translateY(20px);
     transition: transform 0.3s;
@@ -72,31 +72,31 @@
 
 .newsletter-modal-header {
     padding: 15px 20px;
-    border-bottom: 1px solid var(--border-color, #eee);
+    border-bottom: 1px solid var(--evo-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--section-head-bg-color, #f9f9f9);
+    background: var(--evo-surface);
 }
 
 .newsletter-modal-header h3 {
     margin: 0;
     font-size: 1.2rem;
-    color: var(--font-color, #333);
+    color: var(--evo-text);
 }
 
 .newsletter-modal-close {
     background: none;
     border: none;
     font-size: 1.2rem;
-    color: var(--font-secondary, #666);
+    color: var(--evo-text-muted);
     cursor: pointer;
     padding: 5px;
     transition: color 0.2s;
 }
 
 .newsletter-modal-close:hover {
-    color: var(--font-color, #333);
+    color: var(--evo-text);
 }
 
 .newsletter-modal-body {
@@ -106,8 +106,8 @@
 .newsletter-rgpd {
     margin: 15px 0;
     padding: 10px;
-    background: var(--section-head-bg-color, #f0f8ff);
-    border: 1px solid var(--border-color, transparent);
+    background: var(--evo-surface);
+    border: 1px solid var(--evo-border);
     border-radius: 6px;
     font-size: 0.85rem;
 }
@@ -123,20 +123,20 @@
 
 .newsletter-rgpd-text {
     display: block;
-    color: var(--font-secondary, #666);
+    color: var(--evo-text-muted);
     margin-left: 20px;
 }
 
 /* --- USER PROFILE SETTINGS --- */
 .newsletter-icon-subscribed {
     font-size: 1.5rem;
-    color: var(--primary-color, #1d4ed8);
+    color: var(--evo-accent);
     margin-top: 0.25rem;
 }
 
 .newsletter-icon-unsubscribed {
     font-size: 1.5rem;
-    color: var(--font-muted, #9aa3b2);
+    color: var(--evo-text-muted);
     margin-top: 0.25rem;
 }
 

@@ -3,14 +3,13 @@
 .auth-plugin-extra {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+    border-top: 1px solid var(--evo-border);
 }
 
 .auth-custom-text {
     margin-bottom: 20px;
     font-style: italic;
-    color: var(--font-color);
-    opacity: 0.8;
+    color: var(--evo-text-muted);
 }
 
 /* OAuth Divider & Buttons */
@@ -19,8 +18,7 @@
     align-items: center;
     text-align: center;
     margin: 20px 0 10px;
-    color: var(--font-color, #666);
-    opacity: 0.65;
+    color: var(--evo-text-muted);
     font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -30,7 +28,7 @@
 .oauth-divider::after {
     content: '';
     flex: 1;
-    border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+    border-bottom: 1px solid var(--evo-border);
 }
 .oauth-divider span {
     padding: 0 12px;
@@ -53,14 +51,14 @@
 }
 
 .oauth-buttons .button.facebook {
-    background-color: var(--primary-color, #1877f2);
-    color: #fff;
+    background-color: var(--evo-accent);
+    color: var(--evo-accent-text);
 }
 
 .oauth-buttons .button.google {
-    background-color: var(--section-bg-color, #fff);
-    color: var(--font-color, #757575);
-    border: 1px solid var(--border-color, #ddd);
+    background-color: var(--evo-card-bg);
+    color: var(--evo-text);
+    border: 1px solid var(--evo-border);
 }
 
 /* Spoiler / Help Block */
@@ -74,21 +72,21 @@
     align-items: center;
     gap: 8px;
     font-weight: 600;
-    color: var(--primary-color);
+    color: var(--evo-accent);
     transition: color 0.3s;
 }
 
 .auth-spoiler-toggle:hover {
-    color: var(--primary-hover-color);
+    color: var(--evo-accent-hover);
 }
 
 .auth-spoiler-content {
     display: none;
     margin-top: 10px;
     padding: 15px;
-    background: rgba(0, 0, 0, 0.03);
-    border-radius: var(--section-radius);
-    border-left: 4px solid var(--primary-color);
+    background: var(--evo-surface);
+    border-radius: var(--evo-radius-sm);
+    border-left: 4px solid var(--evo-accent);
 }
 
 .auth-spoiler.active .auth-spoiler-content {
@@ -114,13 +112,14 @@
 }
 
 .auth-modal-content {
-    background-color: var(--section-bg-color);
+    background-color: var(--evo-card-bg);
+    color: var(--evo-text);
     padding: 30px;
-    border-radius: var(--section-radius);
+    border-radius: var(--evo-radius-md);
     max-width: 500px;
     width: 90%;
     position: relative;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--evo-shadow-md);
 }
 
 .auth-modal-close {
@@ -129,7 +128,7 @@
     top: 10px;
     font-size: 24px;
     cursor: pointer;
-    color: var(--infos-color);
+    color: var(--evo-text-muted);
 }
 
 /* Custom Checkboxes */
@@ -148,13 +147,14 @@
 .auth-desc header h2 {
     margin: 0 0 15px 0;
     font-size: 1.5em;
-    color: var(--primary-color);
+    color: var(--evo-accent);
 }
 
 .password-requirements {
     margin-top: 0.5rem;
     padding: 0.75rem;
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--evo-surface);
+    border: 1px solid var(--evo-border);
     border-radius: 4px;
     font-size: 0.9em;
 }
@@ -163,7 +163,7 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: var(--font-color);
+    color: var(--evo-text);
 }
 
 .password-requirements ul {
@@ -176,25 +176,25 @@
     position: relative;
     padding-left: 1.5rem;
     margin: 0.25rem 0;
-    color: var(--font-color);
+    color: var(--evo-text);
 }
 
 .password-requirements li:before {
     content: '○';
     position: absolute;
     left: 0;
-    color: var(--infos-color, #999);
+    color: var(--evo-text-muted);
     font-weight: bold;
 }
 
 .password-requirements li.valid:before {
     content: '✓';
-    color: var(--success-color, #10b981);
+    color: var(--evo-success);
 }
 
 .password-requirements li.invalid:before {
     content: '✗';
-    color: var(--error-color, #ef4444);
+    color: var(--evo-danger);
 }
 
 .auth-checkbox-row {

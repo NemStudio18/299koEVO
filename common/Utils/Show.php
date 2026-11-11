@@ -100,6 +100,11 @@ class Show
             $pluginsManager = PluginsManager::getInstance();
             $activePlugin = $core->getPluginToCall();
             $isAdminAssets = self::isAdminAssetsMode();
+            $tokensCss = 'common/css/ui-tokens.css';
+            if (file_exists(ROOT . $tokensCss)) {
+                $ver = '?v=' . filemtime(ROOT . $tokensCss);
+                echo '<link href="' . Util::urlBuild($tokensCss) . $ver . '" rel="stylesheet" type="text/css" />';
+            }
             foreach ($core->getCss() as $k => $v) {
                 $ver = file_exists($v) ? ('?v=' . filemtime($v)) : '';
                 if (!$isAdminAssets) {

@@ -103,7 +103,7 @@
         <section class="menus-tree-col">
             <div class="menus-tree-header">
                 <div>
-                    <h2 class="menus-col-title" style="margin:0;">Structure du menu</h2>
+                    <h2 class="menus-col-title">Structure du menu</h2>
                     <small class="menus-hint">Glissez-déposez ou utilisez les flèches pour réordonner et créer des sous-menus (y compris pour les plugins).</small>
                 </div>
                 <button type="button" id="btnSaveOrder" class="menus-btn-save" onclick="persistCurrentOrder()">
@@ -119,432 +119,6 @@
 <script id="menuTreeJson" type="application/json">{{treeJson|raw}}</script>
 <script id="menuCatalogJson" type="application/json">{{catalogJson|raw}}</script>
 <script id="menuPagesJson" type="application/json">{{pagesJson|raw}}</script>
-
-<style>
-.menus-admin-wrap {
-    --mn-accent: #1f62a9;
-    --mn-accent-soft: #eff6ff;
-    --mn-border: #e2e8f0;
-    --mn-text: #0f172a;
-    --mn-muted: #64748b;
-    max-width: 1320px;
-    margin: 0 auto;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-.menus-top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-}
-.menus-page-title {
-    margin: 0;
-    font-size: 1.55rem;
-    font-weight: 800;
-    color: var(--mn-text);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.menus-page-title i {
-    color: var(--mn-accent);
-}
-.menus-page-sub {
-    margin: 4px 0 0;
-    color: var(--mn-muted);
-    font-size: 0.92rem;
-}
-.menus-btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 15px;
-    border: 1px solid #cbd5e1;
-    border-radius: 10px;
-    background: #fff;
-    color: #334155;
-    font-weight: 600;
-    text-decoration: none;
-    font-size: 0.9rem;
-}
-.menus-btn-secondary:hover {
-    border-color: var(--mn-accent);
-    color: var(--mn-accent);
-}
-.menus-location-tabs {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 18px;
-}
-.menus-loc-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: 10px;
-    border: 1px solid var(--mn-border);
-    background: #fff;
-    color: #475569;
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-decoration: none;
-    transition: all 0.15s ease;
-}
-.menus-loc-tab:hover {
-    background: #f8fafc;
-    color: var(--mn-text);
-}
-.menus-loc-tab.is-active {
-    background: var(--mn-accent);
-    border-color: var(--mn-accent);
-    color: #fff;
-}
-.loc-badge {
-    background: rgba(15, 23, 42, 0.12);
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 0.78rem;
-}
-.menus-loc-tab.is-active .loc-badge {
-    background: rgba(255, 255, 255, 0.25);
-}
-.menus-toast {
-    margin-bottom: 14px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    background: #ecfdf5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-}
-.menus-toast.is-error {
-    background: #fef2f2;
-    color: #991b1b;
-    border-color: #fecaca;
-}
-.menus-grid {
-    display: grid;
-    grid-template-columns: 350px minmax(0, 1fr);
-    gap: 20px;
-    align-items: start;
-}
-.menus-sources-col,
-.menus-tree-col {
-    background: #fff;
-    border: 1px solid var(--mn-border);
-    border-radius: 14px;
-    padding: 16px;
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
-}
-.menus-col-title {
-    margin: 0 0 12px;
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: var(--mn-text);
-}
-.source-box {
-    border: 1px solid var(--mn-border);
-    border-radius: 10px;
-    margin-bottom: 10px;
-    overflow: hidden;
-    background: #f8fafc;
-}
-.source-box summary {
-    padding: 10px 12px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    color: #1e293b;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    list-style: none;
-}
-.source-box[open] summary {
-    border-bottom: 1px solid var(--mn-border);
-}
-.source-body {
-    padding: 10px 12px;
-}
-.source-search {
-    width: 100%;
-    padding: 7px 10px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    margin-bottom: 8px;
-    box-sizing: border-box;
-    background: #fff;
-}
-.source-check-list {
-    max-height: 180px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-bottom: 10px;
-}
-.source-check-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.86rem;
-    color: #334155;
-    padding: 4px 6px;
-    border-radius: 6px;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    cursor: pointer;
-}
-.source-check-row small {
-    color: var(--mn-muted);
-    margin-left: auto;
-    font-size: 0.72rem;
-}
-.source-check-row.is-already-added {
-    opacity: 0.65;
-    cursor: not-allowed;
-    background: #f8fafc;
-}
-.source-added-badge {
-    margin-left: auto;
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 999px;
-    background: #e0f2fe;
-    color: #0369a1;
-    border: 1px solid #bae6fd;
-    white-space: nowrap;
-}
-.source-form {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-.source-form label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: #334155;
-}
-.source-form input[type="text"] {
-    padding: 7px 10px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 0.86rem;
-}
-.source-form .inline-check {
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-}
-.source-actions {
-    display: flex;
-    justify-content: flex-end;
-}
-.menus-btn-primary,
-.menus-btn-save {
-    background: var(--mn-accent);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 0.84rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-.menus-btn-primary:hover,
-.menus-btn-save:hover {
-    background: #164980;
-}
-.menus-tree-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    padding-bottom: 12px;
-    margin-bottom: 12px;
-    border-bottom: 1px solid var(--mn-border);
-}
-.menus-hint {
-    color: var(--mn-muted);
-    font-size: 0.82rem;
-}
-.menu-tree-root {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.menu-node-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.menu-node-children {
-    margin-left: 28px;
-    padding-left: 12px;
-    border-left: 2px dashed #cbd5e1;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.menu-node-card {
-    border: 1px solid var(--mn-border);
-    border-radius: 10px;
-    background: #fff;
-    transition: border-color 0.15s, box-shadow 0.15s;
-}
-.menu-node-card.is-disabled {
-    opacity: 0.6;
-    background: #f8fafc;
-}
-.menu-node-card.is-dragging {
-    opacity: 0.45;
-    border-style: dashed;
-}
-.menu-node-card.drag-over-top {
-    border-top: 3px solid var(--mn-accent);
-}
-.menu-node-card.drag-over-inside {
-    background: var(--mn-accent-soft);
-    border-color: var(--mn-accent);
-}
-.menu-node-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 12px;
-}
-.menu-drag-handle {
-    color: #94a3b8;
-    cursor: grab;
-    padding: 4px;
-}
-.menu-node-title {
-    font-weight: 700;
-    font-size: 0.92rem;
-    color: var(--mn-text);
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    flex: 1;
-    min-width: 0;
-}
-.menu-type-pill {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 999px;
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #cbd5e1;
-}
-.menu-type-pill.type-page { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-.menu-type-pill.type-plugin { background: #f3e8ff; color: #7e22ce; border-color: #d8b4fe; }
-.menu-type-pill.type-url { background: #fef3c7; color: #b45309; border-color: #fde68a; }
-.menu-type-pill.type-folder { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
-.menu-vis-pill {
-    font-size: 0.7rem;
-    padding: 2px 7px;
-    border-radius: 999px;
-    background: #f8fafc;
-    color: #64748b;
-    border: 1px solid #e2e8f0;
-}
-.menu-node-tools {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-.menu-icon-btn {
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
-    color: #475569;
-    border-radius: 6px;
-    width: 28px;
-    height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 0.78rem;
-}
-.menu-icon-btn:hover {
-    background: #e2e8f0;
-    color: var(--mn-text);
-}
-.menu-node-editor {
-    padding: 12px;
-    border-top: 1px solid var(--mn-border);
-    background: #f8fafc;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-}
-.menu-node-editor label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #334155;
-}
-.menu-node-editor input[type="text"],
-.menu-node-editor select {
-    padding: 6px 9px;
-    border: 1px solid #cbd5e1;
-    border-radius: 7px;
-    font-size: 0.85rem;
-    background: #fff;
-}
-.menu-editor-footer {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    padding-top: 6px;
-}
-.menu-btn-danger {
-    background: #fef2f2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
-    border-radius: 7px;
-    padding: 6px 11px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    cursor: pointer;
-}
-.menu-btn-danger:hover {
-    background: #fee2e2;
-}
-.menu-empty-state {
-    text-align: center;
-    padding: 36px 20px;
-    color: var(--mn-muted);
-    border: 2px dashed var(--mn-border);
-    border-radius: 12px;
-}
-.is-hidden {
-    display: none !important;
-}
-@media (max-width: 900px) {
-    .menus-grid { grid-template-columns: 1fr; }
-    .menu-node-editor { grid-template-columns: 1fr; }
-}
-</style>
 
 <script>
 const wrap = document.getElementById('menusAdminWrap');
@@ -622,7 +196,7 @@ function renderSourcePages(query) {
     const q = (query || '').trim().toLowerCase();
     const filtered = pagesData.filter(p => !q || p.name.toLowerCase().includes(q));
     if (!filtered.length) {
-        box.innerHTML = '<div style="font-size:0.82rem;color:#64748b;padding:6px;">Aucune page trouvée.</div>';
+        box.innerHTML = '<div class="menus-source-empty">Aucune page trouvée.</div>';
         return;
     }
     box.innerHTML = filtered.map(p => {
@@ -645,7 +219,7 @@ function renderSourcePlugins(query) {
     const q = (query || '').trim().toLowerCase();
     const filtered = catalogData.filter(m => !q || m.label.toLowerCase().includes(q) || m.plugin.toLowerCase().includes(q));
     if (!filtered.length) {
-        box.innerHTML = '<div style="font-size:0.82rem;color:#64748b;padding:6px;">Aucun module public.</div>';
+        box.innerHTML = '<div class="menus-source-empty">Aucun module public.</div>';
         return;
     }
     box.innerHTML = filtered.map(m => {
@@ -765,7 +339,7 @@ function renderTree() {
     const container = document.getElementById('menuTreeContainer');
     if (!container) return;
     if (!treeData.length) {
-        container.innerHTML = `<div class="menu-empty-state"><i class="fa-regular fa-compass" style="font-size:1.8rem;margin-bottom:8px;display:block;"></i>Aucun élément dans cet emplacement.<br>Ajoutez des pages, plugins ou liens depuis la colonne de gauche.</div>`;
+        container.innerHTML = `<div class="menu-empty-state"><i class="fa-regular fa-compass menus-empty-icon"></i>Aucun élément dans cet emplacement.<br>Ajoutez des pages, plugins ou liens depuis la colonne de gauche.</div>`;
         return;
     }
     container.innerHTML = treeData.map((node, idx) => renderNodeHtml(node, 0, idx, treeData.length)).join('');
@@ -780,7 +354,7 @@ function renderNodeHtml(node, parentId, idx, siblingsLen) {
     const childrenHtml = (node.children && node.children.length)
         ? `<div class="menu-node-children">${node.children.map((c, ci) => renderNodeHtml(c, idStr, ci, node.children.length)).join('')}</div>`
         : '';
-    const statusWarn = !node.targetActive ? `<span class="menu-vis-pill" style="color:#b91c1c;border-color:#fecaca;">Cible inactive</span>` : '';
+    const statusWarn = !node.targetActive ? `<span class="menu-vis-pill menu-vis-pill-warn">Cible inactive</span>` : '';
 
     return `
         <div class="menu-node-wrap" data-id="${idAttr}">
@@ -826,7 +400,7 @@ function renderNodeHtml(node, parentId, idx, siblingsLen) {
                         <input type="text" name="target_ref" value="${esc(node.targetRef)}" required>
                     </label>` : `
                     <label>Cible liée
-                        <input type="text" value="${esc(node.targetLabel || node.url)}" disabled style="background:#f1f5f9;">
+                        <input type="text" value="${esc(node.targetLabel || node.url)}" disabled>
                     </label>`}
                     <label>Icône FontAwesome
                         <input type="text" name="icon" value="${esc(node.icon)}" placeholder="ex: fa-solid fa-star">
@@ -835,12 +409,12 @@ function renderNodeHtml(node, parentId, idx, siblingsLen) {
                         <input type="text" name="css_class" value="${esc(node.cssClass)}">
                     </label>
                     <label>Ouverture & État
-                        <div style="display:flex;gap:10px;align-items:center;padding-top:4px;">
-                            <select name="target_attr" style="flex:1;">
+                        <div class="menu-editor-split">
+                            <select name="target_attr">
                                 <option value="_self" ${node.targetAttr === '_self' ? 'selected' : ''}>Même onglet</option>
                                 <option value="_blank" ${node.targetAttr === '_blank' ? 'selected' : ''}>Nouvel onglet</option>
                             </select>
-                            <select name="is_enabled" style="flex:1;">
+                            <select name="is_enabled">
                                 <option value="1" ${node.isEnabled ? 'selected' : ''}>Affiché</option>
                                 <option value="0" ${!node.isEnabled ? 'selected' : ''}>Masqué</option>
                             </select>

@@ -281,8 +281,8 @@ window.toggleWeatherAccordion = function(id) {
     const body = document.getElementById('weather-body-' + id);
     const btn = document.getElementById('weather-toggle-btn-' + id);
     if (!body) return;
-    const isHidden = (body.style.display === 'none');
-    body.style.display = isHidden ? 'block' : 'none';
+    const isHidden = body.classList.contains('is-collapsed');
+    body.classList.toggle('is-collapsed', !isHidden);
     if (btn) {
         btn.innerHTML = isHidden 
             ? '<i class="fa-solid fa-chevron-up"></i> <span class="wth-toggle-text">Réduire</span>' 
