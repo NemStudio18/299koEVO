@@ -164,3 +164,16 @@
     border-color: var(--primary-color) !important;
     background: rgba(0, 172, 193, 0.02);
 }
+
+.galerie-featured-preview {
+    margin-bottom: 15px;
+}
+.galerie-featured-thumb {
+    max-width: 150px;
+    border-radius: var(--evo-radius-sm);
+    box-shadow: var(--evo-shadow-sm);
+    border: 2px solid var(--evo-card-bg);
+}
+.galerie-featured-delete-label {
+    color: var(--evo-danger);
+}

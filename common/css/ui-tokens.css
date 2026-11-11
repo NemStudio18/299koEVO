@@ -1,0 +1,195 @@
+/**
+ * 299koEVO - Contrat de Design Tokens Core (--evo-*)
+ * Chargé avant les CSS des plugins et du thème actif (public + admin).
+ * Tout thème peut surcharger ces variables sur :root / body.theme-dark.
+ */
+
+:root {
+    --evo-bg: #f8fafc;
+    --evo-surface: #f1f5f9;
+    --evo-surface-alt: #e2e8f0;
+    --evo-card-bg: #ffffff;
+
+    --evo-text: #1e293b;
+    --evo-text-muted: #64748b;
+
+    --evo-border: #e2e8f0;
+    --evo-border-strong: #cbd5e1;
+
+    --evo-input-bg: #ffffff;
+    --evo-input-border: #cbd5e1;
+
+    --evo-accent: #1d4ed8;
+    --evo-accent-hover: #1e40af;
+    --evo-accent-soft: rgba(29, 78, 216, 0.1);
+    --evo-accent-text: #ffffff;
+
+    --evo-success: #166534;
+    --evo-success-bg: #dcfce7;
+    --evo-success-border: #86efac;
+
+    --evo-warning: #92400e;
+    --evo-warning-bg: #fef3c7;
+    --evo-warning-border: #fde68a;
+
+    --evo-danger: #991b1b;
+    --evo-danger-bg: #fee2e2;
+    --evo-danger-border: #fecaca;
+
+    --evo-info: #075985;
+    --evo-info-bg: #e0f2fe;
+    --evo-info-border: #bae6fd;
+
+    --evo-radius-sm: 8px;
+    --evo-radius-md: 12px;
+    --evo-radius-lg: 14px;
+    --evo-shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.05);
+    --evo-shadow-md: 0 10px 24px rgba(15, 23, 42, 0.1);
+}
+
+body.theme-dark {
+    --evo-bg: #0e1116;
+    --evo-surface: #18232c;
+    --evo-surface-alt: #1d232d;
+    --evo-card-bg: #141e26;
+
+    --evo-text: #e2e8f0;
+    --evo-text-muted: #9aa3b2;
+
+    --evo-border: #27323f;
+    --evo-border-strong: #374956;
+
+    --evo-input-bg: #11191f;
+    --evo-input-border: #374956;
+
+    --evo-accent: #60a5fa;
+    --evo-accent-hover: #93c5fd;
+    --evo-accent-soft: rgba(96, 165, 250, 0.16);
+    --evo-accent-text: #ffffff;
+
+    --evo-success: #86efac;
+    --evo-success-bg: rgba(34, 197, 94, 0.2);
+    --evo-success-border: rgba(74, 222, 128, 0.4);
+
+    --evo-warning: #fcd34d;
+    --evo-warning-bg: rgba(245, 158, 11, 0.2);
+    --evo-warning-border: rgba(251, 191, 36, 0.45);
+
+    --evo-danger: #fca5a5;
+    --evo-danger-bg: rgba(239, 68, 68, 0.2);
+    --evo-danger-border: rgba(248, 113, 113, 0.4);
+
+    --evo-info: #7dd3fc;
+    --evo-info-bg: rgba(14, 165, 233, 0.2);
+    --evo-info-border: rgba(56, 189, 248, 0.4);
+
+    --evo-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+    --evo-shadow-md: 0 12px 28px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    body:not(.theme-light) {
+        --evo-bg: #0e1116;
+        --evo-surface: #18232c;
+        --evo-surface-alt: #1d232d;
+        --evo-card-bg: #141e26;
+
+        --evo-text: #e2e8f0;
+        --evo-text-muted: #9aa3b2;
+
+        --evo-border: #27323f;
+        --evo-border-strong: #374956;
+
+        --evo-input-bg: #11191f;
+        --evo-input-border: #374956;
+
+        --evo-accent: #60a5fa;
+        --evo-accent-hover: #93c5fd;
+        --evo-accent-soft: rgba(96, 165, 250, 0.16);
+        --evo-accent-text: #ffffff;
+
+        --evo-success: #86efac;
+        --evo-success-bg: rgba(34, 197, 94, 0.2);
+        --evo-success-border: rgba(74, 222, 128, 0.4);
+
+        --evo-warning: #fcd34d;
+        --evo-warning-bg: rgba(245, 158, 11, 0.2);
+        --evo-warning-border: rgba(251, 191, 36, 0.45);
+
+        --evo-danger: #fca5a5;
+        --evo-danger-bg: rgba(239, 68, 68, 0.2);
+        --evo-danger-border: rgba(248, 113, 113, 0.4);
+
+        --evo-info: #7dd3fc;
+        --evo-info-bg: rgba(14, 165, 233, 0.2);
+        --evo-info-border: rgba(56, 189, 248, 0.4);
+
+        --evo-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+        --evo-shadow-md: 0 12px 28px rgba(0, 0, 0, 0.45);
+        color-scheme: dark;
+    }
+}
+
+/* Composants utilitaires communs réutilisables par tous les plugins */
+.evo-card {
+    background: var(--evo-card-bg);
+    border: 1px solid var(--evo-border);
+    border-radius: var(--evo-radius-lg);
+    color: var(--evo-text);
+    box-shadow: var(--evo-shadow-sm);
+}
+
+.evo-empty {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    background: var(--evo-surface);
+    border: 1px dashed var(--evo-border-strong);
+    border-radius: var(--evo-radius-md);
+    color: var(--evo-text-muted);
+}
+
+.evo-notice {
+    font-size: 0.86rem;
+    color: var(--evo-text-muted);
+    background: var(--evo-surface);
+    border: 1px solid var(--evo-border);
+    border-radius: var(--evo-radius-sm);
+    padding: 10px 12px;
+    line-height: 1.5;
+}
+
+.evo-notice-warning {
+    background: var(--evo-warning-bg);
+    border-color: var(--evo-warning-border);
+    color: var(--evo-warning);
+}
+
+.evo-notice-danger {
+    background: var(--evo-danger-bg);
+    border-color: var(--evo-danger-border);
+    color: var(--evo-danger);
+}
+
+.evo-notice-success {
+    background: var(--evo-success-bg);
+    border-color: var(--evo-success-border);
+    color: var(--evo-success);
+}
+
+.evo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.evo-badge-success { background: var(--evo-success-bg); color: var(--evo-success); }
+.evo-badge-warning { background: var(--evo-warning-bg); color: var(--evo-warning); }
+.evo-badge-danger  { background: var(--evo-danger-bg); color: var(--evo-danger); }
+.evo-badge-info    { background: var(--evo-info-bg); color: var(--evo-info); }
+.evo-badge-neutral { background: var(--evo-surface-alt); color: var(--evo-text-muted); }

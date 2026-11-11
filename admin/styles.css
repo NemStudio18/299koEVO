@@ -34,6 +34,19 @@
     --infos-hover-color: #334155;
     --warning-color: #d97706;
     --warning-hover-color: #b45309;
+
+    /* Contrat Core --evo-* (administration) */
+    --evo-bg: #f1f5f9;
+    --evo-surface: var(--section-head-bg-color);
+    --evo-card-bg: var(--section-bg-color);
+    --evo-text: var(--adm-text-strong);
+    --evo-text-muted: var(--adm-text-muted);
+    --evo-border: var(--adm-border);
+    --evo-border-strong: #cbd5e1;
+    --evo-input-bg: #ffffff;
+    --evo-input-border: #cbd5e1;
+    --evo-accent: var(--primary-color);
+    --evo-accent-hover: var(--primary-hover-color);
 }
 
 

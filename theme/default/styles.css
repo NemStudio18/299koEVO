@@ -211,6 +211,20 @@ summary {
     --sidebar-order: 99;
     --sidebar-min-width: 250px;
     --sidebar-max-width: 299px;
+
+    /* Contrat Core --evo-* (thème default clair) */
+    --evo-bg: var(--background-color);
+    --evo-surface: var(--section-head-bg-color);
+    --evo-surface-alt: #e9ecef;
+    --evo-card-bg: var(--section-bg-color);
+    --evo-text: var(--font-color);
+    --evo-text-muted: var(--text-muted);
+    --evo-border: var(--panel-border);
+    --evo-border-strong: var(--form-border-color);
+    --evo-input-bg: var(--form-bg-color);
+    --evo-input-border: var(--form-border-color);
+    --evo-accent: var(--primary-color);
+    --evo-accent-hover: var(--primary-hover-color);
 }
 
 /* BASIC */
@@ -1209,6 +1223,27 @@ article.comment {
 /* FORCE DARK CLASS */
 body.theme-dark {
     --header-bg-color: var(--dark-section-bg-color);
+    --background-color: var(--dark-background-color);
+    --section-bg-color: var(--dark-section-bg-color);
+    --section-head-bg-color: var(--dark-section-head-bg-color);
+    --panel-bg: var(--dark-section-bg-color);
+    --panel-border: var(--dark-form-border-color);
+    --form-bg-color: var(--dark-form-bg-color);
+    --form-border-color: var(--dark-form-border-color);
+    --font-color: var(--dark-font-color);
+    --text-muted: #9aa3b2;
+    --evo-bg: var(--dark-background-color);
+    --evo-surface: var(--dark-section-head-bg-color);
+    --evo-surface-alt: #24323e;
+    --evo-card-bg: var(--dark-section-bg-color);
+    --evo-text: var(--dark-font-color);
+    --evo-text-muted: #9aa3b2;
+    --evo-border: var(--dark-form-border-color);
+    --evo-border-strong: #475d6d;
+    --evo-input-bg: var(--dark-form-bg-color);
+    --evo-input-border: var(--dark-form-border-color);
+    --evo-accent: var(--dark-primary-color);
+    --evo-accent-hover: var(--dark-primary-hover-color);
     color: var(--dark-font-color);
     background: var(--dark-background-color);
 }
@@ -1337,6 +1372,27 @@ body.theme-light #footer {
     /* Apply same rules as body.theme-dark but ONLY if body doesn't have .theme-light class */
     body:not(.theme-light) {
         --header-bg-color: var(--dark-section-bg-color);
+        --background-color: var(--dark-background-color);
+        --section-bg-color: var(--dark-section-bg-color);
+        --section-head-bg-color: var(--dark-section-head-bg-color);
+        --panel-bg: var(--dark-section-bg-color);
+        --panel-border: var(--dark-form-border-color);
+        --form-bg-color: var(--dark-form-bg-color);
+        --form-border-color: var(--dark-form-border-color);
+        --font-color: var(--dark-font-color);
+        --text-muted: #9aa3b2;
+        --evo-bg: var(--dark-background-color);
+        --evo-surface: var(--dark-section-head-bg-color);
+        --evo-surface-alt: #24323e;
+        --evo-card-bg: var(--dark-section-bg-color);
+        --evo-text: var(--dark-font-color);
+        --evo-text-muted: #9aa3b2;
+        --evo-border: var(--dark-form-border-color);
+        --evo-border-strong: #475d6d;
+        --evo-input-bg: var(--dark-form-bg-color);
+        --evo-input-border: var(--dark-form-border-color);
+        --evo-accent: var(--dark-primary-color);
+        --evo-accent-hover: var(--dark-primary-hover-color);
         color: var(--dark-font-color);
     }
 

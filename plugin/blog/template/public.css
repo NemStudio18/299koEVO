@@ -298,3 +298,20 @@
     opacity: 1;
     transform: scale(1);
 }
+
+/* Dernier article embarqué via hook */
+.blog-latest-post-header .fa-newspaper {
+    color: var(--evo-accent);
+}
+.blog-latest-post-chevron {
+    color: var(--evo-text-muted);
+    transition: transform 0.2s;
+}
+.blog-latest-post-article-head {
+    margin-top: 1.5rem;
+}
+.blog-latest-post-img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+}

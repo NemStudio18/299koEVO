@@ -365,15 +365,15 @@ class BlogHooks
         $html = '<details class="blog-latest-post-details">';
         $html .= '<summary class="blog-latest-post-summary">';
         $html .= '<h3 class="blog-latest-post-header">';
-        $html .= '<i class="fa-solid fa-newspaper" style="color: #007bff;"></i>'; // Icon color kept for now or move to CSS
+        $html .= '<i class="fa-solid fa-newspaper"></i>';
         $html .= '<span>Le dernier article du blog</span></h3>';
-        $html .= '<i class="fa-solid fa-chevron-down" style="color: #666; transition: transform 0.2s;"></i></summary>';
+        $html .= '<i class="fa-solid fa-chevron-down blog-latest-post-chevron"></i></summary>';
         
         $html .= '<div id="content" class="blog">';
-        $html .= '<article><header style="margin-top: 1.5rem;">'; // Small margin-top kept or move to CSS
+        $html .= '<article><header class="blog-latest-post-article-head">';
         
         if ($post['img']) {
-            $html .= '<a href="' . $post['url'] . '"><img class="featured blog-latest-post-img" src="' . $post['imgUrl'] . '" alt="' . htmlspecialchars($post['title']) . '" style="max-width: 100%; width: 100%; height: auto;"/></a>';
+            $html .= '<a href="' . $post['url'] . '"><img class="featured blog-latest-post-img" src="' . $post['imgUrl'] . '" alt="' . htmlspecialchars($post['title']) . '"/></a>';
         }
         
         $html .= '<div class="item-head">';

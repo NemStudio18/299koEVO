@@ -127,9 +127,9 @@ function galerieAdminEditSections(array $data): array {
     $sectionHtml .= '<p>';
     if ($img != '') {
         $imgUrl = \Core\Core::getInstance()->getConfigVal('siteUrl') . '/' . str_replace('./', '', UPLOAD) . 'galerie/' . $img;
-        $sectionHtml .= '<div style="margin-bottom: 15px;">';
-        $sectionHtml .= '<img src="' . $imgUrl . '" alt="' . htmlspecialchars($img) . '" style="max-width: 150px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid #fff;" />';
-        $sectionHtml .= '<br><input type="checkbox" name="delImg" id="delImg" /> <label for="delImg" style="color: var(--alert-color, #dc3545);">' . Lang::get('galerie.delete-featured-image') . '</label>';
+        $sectionHtml .= '<div class="galerie-featured-preview">';
+        $sectionHtml .= '<img src="' . $imgUrl . '" alt="' . htmlspecialchars($img) . '" class="galerie-featured-thumb" />';
+        $sectionHtml .= '<br><input type="checkbox" name="delImg" id="delImg" /> <label for="delImg" class="galerie-featured-delete-label">' . Lang::get('galerie.delete-featured-image') . '</label>';
         $sectionHtml .= '</div>';
         $sectionHtml .= '<label for="file">Modifier l\'icône/image</label><br>';
     } else {
