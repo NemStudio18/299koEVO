@@ -79,6 +79,7 @@
     --evo-accent: var(--dc-accent);
     --evo-accent-hover: var(--dc-accent-hover);
     --evo-accent-soft: var(--dc-accent-soft);
+    --evo-accent-text: #ffffff;
 }
 
 /* Mode Sombre Automatique */
@@ -95,6 +96,7 @@
         --dc-accent: #60a5fa;
         --dc-accent-hover: #93c5fd;
         --dc-accent-soft: rgba(96, 165, 250, 0.14);
+        --evo-accent-text: #0b1220;
         --dc-warm: #fb923c;
         --dc-success: #4ade80;
         --dc-success-bg: rgba(21, 128, 61, 0.18);
@@ -147,6 +149,7 @@ body.theme-dark {
     --dc-accent: #60a5fa;
     --dc-accent-hover: #93c5fd;
     --dc-accent-soft: rgba(96, 165, 250, 0.14);
+    --evo-accent-text: #0b1220;
     --dc-warm: #fb923c;
     --dc-success: #4ade80;
     --dc-success-bg: rgba(21, 128, 61, 0.18);
@@ -365,7 +368,7 @@ hr { border: 0; border-top: 1px solid var(--dc-border); margin: 2rem 0; }
 /* Auth & Avatar */
 .nav-auth-links { display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; }
 .nav-auth-links a { padding: 7px 13px; border-radius: var(--dc-radius-sm); font-size: 0.88rem; font-weight: 600; text-decoration: none; }
-.nav-auth-links .login-link { background: var(--dc-accent); color: #ffffff !important; }
+.nav-auth-links .login-link { background: var(--dc-accent); color: var(--evo-accent-text) !important; }
 .nav-auth-links .login-link:hover { background: var(--dc-accent-hover); }
 .nav-auth-links .register-link { border: 1px solid var(--dc-border-strong); color: var(--dc-text); }
 .nav-auth-links .register-link:hover { border-color: var(--dc-accent); color: var(--dc-accent); }
@@ -389,7 +392,7 @@ hr { border: 0; border-top: 1px solid var(--dc-border); margin: 2rem 0; }
 }
 
 .avatar-menu-separator hr { margin: 6px 0; }
-.nav-badge { background: var(--dc-accent); color: #fff; border-radius: 999px; padding: 1px 7px; font-size: 0.72rem; margin-left: auto; }
+.nav-badge { background: var(--dc-accent); color: var(--evo-accent-text); border-radius: 999px; padding: 1px 7px; font-size: 0.72rem; margin-left: auto; }
 
 /* Utilitaires Header */
 .header-utilities { display: inline-flex; align-items: center; gap: 8px; }
@@ -642,16 +645,46 @@ hr { border: 0; border-top: 1px solid var(--dc-border); margin: 2rem 0; }
     border-radius: var(--dc-radius-sm);
     border: 1px solid transparent;
     background: var(--dc-accent);
-    color: #ffffff;
+    color: var(--evo-accent-text);
     font-family: inherit;
     font-size: 0.94rem;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
-    transition: background-color 0.18s ease;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
-:where(button, .button, input[type="submit"], input[type="button"]):hover { background: var(--dc-accent-hover); }
+:where(button, .button, input[type="submit"], input[type="button"]):hover {
+    background: var(--dc-accent-hover);
+    color: var(--evo-accent-text);
+}
+
+:where(button, .button, input[type="submit"], input[type="button"]).secondary {
+    background: var(--dc-surface);
+    color: var(--dc-text);
+    border-color: var(--dc-border-strong);
+}
+
+:where(button, .button, input[type="submit"], input[type="button"]).secondary:hover {
+    background: var(--dc-surface);
+    border-color: var(--dc-accent);
+    color: var(--dc-accent);
+}
+
+:where(button, .button, input[type="submit"], input[type="button"]).success {
+    background: var(--evo-success);
+    color: var(--evo-accent-text);
+}
+
+:where(button, .button, input[type="submit"], input[type="button"]).alert {
+    background: var(--evo-danger);
+    color: var(--evo-accent-text);
+}
+
+:where(button, .button, input[type="submit"], input[type="button"]).warning {
+    background: var(--evo-warning);
+    color: var(--evo-accent-text);
+}
 
 table { width: 100%; border-collapse: collapse; font-size: 0.94rem; }
 th, td { padding: 10px 12px; border-bottom: 1px solid var(--dc-border); text-align: left; }

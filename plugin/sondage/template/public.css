@@ -287,7 +287,7 @@ form small {
 }
 
 /* Bouton retour à la liste */
-a.button {
+.sondage-back-button a.button {
     color: var(--evo-accent-text) !important;
     background-color: var(--evo-accent) !important;
     text-decoration: none;
@@ -300,18 +300,18 @@ a.button {
     transition: all 0.3s ease;
 }
 
-a.button:hover {
+.sondage-back-button a.button:hover {
     background-color: var(--evo-accent-hover) !important;
     color: var(--evo-accent-text) !important;
     transform: translateY(-2px);
     box-shadow: var(--evo-shadow-sm);
 }
 
-a.button span {
+.sondage-back-button a.button span {
     color: var(--evo-accent-text) !important;
 }
 
-a.button i {
+.sondage-back-button a.button i {
     color: var(--evo-accent-text) !important;
 }
 /* === Utility Classes for Inline Styles Cleanup === */
