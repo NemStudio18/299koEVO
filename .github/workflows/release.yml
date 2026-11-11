@@ -1,0 +1,27 @@
+name: Create Release Archive
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build clean ZIP archive
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          zip -r "299koevo-${TAG}.zip" . -x ".git/*" ".github/*"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: 299koevo-${{ github.ref_name }}.zip
+          generate_release_notes: true
