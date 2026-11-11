@@ -4,12 +4,16 @@ namespace Annonces\Controllers;
 
 use Annonces\Entities\Annonce;
 use Annonces\Entities\AnnonceReservation;
+use Core\Auth\User;
 use Core\Controllers\PublicController;
 use Core\Lang;
+use Core\Navigation\AccessPolicyEvaluator;
+use Core\Navigation\ConditionContext;
 use Core\Plugin\PluginsManager;
 use Core\Responses\PublicResponse;
 use Core\Security\Csrf;
 use Utils\Show;
+use Utils\Util;
 
 defined('ROOT') OR exit('Access denied!');
 
@@ -197,10 +201,31 @@ class AnnoncesController extends PublicController
             }
         }
 
+        $onReserveMode = (string) $this->pluginCfg('onReserveStatus', 'mark_reserved');
+        if ($onReserveMode === '') {
+            $onReserveMode = 'mark_reserved';
+        }
+
         if (!$item->isAvailable()) {
             Show::msg(Lang::get('annonces.reserve-unavailable') ?: "Cette annonce n'est plus disponible à la réservation.", 'error');
             $this->core->redirect($redirectUrl);
             return null;
+        }
+
+        if ($onReserveMode === 'mark_reserved') {
+            $itemId = (string) $item->getId();
+            foreach (AnnonceReservation::all() as $existing) {
+                $existingAid = (string) ($existing->attributes['annonce_id'] ?? '');
+                $existingStatus = (string) ($existing->attributes['status'] ?? 'pending');
+                if ($existingAid === $itemId && in_array($existingStatus, ['pending', 'confirmed'], true)) {
+                    $item->status = 'reserved';
+                    $item->updated_at = date('Y-m-d H:i:s');
+                    $item->save();
+                    Show::msg(Lang::get('annonces.reserve-unavailable') ?: "Cette annonce n'est plus disponible à la réservation.", 'error');
+                    $this->core->redirect($redirectUrl);
+                    return null;
+                }
+            }
         }
 
         $name = trim((string) ($_POST['requester_name'] ?? ''));
@@ -225,28 +250,121 @@ class AnnoncesController extends PublicController
         $reservation->created_at = date('Y-m-d H:i:s');
         $reservation->save();
 
-        // Si l'admin a choisi de bloquer immédiatement l'annonce dès réception d'une demande
-        if ($this->pluginCfg('onReserveStatus', 'keep_available') === 'mark_reserved') {
+        // Par défaut, bloquer immédiatement l'annonce dès réception d'une demande
+        if ($onReserveMode === 'mark_reserved') {
             $item->status = 'reserved';
             $item->updated_at = date('Y-m-d H:i:s');
             $item->save();
         }
 
-        // Notification email optionnelle vers l'administrateur
-        $notifyEmail = filter_var(trim((string) $this->pluginCfg('notifyEmail', '')), FILTER_VALIDATE_EMAIL);
-        if ($notifyEmail) {
-            $siteName = (string) ($this->core->getConfigVal('siteName') ?? 'Site');
-            $subject = '[' . $siteName . '] Nouvelle réservation : ' . ($item->attributes['title'] ?? '');
-            $body = "Nouvelle demande de réservation (sans paiement) pour l'annonce : " . ($item->attributes['title'] ?? '') . "\n\n"
+        $recipients = $this->resolveAdminRecipients();
+        $annonceTitle = (string) ($item->attributes['title'] ?? 'Annonce');
+        $siteName = (string) ($this->core->getConfigVal('siteName') ?? 'Site');
+
+        // Notification email vers l'administrateur
+        if (!empty($recipients['emails'])) {
+            $host = parse_url((string) ($this->core->getConfigVal('siteUrl') ?? ''), PHP_URL_HOST)
+                ?: ($_SERVER['HTTP_HOST'] ?? 'localhost');
+            $host = preg_replace('/[^a-zA-Z0-9.-]/', '', (string) $host) ?: 'localhost';
+            $from = 'no-reply@' . $host;
+            $adminUrl = rtrim((string) ($this->core->getConfigVal('siteUrl') ?? ''), '/') . '/admin/annonces?tab=reservations';
+            $subject = '[' . $siteName . '] Nouvelle réservation : ' . $annonceTitle;
+            $body = "Nouvelle demande de réservation (sans paiement en ligne) pour l'annonce : {$annonceTitle}\n\n"
                 . "Demandeur : {$name}\n"
                 . "Email : {$email}\n"
                 . "Téléphone : " . ($phone !== '' ? $phone : 'Non renseigné') . "\n\n"
-                . "Message :\n{$message}\n";
-            @mail($notifyEmail, $subject, $body);
+                . "Message :\n{$message}\n\n"
+                . "Gérer les réservations : {$adminUrl}\n";
+            foreach ($recipients['emails'] as $toEmail) {
+                try {
+                    Util::sendEmail($from, $email, $toEmail, $subject, $body);
+                } catch (\Throwable $e) {
+                    $this->core->getLogger()->error('Annonces email notification failed: ' . $e->getMessage());
+                }
+            }
+        }
+
+        // Notification interne via le plugin notifications s'il est actif
+        if (PluginsManager::isActivePlugin('notifications') && !empty($recipients['userIds'])) {
+            try {
+                $this->core->callHook('notifications:send', [
+                    'user_id'       => $recipients['userIds'],
+                    'type'          => 'annonces.reservation',
+                    'source_plugin' => 'annonces',
+                    'data'          => [
+                        'key'            => 'annonces.reservation',
+                        'params'         => [$name, $annonceTitle],
+                        'fallback_title' => 'Nouvelle réservation de %s pour « %s »',
+                        'url'            => '/admin/annonces?tab=reservations',
+                        'actor'          => [
+                            'name'  => $name,
+                            'email' => $email,
+                        ],
+                        'entity'         => [
+                            'type' => 'annonce',
+                            'id'   => (string) $item->getId(),
+                        ],
+                    ],
+                    'external_id' => 'annonces:reservation:' . (string) $reservation->getId(),
+                ]);
+            } catch (\Throwable $e) {
+                $this->core->getLogger()->error('Annonces hook notifications:send failed: ' . $e->getMessage());
+            }
         }
 
         Show::msg(Lang::get('annonces.reserve-success') ?: 'Votre demande de réservation a bien été enregistrée.', 'success');
         $this->core->redirect($redirectUrl);
         return null;
+    }
+
+    /**
+     * Résout les emails et IDs administrateurs destinataires des alertes de réservation.
+     *
+     * @return array{emails: string[], userIds: int[]}
+     */
+    private function resolveAdminRecipients(): array
+    {
+        $emails = [];
+        $userIds = [];
+
+        $cfgEmail = trim((string) $this->pluginCfg('notifyEmail', ''));
+        if ($cfgEmail !== '' && filter_var($cfgEmail, FILTER_VALIDATE_EMAIL)) {
+            $emails[$cfgEmail] = $cfgEmail;
+        }
+
+        try {
+            $evaluator = AccessPolicyEvaluator::getInstance();
+            foreach (User::all() as $user) {
+                if (!$evaluator->isAdmin(new ConditionContext($user))) {
+                    continue;
+                }
+                $uid = (int) ($user->id ?? ($user->attributes['id'] ?? 0));
+                if ($uid > 0) {
+                    $userIds[] = $uid;
+                }
+                $uEmail = trim((string) ($user->email ?? ($user->attributes['email'] ?? '')));
+                if (empty($emails) && $uEmail !== '' && filter_var($uEmail, FILTER_VALIDATE_EMAIL)) {
+                    $emails[$uEmail] = $uEmail;
+                }
+            }
+        } catch (\Throwable $e) {
+            // Fallback géré ci-dessous
+        }
+
+        if (empty($emails)) {
+            $siteEmail = trim((string) ($this->core->getConfigVal('siteEmail') ?? ''));
+            if ($siteEmail !== '' && filter_var($siteEmail, FILTER_VALIDATE_EMAIL)) {
+                $emails[$siteEmail] = $siteEmail;
+            }
+        }
+
+        if (empty($userIds)) {
+            $userIds = [1];
+        }
+
+        return [
+            'emails'  => array_values($emails),
+            'userIds' => array_values(array_unique($userIds)),
+        ];
     }
 }

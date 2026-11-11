@@ -1,0 +1,128 @@
+[
+    {
+        "type": "forum.reply",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 1,
+        "description": "Nouvelle réponse à votre sujet sur le forum."
+    },
+    {
+        "type": "blog.comment",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 1,
+        "description": "Nouveau commentaire sur votre article de blog."
+    },
+    {
+        "type": "contact.message",
+        "can_disable": false,
+        "default_enabled": true,
+        "priority": 2,
+        "description": "Nouveau message via le formulaire de contact."
+    },
+    {
+        "type": "auth.login_failed",
+        "can_disable": false,
+        "default_enabled": true,
+        "priority": 3,
+        "description": "Alerte de sécurité : tentatives de connexion échouées."
+    },
+    {
+        "type": "auth.registration",
+        "can_disable": false,
+        "default_enabled": true,
+        "priority": 2,
+        "description": "Notification de nouvelle inscription utilisateur (Admins)."
+    },
+    {
+        "type": "poi.updated",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 1,
+        "description": "Mise à jour d'un établissement que vous suivez."
+    },
+    {
+        "type": "offer.activated",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 2,
+        "description": "Nouvelle offre spéciale sur un de vos favoris."
+    },
+    {
+        "type": "blog.news",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 1,
+        "description": "Nouvel article publié sur le blog."
+    },
+    {
+        "type": "poi.updated",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 1,
+        "description": "Un de vos lieux favoris a été mis à jour."
+    },
+    {
+        "type": "poi.offer_activated",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 2,
+        "description": "Nouvelle offre spéciale sur un de vos favoris !"
+    },
+    {
+        "type": "poi_edit.suggestion_approved",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 2,
+        "description": "Votre suggestion de modification a été acceptée !"
+    },
+    {
+        "type": "poi_edit.suggestion_rejected",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 1,
+        "description": "Votre suggestion de modification a été refusée."
+    },
+    {
+        "type": "poi_edit.proposal_approved",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 3,
+        "description": "Votre proposition de nouveau lieu a été validée !"
+    },
+    {
+        "type": "poi_edit.proposal_rejected",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 1,
+        "description": "Votre proposition de nouveau lieu a été refusée."
+    },
+    {
+        "type": "auth.login_failed",
+        "can_disable": false,
+        "default_enabled": true,
+        "priority": 3,
+        "description": "Alerte de sécurité : plusieurs échecs de connexion sur votre compte."
+    },
+    {
+        "type": "auth.welcome",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 1,
+        "description": "Message de bienvenue aux nouveaux membres."
+    },
+    {
+        "type": "gamification.badge",
+        "can_disable": true,
+        "default_enabled": true,
+        "priority": 1,
+        "description": "Félicitations ! Vous avez gagné un badge."
+    },
+    {
+        "type": "annonces.reservation",
+        "can_disable": false,
+        "default_enabled": true,
+        "priority": 2,
+        "description": "Nouvelle demande de réservation sur les petites annonces (Admins)."
+    }
+]

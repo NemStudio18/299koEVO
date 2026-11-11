@@ -107,7 +107,7 @@ class AnnoncesAdminController extends AdminController
         $tpl->set('cfgLabel', (string) ($this->runPlugin->getConfigVal('label') ?? 'Petites Annonces'));
         $tpl->set('cfgIntroText', (string) ($this->runPlugin->getConfigVal('introText') ?? ''));
         $tpl->set('cfgNotifyEmail', (string) ($this->runPlugin->getConfigVal('notifyEmail') ?? ''));
-        $tpl->set('cfgOnReserveStatus', (string) ($this->runPlugin->getConfigVal('onReserveStatus') ?? 'keep_available'));
+        $tpl->set('cfgOnReserveStatus', (string) ($this->runPlugin->getConfigVal('onReserveStatus') ?? 'mark_reserved'));
         $tpl->set('cfgReservationNotice', (string) ($this->runPlugin->getConfigVal('reservationNotice') ?? ''));
         $tpl->set('cfgRequireAntispam', (string) ($this->runPlugin->getConfigVal('requireAntispam') ?? '1') === '1');
         $response->addTemplate($tpl);
@@ -314,7 +314,7 @@ class AnnoncesAdminController extends AdminController
             return null;
         }
 
-        $onReserve = ($_POST['onReserveStatus'] ?? 'keep_available') === 'mark_reserved' ? 'mark_reserved' : 'keep_available';
+        $onReserve = ($_POST['onReserveStatus'] ?? 'mark_reserved') === 'keep_available' ? 'keep_available' : 'mark_reserved';
         $this->runPlugin->setConfigVal('label', trim((string) ($_POST['label'] ?? 'Petites Annonces')) ?: 'Petites Annonces');
         $this->runPlugin->setConfigVal('introText', (string) ($_POST['introText'] ?? ''));
         $this->runPlugin->setConfigVal('notifyEmail', trim((string) ($_POST['notifyEmail'] ?? '')));
@@ -365,3 +365,4 @@ class AnnoncesAdminController extends AdminController
         return $text !== '' ? $text : 'annonce';
     }
 }
+

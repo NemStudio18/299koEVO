@@ -5,7 +5,8 @@
     "itemsPerPage": "12",
     "currency": "€",
     "notifyEmail": "",
-    "onReserveStatus": "keep_available",
+    "onReserveStatus": "mark_reserved",
     "reservationNotice": "Réservation sans paiement en ligne : votre demande est transmise directement à l'administrateur pour validation.",
     "requireAntispam": "1"
 }
+
