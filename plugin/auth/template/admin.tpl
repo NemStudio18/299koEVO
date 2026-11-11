@@ -1,18 +1,20 @@
 <section class="module-card">
-    <header><i class="fa-solid fa-key"></i> Configuration Authentification & Profils</header>
-
-    <div class="auth-admin-tabs">
-        <button type="button" class="tab-btn active" data-tab="tab-oauth">OAuth (Facebook/Google)</button>
-        <button type="button" class="tab-btn" data-tab="tab-fields">Champs Profil</button>
-        <button type="button" class="tab-btn" data-tab="tab-register">Inscription</button>
-        <button type="button" class="tab-btn" data-tab="tab-help">Aide & Spoiler</button>
-    </div>
+    <header><i class="fa-solid fa-key"></i> Configuration Authentification &amp; Profils</header>
 
     <form method="post" action="{{ ROUTER.generate('auth-admin-save') }}">
         <input type="hidden" name="_csrf" value="{{_csrfToken}}"/>
 
-        <!-- TAB: OAUTH -->
-        <div id="tab-oauth" class="auth-tab-content active">
+        <div class="tabs-container" data-tab-key="auth">
+            <ul class="tabs-header">
+                <li class="default-tab" data-tab="oauth"><i class="fa-solid fa-plug"></i> OAuth (Facebook/Google)</li>
+                <li data-tab="fields"><i class="fa-solid fa-id-card"></i> Champs Profil</li>
+                <li data-tab="register"><i class="fa-solid fa-user-plus"></i> Inscription</li>
+                <li data-tab="help"><i class="fa-solid fa-circle-question"></i> Aide &amp; Spoiler</li>
+            </ul>
+
+            <ul class="tabs">
+                <!-- TAB: OAUTH -->
+                <li class="tab">
             <h4>Facebook</h4>
             <p class="split">
                 <span>
@@ -56,10 +58,9 @@
                 <small><strong>URL de callback Google :</strong><br>
                 <code>{{ CORE.getConfigVal("siteUrl") }}/auth/google/callback</code></small>
             </p>
-        </div>
-
-        <!-- TAB: FIELDS -->
-        <div id="tab-fields" class="auth-tab-content">
+                </li>
+                <!-- TAB: FIELDS -->
+                <li class="tab">
             <h4>Gestion des champs de profil</h4>
             <p><small>Activez ou désactivez les champs de profil et gérez leurs sources de données (JSON pour les listes).</small></p>
             
@@ -102,10 +103,9 @@
             </div>
             
             <p><button type="button" id="add-field" class="button"><i class="fa-solid fa-plus"></i> Ajouter un champ personnalisé</button></p>
-        </div>
-
-        <!-- TAB: REGISTER -->
-        <div id="tab-register" class="auth-tab-content">
+                </li>
+                <!-- TAB: REGISTER -->
+                <li class="tab">
             <h4>Contenu des pages Login / Register</h4>
             <p>
                 <label for="content_position">Position du contenu personnalisé</label>
@@ -144,10 +144,9 @@
                 {% ENDFOR %}
             </div>
             <p><button type="button" id="add-checkbox" class="button small"><i class="fa-solid fa-plus"></i> Ajouter une case</button></p>
-        </div>
-
-        <!-- TAB: HELP -->
-        <div id="tab-help" class="auth-tab-content">
+                </li>
+                <!-- TAB: HELP -->
+                <li class="tab">
             <h4>Bloc Spoiler / Aide</h4>
             <p>
                 <label><input type="checkbox" name="show_spoiler" {% if config.show_spoiler %}checked{% endif %} /> Activer le bloc d'aide (spoiler)</label>
@@ -169,28 +168,18 @@
                 <label for="spoiler_content">Contenu HTML</label>
                 <textarea id="spoiler_content" name="spoiler_content" class="editor" rows="8">{{config.spoiler_content}}</textarea>
             </p>
+                </li>
+            </ul>
         </div>
 
-        <hr>
-        <p><button class="button primary large" type="submit" style="width: 100%;"><i class="fa-solid fa-save"></i> Sauvegarder toute la configuration</button></p>
+        <p style="margin-top: 16px;">
+            <button class="button success" type="submit"><i class="fa-solid fa-save"></i> Sauvegarder toute la configuration</button>
+        </p>
     </form>
 </section>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Tabs Logic
-    const tabs = document.querySelectorAll('.auth-admin-tabs .tab-btn');
-    const contents = document.querySelectorAll('.auth-tab-content');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const target = tab.dataset.tab;
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById(target).classList.add('active');
-        });
-    });
 
     // Add Checkbox Logic
     document.getElementById('add-checkbox').addEventListener('click', function() {

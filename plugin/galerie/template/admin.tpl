@@ -1,16 +1,16 @@
 {% if mode == "list" %}
-    <div class="tabs-container">
+    <div class="tabs-container" data-tab-key="galerie">
         <ul class="tabs-header">
-            <li class="{% if activeTab == 'images' %}default-tab{% endif %}">
+            <li data-tab="images" class="{% if activeTab == 'images' %}default-tab{% endif %}">
                 <i class="fa-solid fa-images"></i> {{ Lang.galerie.images-list }}
             </li>
-            <li class="{% if activeTab == 'categories' %}default-tab{% endif %}">
+            <li data-tab="categories" class="{% if activeTab == 'categories' %}default-tab{% endif %}">
                 <i class="fa-solid fa-folder-tree"></i> {{ Lang.galerie.categories }}
             </li>
-            <li class="{% if activeTab == 'carousel' %}default-tab{% endif %}">
+            <li data-tab="carousel" class="{% if activeTab == 'carousel' %}default-tab{% endif %}">
                 <i class="fa-solid fa-play"></i> {{ Lang.galerie.carousel-settings }}
             </li>
-            <li class="{% if activeTab == 'settings' %}default-tab{% endif %}">
+            <li data-tab="settings" class="{% if activeTab == 'settings' %}default-tab{% endif %}">
                 <i class="fa-solid fa-cog"></i> {{ Lang.core-settings }}
             </li>
         </ul>

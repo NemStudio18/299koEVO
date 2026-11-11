@@ -1091,29 +1091,45 @@
 <!-- ── SCRIPTS CHART.JS & NAVIGATION DES ONGLETS ── -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Navigation sans rechargement entre onglets
+    // 1. Navigation sans rechargement entre onglets (avec mémorisation sessionStorage)
+    const LS_TAB_KEY = 'adm_tab:' + window.location.pathname + ':lightstats';
     const tabBtns = document.querySelectorAll('.ls-tab-button');
     const tabPanes = document.querySelectorAll('.tab-pane');
     const activeTabInput = document.getElementById('activeTabInput');
 
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const target = this.getAttribute('data-tab');
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabPanes.forEach(p => p.style.display = 'none');
+    function activateLightStatsTab(target, persist) {
+        const btn = document.querySelector(`.ls-tab-button[data-tab="${target}"]`);
+        const pane = document.getElementById('tab-' + target);
+        if (!btn || !pane) return;
 
-            this.classList.add('active');
-            const targetPane = document.getElementById('tab-' + target);
-            if (targetPane) targetPane.style.display = 'block';
-            if (activeTabInput) activeTabInput.value = target;
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabPanes.forEach(p => p.style.display = 'none');
+        btn.classList.add('active');
+        pane.style.display = 'block';
+        if (activeTabInput) activeTabInput.value = target;
 
-            // Mise à jour de l'URL sans rechargement
+        if (persist) {
+            try { sessionStorage.setItem(LS_TAB_KEY, target); } catch (e) {}
             const url = new URL(window.location);
             url.searchParams.set('tab', target);
             window.history.replaceState({}, '', url);
+        }
+        window.dispatchEvent(new Event('resize'));
+    }
 
-            // Re-render charts si nécessaire
-            window.dispatchEvent(new Event('resize'));
+    const urlTabParam = new URLSearchParams(window.location.search).get('tab');
+    if (urlTabParam) {
+        try { sessionStorage.setItem(LS_TAB_KEY, urlTabParam); } catch (e) {}
+    } else {
+        try {
+            const savedLsTab = sessionStorage.getItem(LS_TAB_KEY);
+            if (savedLsTab) activateLightStatsTab(savedLsTab, false);
+        } catch (e) {}
+    }
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            activateLightStatsTab(this.getAttribute('data-tab'), true);
         });
     });
 

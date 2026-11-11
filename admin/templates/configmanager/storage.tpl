@@ -289,65 +289,82 @@
 
 /* Connections Manager */
 .connection-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-.tab-btn { padding: 6px 15px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
-.tab-btn.active { background: #0d6efd; color: white; border-color: #0d6efd; }
-.tab-btn:hover:not(.active) { background: #e9ecef; }
-.btn-add-conn { background: #e9f7ef; color: #198754; border-color: #d4edda; }
+.tab-btn { padding: 7px 14px; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; }
+.tab-btn.active { background: var(--primary-color, #1f62a9); color: #ffffff; border-color: var(--primary-color, #1f62a9); }
+.tab-btn:hover:not(.active) { background: #f1f5f9; color: #0f172a; }
+.btn-add-conn { background: #ecfdf5; color: #15803d; border-color: #bbf7d0; }
 
 .connection-panel { display: none; }
-.connection-panel.active { display: block; animation: fadeIn 0.3s ease; }
+.connection-panel.active { display: block; animation: fadeIn 0.25s ease; }
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
 /* DB Config Form */
-.db-config-grid { background: #fdfdfd; padding: 1.5rem; border: 1px solid #dee2e6; border-radius: 8px; max-width: 800px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+.db-config-grid { background: #f8fafc; padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 12px; max-width: 820px; }
 .form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
 .form-group { flex: 1; display: flex; flex-direction: column; gap: 5px; margin-bottom: 1rem; }
-.form-group label { font-weight: 600; font-size: 0.85em; color: #444; }
-.form-group input, .form-group select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; }
+.form-group label { font-weight: 600; font-size: 0.85rem; color: #334155; }
+.form-group input, .form-group select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; }
 
 /* Model Table */
-.badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; }
-.badge-json { background: #6c757d; color: white; }
-.badge-sql { background: #0d6efd; color: white; }
+.badge { padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.badge-json { background: #475569; color: white; }
+.badge-sql { background: var(--primary-color, #1f62a9); color: white; }
 
 .storage-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-.storage-table th { background: #f1f3f5; padding: 12px; font-size: 0.85em; text-align: left; border-bottom: 2px solid #dee2e6; }
-.storage-table td { padding: 15px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.storage-table th { background: #f8fafc; padding: 12px; font-size: 0.85rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+.storage-table td { padding: 14px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
 
-.button.outline { background: transparent; border: 1px solid #0d6efd; color: #0d6efd; font-size: 0.8em; }
-.button.outline:hover { background: #0d6efd; color: white; }
+.button.outline { background: transparent; border: 1px solid var(--primary-color, #1f62a9); color: var(--primary-color, #1f62a9); font-size: 0.82rem; }
+.button.outline:hover { background: var(--primary-color, #1f62a9); color: white; }
 
 .migration-status { font-size: 0.8em; margin-top: 5px; font-weight: 500; }
-.migration-status.success { color: #28a745; }
-.migration-status.error { color: #dc3545; }
+.migration-status.success { color: #16a34a; }
+.migration-status.error { color: #dc2626; }
 
-.storage-help { background: #fff; border-left: 4px solid #198754; padding: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.storage-help { background: #fff; border: 1px solid #e2e8f0; border-left: 4px solid var(--success-color, #16a34a); border-radius: 12px; padding: 1.5rem; }
 .help-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-.help-item strong { color: #198754; }
+.help-item strong { color: #15803d; }
 
 .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-left: 5px; }
-.status-online { background-color: #28a745; box-shadow: 0 0 5px #28a745; }
-.status-offline { background-color: #dc3545; box-shadow: 0 0 5px #dc3545; }
+.status-online { background-color: #16a34a; box-shadow: 0 0 5px rgba(22, 163, 74, 0.5); }
+.status-offline { background-color: #dc2626; box-shadow: 0 0 5px rgba(220, 38, 38, 0.5); }
 
 .migration-loading::after { content: "..."; animation: dots 1.5s infinite; }
 @keyframes dots { 0% { content: "."; } 33% { content: ".."; } 66% { content: "..."; } }
 </style>
 
 <script>
-// Tabs Management
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const target = this.dataset.target || (this.classList.contains('btn-add-conn') ? 'add' : '');
-        if (!target) return;
-        
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.connection-panel').forEach(p => p.classList.remove('active'));
-        
-        this.classList.add('active');
-        document.getElementById('panel-' + target).classList.add('active');
+// Tabs Management avec mémorisation de l'onglet actif
+(function () {
+    const STORAGE_KEY = 'adm_tab:' + window.location.pathname + ':storage_conn';
+    const tabBtns = document.querySelectorAll('.connection-tabs .tab-btn');
+    const panels = document.querySelectorAll('.connection-panel');
+
+    function activateConnTab(target, persist) {
+        const panel = document.getElementById('panel-' + target);
+        if (!panel) return false;
+        tabBtns.forEach(b => b.classList.toggle('active', b.dataset.target === target));
+        panels.forEach(p => p.classList.remove('active'));
+        panel.classList.add('active');
+        if (persist) {
+            try { sessionStorage.setItem(STORAGE_KEY, target); } catch (e) {}
+        }
+        return true;
+    }
+
+    try {
+        const saved = sessionStorage.getItem(STORAGE_KEY);
+        if (saved) activateConnTab(saved, false);
+    } catch (e) {}
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = this.dataset.target || (this.classList.contains('btn-add-conn') ? 'add' : '');
+            if (target) activateConnTab(target, true);
+        });
     });
-});
+})();
 
 // DB Driver Fields Toggle
 document.querySelectorAll('.db-driver-selector').forEach(select => {
