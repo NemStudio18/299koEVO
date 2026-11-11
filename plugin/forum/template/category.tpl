@@ -14,10 +14,16 @@
                 <p class="forum-description">{{category.description}}</p>
                 {% ENDIF %}
             </div>
-            {% IF token AND canCreateTopic %}
-            <a href="{{createTopicFormUrl}}" class="button primary">
-                <i class="fa-solid fa-plus"></i> Nouveau sujet
-            </a>
+            {% IF canCreateTopic %}
+                {% IF canPostTopic %}
+                <a href="{{createTopicFormUrl}}" class="button primary">
+                    <i class="fa-solid fa-plus"></i> Nouveau sujet
+                </a>
+                {% ELSE %}
+                <a href="/users/login" class="button secondary">
+                    <i class="fa-solid fa-right-to-bracket"></i> Se connecter pour créer un sujet
+                </a>
+                {% ENDIF %}
             {% ENDIF %}
         </div>
     </header>
@@ -134,10 +140,16 @@
     <div class="forum-empty-box">
         <i class="fa-solid fa-comments"></i>
         <p>Aucun sujet dans cette catégorie pour le moment.</p>
-        {% IF token AND canCreateTopic %}
-        <a href="{{createTopicFormUrl}}" class="button primary">
-            <i class="fa-solid fa-plus"></i> Créer le premier sujet
-        </a>
+        {% IF canCreateTopic %}
+            {% IF canPostTopic %}
+            <a href="{{createTopicFormUrl}}" class="button primary">
+                <i class="fa-solid fa-plus"></i> Créer le premier sujet
+            </a>
+            {% ELSE %}
+            <a href="/users/login" class="button secondary">
+                <i class="fa-solid fa-right-to-bracket"></i> Se connecter pour créer le premier sujet
+            </a>
+            {% ENDIF %}
         {% ENDIF %}
     </div>
     {% ENDIF %}

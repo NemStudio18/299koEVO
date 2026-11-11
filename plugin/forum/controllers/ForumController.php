@@ -272,12 +272,16 @@ class ForumController extends PublicController
         }
         unset($topicData);
 
+        $allowAnonymous = (bool) $plugin->getConfigVal('allowAnonymous');
+        $canPostTopic = ($this->user !== null || $allowAnonymous) && (!$hasSubcategories || $isAdmin);
+
         $tpl->set('topics', $topicsPrepared);
         $tpl->set('subcategories', $subcategoriesPrepared);
         $tpl->set('hasSubcategories', $hasSubcategories);
         $tpl->set('canCreateTopic', !$hasSubcategories || $isAdmin);
+        $tpl->set('canPostTopic', $canPostTopic);
         $tpl->set('isAdmin', $isAdmin);
-        $tpl->set('token', $this->user ? Csrf::token() : null);
+        $tpl->set('token', ($this->user !== null || $allowAnonymous) ? Csrf::token() : null);
         $tpl->set('currentPage', $page);
         $tpl->set('totalPages', $totalPages);
         $tpl->set('paginationPages', $paginationPages);
