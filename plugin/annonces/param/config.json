@@ -1,0 +1,11 @@
+{
+    "priority": "5",
+    "label": "Petites Annonces",
+    "introText": "",
+    "itemsPerPage": "12",
+    "currency": "€",
+    "notifyEmail": "",
+    "onReserveStatus": "keep_available",
+    "reservationNotice": "Réservation sans paiement en ligne : votre demande est transmise directement à l'administrateur pour validation.",
+    "requireAntispam": "1"
+}

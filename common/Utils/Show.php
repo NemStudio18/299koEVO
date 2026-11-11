@@ -410,6 +410,7 @@ class Show
             'blog'          => 'contenu',
             'agenda'        => 'contenu',
             'galerie'       => 'contenu',
+            'annonces'      => 'contenu',
             'filemanager'   => 'contenu',
             'searchmaps'    => 'contenu',
             'livechat'      => 'communaute',
