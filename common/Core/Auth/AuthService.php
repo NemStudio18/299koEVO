@@ -173,7 +173,7 @@ class AuthService
             return [
                 'success' => false,
                 'reason' => 'empty_identifier',
-                'message' => 'Veuillez saisir votre adresse email ou votre identifiant (Nom_Prénom).'
+                'message' => 'Veuillez saisir votre adresse email ou votre pseudo.'
             ];
         }
 

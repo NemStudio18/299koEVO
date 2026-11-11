@@ -81,6 +81,22 @@
 					<br><small>{{Lang.configmanager-registration-validation-mode-desc}}</small>
 				</p>
 				<p>
+					<input {% if CORE.getConfigVal("antispamLogin") %}checked{% endif %} type="checkbox" name="antispamLogin" id="antispamLogin"/>
+					<label for="antispamLogin">{{Lang.configmanager-antispam-login}}</label>
+					<br><small>{{Lang.configmanager-antispam-login-desc}}</small>
+					{% if not antispamPluginActive %}
+						<br><small style="color: #b45309;"><i class="fa-solid fa-triangle-exclamation"></i> {{Lang.configmanager-antispam-inactive-note}}</small>
+					{% endif %}
+				</p>
+				<p>
+					<input {% if CORE.getConfigVal("antispamRegister") %}checked{% endif %} type="checkbox" name="antispamRegister" id="antispamRegister"/>
+					<label for="antispamRegister">{{Lang.configmanager-antispam-register}}</label>
+					<br><small>{{Lang.configmanager-antispam-register-desc}}</small>
+					{% if not antispamPluginActive %}
+						<br><small style="color: #b45309;"><i class="fa-solid fa-triangle-exclamation"></i> {{Lang.configmanager-antispam-inactive-note}}</small>
+					{% endif %}
+				</p>
+				<p>
 					<label for="sessionLifetime">{{Lang.configmanager-session-lifetime}}</label>
 					<select name="sessionLifetime" id="sessionLifetime">
 						<option value="1440" {% if CORE.getConfigVal("sessionLifetime") == 1440 or CORE.getConfigVal("sessionLifetime") == "" %}selected{% endif %}>24 minutes (par défaut PHP)</option>

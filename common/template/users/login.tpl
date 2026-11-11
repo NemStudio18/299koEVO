@@ -5,8 +5,8 @@
         <input type="text" name="_hp_website" value="" class="hp-field" aria-hidden="true" tabindex="-1" autocomplete="off" style="display:none !important; position:absolute !important; left:-9999px !important; visibility:hidden !important; pointer-events:none !important;" rel="nofollow">
         
         <p class="field">
-            <label for="adminEmail">Adresse email ou Nom_Prénom</label>
-            <input type="text" id="adminEmail" name="adminEmail" required autocomplete="username" placeholder="ex: dupont_jean ou email@exemple.com">
+            <label for="adminEmail">Adresse email ou pseudo</label>
+            <input type="text" id="adminEmail" name="adminEmail" required autocomplete="username" placeholder="ex: mon_pseudo ou email@exemple.com">
             <span class="field-validation" id="email-validation"></span>
         </p>
         <p class="field">
@@ -23,6 +23,11 @@
             <input type="checkbox" name="remember" id="remember"/>
             <label for="remember">{{Lang.users.remember}}</label>
         </p>
+        {% if antispam %}
+            <div class="field antispam-wrapper">
+                {{antispamField}}
+            </div>
+        {% endif %}
         <p class="actions">
             <button type="submit" class="button success">{{Lang.validate}}</button>
             <a class="button alert" href="{{CORE.getConfigVal("siteUrl") }}">{{ Lang.quit}}</a>

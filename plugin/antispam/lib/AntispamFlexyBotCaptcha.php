@@ -120,6 +120,42 @@ class AntispamFlexyBotCaptcha extends AntispamAbstractCaptcha
     const proofInput = box.querySelector('.fb-proof-input');
     const panel = box.querySelector('.fb-challenge-panel');
     const ansInput = box.querySelector('.fb-answer-input');
+    const form = box.closest('form');
+    const submitControls = form
+        ? Array.from(form.querySelectorAll('button[type="submit"], input[type="submit"], button:not([type])'))
+            .filter(el => el !== btn)
+        : [];
+
+    let isVerified = false;
+
+    function setSubmitEnabled(enabled) {
+        submitControls.forEach(function(el) {
+            el.disabled = !enabled;
+            el.style.opacity = enabled ? '' : '0.55';
+            el.style.cursor = enabled ? '' : 'not-allowed';
+            el.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+        });
+    }
+
+    setSubmitEnabled(false);
+
+    if (ansInput) {
+        ansInput.addEventListener('input', function() {
+            if (!isVerified) {
+                setSubmitEnabled(this.value.trim() !== '');
+            }
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const hasFallbackAnswer = ansInput && panel.style.display !== 'none' && ansInput.value.trim() !== '';
+            if (!isVerified && !hasFallbackAnswer) {
+                e.preventDefault();
+                setSubmitEnabled(false);
+            }
+        });
+    }
 
     btn.addEventListener('click', function() {
         const elapsedMs = Date.now() - startTs;
@@ -138,12 +174,15 @@ class AntispamFlexyBotCaptcha extends AntispamAbstractCaptcha
         });
 
         if (humanEnough) {
+            isVerified = true;
             box.classList.add('is-verified');
             btn.setAttribute('aria-pressed', 'true');
             label.textContent = 'Vérifié';
             panel.style.display = 'none';
             if (ansInput) ansInput.removeAttribute('required');
+            setSubmitEnabled(true);
         } else {
+            isVerified = false;
             box.classList.remove('is-verified');
             btn.setAttribute('aria-pressed', 'true');
             label.textContent = 'Vérification requise';
@@ -151,6 +190,9 @@ class AntispamFlexyBotCaptcha extends AntispamAbstractCaptcha
             if (ansInput) {
                 ansInput.setAttribute('required', 'required');
                 ansInput.focus();
+                setSubmitEnabled(ansInput.value.trim() !== '');
+            } else {
+                setSubmitEnabled(false);
             }
         }
     });
@@ -225,3 +267,4 @@ HTML;
         return $data;
     }
 }
+

@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Login Validations
     updateValidation('adminEmail', 'email-validation', [
-        { test: (v) => v.trim().length >= 3, message: 'Email ou identifiant (Nom_Prénom) requis', success: 'Identifiant saisi' }
+        { test: (v) => v.trim().length >= 3, message: 'Email ou pseudo requis', success: 'Identifiant saisi' }
     ]);
     updateValidation('adminPwd', 'password-validation', [
         { test: (v) => v.length > 0, message: 'Mot de passe requis', success: 'Mot de passe saisi' }

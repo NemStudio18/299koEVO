@@ -9,6 +9,7 @@ use Core\Auth\UsersManager;
 use Core\Auth\User;
 use Core\Auth\PasswordRecovery;
 use Core\Auth\RegistrationRequest;
+use Core\Plugin\PluginsManager;
 use Core\Security\Csrf;
 use Utils\Show;
 use Core\Lang;
@@ -39,49 +40,33 @@ class UsersLoginController extends PublicController
         }
         
         if ($msgType) {
-            $poiLabel = $poiName ? htmlspecialchars(urldecode($poiName)) : 'ce lieu';
+            $poiLabel = $poiName ? htmlspecialchars(urldecode($poiName)) : 'cet élément';
             switch ($msgType) {
                 case 'participate':
-                    $mascotMsg = '<div style="display:flex; align-items:center; gap:16px;">'
-                               . '<img src="/images/mascot/what_empty.webp" alt="Mascotte What" style="width:72px; height:auto; flex-shrink:0; border-radius:12px; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.15));">'
-                               . '<div><strong style="font-size:1.05rem;">Envie de participer ?</strong><br>Connectez-vous ou rejoignez gratuitement la communauté Vivre-Bourges pour confirmer votre présence et enregistrer vos sorties locales !</div>'
-                               . '</div>';
-                    Show::msg($mascotMsg, 'info');
+                    Show::msg("Pour confirmer votre participation, veuillez vous connecter ou créer un compte.", 'info');
                     break;
                 case 'interest':
-                    $mascotMsg = '<div style="display:flex; align-items:center; gap:16px;">'
-                               . '<img src="/images/mascot/what_empty.webp" alt="Mascotte What" style="width:72px; height:auto; flex-shrink:0; border-radius:12px; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.15));">'
-                               . '<div><strong style="font-size:1.05rem;">Cet événement vous intéresse ?</strong><br>Connectez-vous pour l\'ajouter à vos rappels et ne manquer aucune animation à Bourges !</div>'
-                               . '</div>';
-                    Show::msg($mascotMsg, 'info');
+                    Show::msg("Pour suivre cet événement, connectez-vous ou créez un compte.", 'info');
                     break;
                 case 'like':
                 case 'react':
-                    $mascotMsg = '<div style="display:flex; align-items:center; gap:16px;">'
-                               . '<img src="/images/mascot/what_empty.webp" alt="Mascotte What" style="width:72px; height:auto; flex-shrink:0; border-radius:12px; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.15));">'
-                               . '<div><strong style="font-size:1.05rem;">Vous aimez cette publication ?</strong><br>Connectez-vous pour soutenir vos commerçants locaux et réagir aux actualités de Bourges !</div>'
-                               . '</div>';
-                    Show::msg($mascotMsg, 'info');
+                    Show::msg("Pour réagir à cette publication, veuillez vous connecter ou créer un compte.", 'info');
                     break;
                 case 'comment':
-                    $mascotMsg = '<div style="display:flex; align-items:center; gap:16px;">'
-                               . '<img src="/images/mascot/what_empty.webp" alt="Mascotte What" style="width:72px; height:auto; flex-shrink:0; border-radius:12px; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.15));">'
-                               . '<div><strong style="font-size:1.05rem;">Envie de commenter ?</strong><br>Connectez-vous pour participer aux échanges et poser vos questions aux commerçants !</div>'
-                               . '</div>';
-                    Show::msg($mascotMsg, 'info');
+                    Show::msg("Pour publier un commentaire, veuillez vous connecter ou créer un compte.", 'info');
                     break;
                 case 'favorite':
                 case 'subscribe':
-                    Show::msg("Pour s'abonner et suivre les offres et événements de <strong>" . $poiLabel . "</strong>, veuillez d'abord vous connecter ou créer un compte.", 'info');
+                    Show::msg("Pour vous abonner à <strong>" . $poiLabel . "</strong>, veuillez vous connecter ou créer un compte.", 'info');
                     break;
                 case 'report':
-                    Show::msg("Pour signaler un problème sur la fiche de <strong>" . $poiLabel . "</strong>, merci de vous connecter ou de créer un compte.", 'info');
+                    Show::msg("Pour signaler un problème sur <strong>" . $poiLabel . "</strong>, merci de vous connecter ou de créer un compte.", 'info');
                     break;
                 case 'claim':
                     Show::msg("Pour revendiquer <strong>" . $poiLabel . "</strong>, merci de vous connecter ou de créer un compte.", 'info');
                     break;
                 case 'edit':
-                    Show::msg("Pour proposer une correction sur la fiche de <strong>" . $poiLabel . "</strong>, merci de vous connecter ou de créer un compte.", 'info');
+                    Show::msg("Pour proposer une modification sur <strong>" . $poiLabel . "</strong>, merci de vous connecter ou de créer un compte.", 'info');
                     break;
             }
         }
@@ -92,6 +77,7 @@ class UsersLoginController extends PublicController
         $tpl = $response->createPluginTemplate('users', 'login');
         $tpl->set('loginLink', $this->router->generate('login-send'));
         $tpl->set('lostLink', $this->router->generate('lost-password'));
+        $this->attachAntispam($tpl, 'antispamLogin');
         $response->addTemplate($tpl);
         return $response;
     }
@@ -104,6 +90,7 @@ class UsersLoginController extends PublicController
         $response->hidePageTitle(true);
         $tpl = $response->createPluginTemplate('users', 'register');
         $tpl->set('registerLink', $this->router->generate('register-send'));
+        $this->attachAntispam($tpl, 'antispamRegister');
         $response->addTemplate($tpl);
         return $response;
     }
@@ -118,6 +105,11 @@ class UsersLoginController extends PublicController
         if (($_POST['_hp_website'] ?? '') !== '') {
             return $this->register();
         }
+        if (!$this->isAntispamValid('antispamRegister')) {
+            Show::msg(Lang::get('antispam.invalid-captcha') ?: 'Antispam invalide, veuillez réessayer.', 'error');
+            $this->core->redirect($this->router->generate('register'));
+            return;
+        }
 
         // Hook de validation pour les plugins (ex: Auth pour les checkboxes)
         $this->core->callHook('users:register-validation');
@@ -127,15 +119,14 @@ class UsersLoginController extends PublicController
         $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL) ?: '';
         $password = $_POST['password'] ?? '';
         $passwordConfirm = $_POST['password_confirm'] ?? '';
-
-        // Si username n'est pas fourni dans le formulaire, le générer automatiquement (Prénom Nom)
         $username = trim($_POST['username'] ?? '');
-        if ($username === '') {
+
+        if ($username === '' && ($firstname !== '' || $lastname !== '')) {
             $username = trim($firstname . ' ' . $lastname);
         }
 
-        if ($email === '' || $password === '' || ($username === '' && $firstname === '')) {
-            Show::msg('Veuillez renseigner votre nom, prénom, adresse email et mot de passe.', 'error');
+        if ($email === '' || $password === '' || mb_strlen($username) < 3 || mb_strlen($username) > 60) {
+            Show::msg('Veuillez renseigner un pseudo (3 à 60 caractères), une adresse email valide et un mot de passe.', 'error');
             return $this->register();
         }
 
@@ -154,12 +145,9 @@ class UsersLoginController extends PublicController
             return $this->register();
         }
 
-        // Si le pseudo généré existe déjà, lui attribuer un numéro unique (ex: Jean Dupont 2)
-        $baseUsername = $username;
-        $counter = 2;
-        while ($this->usernameExists($username)) {
-            $username = $baseUsername . ' ' . $counter;
-            $counter++;
+        if ($this->usernameExists($username)) {
+            Show::msg(Lang::get('users.registration-username-exists') ?: 'Ce pseudo est déjà utilisé.', 'error');
+            return $this->register();
         }
 
         $this->cleanupPendingRequests($email);
@@ -228,12 +216,17 @@ class UsersLoginController extends PublicController
             Show::msg(Lang::get("users.bad-credentials"), 'error');
             $this->core->redirect($this->router->generate('login'));
         }
+        if (!$this->isAntispamValid('antispamLogin')) {
+            Show::msg(Lang::get('antispam.invalid-captcha') ?: 'Antispam invalide, veuillez réessayer.', 'error');
+            $this->core->redirect($this->router->generate('login'));
+            return;
+        }
         $identifier = trim($_POST['adminEmail'] ?? '');
         $password = $_POST['adminPwd'] ?? '';
 
         if (empty($identifier) || empty($password) || ($_POST['_hp_website'] ?? '') !== '') {
             $this->core->getLogger()->warning("Auth: login-send ignored - empty field or honeypot filled");
-            Show::msg('Veuillez renseigner votre identifiant ou adresse email et votre mot de passe.', 'error');
+            Show::msg('Veuillez renseigner votre pseudo ou adresse email et votre mot de passe.', 'error');
             return $this->login();
         }
 
@@ -962,6 +955,26 @@ class UsersLoginController extends PublicController
         return User::find('email', $email) !== null;
     }
 
+    protected function attachAntispam($tpl, string $configKey): void
+    {
+        $antispamField = '';
+        if (!empty($this->core->getConfigVal($configKey)) && PluginsManager::isActivePlugin('antispam')) {
+            $antispamData = $this->core->callHook('antispam:get-captcha', ['field_html' => '']);
+            $antispamField = $antispamData['field_html'] ?? '';
+        }
+        $tpl->set('antispamField', $antispamField);
+        $tpl->set('antispam', $antispamField !== '');
+    }
+
+    protected function isAntispamValid(string $configKey): bool
+    {
+        if (empty($this->core->getConfigVal($configKey)) || !PluginsManager::isActivePlugin('antispam')) {
+            return true;
+        }
+        $result = $this->core->callHook('antispam:validate', ['is_valid' => true]);
+        return (bool) ($result['is_valid'] ?? false);
+    }
+
     protected function usernameExists(string $username, ?int $excludeId = null): bool
     {
         foreach (User::all() as $user) {
@@ -969,6 +982,14 @@ class UsersLoginController extends PublicController
                 continue;
             }
             if (strcasecmp($user->attributes['username'] ?? '', $username) === 0) {
+                return true;
+            }
+        }
+        foreach (RegistrationRequest::all() as $pending) {
+            if ($pending->isExpired()) {
+                continue;
+            }
+            if (strcasecmp($pending->attributes['username'] ?? '', $username) === 0) {
                 return true;
             }
         }

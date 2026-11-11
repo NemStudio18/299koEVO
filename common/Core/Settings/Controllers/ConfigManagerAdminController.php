@@ -59,6 +59,7 @@ class ConfigManagerAdminController extends AdminController {
         $tpl->set('dbError', $dbError);
 
         $tpl->set('registrationDefaultGroup', $this->core->getConfigVal('registrationDefaultGroup') ?? 'member');
+        $tpl->set('antispamPluginActive', PluginsManager::isActivePlugin('antispam'));
         
         // Pass available locales and current locale to template
         $availablesLocales = Lang::getAvailablesLocales();
@@ -184,6 +185,8 @@ class ConfigManagerAdminController extends AdminController {
             'enable_theme_toggle' => (isset($_POST['enable_theme_toggle'])) ? true : false,
         ];
         $config['allowRegistrations'] = isset($_POST['allowRegistrations']);
+        $config['antispamLogin'] = isset($_POST['antispamLogin']);
+        $config['antispamRegister'] = isset($_POST['antispamRegister']);
         $defaultGroupSlug = $_POST['registrationDefaultGroup'] ?? 'member';
         if ($this->core->auth()->getGroupBySlug($defaultGroupSlug) === null) {
             $defaultGroupSlug = 'member';
