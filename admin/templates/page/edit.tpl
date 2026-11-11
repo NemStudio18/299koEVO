@@ -8,7 +8,7 @@
         <div>
             <h2 style="margin: 0;">
                 <i class="fa-solid fa-file-pen"></i>
-                {% if pageItem.getId() %}{{pageItem.getName()}}{% else %}{{Lang.page.add}}{% endif %}
+                {% if pageItem.getId() %}{{pageItem.getName()}}{% else %}{{Lang.page.add-page}}{% endif %}
             </h2>
         </div>
         <div class="admin-actions-bar" style="display: flex; align-items: center; gap: 10px; margin: 0;">
@@ -33,7 +33,7 @@
                 <i class="fa-solid fa-magnifying-glass"></i> {{Lang.page.seo-heading}}
             </li>
             <li data-tab="access">
-                <i class="fa-solid fa-shield-halved"></i> Conditions d'accès
+                <i class="fa-solid fa-flask"></i> Conditions d'accès <span class="adm-badge-exp">Expérimental</span>
             </li>
         </ul>
 
@@ -140,7 +140,16 @@
             <!-- Tab 4: Conditions d'accès -->
             <li class="tab">
                 <section id="section-access" class="content">
-                    <header><h3>Conditions d'accès à la page</h3></header>
+                    <header>
+                        <h3>
+                            Conditions d'accès à la page
+                            <span class="adm-badge-exp">Fonctionnalité expérimentale</span>
+                        </h3>
+                    </header>
+                    <p style="background: #fffbeb; color: #92400e; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem;">
+                        <i class="fa-solid fa-flask" aria-hidden="true"></i>
+                        <strong>Fonctionnalité expérimentale :</strong> l'éditeur de conditions et la politique d'accès dynamique sont en cours de test. Vérifiez bien l'accès avec le bouton <em>Test Policy</em> ; en cas de doute, utilisez plutôt le statut brouillon ou le mot de passe dans l'onglet <em>Paramètres</em>.
+                    </p>
                     <div id="conditions-container">
                         <input type="hidden" name="conditions" id="conditions" value="{{pageItem.getConditions()|json_encode}}" />
                         <div id="conditions-list" style="margin-bottom: 12px;"></div>

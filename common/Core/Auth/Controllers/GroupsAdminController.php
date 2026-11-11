@@ -29,10 +29,19 @@ class GroupsAdminController extends AdminController
 
         $groups = $this->core->auth()->getGroups();
         
-        // Count users per group
+        // Count users per group & resolve permission labels
         foreach ($groups as $group) {
             $groupId = $group->attributes['id'] ?? null;
             $group->userCount = $this->countUsersInGroup($groupId);
+            $labels = [];
+            foreach ($group->getPermissions() as $perm) {
+                if ($perm === Permissions::ALL) {
+                    $labels[] = ['key' => $perm, 'label' => Lang::get('permissions.all')];
+                } else {
+                    $labels[] = ['key' => $perm, 'label' => Lang::get('permissions.' . $perm) ?: $perm];
+                }
+            }
+            $group->permissionLabels = $labels;
         }
 
         $tpl->set('groups', $groups);
@@ -95,9 +104,10 @@ class GroupsAdminController extends AdminController
         $this->core->redirect($this->router->generate('groups-admin-home'));
     }
 
-    public function edit(int $id)
+    public function edit($id)
     {
-        $group = Group::findPK($id);
+        $id = trim((string) $id);
+        $group = $id !== '' ? Group::findPK($id) : null;
         if ($group === null) {
             $this->core->redirect($this->router->generate('groups-admin-home'));
         }
@@ -131,12 +141,12 @@ class GroupsAdminController extends AdminController
             $this->core->redirect($this->router->generate('groups-admin-home'));
         }
 
-        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? false;
-        $group = Group::findPK($id);
+        $id = trim((string) ($_POST['id'] ?? ''));
+        $group = $id !== '' ? Group::findPK($id) : null;
         $name = trim($_POST['name'] ?? '');
         $permissions = $_POST['permissions'] ?? [];
 
-        if (!$id || $group === null || $name === '') {
+        if ($id === '' || $group === null || $name === '') {
             Show::msg(Lang::get('groups-bad-entries'), 'error');
             $this->core->redirect($this->router->generate('groups-admin-home'));
         }
@@ -155,7 +165,7 @@ class GroupsAdminController extends AdminController
         $this->core->redirect($this->router->generate('groups-admin-home'));
     }
 
-    public function delete(int $id, $token)
+    public function delete($id, $token)
     {
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
@@ -163,7 +173,8 @@ class GroupsAdminController extends AdminController
             $this->core->redirect($this->router->generate('groups-admin-home'));
         }
 
-        $group = Group::findPK($id);
+        $id = trim((string) $id);
+        $group = $id !== '' ? Group::findPK($id) : null;
         if ($group === null) {
             Show::msg(Lang::get('groups-not-found'), 'error');
             $this->core->redirect($this->router->generate('groups-admin-home'));
@@ -210,14 +221,16 @@ class GroupsAdminController extends AdminController
         return $slug ?: 'group-' . time();
     }
 
-    protected function countUsersInGroup(?int $groupId): int
+    protected function countUsersInGroup(int|string|null $groupId): int
     {
-        if ($groupId === null) {
+        if ($groupId === null || $groupId === '') {
             return 0;
         }
+        $target = (string) $groupId;
         $count = 0;
         foreach (User::all() as $user) {
-            if (($user->attributes['group_id'] ?? null) === $groupId) {
+            $userGroup = $user->attributes['group_id'] ?? null;
+            if ($userGroup !== null && (string) $userGroup === $target) {
                 $count++;
             }
         }
