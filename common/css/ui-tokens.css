@@ -295,6 +295,13 @@ body.theme-dark {
     background: var(--evo-accent-hover);
     transform: translateY(-1px);
 }
+.evo-btn-primary .evo-pill {
+    margin-left: 6px;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.22);
+    color: var(--evo-accent-text);
+    border: none;
+}
 .evo-btn-secondary {
     display: inline-flex;
     align-items: center;
