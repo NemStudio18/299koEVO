@@ -1,0 +1,12 @@
+{
+    "slug": "annonces",
+    "name": "Petites Annonces",
+    "icon": "fa-solid fa-tags",
+    "description": "Publiez des petites annonces (création admin) avec système de réservation sans paiement en ligne.",
+    "authorEmail": "mx.koder@gmail.com",
+    "authorWebsite": "https://299ko.ovh",
+    "version": "1.0.0",
+    "adminCategory": "contenu",
+    "homePublicMethod": "Annonces\\Controllers\\AnnoncesController#home",
+    "homeAdminMethod": "Annonces\\Controllers\\AnnoncesAdminController#home"
+}

@@ -62,9 +62,30 @@ class MenuItem extends JsonActiveRecord
         ];
     }
 
-    public function getId(): int
+    /**
+     * Normalise un identifiant d'item (entier SQL ou chaîne hex JSON, 0 si vide).
+     */
+    public static function normalizeId(mixed $id): int|string
     {
-        return (int)($this->attributes['id'] ?? 0);
+        if ($id === null || $id === '' || $id === 0 || $id === '0') {
+            return 0;
+        }
+        if (is_int($id)) {
+            return max(0, $id);
+        }
+        $str = trim((string)$id);
+        if ($str === '' || $str === '0') {
+            return 0;
+        }
+        if (ctype_digit($str)) {
+            return (int)$str;
+        }
+        return $str;
+    }
+
+    public function getId(): int|string
+    {
+        return self::normalizeId($this->attributes['id'] ?? 0);
     }
 
     public function getLocation(): string
@@ -78,14 +99,14 @@ class MenuItem extends JsonActiveRecord
         $this->attributes['location'] = in_array($location, self::VALID_LOCATIONS, true) ? $location : 'main';
     }
 
-    public function getParentId(): int
+    public function getParentId(): int|string
     {
-        return (int)($this->attributes['parentId'] ?? $this->attributes['parent_id'] ?? 0);
+        return self::normalizeId($this->attributes['parentId'] ?? $this->attributes['parent_id'] ?? 0);
     }
 
-    public function setParentId(int $parentId): void
+    public function setParentId(int|string $parentId): void
     {
-        $this->attributes['parentId'] = max(0, $parentId);
+        $this->attributes['parentId'] = self::normalizeId($parentId);
     }
 
     public function getPosition(): int

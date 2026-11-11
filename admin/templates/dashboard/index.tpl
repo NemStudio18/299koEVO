@@ -73,7 +73,7 @@
     {% endif %}
 
     <div class="adm-dash-meta-bar">
-        <span><i class="fa-solid fa-code-branch"></i> 299Ko v{{cmsVersion}}</span>
+        <span><i class="fa-solid fa-code-branch"></i> 299koEVO v{{cmsVersion}}</span>
         <span><i class="fa-brands fa-php"></i> PHP {{phpVersion}}</span>
         <span><i class="fa-solid fa-database"></i> Stockage : {{storageDriver}}</span>
     </div>

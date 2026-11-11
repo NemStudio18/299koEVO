@@ -410,6 +410,7 @@ class Show
             'blog'          => 'contenu',
             'agenda'        => 'contenu',
             'galerie'       => 'contenu',
+            'annonces'      => 'contenu',
             'filemanager'   => 'contenu',
             'searchmaps'    => 'contenu',
             'livechat'      => 'communaute',
@@ -558,7 +559,7 @@ class Show
         $html .= '<li><a href="' . htmlspecialchars($siteUrl . '/admin/pluginsmanager') . '"><i class="fa-solid fa-plug"></i><span>Plugins</span></a></li>';
         $html .= '<li class="adm-drop-sep"><hr></li>';
         $html .= '<li><a class="adm-logout-link" href="' . htmlspecialchars($logoutUrl) . '"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>' . htmlspecialchars(Lang::get('core-disconnection')) . '</span></a></li>';
-        $html .= '<li class="adm-drop-version"><span><i class="fa-solid fa-flask"></i> 299Ko v' . htmlspecialchars((string)$version) . '</span></li>';
+        $html .= '<li class="adm-drop-version"><span><i class="fa-solid fa-flask"></i> 299koEVO v' . htmlspecialchars((string)$version) . '</span></li>';
         $html .= '</ul></div>';
 
         echo $html;

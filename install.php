@@ -63,6 +63,19 @@ if (!is_dir(DATA)) {
 $errorDataWrite = !is_writable(DATA);
 
 $availablesLocales = Lang::$availablesLocales;
+$availableThemes = [];
+foreach ((array) $core->getThemes() as $themeSlug => $themeInfo) {
+    if (is_file(THEMES . $themeSlug . DS . 'layout.tpl')) {
+        $availableThemes[$themeSlug] = (is_array($themeInfo) && !empty($themeInfo['name']))
+            ? (string) $themeInfo['name']
+            : $themeSlug;
+    }
+}
+if (empty($availableThemes)) {
+    $availableThemes['default'] = 'default';
+}
+$defaultThemeSlug = isset($availableThemes['default']) ? 'default' : (string) array_key_first($availableThemes);
+
 $pdoDrivers = class_exists('PDO') ? PDO::getAvailableDrivers() : [];
 $hasSqlitePdo = in_array('sqlite', $pdoDrivers, true);
 $hasMysqlPdo = in_array('mysql', $pdoDrivers, true);
@@ -85,6 +98,10 @@ if (count($_POST) > 0) {
     $adminEmail = filter_var($_POST['adminEmail'] ?? '', FILTER_VALIDATE_EMAIL);
     $adminPwdPlain = $_POST['adminPwd'] ?? '';
     $adminUsername = trim($_POST['adminUsername'] ?? '');
+    $selectedTheme = trim((string) ($_POST['theme'] ?? ''));
+    if (!array_key_exists($selectedTheme, $availableThemes)) {
+        $selectedTheme = $defaultThemeSlug;
+    }
     $storageMode = $_POST['storage_mode'] ?? $defaultStorageMode;
     if (!in_array($storageMode, ['sqlite', 'json', 'mysql'], true)) {
         $storageMode = $defaultStorageMode;
@@ -195,13 +212,8 @@ if (count($_POST) > 0) {
         } else {
             \Core\Database::getInstance()->reloadConfig();
         }
-        $pagesDirPre = DATA_CORE_PAGE;
-        if (!is_dir($pagesDirPre)) {
-            @mkdir($pagesDirPre, 0755, true);
-        }
-        $pagesFilePre = $pagesDirPre . 'pages.json';
-        if (!file_exists($pagesFilePre) || count(json_decode((string) file_get_contents($pagesFilePre), true) ?: []) === 0) {
-            $homepageSeedPre = [[
+        $defaultPagesSeed = [
+            [
                 'id' => 1,
                 'name' => 'Accueil',
                 'position' => 1,
@@ -219,25 +231,65 @@ if (count($_POST) > 0) {
                 'cssClass' => null,
                 'password' => null,
                 'img' => null,
-            ]];
-            file_put_contents($pagesFilePre, json_encode($homepageSeedPre, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                'navPosition' => 'menu',
+                'navContext' => 'main',
+                'showIcon' => 1,
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'id' => 2,
+                'name' => 'À propos',
+                'position' => 2,
+                'isHomepage' => '0',
+                'content' => "<p>Voici une page d'exemple créée lors de l'installation.</p><p>Vous pouvez la modifier, la renommer ou en créer d'autres depuis <strong>Administration &rarr; Pages</strong>.</p>",
+                'isHidden' => 0,
+                'file' => null,
+                'mainTitle' => null,
+                'metaDescriptionTag' => null,
+                'metaTitleTag' => null,
+                'targetAttr' => null,
+                'target' => null,
+                'noIndex' => null,
+                'parent' => null,
+                'cssClass' => null,
+                'password' => null,
+                'img' => null,
+                'navPosition' => 'menu',
+                'navContext' => 'main',
+                'showIcon' => 1,
+                'icon' => 'fa-solid fa-circle-info',
+            ],
+        ];
+        $pagesDirPre = DATA_CORE_PAGE;
+        if (!is_dir($pagesDirPre)) {
+            @mkdir($pagesDirPre, 0755, true);
+        }
+        $pagesFilePre = $pagesDirPre . 'pages.json';
+        if (!file_exists($pagesFilePre) || count(json_decode((string) file_get_contents($pagesFilePre), true) ?: []) === 0) {
+            file_put_contents($pagesFilePre, json_encode($defaultPagesSeed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
             if ($storageMode === 'sqlite' || $storageMode === 'mysql') {
                 \Core\Storage\StorageMigrationService::migrate('PageItem', 'sql', 'json');
             }
         }
-		$plugins = $pluginsManager->getPlugins();
-		if ($plugins != false) {
-			foreach ($plugins as $plugin) {
-				if ($plugin->getLibFile()) {
-					include_once($plugin->getLibFile());
-					$plugin->loadLangFile();
-					if (!$plugin->isInstalled())
-						$pluginsManager->installPlugin($plugin->getName(), true);
-					$plugin->setConfigVal('activate', '1');
-					$pluginsManager->savePluginConfig($plugin);
-				}
-			}
-		}
+        // Si le dossier /plugin existe déjà lors de l'installation, on ne pré-installe pas ses plugins :
+        // l'administrateur activera uniquement ceux de son choix depuis l'interface Plugins.
+        $skipPluginsAutoInstall = is_dir(PLUGINS);
+        if (!$skipPluginsAutoInstall) {
+            $plugins = $pluginsManager->getPlugins();
+            if ($plugins != false) {
+                foreach ($plugins as $plugin) {
+                    if ($plugin->getLibFile()) {
+                        include_once($plugin->getLibFile());
+                        $plugin->loadLangFile();
+                        if (!$plugin->isInstalled()) {
+                            $pluginsManager->installPlugin($plugin->getName(), true);
+                        }
+                        $plugin->setConfigVal('activate', '1');
+                        $pluginsManager->savePluginConfig($plugin);
+                    }
+                }
+            }
+        }
 	}
 	include(DATA . 'key.php');
     $adminPwd = hash_hmac('sha1', $adminPwdPlain, KEY);
@@ -245,8 +297,10 @@ if (count($_POST) > 0) {
         'siteName' => "SiteName",
         'siteDesc' => "Description",
         'siteUrl' => $core->makeSiteUrl(),
-        'theme' => 'default',
+        'theme' => $selectedTheme,
         'hideTitles' => false,
+        'showBanner' => true,
+        'hideBannerTitle' => false,
         'defaultPlugin' => 'page',
         'debug' => false,
         'defaultAdminPlugin' => 'configmanager',
@@ -261,27 +315,7 @@ if (count($_POST) > 0) {
         'registrationDefaultGroup' => 'member',
         'registrationValidationMode' => 'email',
     ];
-    $pagesSeed = [
-        [
-            'id' => 1,
-            'name' => 'Accueil',
-            'position' => 1,
-            'isHomepage' => '1',
-            'content' => "<p>Félicitations, l'installation de 299koEVO s'est déroulée avec succès !<br>Par mesure de sécurité, vous devez maintenant supprimer le fichier install.php du répertoire d'installation.</p>",
-            'isHidden' => 0,
-            'file' => null,
-            'mainTitle' => null,
-            'metaDescriptionTag' => null,
-            'metaTitleTag' => null,
-            'targetAttr' => null,
-            'target' => null,
-            'noIndex' => null,
-            'parent' => null,
-            'cssClass' => null,
-            'password' => null,
-            'img' => null,
-        ],
-    ];
+    $pagesSeed = $defaultPagesSeed;
 
     $pagesDir = DATA_CORE_PAGE;
     if (!is_dir($pagesDir) && !mkdir($pagesDir, 0755, true)) {
@@ -404,6 +438,37 @@ if (count($_POST) > 0) {
         }
     }
 
+    // Créer les entrées de navigation par défaut (Accueil + À propos) dans MenuItem
+    try {
+        if (file_exists(DATA_CORE . 'menus_migrated.flag')) {
+            @unlink(DATA_CORE . 'menus_migrated.flag');
+        }
+        foreach (glob(\CACHE . 'nav_tree_*.json') ?: [] as $navCacheFile) {
+            @unlink($navCacheFile);
+        }
+        if (\Core\Navigation\MenuItem::queryBuilder()->count() === 0) {
+            $pos = 1;
+            foreach ($defaultPagesSeed as $seedPage) {
+                $menuItem = new \Core\Navigation\MenuItem();
+                $menuItem->setLocation('main');
+                $menuItem->setParentId(0);
+                $menuItem->setPosition($pos++);
+                $menuItem->setType('page');
+                $menuItem->setTargetRef((string) $seedPage['id']);
+                $menuItem->setLabel((string) $seedPage['name']);
+                $menuItem->setIcon((string) ($seedPage['icon'] ?? ''));
+                $menuItem->setCssClass('');
+                $menuItem->setTargetAttr('_self');
+                $menuItem->setVisibility(['mode' => 'public', 'roles' => []]);
+                $menuItem->setIsEnabled(1);
+                $menuItem->save();
+            }
+        }
+        @file_put_contents(DATA_CORE . 'menus_migrated.flag', date('c'));
+    } catch (\Throwable $e) {
+        $core->log('Menu seed warning during install: ' . $e->getMessage(), 'WARNING');
+    }
+
     $configEncoded = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     if (!file_put_contents(DATA . 'config.json', $configEncoded) || !chmod(DATA . 'config.json', 0600)) {
         $core->log('Error while writing config file', 'ERROR');
@@ -437,174 +502,212 @@ if (count($_POST) > 0) {
     <head>
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>299ko - <?php echo Lang::get('install-installation'); ?></title>
+        <title>299koEVO - <?php echo Lang::get('install-installation'); ?></title>
         <link rel="stylesheet" href="admin/install.css" media="all">
         <link rel="stylesheet" href="<?php echo FONTICON; ?>" />
     </head>
 
     <body class="install install-body">
+        <div class="install-topbar">
+            <div class="install-topbar-inner">
+                <div class="install-brand">
+                    <span class="install-brand-badge"><i class="fa-solid fa-cubes"></i></span>
+                    <span>299koEVO</span>
+                </div>
+                <span class="install-version-pill">v<?php echo VERSION; ?></span>
+            </div>
+        </div>
+
         <div id="alert-msg">
             <?php Show::displayMsg(); ?>
         </div>
-        <section id="install">
-            <header>
-                <h1 class="text-center">299koEVO <?php echo Lang::get('install-installation'); ?></h1>
-            </header>
-                <div class="msg-container">
-            <?php
-            if ($errorPHP) {
-                echo '<div class="msg error">';
-                echo Lang::get('install-php-version-error', (float) substr(phpversion(), 0, 3), $minPHPVersion);
-                echo '</div>';
-            } else {
-                echo '<div class="msg success">';
-                echo Lang::get('install-php-version-ok', $minPHPVersion);
-                echo '</div>';
-            }
 
-            if ($errorRewrite === 'CGI') {
-                echo '<div class="msg warning">';
-                echo Lang::get('install-php-rewrite-cgi');
-                echo '</div>';
-            } elseif ($errorRewrite) {
-                echo '<div class="msg error">';
-                echo Lang::get('install-php-rewrite-error');
-                echo '</div>';
-            } else {
-                echo '<div class="msg success">';
-                echo Lang::get('install-php-rewrite-ok');
-                echo '</div>';
-            }
+        <main class="install-main">
+            <section id="install" class="module-card">
+                <header>
+                    <h1><i class="fa-solid fa-wand-magic-sparkles"></i> <?php echo Lang::get('install-installation'); ?></h1>
+                    <p class="install-subtitle"><?php echo Lang::get('install-please-fill-fields'); ?></p>
+                </header>
 
-            if ($errorDataWrite) {
-                echo '<div class="msg error">';
-                echo Lang::get('install-php-data-write-error');
-                echo '</div>';
-            } else {
-                echo '<div class="msg success">';
-                echo Lang::get('install-php-data-write-ok');
-                echo '</div>';
-            }
-
-            if ($errorFopen) {
-                echo '<div class="msg warning">';
-                echo Lang::get('install-php-fopen-error');
-                echo '</div>';
-            } else {
-                echo '<div class="msg success">';
-                echo Lang::get('install-php-fopen-ok');
-                echo '</div>';
-            }
-
-            if ($errorCurl) {
-                echo '<div class="msg warning">';
-                echo Lang::get('install-php-curl-error');
-                echo '</div>';
-            } else {
-                echo '<div class="msg success">';
-                echo Lang::get('install-php-curl-ok');
-                echo '</div>';
-            }
-
-            if ($errorZip) {
-                echo '<div class="msg warning">';
-                echo Lang::get('install-php-zip-error');
-                echo '</div>';
-            } else {
-                echo '<div class="msg success">';
-                echo Lang::get('install-php-zip-ok');
-                echo '</div>';
-            }
-
-            if ($errorDataWrite || $errorPHP || $errorRewrite === true) {
-                echo '<div class="msg error">';
-                echo Lang::get('install-please-check-errors');
-                echo '</div>';
-            } else {
-                ?>
-                </div>
-                <form method="post" action="">
-                    <?php echo '<h3>'.Lang::get('install-please-fill-fields').'</h3>';
-                    ?>
-                    <p><label for="lang-select"><?php echo Lang::get('install-lang-choice'); ?></label>
-                    <select name="lang-select" id="lang-select" onchange="langChange()">
+                <div class="install-body-inner">
+                    <h2 class="install-section-title"><i class="fa-solid fa-stethoscope"></i> Vérification de l'environnement</h2>
+                    <div class="msg-container">
                         <?php
-                        foreach (Lang::$availablesLocales as $k => $v) {
-                            if (Lang::getLocale() === $k) {
-                                echo '<option value="' . $k . '" selected>' . $v . '</option>';
-                            } else {
-                                echo '<option value="' . $k . '">' . $v . '</option>';
-                            }
+                        $renderCheck = static function (string $type, string $text): void {
+                            $icons = [
+                                'success' => 'fa-circle-check',
+                                'warning' => 'fa-triangle-exclamation',
+                                'error'   => 'fa-circle-xmark',
+                            ];
+                            $icon = $icons[$type] ?? 'fa-circle-info';
+                            echo '<div class="msg ' . $type . '"><i class="fa-solid ' . $icon . '"></i><span>' . $text . '</span></div>';
+                        };
+
+                        if ($errorPHP) {
+                            $renderCheck('error', Lang::get('install-php-version-error', (float) substr(phpversion(), 0, 3), $minPHPVersion));
+                        } else {
+                            $renderCheck('success', Lang::get('install-php-version-ok', $minPHPVersion));
+                        }
+
+                        if ($errorRewrite === 'CGI') {
+                            $renderCheck('warning', Lang::get('install-php-rewrite-cgi'));
+                        } elseif ($errorRewrite) {
+                            $renderCheck('error', Lang::get('install-php-rewrite-error'));
+                        } else {
+                            $renderCheck('success', Lang::get('install-php-rewrite-ok'));
+                        }
+
+                        if ($errorDataWrite) {
+                            $renderCheck('error', Lang::get('install-php-data-write-error'));
+                        } else {
+                            $renderCheck('success', Lang::get('install-php-data-write-ok'));
+                        }
+
+                        if ($errorFopen) {
+                            $renderCheck('warning', Lang::get('install-php-fopen-error'));
+                        } else {
+                            $renderCheck('success', Lang::get('install-php-fopen-ok'));
+                        }
+
+                        if ($errorCurl) {
+                            $renderCheck('warning', Lang::get('install-php-curl-error'));
+                        } else {
+                            $renderCheck('success', Lang::get('install-php-curl-ok'));
+                        }
+
+                        if ($errorZip) {
+                            $renderCheck('warning', Lang::get('install-php-zip-error'));
+                        } else {
+                            $renderCheck('success', Lang::get('install-php-zip-ok'));
+                        }
+
+                        if ($errorDataWrite || $errorPHP || $errorRewrite === true) {
+                            echo '<div class="msg error install-fatal-block"><i class="fa-solid fa-ban"></i><span>' . Lang::get('install-please-check-errors') . '</span></div>';
                         }
                         ?>
-                    </select>
-                    </p>
-                    <p>
-                        <label for="adminUsername"><?php echo Lang::get('users-username'); ?></label><br>
-                        <input type="text" name="adminUsername" id="adminUsername" required="required" minlength="3" maxlength="60" pattern="[A-Za-z0-9_.\-]+">
-                    </p>
-                    <p>
-                        <label for="adminEmail"><?php echo Lang::get('email'); ?></label><br>
-                        <input type="email" name="adminEmail" required="required">
-                    </p>
-                    <p>
-                        <label for="adminPwd"><?php echo Lang::get('password'); ?></label><br>
-                        <input type="password" name="adminPwd" id="adminPwd" required="required">
-                    </p>
-                    <div style="margin: 18px 0; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; text-align: left;">
-                        <label for="storage_mode" style="font-weight: 700; display: block; margin-bottom: 8px;"><?php echo Lang::get('install-storage-mode'); ?></label>
-                        <select name="storage_mode" id="storage_mode" onchange="toggleStorageFields()" style="width: 100%; padding: 8px; margin-bottom: 8px;">
-                            <option value="sqlite" <?php echo $hasSqlitePdo ? 'selected' : 'disabled'; ?>>
-                                <?php echo Lang::get('install-storage-sqlite') . ($hasSqlitePdo ? '' : ' (' . Lang::get('install-driver-unavailable') . ')'); ?>
-                            </option>
-                            <option value="json" <?php echo !$hasSqlitePdo ? 'selected' : ''; ?>>
-                                <?php echo Lang::get('install-storage-json'); ?>
-                            </option>
-                            <option value="mysql" <?php echo $hasMysqlPdo ? '' : 'disabled'; ?>>
-                                <?php echo Lang::get('install-storage-mysql') . ($hasMysqlPdo ? '' : ' (' . Lang::get('install-driver-unavailable') . ')'); ?>
-                            </option>
-                        </select>
-                        <small id="storageModeDesc" style="color: #475569; display: block; line-height: 1.4;"></small>
-                        <div id="mysqlFieldsBox" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
-                            <p style="margin: 8px 0;">
-                                <label for="mysql_host"><?php echo Lang::get('install-mysql-host'); ?></label><br>
-                                <input type="text" name="mysql_host" id="mysql_host" value="localhost" placeholder="localhost">
-                            </p>
-                            <p style="margin: 8px 0;">
-                                <label for="mysql_port"><?php echo Lang::get('install-mysql-port'); ?></label><br>
-                                <input type="number" name="mysql_port" id="mysql_port" value="3306" min="1" max="65535">
-                            </p>
-                            <p style="margin: 8px 0;">
-                                <label for="mysql_dbname"><?php echo Lang::get('install-mysql-dbname'); ?></label><br>
-                                <input type="text" name="mysql_dbname" id="mysql_dbname" value="" placeholder="ex: declic_cms">
-                            </p>
-                            <p style="margin: 8px 0;">
-                                <label for="mysql_user"><?php echo Lang::get('install-mysql-user'); ?></label><br>
-                                <input type="text" name="mysql_user" id="mysql_user" value="" placeholder="ex: cms_user">
-                            </p>
-                            <p style="margin: 8px 0;">
-                                <label for="mysql_password"><?php echo Lang::get('install-mysql-password'); ?></label><br>
-                                <input type="password" name="mysql_password" id="mysql_password" value="">
-                            </p>
-                        </div>
                     </div>
-                    <input type="hidden" name="_installToken" value="<?php echo htmlspecialchars($installToken, ENT_QUOTES); ?>">
-                    <p>
-                        <a id="showPassword" href="javascript:showPassword()" class="button success"><?php echo Lang::get('install-show-password'); ?></a>
-                        <button type="submit" class="button success"><?php echo Lang::get('submit'); ?></button>
-                    </p>
-                    </form>
-                    <footer><a target="_blank" href="https://github.com/299ko/"><?php echo Lang::get('site-just-using', VERSION); ?></a>
-                    </footer>
 
-                <?php
-            }
-            ?>
-        </section>
+                    <?php if (!($errorDataWrite || $errorPHP || $errorRewrite === true)) { ?>
+                    <form method="post" action="" class="install-form">
+                        <div class="install-panel">
+                            <h2 class="install-section-title"><i class="fa-solid fa-user-shield"></i> Compte administrateur &amp; langue</h2>
+                            <div class="install-grid-2">
+                                <p class="install-field">
+                                    <label for="lang-select"><?php echo Lang::get('install-lang-choice'); ?></label>
+                                    <select name="lang-select" id="lang-select" onchange="langChange()">
+                                        <?php
+                                        foreach (Lang::$availablesLocales as $k => $v) {
+                                            $selected = (Lang::getLocale() === $k) ? ' selected' : '';
+                                            echo '<option value="' . $k . '"' . $selected . '>' . $v . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </p>
+                                <?php if (count($availableThemes) > 1) { ?>
+                                <p class="install-field">
+                                    <label for="theme-select"><?php echo Lang::get('install-theme-choice'); ?></label>
+                                    <select name="theme" id="theme-select">
+                                        <?php
+                                        foreach ($availableThemes as $slug => $label) {
+                                            $selected = ($slug === $defaultThemeSlug) ? ' selected' : '';
+                                            echo '<option value="' . htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') . '"' . $selected . '>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </p>
+                                <?php } else { ?>
+                                <input type="hidden" name="theme" value="<?php echo htmlspecialchars($defaultThemeSlug, ENT_QUOTES, 'UTF-8'); ?>">
+                                <?php } ?>
+                                <p class="install-field">
+                                    <label for="adminUsername"><?php echo Lang::get('users-username'); ?></label>
+                                    <input type="text" name="adminUsername" id="adminUsername" required="required" minlength="3" maxlength="60" pattern="[A-Za-z0-9_.\-]+" placeholder="ex: admin">
+                                </p>
+                                <p class="install-field">
+                                    <label for="adminEmail"><?php echo Lang::get('email'); ?></label>
+                                    <input type="email" name="adminEmail" id="adminEmail" required="required" placeholder="admin@exemple.fr">
+                                </p>
+                                <p class="install-field">
+                                    <label for="adminPwd"><?php echo Lang::get('password'); ?></label>
+                                    <span class="install-password-wrap">
+                                        <input type="password" name="adminPwd" id="adminPwd" required="required" minlength="8" placeholder="8 caractères minimum">
+                                        <button type="button" id="showPassword" class="install-toggle-pwd" onclick="toggleInstallPwd()" title="<?php echo Lang::get('install-show-password'); ?>" aria-label="<?php echo Lang::get('install-show-password'); ?>">
+                                            <i id="pwdEyeIcon" class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="install-panel">
+                            <h2 class="install-section-title"><i class="fa-solid fa-database"></i> <?php echo Lang::get('install-storage-mode'); ?></h2>
+                            <div class="install-field">
+                                <select name="storage_mode" id="storage_mode" onchange="toggleStorageFields()">
+                                    <option value="sqlite" <?php echo $hasSqlitePdo ? 'selected' : 'disabled'; ?>>
+                                        <?php echo Lang::get('install-storage-sqlite') . ($hasSqlitePdo ? '' : ' (' . Lang::get('install-driver-unavailable') . ')'); ?>
+                                    </option>
+                                    <option value="json" <?php echo !$hasSqlitePdo ? 'selected' : ''; ?>>
+                                        <?php echo Lang::get('install-storage-json'); ?>
+                                    </option>
+                                    <option value="mysql" <?php echo $hasMysqlPdo ? '' : 'disabled'; ?>>
+                                        <?php echo Lang::get('install-storage-mysql') . ($hasMysqlPdo ? '' : ' (' . Lang::get('install-driver-unavailable') . ')'); ?>
+                                    </option>
+                                </select>
+                                <small id="storageModeDesc" class="install-storage-desc"></small>
+                            </div>
+
+                            <div id="mysqlFieldsBox" class="install-mysql-box">
+                                <div class="install-grid-2">
+                                    <p class="install-field">
+                                        <label for="mysql_host"><?php echo Lang::get('install-mysql-host'); ?></label>
+                                        <input type="text" name="mysql_host" id="mysql_host" value="localhost" placeholder="localhost">
+                                    </p>
+                                    <p class="install-field">
+                                        <label for="mysql_port"><?php echo Lang::get('install-mysql-port'); ?></label>
+                                        <input type="number" name="mysql_port" id="mysql_port" value="3306" min="1" max="65535">
+                                    </p>
+                                    <p class="install-field">
+                                        <label for="mysql_dbname"><?php echo Lang::get('install-mysql-dbname'); ?></label>
+                                        <input type="text" name="mysql_dbname" id="mysql_dbname" value="" placeholder="ex: declic_cms">
+                                    </p>
+                                    <p class="install-field">
+                                        <label for="mysql_user"><?php echo Lang::get('install-mysql-user'); ?></label>
+                                        <input type="text" name="mysql_user" id="mysql_user" value="" placeholder="ex: cms_user">
+                                    </p>
+                                    <p class="install-field">
+                                        <label for="mysql_password"><?php echo Lang::get('install-mysql-password'); ?></label>
+                                        <input type="password" name="mysql_password" id="mysql_password" value="">
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="_installToken" value="<?php echo htmlspecialchars($installToken, ENT_QUOTES); ?>">
+                        <div class="install-actions">
+                            <button type="submit" class="button success">
+                                <i class="fa-solid fa-check"></i> <?php echo Lang::get('submit'); ?>
+                            </button>
+                        </div>
+                    </form>
+                    <?php } ?>
+                </div>
+
+                <footer>
+                    <a target="_blank" href="https://github.com/299ko/"><?php echo Lang::get('site-just-using', VERSION); ?></a>
+                </footer>
+            </section>
+        </main>
         <script type="text/javascript">
-            function showPassword() {
-                document.getElementById("adminPwd").setAttribute("type", "text");
-                document.getElementById("showPassword").style.display = 'none';
+            function toggleInstallPwd() {
+                var pwd = document.getElementById("adminPwd");
+                var icon = document.getElementById("pwdEyeIcon");
+                if (!pwd) return;
+                if (pwd.getAttribute("type") === "password") {
+                    pwd.setAttribute("type", "text");
+                    if (icon) { icon.classList.remove("fa-eye"); icon.classList.add("fa-eye-slash"); }
+                } else {
+                    pwd.setAttribute("type", "password");
+                    if (icon) { icon.classList.remove("fa-eye-slash"); icon.classList.add("fa-eye"); }
+                }
             }
             function langChange() {
                 window.location.href = '<?php echo $url; ?>?lang=' + document.getElementById("lang-select").value;

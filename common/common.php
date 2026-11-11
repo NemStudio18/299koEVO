@@ -184,6 +184,18 @@ foreach ($pluginsManager->getPlugins() as $plugin) {
 // Cela permet de collecter les données métiers (claims, abonnements) via hooks
 \Core\Auth\CurrentUser::get()->initialize();
 
+// Aperçu temporaire de thème réservé aux administrateurs connectés (sans écriture disque)
+if (!empty($_GET['_theme_preview'])) {
+    $previewSlug = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $_GET['_theme_preview']);
+    if ($previewSlug !== '' && is_file(THEMES . $previewSlug . DS . 'layout.tpl')) {
+        $previewUser = \Core\Auth\UsersManager::getCurrentUser();
+        if ($previewUser !== null && \Core\Navigation\AccessPolicyEvaluator::getInstance()->isAdmin(new \Core\Navigation\ConditionContext($previewUser))) {
+            $core->setConfigVal('theme', $previewSlug);
+            $core->setConfigVal('cache_enabled', false);
+        }
+    }
+}
+
 
 \Core\Lang::loadLanguageFile(THEMES . $core->getConfigVal('theme') . '/langs/');
 $themeFunctionsFile = THEMES . $core->getConfigVal('theme') . '/functions.php';

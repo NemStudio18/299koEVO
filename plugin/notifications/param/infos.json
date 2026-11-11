@@ -1,0 +1,11 @@
+{
+    "name": "Notifications",
+    "icon": "fa-solid fa-circle-exclamation",
+    "version": "1.0.0",
+    "author": "VivréBourges",
+    "description": "Système centralisé de notifications pour tous les plugins",
+    "compatibility": [
+        "0.0.1"
+    ],
+    "admin_menu": false
+}

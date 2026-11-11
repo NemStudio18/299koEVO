@@ -60,6 +60,21 @@ class ConfigManagerAdminController extends AdminController {
 
         $tpl->set('registrationDefaultGroup', $this->core->getConfigVal('registrationDefaultGroup') ?? 'member');
         $tpl->set('antispamPluginActive', PluginsManager::isActivePlugin('antispam'));
+
+        $themesList = [];
+        foreach ((array) $this->core->getThemes() as $slug => $info) {
+            if (!is_file(THEMES . $slug . DS . 'layout.tpl')) {
+                continue;
+            }
+            $themesList[] = [
+                'slug'    => $slug,
+                'name'    => (is_array($info) && !empty($info['name'])) ? (string) $info['name'] : $slug,
+                'version' => (is_array($info) && !empty($info['version'])) ? (string) $info['version'] : '',
+                'author'  => (is_array($info) && !empty($info['authorEmail'])) ? (string) $info['authorEmail'] : '',
+            ];
+        }
+        $tpl->set('themesList', $themesList);
+        $tpl->set('themesMetaJson', json_encode($themesList, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT));
         
         // Pass available locales and current locale to template
         $availablesLocales = Lang::getAvailablesLocales();

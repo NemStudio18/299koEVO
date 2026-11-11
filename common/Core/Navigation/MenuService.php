@@ -51,6 +51,9 @@ class MenuService
      */
     public function ensureMigrated(): void
     {
+        if (!file_exists(DATA . 'config.json')) {
+            return;
+        }
         $flagFile = DATA_CORE . 'menus_migrated.flag';
         if (file_exists($flagFile)) {
             return;
@@ -330,7 +333,7 @@ class MenuService
 
         if ($type === 'page') {
             $pageManager = $pageManager ?? Core::getInstance()->pages();
-            $pageItem = $pagesById[(int)$ref] ?? $pageManager->create((int)$ref);
+            $pageItem = $pagesById[(string)$ref] ?? $pageManager->create($ref);
             if (!$pageItem || $pageItem->getIsHidden()) {
                 return [
                     'url'         => '#',
@@ -415,15 +418,16 @@ class MenuService
         $pageManager = Core::getInstance()->pages();
         $pagesById = [];
         foreach ($pageManager->getItems() as $p) {
-            $pagesById[(int)$p->getId()] = $p;
+            $pagesById[(string)$p->getId()] = $p;
         }
 
         $nodes = [];
         foreach ($items as $item) {
             $resolved = $this->resolveMenuItemTarget($item, $pagesById, $pageManager);
             $vis = $item->getVisibility();
-            $nodes[$item->getId()] = [
-                'id'          => $item->getId(),
+            $id = $item->getId();
+            $nodes[(string)$id] = [
+                'id'          => $id,
                 'location'    => $item->getLocation(),
                 'parentId'    => $item->getParentId(),
                 'position'    => $item->getPosition(),
@@ -443,10 +447,11 @@ class MenuService
         }
 
         $roots = [];
-        foreach ($nodes as $id => &$node) {
-            $pid = (int)$node['parentId'];
-            if ($pid > 0 && isset($nodes[$pid]) && $pid !== $id) {
-                $nodes[$pid]['children'][] = &$node;
+        foreach ($nodes as $idKey => &$node) {
+            $pid = MenuItem::normalizeId($node['parentId']);
+            $pidKey = (string)$pid;
+            if ($pid !== 0 && isset($nodes[$pidKey]) && $pidKey !== (string)$idKey) {
+                $nodes[$pidKey]['children'][] = &$node;
             } else {
                 $roots[] = &$node;
             }
@@ -490,12 +495,27 @@ class MenuService
         return $locations;
     }
 
-    public function getNextPosition(string $location, int $parentId = 0): int
+    public function hasTargetInLocation(string $location, string $type, string $targetRef): bool
+    {
+        $targetRef = trim($targetRef);
+        if ($targetRef === '' || !in_array($type, ['page', 'plugin'], true)) {
+            return false;
+        }
+        foreach ($this->getLocationItems($location) as $item) {
+            if ($item->getType() === $type && trim($item->getTargetRef()) === $targetRef) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getNextPosition(string $location, int|string $parentId = 0): int
     {
         $items = $this->getLocationItems($location);
+        $parentKey = (string)MenuItem::normalizeId($parentId);
         $max = 0;
         foreach ($items as $item) {
-            if ($item->getParentId() === $parentId && $item->getPosition() > $max) {
+            if ((string)$item->getParentId() === $parentKey && $item->getPosition() > $max) {
                 $max = $item->getPosition();
             }
         }
@@ -508,14 +528,20 @@ class MenuService
         $location = in_array($data['location'] ?? 'main', MenuItem::VALID_LOCATIONS, true)
             ? $data['location']
             : 'main';
-        $parentId = max(0, (int)($data['parent_id'] ?? 0));
+        $parentId = MenuItem::normalizeId($data['parent_id'] ?? 0);
+        $type = (string)($data['type'] ?? 'url');
+        $targetRef = trim((string)($data['target_ref'] ?? ''));
+
+        if (in_array($type, ['page', 'plugin'], true) && $targetRef !== '' && $this->hasTargetInLocation($location, $type, $targetRef)) {
+            return null;
+        }
 
         $item = new MenuItem();
         $item->setLocation($location);
         $item->setParentId($parentId);
         $item->setPosition(isset($data['position']) ? (int)$data['position'] : $this->getNextPosition($location, $parentId));
-        $item->setType((string)($data['type'] ?? 'url'));
-        $item->setTargetRef((string)($data['target_ref'] ?? ''));
+        $item->setType($type);
+        $item->setTargetRef($targetRef);
         $item->setLabel((string)($data['label'] ?? 'Nouvel élément'));
         $item->setIcon((string)($data['icon'] ?? ''));
         $item->setCssClass((string)($data['css_class'] ?? ''));
@@ -530,8 +556,12 @@ class MenuService
         return null;
     }
 
-    public function updateItem(int $id, array $data): bool
+    public function updateItem(int|string $id, array $data): bool
     {
+        $id = MenuItem::normalizeId($id);
+        if ($id === 0) {
+            return false;
+        }
         $item = MenuItem::findPK($id);
         if (!$item) {
             return false;
@@ -572,19 +602,25 @@ class MenuService
         return $ok;
     }
 
-    public function deleteItem(int $id): bool
+    public function deleteItem(int|string $id): bool
     {
+        $id = MenuItem::normalizeId($id);
+        if ($id === 0) {
+            return false;
+        }
         $item = MenuItem::findPK($id);
         if (!$item) {
             return false;
         }
 
-        // Réattacher les éventuels enfants au parent de l'item supprimé
+        // Réattacher les éventuels enfants au parent de l'item supprimé (compatible JSON et SQL)
         $parentId = $item->getParentId();
-        $children = MenuItem::queryBuilder()->where('parent_id', $id)->get();
-        foreach ($children as $child) {
-            $child->setParentId($parentId);
-            $child->save();
+        $idKey = (string)$id;
+        foreach ($this->getLocationItems($item->getLocation()) as $child) {
+            if ((string)$child->getParentId() === $idKey) {
+                $child->setParentId($parentId);
+                $child->save();
+            }
         }
 
         $ok = (bool)$item->delete();
@@ -597,29 +633,31 @@ class MenuService
     /**
      * Sauvegarde la hiérarchie et les positions d'un emplacement.
      *
-     * @param array<int, array{id: int, parent_id: int, position: int}> $flatNodes
+     * @param array<int, array{id: int|string, parent_id: int|string, position: int}> $flatNodes
      */
     public function saveOrder(string $location, array $flatNodes): bool
     {
         $items = $this->getLocationItems($location);
         $byId = [];
         foreach ($items as $it) {
-            $byId[$it->getId()] = $it;
+            $byId[(string)$it->getId()] = $it;
         }
 
         $success = true;
         foreach ($flatNodes as $node) {
-            $id = (int)($node['id'] ?? 0);
-            if (!isset($byId[$id])) {
+            $id = MenuItem::normalizeId($node['id'] ?? 0);
+            $idKey = (string)$id;
+            if ($id === 0 || !isset($byId[$idKey])) {
                 continue;
             }
-            $parentId = (int)($node['parent_id'] ?? 0);
-            if ($parentId === $id || ($parentId > 0 && !isset($byId[$parentId]))) {
+            $parentId = MenuItem::normalizeId($node['parent_id'] ?? 0);
+            $parentKey = (string)$parentId;
+            if ($parentKey === $idKey || ($parentId !== 0 && !isset($byId[$parentKey]))) {
                 $parentId = 0;
             }
             $position = (int)($node['position'] ?? 0);
 
-            $item = $byId[$id];
+            $item = $byId[$idKey];
             $item->setParentId($parentId);
             $item->setPosition($position);
             if (!$item->save()) {
