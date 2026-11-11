@@ -1,9 +1,9 @@
 {
     "slug": "tinymce",
     "name": "TinyMCE",
-    "icon" : "fa-solid fa-spell-check",
+    "icon": "fa-solid fa-spell-check",
     "description": "Editeur WYSIWYG",
-    "authorEmail" : "mx.koder@gmail.com",
-    "authorWebsite" : "https://299ko.ovh",
-    "version" : "0.1.0b"
+    "authorEmail": "mx.koder@gmail.com",
+    "authorWebsite": "https://299ko.ovh",
+    "version": "1.0.0"
 }

@@ -1,11 +1,11 @@
 {
-    "slug" : "blog",
-    "name" : "Blog",
-    "icon" : "fa-regular fa-newspaper",
-    "description" : "Blog management",
-    "authorEmail" : "mx.koder@gmail.com",
-    "authorWebsite" : "https://299ko.ovh",
-    "version" : "0.1.0b",
-    "homePublicMethod" : "BlogListController#home",
-    "homeAdminMethod" : "BlogAdminPostsController#list"
+    "slug": "blog",
+    "name": "Blog",
+    "icon": "fa-regular fa-newspaper",
+    "description": "Blog management",
+    "authorEmail": "mx.koder@gmail.com",
+    "authorWebsite": "https://299ko.ovh",
+    "version": "1.0.0",
+    "homePublicMethod": "BlogListController#home",
+    "homeAdminMethod": "BlogAdminPostsController#list"
 }

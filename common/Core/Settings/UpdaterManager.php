@@ -457,13 +457,13 @@ class UpdaterManager
         $remoteFile = self::REMOTE . 'core/' . $nextVersion . '/_beforeChangeFiles.php';
         $content = $this->getRemoteFileContent($remoteFile);
         if ($content === false) {
-            return;
+            return true;
         }
         $tmpFile = PLUGINS . 'configmanager' . '/tmp_beforeChangeFiles.php';
         if (@file_put_contents($tmpFile, $content, LOCK_EX)) {
             $success = require_once $tmpFile;
             @unlink($tmpFile);
-            return $success;
+            return $success !== false;
         }
         return false;
     }
@@ -473,13 +473,13 @@ class UpdaterManager
         $remoteFile = self::REMOTE . 'core/' . $nextVersion . '/_afterChangeFiles.php';
         $content = $this->getRemoteFileContent($remoteFile);
         if ($content === false) {
-            return;
+            return true;
         }
         $tmpFile = PLUGINS . 'configmanager' . '/tmp_afterChangeFiles.php';
         if (@file_put_contents($tmpFile, $content, LOCK_EX)) {
             $success = require_once $tmpFile;
             @unlink($tmpFile);
-            return $success;
+            return $success !== false;
         }
         return false;
     }

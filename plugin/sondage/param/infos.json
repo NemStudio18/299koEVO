@@ -1,12 +1,11 @@
 {
-    "name" : "Sondage",
-    "icon" : "fa-solid fa-chart-bar",
-    "description" : "Gestion de sondages et votes",
-    "authorEmail" : "maximeblanc@flexcb.fr",
-    "authorWebsite" : "https://www.flexcb.fr",
-    "version" : "0.1.0b",
-    "homePublicMethod" : "SondageController#home",
-    "homeAdminMethod" : "SondageAdminController#list"
+    "slug": "sondage",
+    "name": "Sondage",
+    "icon": "fa-solid fa-chart-bar",
+    "description": "Gestion de sondages et votes",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://www.flexcb.fr",
+    "version": "1.0.0",
+    "homePublicMethod": "SondageController#home",
+    "homeAdminMethod": "SondageAdminController#list"
 }
-
-
