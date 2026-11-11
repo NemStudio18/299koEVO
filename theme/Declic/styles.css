@@ -447,43 +447,61 @@ hr { border: 0; border-top: 1px solid var(--dc-border); margin: 2rem 0; }
     border-bottom: 1px solid var(--dc-border);
     background: linear-gradient(135deg, var(--dc-surface) 0%, var(--dc-bg) 60%, var(--dc-surface-alt) 100%);
 }
-.declic-banner-svg {
+.declic-banner-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+.declic-banner-grid {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
     display: block;
 }
-.declic-svg-wave-a {
-    animation: declicWaveFloatA 18s ease-in-out infinite alternate;
+.declic-banner-wave {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 200%;
+    height: 100%;
+    display: block;
     will-change: transform;
+    backface-visibility: hidden;
 }
-.declic-svg-wave-b {
-    animation: declicWaveFloatB 24s ease-in-out infinite alternate;
+.declic-wave-1 {
+    animation: declicWaveSlideLeft 14s linear infinite;
+}
+.declic-wave-2 {
+    animation: declicWaveSlideRight 20s linear infinite;
+}
+.declic-banner-ring {
+    position: absolute;
+    right: max(4%, calc((100% - var(--dc-container)) / 2 + 24px));
+    top: 50%;
+    width: 190px;
+    height: 190px;
+    margin-top: -95px;
     will-change: transform;
+    animation: declicRingSpin 32s linear infinite;
 }
-.declic-svg-orbit {
-    animation: declicOrbitDrift 20s ease-in-out infinite alternate;
-    transform-origin: center;
-    will-change: transform;
+@keyframes declicWaveSlideLeft {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
 }
-@keyframes declicWaveFloatA {
-    0% { transform: translate3d(0, 0, 0); }
-    100% { transform: translate3d(-26px, 6px, 0); }
+@keyframes declicWaveSlideRight {
+    from { transform: translate3d(-50%, 0, 0); }
+    to   { transform: translate3d(0, 0, 0); }
 }
-@keyframes declicWaveFloatB {
-    0% { transform: translate3d(0, 0, 0); }
-    100% { transform: translate3d(24px, -5px, 0); }
-}
-@keyframes declicOrbitDrift {
-    0% { transform: translate3d(0, 0, 0) scale(1); }
-    100% { transform: translate3d(-14px, 8px, 0) scale(1.03); }
+@keyframes declicRingSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-    .declic-svg-wave-a,
-    .declic-svg-wave-b,
-    .declic-svg-orbit {
+    .declic-wave-1,
+    .declic-wave-2,
+    .declic-banner-ring {
         animation: none;
     }
 }

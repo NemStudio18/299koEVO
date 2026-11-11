@@ -67,33 +67,33 @@
 
             {% if CORE.getConfigVal("showBanner") != false %}
             <section id="banner" class="declic-banner">
-                <svg class="declic-banner-svg" viewBox="0 0 1440 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-                    <defs>
-                        <linearGradient id="declicGradPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="var(--dc-accent)" stop-opacity="0.18" />
-                            <stop offset="100%" stop-color="var(--dc-warm)" stop-opacity="0.08" />
-                        </linearGradient>
-                        <linearGradient id="declicGradSoft" x1="100%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stop-color="var(--dc-accent)" stop-opacity="0.12" />
-                            <stop offset="100%" stop-color="var(--dc-accent)" stop-opacity="0" />
-                        </linearGradient>
-                        <pattern id="declicGridPattern" width="48" height="48" patternUnits="userSpaceOnUse">
-                            <path d="M 48 0 L 0 0 0 48" fill="none" stroke="var(--dc-border-strong)" stroke-width="0.7" stroke-opacity="0.35" />
-                        </pattern>
-                    </defs>
-                    <rect width="1440" height="260" fill="url(#declicGridPattern)" />
-                    <g class="declic-svg-orbit">
-                        <circle cx="1180" cy="70" r="145" fill="url(#declicGradSoft)" />
-                        <circle cx="1180" cy="70" r="96" fill="none" stroke="var(--dc-accent)" stroke-width="1" stroke-opacity="0.2" stroke-dasharray="6 8" />
-                        <circle cx="240" cy="210" r="88" fill="none" stroke="var(--dc-warm)" stroke-width="1" stroke-opacity="0.18" />
-                    </g>
-                    <g class="declic-svg-wave-a">
-                        <path d="M-80,195 C260,120 520,255 880,165 C1150,95 1330,155 1520,125 L1520,280 L-80,280 Z" fill="url(#declicGradPrimary)" />
-                    </g>
-                    <g class="declic-svg-wave-b">
-                        <path d="M-60,225 C310,165 620,255 960,190 C1190,145 1350,195 1500,175 L1500,280 L-60,280 Z" fill="none" stroke="var(--dc-accent)" stroke-width="1.5" stroke-opacity="0.22" />
-                    </g>
-                </svg>
+                <div class="declic-banner-bg" aria-hidden="true">
+                    <svg class="declic-banner-grid" viewBox="0 0 1440 240" preserveAspectRatio="xMidYMid slice" focusable="false">
+                        <defs>
+                            <pattern id="declicGridPattern" width="48" height="48" patternUnits="userSpaceOnUse">
+                                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="var(--dc-border-strong)" stroke-width="0.7" stroke-opacity="0.32" />
+                            </pattern>
+                        </defs>
+                        <rect width="1440" height="240" fill="url(#declicGridPattern)" />
+                    </svg>
+                    <svg class="declic-banner-wave declic-wave-1" viewBox="0 0 2880 240" preserveAspectRatio="none" focusable="false">
+                        <defs>
+                            <linearGradient id="declicWaveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="var(--dc-accent)" stop-opacity="0.16" />
+                                <stop offset="50%" stop-color="var(--dc-warm)" stop-opacity="0.11" />
+                                <stop offset="100%" stop-color="var(--dc-accent)" stop-opacity="0.16" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M0,150 C240,85 480,215 720,150 C960,85 1200,215 1440,150 C1680,85 1920,215 2160,150 C2400,85 2640,215 2880,150 L2880,260 L0,260 Z" fill="url(#declicWaveGrad)" />
+                    </svg>
+                    <svg class="declic-banner-wave declic-wave-2" viewBox="0 0 2880 240" preserveAspectRatio="none" focusable="false">
+                        <path d="M0,180 C240,225 480,135 720,180 C960,225 1200,135 1440,180 C1680,225 1920,135 2160,180 C2400,225 2640,135 2880,180 L2880,260 L0,260 Z" fill="var(--dc-accent)" fill-opacity="0.06" stroke="var(--dc-accent)" stroke-width="1.5" stroke-opacity="0.22" />
+                    </svg>
+                    <svg class="declic-banner-ring" viewBox="0 0 200 200" focusable="false">
+                        <circle cx="100" cy="100" r="88" fill="none" stroke="var(--dc-accent)" stroke-width="1.2" stroke-opacity="0.22" stroke-dasharray="10 10" />
+                        <circle cx="100" cy="100" r="62" fill="none" stroke="var(--dc-warm)" stroke-width="1" stroke-opacity="0.2" stroke-dasharray="4 8" />
+                    </svg>
+                </div>
                 <div class="declic-banner-inner">
                     <div id="siteDesc" class="declic-site-desc">
                         {% if CORE.getConfigVal("siteLogo") != "" and CORE.getConfigVal("siteLogoPlacement") == "header" %}
