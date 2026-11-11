@@ -68,5 +68,5 @@
         </div>
     </div>
 
-    <div class='form'><button type="submit" class="button">{{Lang.submit}}</button></div>
+    <div class='form'><button type="submit" class="button primary"><i class="fa-solid fa-save"></i> {{Lang.submit}}</button></div>
 </form>

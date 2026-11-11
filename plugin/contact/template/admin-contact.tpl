@@ -1,9 +1,9 @@
 ﻿
-<div class="tabs-container">
+<div class="tabs-container" data-tab-key="contact">
     <ul class="tabs-header">
-        <li class="default-tab"><i class="fa-solid fa-message"></i> Messages Reçus</li>
-        <li><i class="fa-solid fa-gear"></i> Configuration</li>
-        <li><i class="fa-solid fa-at"></i> Emails Collectés</li>
+        <li data-tab="messages" class="default-tab"><i class="fa-solid fa-message"></i> Messages Reçus</li>
+        <li data-tab="config"><i class="fa-solid fa-gear"></i> Configuration</li>
+        <li data-tab="emails"><i class="fa-solid fa-at"></i> Emails Collectés</li>
     </ul>
     <ul class="tabs">
         <!-- Messages Tab -->
@@ -53,10 +53,10 @@
             <form method="post" action="{ ROUTER.generate("contact-saveConfig") }">
                 {{SHOW.tokenField}}
                 
-                <div class="tabs-container">
+                <div class="tabs-container" data-tab-key="contact-config">
                     <ul class="tabs-header">
-                        <li class="default-tab">Général</li>
-                        <li>Contenu</li>
+                        <li data-tab="general" class="default-tab">Général</li>
+                        <li data-tab="content">Contenu</li>
                     </ul>
                     <ul class="tabs">
                         <!-- Général -->

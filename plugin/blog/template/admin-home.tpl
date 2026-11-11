@@ -98,7 +98,7 @@
                 <header>
                     <h3>{{Lang.core-settings}}</h3>
                 </header>
-                {% INCLUDE "blog/template/param.tpl" %}
+                {% INCLUDE PLUGINS ~ "blog/template/param.tpl" %}
             </section>
         </li>
     </ul>

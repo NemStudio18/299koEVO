@@ -54,20 +54,68 @@ class SettingsService
     }
 
     /**
-     * Display warning to delete install.php when present.
+     * Check whether install artifacts are still present on disk.
      */
-    public function displayInstallWarning(): void
+    public function hasInstallArtifacts(): bool
     {
         $installFile = ROOT . 'install.php';
         $installCss = ROOT . 'install' . DS . 'install.css';
-        if (file_exists($installFile) || file_exists($installCss)) {
-            echo "<div class='msg warning'>
-                <p>" . Lang::get("configmanager-delete-install-msg") . "</p>
-                <div style='text-align:center'><a class='button' href='" .
-                Router::getInstance()->generate('configmanager-delete-install', ['token' => (UsersManager::getCurrentUser() ? UsersManager::getCurrentUser()->token : '')]) .
-                "'>" . Lang::get("configmanager-delete-install") . "</a></div>
-                <a href='javascript:' class='msg-button-close'><i class='fa-solid fa-xmark'></i></a></div>";
+        return file_exists($installFile) || file_exists($installCss);
+    }
+
+    /**
+     * Render a compact persistent topbar badge when install artifacts remain.
+     */
+    public function displayInstallBadge(): void
+    {
+        if (!$this->hasInstallArtifacts()) {
+            return;
         }
+        $user = UsersManager::getCurrentUser();
+        if (!$user) {
+            return;
+        }
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        if (!$evaluator->isAdmin(new \Core\Navigation\ConditionContext($user))) {
+            return;
+        }
+
+        $deleteUrl = Router::getInstance()->generate('configmanager-delete-install', ['token' => $user->token]);
+        $label = Lang::get('configmanager-install-badge') ?: 'install.php non supprimé';
+        $title = Lang::get('configmanager-install-badge-title') ?: "Le fichier install.php n'est pas supprimé — cliquez pour le supprimer";
+
+        echo '<a class="adm-install-badge" href="' . htmlspecialchars($deleteUrl, ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '">'
+            . '<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>'
+            . '<span>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>'
+            . '</a>';
+    }
+
+    /**
+     * Queue the install cleanup flash message once immediately after installation.
+     */
+    public function displayPostInstallWarningOnce(): void
+    {
+        if (empty($_SESSION['installOk'])) {
+            return;
+        }
+        unset($_SESSION['installOk']);
+
+        if (!$this->hasInstallArtifacts()) {
+            return;
+        }
+
+        $user = UsersManager::getCurrentUser();
+        $deleteUrl = Router::getInstance()->generate(
+            'configmanager-delete-install',
+            ['token' => $user ? $user->token : '']
+        );
+
+        Show::msg(
+            '<span>' . Lang::get('configmanager-delete-install-msg') . '</span> '
+            . '<a class="button msg-action-btn" href="' . htmlspecialchars($deleteUrl, ENT_QUOTES, 'UTF-8') . '">'
+            . Lang::get('configmanager-delete-install') . '</a>',
+            'warning'
+        );
     }
 
     /**
@@ -196,17 +244,17 @@ class SettingsService
         $this->hooksRegistered = true;
 
         $core = Core::getInstance();
-        $core->addHook('afterAdminTitle', function () {
-            $this->displayInstallWarning();
+        $core->addHook('adminTopbarBadges', function () {
+            $this->displayInstallBadge();
         });
         $core->addHook('adminHead', function () {
+            $this->displayPostInstallWarningOnce();
             $this->checkNewVersion();
         });
         $core->addHook('adminToolsTemplates', function () {
             if ($this->isCurrentModule()) {
                 echo '<a title="' . Lang::get('configmanager-backup') . '" id="configmanager-backup" href="' . Router::getInstance()->generate('configmanager-backup') . '"><i class="fa-solid fa-box-archive"></i></a>';
             }
-            echo '<a title="Gestion du Stockage" id="storage-admin" href="' . Router::getInstance()->generate('storage-admin') . '"><i class="fa-solid fa-database"></i></a>';
         });
     }
 

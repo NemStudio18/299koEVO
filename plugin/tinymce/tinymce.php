@@ -222,29 +222,6 @@ function initTinyMceSafe() {
     };
 
     tinymce.init(mceOptions);
-
-    if (typeof Fancybox !== 'undefined') {
-        try {
-            Fancybox.bind('[data-src="#param_panel"]', {
-                trapFocus: false,
-                placeFocusBack: false,
-                on: {
-                    'ready': (fancybox, eventName) => {
-                        document.querySelectorAll('#param_panel textarea.editor').forEach(function (item) {
-                            tinyMCE.execCommand('mceAddEditor', false, { id: item.id, options: mceOptions });
-                        });
-                    },
-                    'init': (fancybox, eventName) => {
-                        document.querySelectorAll('#param_panel textarea.editor').forEach(function (item) {
-                            tinyMCE.execCommand('mceRemoveEditor', false, { id: item.id });
-                        });
-                    }
-                }
-            });
-        } catch (e) {
-            console.warn('TinyMCE Fancybox bind:', e);
-        }
-    }
 }
 
 if (document.readyState === 'loading') {

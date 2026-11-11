@@ -316,11 +316,12 @@ class ConfigManagerAdminController extends AdminController {
             return $this->home();
         }
         if ($this->core->settings()->deleteInstallFile()) {
+            unset($_SESSION['installOk']);
             $this->logger->info('Config: install files removed by ' . ($this->user->email ?? 'unknown'));
             Show::msg(Lang::get('configmanager-deleted-install'), 'success');
         } else {
             $this->logger->warning('Config: install file removal failed for ' . ($this->user->email ?? 'unknown'));
-            Show::msg(Lang::get('configmanager-error-deleting-install'), 'error');
+            Show::msg(Lang::get('configmanager-delete-install-error'), 'error');
         }
         return $this->home();
     }

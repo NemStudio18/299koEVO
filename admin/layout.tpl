@@ -33,6 +33,7 @@
 						</ul>
 
 						<div class="adm-topbar-right">
+							{% HOOK.adminTopbarBadges %}
 							<a class="adm-site-link" target="_blank" href="{{SITE_URL}}" title="{{Lang.core-goto-site}}">
 								<i class="fa-regular fa-eye" aria-hidden="true"></i>
 								<span>{{Lang.core-goto-site}}</span>
@@ -49,19 +50,6 @@
 			<div id="body">
 				<div id="content_mask">
 					<div id="content" class="{% if runPlugin %}{{runPlugin.getName}}-admin{% else %}core-module-admin{% endif %}">
-						{% IF runPlugin && runPlugin.getParamTemplate %}
-							<a title="{{Lang.core-settings}}" data-fancybox id="param_link" href="#" data-src="#param_panel">
-								<i class="fa-solid fa-screwdriver-wrench"></i>
-							</a>
-							<div id="param_panel">
-								<section class="content">
-									<header>
-										<h2>{{Lang.core-settings}}</h2>
-									</header>
-									{% INCLUDE runPlugin.getParamTemplate %}
-								</section>
-							</div>
-						{% ENDIF %}
 						{% IF runPlugin && runPlugin.getHelpTemplate %}
 							<a title="{{Lang.core-help}}" data-fancybox id="help_link" href="#" data-src="#help_panel">
 								<i class="fa-solid fa-circle-question"></i>
