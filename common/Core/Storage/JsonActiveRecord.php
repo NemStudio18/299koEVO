@@ -23,6 +23,7 @@ abstract class JsonActiveRecord implements \ArrayAccess
     protected static array $casts = [];
     protected static array $indexes = [];
     protected static bool $isBooted = false;
+    private static array $bootedModels = [];
 
     protected $queryConditions = [];
     protected $queryOrderBy = [];
@@ -203,15 +204,20 @@ abstract class JsonActiveRecord implements \ArrayAccess
             $storage = new JsonStorage(static::$filePath, static::$primaryKey);
         }
 
-        // Auto-Migration (Lazy boot)
-        if (!static::$isBooted) {
+        // Auto-Migration (Lazy boot per concrete model class & active driver)
+        $modelClass = static::class;
+        $bootKey = $modelClass . '|' . (string) $driver;
+        if (empty(self::$bootedModels[$bootKey])) {
             static::$isBooted = true;
-            $storage->ensureTable(
+            $ensured = $storage->ensureTable(
                 static::$tableName ?? strtolower($className),
                 static::$primaryKey,
                 static::getSchema(),
                 static::$indexes
             );
+            if ($ensured) {
+                self::$bootedModels[$bootKey] = true;
+            }
         }
 
         return $storage;

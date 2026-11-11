@@ -41,6 +41,24 @@ class User extends JsonActiveRecord
         'permissions' => 'array'
     ];
 
+    protected static function getSchema(): array
+    {
+        return [
+            'email' => 'string',
+            'username' => 'string',
+            'password_hash' => 'string',
+            'token' => 'string',
+            'role' => 'string',
+            'group_id' => 'int',
+            'status' => 'string',
+            'permissions' => 'text',
+            'tokens' => 'text',
+            'subscription' => 'string',
+            'subscription_expiry' => 'string',
+            'created_at' => 'datetime',
+        ];
+    }
+
     public function __toString(): string
     {
         return $this->attributes['email'] ?? 'User';

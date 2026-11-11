@@ -63,6 +63,10 @@ if (!is_dir(DATA)) {
 $errorDataWrite = !is_writable(DATA);
 
 $availablesLocales = Lang::$availablesLocales;
+$pdoDrivers = class_exists('PDO') ? PDO::getAvailableDrivers() : [];
+$hasSqlitePdo = in_array('sqlite', $pdoDrivers, true);
+$hasMysqlPdo = in_array('mysql', $pdoDrivers, true);
+$defaultStorageMode = $hasSqlitePdo ? 'sqlite' : 'json';
 
 if (!isset($_SESSION['install_token'])) {
     $_SESSION['install_token'] = bin2hex(random_bytes(32));
@@ -81,6 +85,10 @@ if (count($_POST) > 0) {
     $adminEmail = filter_var($_POST['adminEmail'] ?? '', FILTER_VALIDATE_EMAIL);
     $adminPwdPlain = $_POST['adminPwd'] ?? '';
     $adminUsername = trim($_POST['adminUsername'] ?? '');
+    $storageMode = $_POST['storage_mode'] ?? $defaultStorageMode;
+    if (!in_array($storageMode, ['sqlite', 'json', 'mysql'], true)) {
+        $storageMode = $defaultStorageMode;
+    }
 
     if ($adminEmail === false) {
         Show::msg(Lang::get('users.bad-mail') ?? 'Invalid email address.', 'error');
@@ -98,7 +106,125 @@ if (count($_POST) > 0) {
         die();
     }
 
+    if ($storageMode === 'sqlite' && !$hasSqlitePdo) {
+        Show::msg(Lang::get('install-driver-unavailable') ?: 'SQLite PDO driver unavailable.', 'error');
+        header('location:' . $url);
+        die();
+    }
+
+    $mysqlHost = trim($_POST['mysql_host'] ?? 'localhost');
+    $mysqlPort = max(1, (int) ($_POST['mysql_port'] ?? 3306));
+    $mysqlDbname = trim($_POST['mysql_dbname'] ?? '');
+    $mysqlUser = trim($_POST['mysql_user'] ?? '');
+    $mysqlPassword = (string) ($_POST['mysql_password'] ?? '');
+
+    if ($storageMode === 'mysql') {
+        if (!$hasMysqlPdo) {
+            Show::msg(Lang::get('install-driver-unavailable') ?: 'MySQL PDO driver unavailable.', 'error');
+            header('location:' . $url);
+            die();
+        }
+        if ($mysqlHost === '' || $mysqlDbname === '' || $mysqlUser === '') {
+            Show::msg(Lang::get('install-mysql-fields-required') ?: 'Please fill all required MySQL fields.', 'error');
+            header('location:' . $url);
+            die();
+        }
+        try {
+            $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $mysqlHost, $mysqlPort, $mysqlDbname);
+            new PDO($dsn, $mysqlUser, $mysqlPassword, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_TIMEOUT => 3,
+            ]);
+        } catch (Throwable $e) {
+            $errTpl = Lang::get('install-mysql-connection-error') ?: 'Unable to connect to MySQL: %s';
+            Show::msg(sprintf($errTpl, htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8')), 'error');
+            header('location:' . $url);
+            die();
+        }
+    }
+
+    if ($storageMode === 'mysql') {
+        $dbConfig = [
+            'database' => [
+                'driver' => 'mysql',
+                'host' => $mysqlHost,
+                'port' => $mysqlPort,
+                'dbname' => $mysqlDbname,
+                'user' => $mysqlUser,
+                'password' => $mysqlPassword,
+                'charset' => 'utf8mb4',
+            ],
+            'storage' => [
+                'default' => 'json',
+                'User' => 'sql',
+                'PageItem' => 'sql',
+                'MenuItem' => 'sql',
+            ],
+        ];
+    } elseif ($storageMode === 'sqlite') {
+        $dbConfig = [
+            'database' => [
+                'driver' => 'sqlite',
+                'path' => __DIR__ . DS . 'data' . DS . 'database.sqlite',
+            ],
+            'storage' => [
+                'default' => 'json',
+                'User' => 'sql',
+                'PageItem' => 'sql',
+                'MenuItem' => 'sql',
+            ],
+        ];
+    } else {
+        $dbConfig = [
+            'database' => [
+                'driver' => 'sqlite',
+                'path' => __DIR__ . DS . 'data' . DS . 'database.sqlite',
+            ],
+            'storage' => [
+                'default' => 'json',
+                'User' => 'json',
+                'PageItem' => 'json',
+                'MenuItem' => 'json',
+            ],
+        ];
+    }
+
 	if ($core->install()) {
+        if (file_put_contents(DATA . 'env.json', json_encode($dbConfig, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) === false) {
+            $core->log('Unable to write env.json file', 'ERROR');
+        } else {
+            \Core\Database::getInstance()->reloadConfig();
+        }
+        $pagesDirPre = DATA_CORE_PAGE;
+        if (!is_dir($pagesDirPre)) {
+            @mkdir($pagesDirPre, 0755, true);
+        }
+        $pagesFilePre = $pagesDirPre . 'pages.json';
+        if (!file_exists($pagesFilePre) || count(json_decode((string) file_get_contents($pagesFilePre), true) ?: []) === 0) {
+            $homepageSeedPre = [[
+                'id' => 1,
+                'name' => 'Accueil',
+                'position' => 1,
+                'isHomepage' => '1',
+                'content' => "<p>Félicitations, l'installation de 299koEVO s'est déroulée avec succès !<br>Par mesure de sécurité, vous devez maintenant supprimer le fichier install.php du répertoire d'installation.</p>",
+                'isHidden' => 0,
+                'file' => null,
+                'mainTitle' => null,
+                'metaDescriptionTag' => null,
+                'metaTitleTag' => null,
+                'targetAttr' => null,
+                'target' => null,
+                'noIndex' => null,
+                'parent' => null,
+                'cssClass' => null,
+                'password' => null,
+                'img' => null,
+            ]];
+            file_put_contents($pagesFilePre, json_encode($homepageSeedPre, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            if ($storageMode === 'sqlite' || $storageMode === 'mysql') {
+                \Core\Storage\StorageMigrationService::migrate('PageItem', 'sql', 'json');
+            }
+        }
 		$plugins = $pluginsManager->getPlugins();
 		if ($plugins != false) {
 			foreach ($plugins as $plugin) {
@@ -181,8 +307,16 @@ if (count($_POST) > 0) {
             $existingPages = [];
         }
     }
-    if (!file_exists($pagesFile) || count($existingPages) === 0) {
-        file_put_contents($pagesFile, json_encode($pagesSeed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    $hasHomepage = false;
+    foreach ($existingPages as $p) {
+        if (!empty($p['isHomepage']) && (string) $p['isHomepage'] !== '0') {
+            $hasHomepage = true;
+            break;
+        }
+    }
+    if (!$hasHomepage) {
+        $existingPages = array_merge($pagesSeed, $existingPages);
+        file_put_contents($pagesFile, json_encode($existingPages, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 
     $authDir = DATA_CORE_AUTH;
@@ -238,33 +372,36 @@ if (count($_POST) > 0) {
         }
     }
 
-    if (!file_exists($usersFile)) {
-        if (file_put_contents($usersFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
-            $core->log('Unable to write users file', 'ERROR');
-            Show::msg(Lang::get('install-problem-during-install'), 'error');
-            header('location:' . $core->makeSiteUrl());
-            die();
-        }
+    $adminUser = [
+        'id' => 1,
+        'email' => $adminEmail,
+        'username' => $adminUsername,
+        'pwd' => $adminPwd,
+        'token' => bin2hex(random_bytes(32)),
+        'group_id' => 1,
+        'role' => 'admin',
+        'status' => 'active',
+        'permissions' => [Permissions::ALL],
+    ];
+
+    if (file_put_contents($usersFile, json_encode([$adminUser], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
+        $core->log('Unable to write users file', 'ERROR');
+        Show::msg(Lang::get('install-problem-during-install'), 'error');
+        header('location:' . $core->makeSiteUrl());
+        die();
     }
 
-    // Initialisation env.json pour la base de données
-    $dbConfig = [
-        'database' => [
-            'driver' => 'mysql',
-            'host' => 'localhost',
-            'dbname' => 'vivrebourges2',
-            'user' => 'root',
-            'password' => '',
-            'charset' => 'utf8mb4'
-        ],
-        'storage' => [
-            'default' => 'json',
-            'User' => 'sql',
-            'Page' => 'sql'
-        ]
-    ];
-    if (file_put_contents(DATA . 'env.json', json_encode($dbConfig, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
-        $core->log('Unable to write env.json file', 'ERROR');
+    if ($storageMode === 'sqlite' || $storageMode === 'mysql') {
+        $pageMig = \Core\Storage\StorageMigrationService::migrate('PageItem', 'sql', 'json');
+        $userMig = \Core\Storage\StorageMigrationService::migrate('User', 'sql', 'json');
+        \Core\Navigation\MenuItem::queryBuilder()->get();
+        if (empty($pageMig['success']) || empty($userMig['success'])) {
+            $errDetails = array_merge($pageMig['errors'] ?? [], $userMig['errors'] ?? []);
+            $core->log('SQL seed error during install: ' . implode('; ', $errDetails), 'ERROR');
+            Show::msg(Lang::get('install-problem-during-install'), 'error');
+            header('location:' . $url);
+            die();
+        }
     }
 
     $configEncoded = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -283,24 +420,6 @@ if (count($_POST) > 0) {
         } catch (\Exception $e) {
             // Ne pas bloquer l'installation en cas d'erreur de télémétrie
             $core->log('Telemetry: Failed to send installation data - ' . $e->getMessage(), 'WARNING');
-        }
-        
-        $adminUser = [
-            'id' => 1,
-            'email' => $adminEmail,
-            'username' => $adminUsername,
-            'pwd' => $adminPwd,
-            'token' => bin2hex(random_bytes(32)),
-            'group_id' => 1,
-            'status' => 'active',
-            'permissions' => [Permissions::ALL],
-        ];
-
-        if (file_put_contents($usersFile, json_encode([$adminUser], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) === false) {
-            $core->log('Unable to seed admin user', 'ERROR');
-            Show::msg(Lang::get('install-problem-during-install'), 'error');
-            header('location:' . $core->makeSiteUrl());
-            die();
         }
 
         $_SESSION['installOk'] = true;
@@ -432,6 +551,43 @@ if (count($_POST) > 0) {
                         <label for="adminPwd"><?php echo Lang::get('password'); ?></label><br>
                         <input type="password" name="adminPwd" id="adminPwd" required="required">
                     </p>
+                    <div style="margin: 18px 0; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; text-align: left;">
+                        <label for="storage_mode" style="font-weight: 700; display: block; margin-bottom: 8px;"><?php echo Lang::get('install-storage-mode'); ?></label>
+                        <select name="storage_mode" id="storage_mode" onchange="toggleStorageFields()" style="width: 100%; padding: 8px; margin-bottom: 8px;">
+                            <option value="sqlite" <?php echo $hasSqlitePdo ? 'selected' : 'disabled'; ?>>
+                                <?php echo Lang::get('install-storage-sqlite') . ($hasSqlitePdo ? '' : ' (' . Lang::get('install-driver-unavailable') . ')'); ?>
+                            </option>
+                            <option value="json" <?php echo !$hasSqlitePdo ? 'selected' : ''; ?>>
+                                <?php echo Lang::get('install-storage-json'); ?>
+                            </option>
+                            <option value="mysql" <?php echo $hasMysqlPdo ? '' : 'disabled'; ?>>
+                                <?php echo Lang::get('install-storage-mysql') . ($hasMysqlPdo ? '' : ' (' . Lang::get('install-driver-unavailable') . ')'); ?>
+                            </option>
+                        </select>
+                        <small id="storageModeDesc" style="color: #475569; display: block; line-height: 1.4;"></small>
+                        <div id="mysqlFieldsBox" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+                            <p style="margin: 8px 0;">
+                                <label for="mysql_host"><?php echo Lang::get('install-mysql-host'); ?></label><br>
+                                <input type="text" name="mysql_host" id="mysql_host" value="localhost" placeholder="localhost">
+                            </p>
+                            <p style="margin: 8px 0;">
+                                <label for="mysql_port"><?php echo Lang::get('install-mysql-port'); ?></label><br>
+                                <input type="number" name="mysql_port" id="mysql_port" value="3306" min="1" max="65535">
+                            </p>
+                            <p style="margin: 8px 0;">
+                                <label for="mysql_dbname"><?php echo Lang::get('install-mysql-dbname'); ?></label><br>
+                                <input type="text" name="mysql_dbname" id="mysql_dbname" value="" placeholder="ex: declic_cms">
+                            </p>
+                            <p style="margin: 8px 0;">
+                                <label for="mysql_user"><?php echo Lang::get('install-mysql-user'); ?></label><br>
+                                <input type="text" name="mysql_user" id="mysql_user" value="" placeholder="ex: cms_user">
+                            </p>
+                            <p style="margin: 8px 0;">
+                                <label for="mysql_password"><?php echo Lang::get('install-mysql-password'); ?></label><br>
+                                <input type="password" name="mysql_password" id="mysql_password" value="">
+                            </p>
+                        </div>
+                    </div>
                     <input type="hidden" name="_installToken" value="<?php echo htmlspecialchars($installToken, ENT_QUOTES); ?>">
                     <p>
                         <a id="showPassword" href="javascript:showPassword()" class="button success"><?php echo Lang::get('install-show-password'); ?></a>
@@ -453,6 +609,28 @@ if (count($_POST) > 0) {
             function langChange() {
                 window.location.href = '<?php echo $url; ?>?lang=' + document.getElementById("lang-select").value;
             }
+            function toggleStorageFields() {
+                var sel = document.getElementById("storage_mode");
+                var box = document.getElementById("mysqlFieldsBox");
+                var desc = document.getElementById("storageModeDesc");
+                if (!sel || !box) return;
+                var descs = {
+                    sqlite: <?php echo json_encode(Lang::get('install-storage-sqlite-desc')); ?>,
+                    json: <?php echo json_encode(Lang::get('install-storage-json-desc')); ?>,
+                    mysql: <?php echo json_encode(Lang::get('install-storage-mysql-desc')); ?>
+                };
+                if (desc) desc.textContent = descs[sel.value] || '';
+                var isMysql = (sel.value === 'mysql');
+                box.style.display = isMysql ? 'block' : 'none';
+                ['mysql_host', 'mysql_dbname', 'mysql_user'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) {
+                        if (isMysql) el.setAttribute('required', 'required');
+                        else el.removeAttribute('required');
+                    }
+                });
+            }
+            document.addEventListener("DOMContentLoaded", toggleStorageFields);
         </script>
     </body>
 </html>

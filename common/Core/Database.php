@@ -102,27 +102,39 @@ class Database implements SqlDriverInterface
             }
         }
         
-        // 4. Create default if nothing exists
+        // 4. Neutral SQLite/JSON fallback if nothing exists (without hardcoded project DB)
         if (empty($this->configs['default'])) {
-             $defaultConfig = [
+            $dataDir = defined('DATA') ? DATA : __DIR__ . '/../../data/';
+            $defaultConfig = [
                 'database' => [
-                    'driver' => 'mysql',
-                    'host' => 'localhost',
-                    'dbname' => 'vivrebourges2',
-                    'user' => 'root',
-                    'password' => '',
-                    'charset' => 'utf8mb4'
+                    'driver' => 'sqlite',
+                    'path' => $dataDir . 'database.sqlite',
                 ],
                 'storage' => [
                     'default' => 'json',
                     'User' => 'json',
-                    'Page' => 'json'
-                ]
+                    'PageItem' => 'json',
+                    'MenuItem' => 'json',
+                ],
             ];
-             $this->saveConfig($defaultConfig);
-             $this->configs['default'] = $defaultConfig['database'];
-             $this->storageConfig = $defaultConfig['storage'];
+            if (file_exists($dataDir . 'config.json')) {
+                $this->saveConfig($defaultConfig);
+            }
+            $this->configs['default'] = $defaultConfig['database'];
+            $this->storageConfig = $defaultConfig['storage'];
         }
+    }
+
+    /**
+     * Recharge la configuration depuis env.json/env.ini et réinitialise les connexions PDO.
+     */
+    public function reloadConfig(): void
+    {
+        $this->connections = [];
+        $this->configs = [];
+        $this->storageConfig = [];
+        $this->activeConnection = 'default';
+        $this->loadConfig();
     }
 
     public function getConfig(string $key, $default = null)

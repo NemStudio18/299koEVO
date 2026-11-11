@@ -50,6 +50,34 @@ class PageItem extends \Core\Storage\JsonActiveRecord implements ResourceInterfa
         'conditions' => 'array'
     ];
 
+    protected static function getSchema(): array
+    {
+        return [
+            'name' => 'string',
+            'position' => 'int',
+            'is_homepage' => 'int',
+            'content' => 'text',
+            'is_hidden' => 'int',
+            'file' => 'string',
+            'main_title' => 'string',
+            'meta_description_tag' => 'text',
+            'meta_title_tag' => 'string',
+            'target' => 'string',
+            'target_attr' => 'string',
+            'no_index' => 'int',
+            'parent_id' => 'int',
+            'css_class' => 'string',
+            'password' => 'string',
+            'img' => 'string',
+            'nav_position' => 'string',
+            'legal_type' => 'string',
+            'show_icon' => 'int',
+            'icon' => 'string',
+            'nav_context' => 'string',
+            'conditions' => 'text',
+        ];
+    }
+
 
 
     public function getNavContext()

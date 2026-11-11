@@ -16,6 +16,15 @@ class UserFingerprint extends JsonActiveRecord
     protected static string $tableName = 'user_fingerprints';
     protected static string $primaryKey = 'id';
 
+    protected static function getSchema(): array
+    {
+        return [
+            'user_id' => 'string',
+            'fingerprint_hash' => 'string',
+            'created_at' => 'int',
+        ];
+    }
+
     public static function create($userId, string $fingerprintHash): bool
     {
         $fingerprint = new self();

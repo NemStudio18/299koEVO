@@ -30,12 +30,7 @@ class AuthAdminController extends AdminController
             'spoiler_type' => 'accordion',
             'spoiler_content' => '',
             'checkboxes' => [],
-            'dynamic_fields' => [
-                ['id' => 'age', 'label' => 'Âge', 'type' => 'number', 'icon' => 'fa-solid fa-birthday-cake', 'enabled' => true, 'required' => false],
-                ['id' => 'sex', 'label' => 'Sexe', 'type' => 'select', 'icon' => 'fa-solid fa-venus-mars', 'options' => 'M:Homme,F:Femme,O:Autre', 'enabled' => true, 'required' => false],
-                ['id' => 'city', 'label' => 'Ville', 'type' => 'select', 'icon' => 'fa-solid fa-city', 'source' => 'common/data/agglo.json', 'enabled' => true, 'required' => false],
-                ['id' => 'district', 'label' => 'Quartier', 'type' => 'select', 'icon' => 'fa-solid fa-map-marker-alt', 'source' => 'common/data/quartiers-bourges.json', 'enabled' => true, 'required' => false]
-            ]
+            'dynamic_fields' => []
         ];
         
         if (!is_dir(DATA_PLUGIN . 'auth' . DS)) {
@@ -49,17 +44,6 @@ class AuthAdminController extends AdminController
         
         // Fusionner avec les valeurs par défaut pour la rétrocompatibilité
         $existing = \Utils\Util::readJsonFile($file, true) ?: [];
-        
-        // Migration simple pour show_localisation vers dynamic_fields si nécessaire
-        if (isset($existing['show_localisation'])) {
-            $show = $existing['show_localisation'];
-            foreach ($default['dynamic_fields'] as &$df) {
-                if ($df['id'] === 'city' || $df['id'] === 'district') {
-                    $df['enabled'] = $show;
-                }
-            }
-            unset($existing['show_localisation']);
-        }
 
         return array_merge($default, $existing);
     }

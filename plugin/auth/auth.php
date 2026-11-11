@@ -34,12 +34,7 @@ function authInstall(): void
             'spoiler_show_on_login' => true,
             'spoiler_show_on_register' => true,
             'checkboxes' => [],
-            'dynamic_fields' => [
-                ['id' => 'age', 'label' => 'Âge', 'type' => 'number', 'icon' => 'fa-solid fa-birthday-cake', 'enabled' => true, 'required' => false, 'show_on_register' => true],
-                ['id' => 'sex', 'label' => 'Sexe', 'type' => 'select', 'icon' => 'fa-solid fa-venus-mars', 'options' => 'M:Homme,F:Femme,O:Autre', 'enabled' => true, 'required' => false, 'show_on_register' => true],
-                ['id' => 'city', 'label' => 'Ville', 'type' => 'select', 'icon' => 'fa-solid fa-city', 'source' => 'common/data/agglo.json', 'enabled' => true, 'required' => false, 'show_on_register' => true],
-                ['id' => 'district', 'label' => 'Quartier', 'type' => 'select', 'icon' => 'fa-solid fa-map-marker-alt', 'source' => 'common/data/quartiers-bourges.json', 'enabled' => true, 'required' => false, 'show_on_register' => true]
-            ]
+            'dynamic_fields' => []
         ];
         \Utils\Util::writeJsonFile($configFile, $defaultConfig);
     }
