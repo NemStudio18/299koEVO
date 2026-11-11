@@ -229,19 +229,7 @@ class BlogReadController extends PublicController
         $this->core->addMeta('<meta name="twitter:description" content="' . htmlspecialchars($item->getSEODesc(), ENT_QUOTES, 'UTF-8') . '" />');
         $this->core->addMeta('<meta name="twitter:card" content="summary_large_image" />');
 
-        $imgUrl = '';
-        $rawImg = $item->getImg();
-        if (!empty($rawImg)) {
-            if (str_starts_with($rawImg, 'http://') || str_starts_with($rawImg, 'https://')) {
-                $imgUrl = $rawImg;
-            } elseif (str_starts_with($rawImg, 'data/')) {
-                $imgUrl = Util::urlBuild($rawImg);
-            } elseif ($this->pluginsManager->isActivePlugin('galerie') && galerie::searchByfileName($rawImg)) {
-                $imgUrl = Util::urlBuild(UPLOAD . 'galerie/' . $rawImg);
-            } else {
-                $imgUrl = Util::urlBuild(UPLOAD . 'blog/' . $rawImg);
-            }
-        }
+        $imgUrl = $item->getImgUrl();
 
         // Fallback image si aucune illustration d'article
         if (empty($imgUrl)) {

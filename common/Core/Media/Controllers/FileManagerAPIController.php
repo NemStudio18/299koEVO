@@ -81,124 +81,111 @@ class FileManagerAPIController extends AdminController
 
     public function upload($token)
     {
+        header('Content-Type: application/json; charset=utf-8');
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
         if (!$evaluator->isAdmin($ctx)) {
-            echo json_encode(['success' => 0]);
+            echo json_encode(['success' => 0, 'error' => 'forbidden']);
             die();
         }
         $this->getSentDir();
         $this->filemanager = new FileManager($this->fullDir);
 
-        if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
-            $fileKey = 'image';
-            // Generate a safe name
-            $baseName = Util::strToUrl(pathinfo($_FILES[$fileKey]['name'], PATHINFO_FILENAME)) . '-' . time();
-
-            // Enforce allowed extensions (Media Manager default)
-            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'ico', 'svg']; // Allowed for Admin
-
-            $result = Util::uploadFile($fileKey, $this->fullDir, $baseName, [
-                'extensions' => $allowedExtensions,
-                'size' => 10 * 1024 * 1024 // 10 MB limit for admin
-            ]);
-
-            if ($result === 'success') {
-                echo json_encode(['success' => 1]);
-                die();
-            } else {
-                echo json_encode(['success' => 0, 'error' => $result]);
+        $fileKey = isset($_FILES['image']) ? 'image' : (isset($_FILES['file']) ? 'file' : '');
+        if ($fileKey !== '' && !empty($_FILES[$fileKey]['name'])) {
+            $result = $this->filemanager->uploadAndGetFile($fileKey);
+            if ($result['success']) {
+                echo json_encode([
+                    'success' => 1,
+                    'url' => $result['url'],
+                    'relUrl' => $result['relUrl'],
+                    'name' => $result['file']->name ?? '',
+                ]);
                 die();
             }
+            echo json_encode(['success' => 0, 'error' => $result['error']]);
+            die();
         }
-        echo json_encode(['success' => 0]);
+        echo json_encode(['success' => 0, 'error' => 'no_file']);
         die();
     }
 
     public function uploadAPI($token)
     {
+        header('Content-Type: application/json; charset=utf-8');
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
         if (!$evaluator->isAdmin($ctx)) {
-            header("HTTP/1.1 500 Server Error");
+            http_response_code(403);
+            echo json_encode(['error' => 'Accès refusé.']);
             die();
         }
 
-        // Handle TinyMCE/API upload
-        $key = key($_FILES); // Handle variable file key (usually 'file' or 'blobid'...)
+        // Handle TinyMCE/API upload directly into the FileManager root so images remain manageable & WebP-optimized
+        $key = key($_FILES);
         if (empty($key)) {
-            header("HTTP/1.1 400 No file uploaded.");
+            http_response_code(400);
+            echo json_encode(['error' => 'Aucun fichier envoyé.']);
             die();
         }
 
-        $temp = $_FILES[$key];
+        $fm = new FileManager($this->media->getRootDir());
+        $allowedImageExts = ['gif', 'jpg', 'png', 'ico', 'bmp', 'jpeg', 'webp'];
+        $result = $fm->uploadAndGetFile((string)$key, $allowedImageExts);
 
-        // Define destination
-        $uploadDir = UPLOAD; // Upload root for API
-
-        $baseName = Util::strToUrl(pathinfo($temp['name'], PATHINFO_FILENAME)) . '-' . time();
-        $allowedExtensions = ["gif", "jpg", "png", "ico", "bmp", "jpeg", "webp"];
-
-        $result = Util::uploadFile($key, $uploadDir, $baseName, [
-            'extensions' => $allowedExtensions,
-            'size' => 10 * 1024 * 1024 // 10 MB limit
-        ]);
-
-        if ($result === 'success') {
-            // Reconstruct filename to return location
-            $ext = mb_strtolower(Util::getFileExtension($temp['name']));
-            $finalName = $baseName . '.' . $ext;
-            $fullPath = $uploadDir . $finalName;
-            $url = Util::urlBuild($fullPath);
-
-            echo json_encode(['location' => $url]);
-            die();
-        } else {
-            header("HTTP/1.1 400 Upload failed: " . $result);
+        if ($result['success']) {
+            echo json_encode(['location' => $result['relUrl']]);
             die();
         }
+
+        http_response_code(400);
+        echo json_encode(['error' => 'Échec de l’envoi : ' . $result['error']]);
+        die();
     }
 
     public function delete($token)
     {
+        header('Content-Type: application/json; charset=utf-8');
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
         if (!$evaluator->isAdmin($ctx)) {
-            echo json_encode(['success' => 0]);
+            echo json_encode(['success' => false]);
             die();
         }
         $this->getSentDir();
         $this->filemanager = new FileManager($this->fullDir);
-        if (isset($_POST['filename'])) {
-            // Delete File
-            $deleted = $this->filemanager->deleteFile($_POST['filename']);
+        if (isset($_POST['filename']) && $_POST['filename'] !== '') {
+            $deleted = $this->filemanager->deleteFile((string)$_POST['filename']);
             echo json_encode(['success' => $deleted]);
             die();
-        } elseif (isset($_POST['foldername'])) {
-            $deleted = $this->filemanager->deleteFolder($_POST['foldername']);
+        } elseif (isset($_POST['foldername']) && $_POST['foldername'] !== '') {
+            $deleted = $this->filemanager->deleteFolder((string)$_POST['foldername']);
             echo json_encode(['success' => $deleted]);
             die();
         }
+        echo json_encode(['success' => false]);
+        die();
     }
 
     public function create($token)
     {
+        header('Content-Type: application/json; charset=utf-8');
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
         if (!$evaluator->isAdmin($ctx)) {
-            echo json_encode(['success' => 0]);
+            echo json_encode(['success' => false]);
             die();
         }
         $this->getSentDir();
         $this->filemanager = new FileManager($this->fullDir);
-        $folderName = $_POST['folderName'] ?? '';
-        $created = $this->filemanager->createFolder($folderName);
-        
+        $folderName = trim((string)($_POST['folderName'] ?? ''));
+        $created = $folderName !== '' ? $this->filemanager->createFolder($folderName) : false;
+
         $response = ['success' => $created];
         if ($created) {
             $response['folderName'] = Util::strToUrl($folderName);
         }
-        
+
         echo json_encode($response);
         die();
     }
@@ -208,11 +195,12 @@ class FileManagerAPIController extends AdminController
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
         if (!$evaluator->isAdmin($ctx)) {
-            echo json_encode(['success' => 0]);
+            echo json_encode(['success' => false]);
             die();
         }
         $this->ajaxView = true;
-        $this->editor = $_POST['editor'];
+        $rawEditor = trim((string)($_POST['editor'] ?? ''));
+        $this->editor = ($rawEditor === '' || $rawEditor === 'false' || $rawEditor === '0') ? false : $rawEditor;
 
         return $this->render();
     }
@@ -222,13 +210,11 @@ class FileManagerAPIController extends AdminController
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
         if (!$evaluator->isAdmin($ctx)) {
-            echo json_encode(['success' => 0]);
+            echo json_encode(['success' => false]);
             die();
         }
-        if ($editor === '') {
-            $editor = false;
-        }
-        $this->editor = $editor;
+        $rawEditor = trim((string)$editor);
+        $this->editor = ($rawEditor === '' || $rawEditor === 'false' || $rawEditor === '0') ? false : $rawEditor;
         $this->ajaxView = true;
         $this->dir = '';
         return $this->render();
@@ -248,6 +234,39 @@ class FileManagerAPIController extends AdminController
         $tpl->set('token', $this->user->token);
         $tpl->set('dir', $this->dir);
         $tpl->set('dirParts', $this->dirParts);
+        $breadcrumbs = [];
+        $acc = '';
+        foreach ($this->dirParts as $part) {
+            if ($part === '') {
+                continue;
+            }
+            $acc = ($acc === '') ? $part : ($acc . '/' . $part);
+            $breadcrumbs[] = ['label' => $part, 'dir' => $acc];
+        }
+        $tpl->set('breadcrumbs', $breadcrumbs);
+
+        $folders = [];
+        foreach ($this->filemanager->getFolders() as $folder) {
+            $folders[] = [
+                'name' => $folder->name,
+                'path' => $this->dir === '' ? $folder->name : ($this->dir . '/' . $folder->name),
+            ];
+        }
+        $files = [];
+        foreach ($this->filemanager->getFiles() as $file) {
+            $files[] = [
+                'name' => $file->name,
+                'url' => $file->getUrl(),
+                'relUrl' => $file->getRelUrl(),
+                'isPicture' => $file->isPicture(),
+                'isPictureFlag' => $file->isPicture() ? '1' : '0',
+                'iconClass' => $file->getIconClass(),
+                'sizeFormatted' => $file->getFormattedSize(),
+            ];
+        }
+        $tpl->set('folders', $folders);
+        $tpl->set('files', $files);
+        $tpl->set('isEmpty', empty($folders) && empty($files));
         $tpl->set('manager', $this->filemanager);
         $stats = $this->filemanager->getStats();
         $stats['path'] = $this->dir === '' ? '/' : $this->dir;
@@ -260,8 +279,12 @@ class FileManagerAPIController extends AdminController
         $tpl->set('redirectUrl', $this->router->generate('filemanager-view'));
         $tpl->set('redirectAjaxUrl', $this->router->generate('filemanager-view-ajax'));
         $tpl->set('editor', $this->editor);
+        $tpl->set('hasEditor', $this->editor !== false && $this->editor !== '');
+        $cssPath = ADMIN_PATH . 'templates/filemanager/admin.css';
+        $jsPath = ADMIN_PATH . 'templates/filemanager/admin.js';
+        $tpl->set('fmCssUrl', Util::urlBuild('admin/templates/filemanager/admin.css') . '?v=' . (file_exists($cssPath) ? filemtime($cssPath) : '1'));
+        $tpl->set('fmJsUrl', Util::urlBuild('admin/templates/filemanager/admin.js') . '?v=' . (file_exists($jsPath) ? filemtime($jsPath) : '1'));
 
-        // Check if we should stay on the "Manage" tab (from GET or POST)
         $activeTab = $_GET['activeTab'] ?? $_POST['activeTab'] ?? '';
         $tpl->set('activeTab', $activeTab);
 
@@ -272,9 +295,10 @@ class FileManagerAPIController extends AdminController
     protected function getSentDir()
     {
         if (!isset($this->dir)) {
-            // Priority: POST data (for upload, delete, create actions) > GET parameter (for view after redirect)
             if (isset($_POST['fmFolderToSee'])) {
                 $this->dir = $_POST['fmFolderToSee'];
+            } elseif (isset($_POST['dir'])) {
+                $this->dir = $_POST['dir'];
             } elseif (isset($_GET['dir'])) {
                 $this->dir = $_GET['dir'];
             } else {

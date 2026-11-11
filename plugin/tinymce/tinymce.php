@@ -507,13 +507,23 @@ function tinymceFrontHead($param = ''): string {
 }
 
 function tinymceInsertScriptBeforeEditor() {
-    echo '<script>' .
-    'function processInsertImgInEditor(editorId, imgUrl) {
-        var ed = tinyMCE.get(editorId);
-        var range = ed.selection.getRng();
-        var newNode = ed.getDoc().createElement ( "img" );
-        newNode.src=imgUrl;
-        range.insertNode(newNode);  
+    echo '<script>
+    function processInsertImgInEditor(editorId, imgUrl, isPicture) {
+        var isPic = (typeof isPicture === "boolean") ? isPicture : /\.(jpe?g|png|gif|webp|bmp|svg|ico)(\?.*)?$/i.test(String(imgUrl || ""));
+        var safeUrl = String(imgUrl || "").replace(/"/g, "&quot;");
+        var html = isPic
+            ? \'<img src="\' + safeUrl + \'" alt="" />\'
+            : \'<a href="\' + safeUrl + \'" target="_blank" rel="noopener">\' + safeUrl.split("/").pop() + \'</a>\';
+
+        var ed = (typeof tinyMCE !== "undefined" && editorId) ? tinyMCE.get(editorId) : null;
+        if (ed) {
+            ed.insertContent(html);
+            return;
+        }
+        var field = editorId ? document.getElementById(editorId) : null;
+        if (field) {
+            field.value += html;
+        }
     }
     </script>';
 }

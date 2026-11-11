@@ -164,7 +164,24 @@ class news
 
     public function getImgUrl()
     {
-        return Util::urlBuild($this->img);
+        $rawImg = trim((string)($this->img ?? ''));
+        if ($rawImg === '') {
+            return '';
+        }
+        if (preg_match('~^https?://~i', $rawImg)) {
+            return $rawImg;
+        }
+        $normalized = ltrim(str_replace('\\', '/', $rawImg), '/');
+        if (str_starts_with($normalized, 'data/')) {
+            return Util::urlBuild($normalized);
+        }
+        if (file_exists(UPLOAD . 'blog/' . $normalized)) {
+            return Util::urlBuild(UPLOAD . 'blog/' . $normalized);
+        }
+        if (file_exists(UPLOAD . 'galerie/' . $normalized)) {
+            return Util::urlBuild(UPLOAD . 'galerie/' . $normalized);
+        }
+        return Util::urlBuild($normalized);
     }
 
     public function getCommentsOff()

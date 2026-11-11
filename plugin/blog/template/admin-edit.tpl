@@ -19,7 +19,7 @@
             <li class="tab">
                 <label for="intro">{{Lang.blog-intro-content}}</label><br>
                 <textarea name="intro" id="intro" class="editor">{%HOOK.beforeEditEditor(news.getIntro())%}</textarea><br>
-                {{filemanagerDisplayManagerButton()}}
+                {{filemanagerDisplayManagerButton("intro")}}
             </li>
             <li class="tab">
                 <div class='form'>
@@ -96,8 +96,15 @@
                         <header>{{Lang.blog-featured-img-select-title}}</header>
                         <label for="news-image">{{Lang.blog-featured-img-url}}</label>
                         <input type="text" id="news-image" name="news-image" oninput="blogDisplayPreview()" value="{{news.getImg()}}">
-                        {{filemanagerDisplayManagerButton("news-image", "depuis les fichiers")}}
-                        <a class="button" data-fancybox data-type="ajax" href="{ ROUTER.generate('admin-galerie-selector', {'token': token}) }"><i class="fa-solid fa-images"></i> depuis la gallerie</a>
+                        <div class="blog-img-actions">
+                            {{filemanagerDisplayManagerButton("news-image", "depuis les fichiers")}}
+                            {% IF hasGalerie %}
+                                <a class="button" data-fancybox data-type="ajax" href="{ ROUTER.generate('admin-galerie-selector', {'token': token}) }"><i class="fa-solid fa-images"></i> depuis la galerie</a>
+                            {% ENDIF %}
+                            <button type="button" class="button alert small" id="news-image-clear" onclick="blogClearImage()">
+                                <i class="fa-solid fa-xmark"></i> Retirer
+                            </button>
+                        </div>
                     </section>
                     <section id="news-image-preview-container">
                         <header>{{Lang.blog-featured-img-preview}}</header>
@@ -112,8 +119,34 @@
 
 <script>
     function blogDisplayPreview() {
-        $url = document.getElementById('news-image').value;
-        document.getElementById('news-image-preview').innerHTML = '<img src="' + $url + '" alt="' + $url + '" />';
+        var input = document.getElementById('news-image');
+        var preview = document.getElementById('news-image-preview');
+        var clearBtn = document.getElementById('news-image-clear');
+        if (!input || !preview) return;
+        var raw = input.value.trim();
+        if (!raw) {
+            preview.innerHTML = '<span class="blog-no-img">Aucune image sélectionnée</span>';
+            if (clearBtn) clearBtn.style.display = 'none';
+            return;
+        }
+        var src = raw;
+        if (!/^https?:\/\//i.test(raw) && !raw.startsWith('/')) {
+            src = '/' + raw;
+        }
+        preview.innerHTML = '';
+        var img = document.createElement('img');
+        img.src = src;
+        img.alt = raw;
+        preview.appendChild(img);
+        if (clearBtn) clearBtn.style.display = 'inline-flex';
+    }
+
+    function blogClearImage() {
+        var input = document.getElementById('news-image');
+        if (input) {
+            input.value = '';
+            blogDisplayPreview();
+        }
     }
 
     blogDisplayPreview();

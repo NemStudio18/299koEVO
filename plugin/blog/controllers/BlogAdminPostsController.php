@@ -98,6 +98,7 @@ class BlogAdminPostsController extends AdminController
         $tpl->set('contentEditor', $contentEditor);
         $tpl->set('news', $news);
         $tpl->set('categoriesManager', $this->categoriesManager);
+        $tpl->set('hasGalerie', $this->pluginsManager->isActivePlugin('galerie'));
         $tpl->set('token', $this->user->token);
 
         $response->addTemplate($tpl);

@@ -444,7 +444,18 @@ class PageItem extends \Core\Storage\JsonActiveRecord implements ResourceInterfa
 
     public function getImgUrl()
     {
-        return Util::urlBuild(UPLOAD . 'galerie/' . $this->getImg());
+        $rawImg = trim((string)$this->getImg());
+        if ($rawImg === '') {
+            return '';
+        }
+        if (preg_match('~^https?://~i', $rawImg)) {
+            return $rawImg;
+        }
+        $normalized = ltrim(str_replace('\\', '/', $rawImg), '/');
+        if (str_starts_with($normalized, 'data/')) {
+            return Util::urlBuild($normalized);
+        }
+        return Util::urlBuild(UPLOAD . 'galerie/' . $normalized);
     }
 
     public function targetIs()

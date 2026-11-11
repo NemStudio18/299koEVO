@@ -13,6 +13,14 @@ defined('ROOT') or exit('Access denied!');
 
 class FileManager
 {
+    public const MAX_UPLOAD_SIZE = 10 * 1024 * 1024; // 10 Mo
+
+    public const ALLOWED_EXTENSIONS = [
+        'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'ico',
+        'pdf', 'zip', 'txt', 'md', 'csv', 'doc', 'docx', 'odt', 'xls', 'xlsx', 'ods',
+        'mp3', 'ogg', 'mp4', 'webm',
+    ];
+
     protected string $directory = '';
 
     protected array $subDir = [];
@@ -21,7 +29,7 @@ class FileManager
 
     public function __construct(string $directory)
     {
-        $this->directory = rtrim($directory, '/') . '/';
+        $this->directory = rtrim(str_replace('\\', '/', $directory), '/') . '/';
         if (!is_dir($this->directory)) {
             @mkdir($this->directory, 0755, true);
         }
@@ -30,18 +38,22 @@ class FileManager
 
     protected function hydrateChildren(): void
     {
+        $this->subDir = [];
+        $this->subFiles = [];
         $fileList = glob($this->directory . '*');
         if ($fileList === false) {
             return;
         }
         foreach ($fileList as $path) {
-            $name = str_replace($this->directory, '', $path);
+            $name = str_replace($this->directory, '', str_replace('\\', '/', $path));
             if (is_dir($path)) {
                 $this->subDir[$name] = new Folder($name, $this->directory);
             } else {
                 $this->subFiles[$name] = new File($name, $this->directory);
             }
         }
+        uksort($this->subDir, 'strnatcasecmp');
+        uksort($this->subFiles, 'strnatcasecmp');
     }
 
     public function getFolders(): array
@@ -96,72 +108,119 @@ class FileManager
         ];
     }
 
-    public function uploadFile(string $arrayName): bool|string
+    /**
+     * Handle a file upload inside the current directory, optimizing images to WebP when possible.
+     *
+     * @return array{success: bool, file: ?File, url: string, relUrl: string, error: string}
+     */
+    public function uploadAndGetFile(string $arrayName, array $allowedExtensions = self::ALLOWED_EXTENSIONS): array
     {
-        if (!isset($_FILES[$arrayName])) {
-            return false;
+        if (!isset($_FILES[$arrayName]) || empty($_FILES[$arrayName]['name'])) {
+            return ['success' => false, 'file' => null, 'url' => '', 'relUrl' => '', 'error' => 'no_file'];
         }
-        $file = $_FILES[$arrayName];
-        $fileName = Util::strToUrl(pathinfo($file['name'], PATHINFO_FILENAME));
 
-        // 1. Optimisation automatique en WebP pour toutes les images (gain de poids 80-95%)
+        $file = $_FILES[$arrayName];
+        if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return ['success' => false, 'file' => null, 'url' => '', 'relUrl' => '', 'error' => 'upload_error_' . ($file['error'] ?? 'unknown')];
+        }
+
+        if (($file['size'] ?? 0) > self::MAX_UPLOAD_SIZE) {
+            return ['success' => false, 'file' => null, 'url' => '', 'relUrl' => '', 'error' => 'size_error'];
+        }
+
+        $ext = mb_strtolower(Util::getFileExtension($file['name']));
+        if ($ext === '' || !in_array($ext, $allowedExtensions, true)) {
+            return ['success' => false, 'file' => null, 'url' => '', 'relUrl' => '', 'error' => 'extension_error'];
+        }
+
+        $baseName = Util::strToUrl(pathinfo($file['name'], PATHINFO_FILENAME));
+        if ($baseName === '') {
+            $baseName = 'fichier';
+        }
+
+        // 1. Optimisation automatique en WebP pour les images GD compatibles
         if (\Utils\ImageOptimizer::isOptimizableImage($file['tmp_name'])) {
-            $optimizedName = \Utils\ImageOptimizer::optimizeUpload($file['tmp_name'], $this->directory, $fileName);
-            if ($optimizedName) {
+            $optimizedName = \Utils\ImageOptimizer::optimizeUpload($file['tmp_name'], $this->directory, $baseName);
+            if (is_string($optimizedName) && $optimizedName !== '') {
+                $this->hydrateChildren();
                 $fileObj = new File($optimizedName, $this->directory);
-                return $fileObj->getUrl();
+                return [
+                    'success' => true,
+                    'file' => $fileObj,
+                    'url' => $fileObj->getUrl(),
+                    'relUrl' => $fileObj->getRelUrl(),
+                    'error' => '',
+                ];
             }
         }
 
-        // 2. Repli classique pour documents non-images (PDF, archives, etc.)
-        $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $targetName = $fileName . '-' . time() . '.' . $fileExt;
-        if (move_uploaded_file($file['tmp_name'], $this->directory . $targetName)) {
-            $fileObj = new File($targetName, $this->directory);
-            return $fileObj->getUrl();
+        // 2. Repli sécurisé via Util::uploadFile (vérification MIME + déplacement)
+        $targetBase = $baseName . '-' . time();
+        $res = Util::uploadFile($arrayName, $this->directory, $targetBase, [
+            'extensions' => $allowedExtensions,
+            'size' => self::MAX_UPLOAD_SIZE,
+        ]);
+
+        if ($res !== 'success') {
+            return ['success' => false, 'file' => null, 'url' => '', 'relUrl' => '', 'error' => (string)$res];
         }
 
-        return false;
+        $targetName = $targetBase . '.' . $ext;
+        $this->hydrateChildren();
+        $fileObj = new File($targetName, $this->directory);
+
+        return [
+            'success' => true,
+            'file' => $fileObj,
+            'url' => $fileObj->getUrl(),
+            'relUrl' => $fileObj->getRelUrl(),
+            'error' => '',
+        ];
+    }
+
+    public function uploadFile(string $arrayName): bool|string
+    {
+        $result = $this->uploadAndGetFile($arrayName);
+        return $result['success'] ? $result['url'] : false;
     }
 
     public function deleteFile(string $filename): bool
     {
-        if (isset($this->subFiles[$filename])) {
-            $error = $this->subFiles[$filename]->delete();
-            if (!$error) {
-                unset($this->subFiles[$filename]);
-                return true;
-            }
+        $filename = basename($filename);
+        if ($filename === '' || $filename === '.' || $filename === '..') {
+            return false;
+        }
+        if (isset($this->subFiles[$filename]) && $this->subFiles[$filename]->delete()) {
+            unset($this->subFiles[$filename]);
+            return true;
+        }
+        $target = $this->directory . $filename;
+        if (is_file($target) && @unlink($target)) {
+            $this->hydrateChildren();
+            return true;
         }
         return false;
     }
 
     public function deleteFolder(string $foldername): bool
     {
-        // Always check filesystem directly for reliability
-        $target = $this->directory . $foldername;
-        if (!is_dir($target)) {
-            // Folder doesn't exist
-            if (isset($this->subDir[$foldername])) {
-                unset($this->subDir[$foldername]);
-            }
+        $foldername = basename($foldername);
+        if ($foldername === '' || $foldername === '.' || $foldername === '..') {
             return false;
         }
-        
-        // Create Folder object and delete it
+        $target = $this->directory . $foldername;
+        if (!is_dir($target)) {
+            unset($this->subDir[$foldername]);
+            return false;
+        }
+
         $folder = new Folder($foldername, $this->directory);
-        $success = $folder->delete();
-        
-        if ($success) {
-            // Remove from subDir if it was there
-            if (isset($this->subDir[$foldername])) {
-                unset($this->subDir[$foldername]);
-            }
-            // Reload children to sync with filesystem
+        if ($folder->delete()) {
+            unset($this->subDir[$foldername]);
             $this->hydrateChildren();
             return true;
         }
-        
+
         return false;
     }
 

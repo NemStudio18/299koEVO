@@ -529,6 +529,10 @@ class galerieItem {
         return Util::urlBuild(UPLOAD . 'galerie/' . $this->img);
     }
 
+    public function getRelUrl():string {
+        return '/data/upload/galerie/' . ltrim((string)$this->img, '/');
+    }
+
     public function getCategory() {
         return $this->category;
     }

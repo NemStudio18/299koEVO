@@ -118,6 +118,7 @@
 				<p>
 					<label for="siteLogo">{{Lang.configmanager-theme-logo}}</label>
 					<input type="text" name="siteLogo" id="siteLogo" value="{{CORE.getConfigVal("siteLogo")}}"/>
+					{{filemanagerDisplayManagerButton("siteLogo", Lang.filemanager.button-label)}}
 					<br><small>{{Lang.configmanager-theme-logo-desc}}</small>
 				</p>
 				<p>

@@ -57,15 +57,16 @@ class MediaService
         if ($token === '') {
             return '';
         }
+        $editorTarget = is_string($textareaId) ? trim($textareaId) : '';
         $url = Router::getInstance()->generate('filemanager-view-ajax-home', [
             'token' => $token,
-            'editor' => $textareaId ?: '',
+            'editor' => $editorTarget,
         ]);
 
         return sprintf(
-            '<a class="button fmUploadButton" data-fancybox data-type="ajax" href="%s"/><i class="fa-solid fa-file-image"></i> %s</a>',
-            $url,
-            $buttonLabel
+            '<a class="button fmUploadButton" data-fancybox data-type="ajax" href="%s"><i class="fa-solid fa-file-image"></i> %s</a>',
+            htmlspecialchars($url, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($buttonLabel, ENT_QUOTES, 'UTF-8')
         );
     }
 
