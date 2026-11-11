@@ -110,6 +110,7 @@
                         <label>Identifiant unique de la connexion (ex: <strong>secondary</strong>)</label>
                         <input type="text" name="db_name" placeholder="Nom interne sans espaces" required>
                     </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Driver</label>
                             <select name="database[driver]" class="db-driver-selector">

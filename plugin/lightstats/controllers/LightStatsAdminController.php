@@ -264,8 +264,23 @@ class LightStatsAdminController extends AdminController
         $humanVisitorsEst = (int)($kpis['unique_visitors'] ?? 0);
         $sovereignUniqueVisitors = $humanVisitorsEst > 0 ? $humanVisitorsEst : $certifiedSessions;
 
+        $lsPlugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('lightstats');
+        $privacyMode = ($lsPlugin && $lsPlugin->getConfigVal('privacy_mode') === 'cnil_exempt')
+            ? 'cnil_exempt'
+            : 'consent_banner';
+
+        try {
+            $saveConfigUrl = $this->router->generate('admin-lightstats-save-config');
+        } catch (\Exception $e) {
+            $saveConfigUrl = '/admin/lightstats/save-config';
+        }
+
         $response = new AdminResponse();
         $tpl = $response->createPluginTemplate('lightstats', 'admin');
+        $tpl->set('privacyMode', $privacyMode);
+        $tpl->set('isCnilExempt', ($privacyMode === 'cnil_exempt'));
+        $tpl->set('saveConfigUrl', $saveConfigUrl);
+        $tpl->set('token', $this->user->token);
         $tpl->set('consolidated', $consolidated);
         $tpl->set('totalDbSessions', $totalDbSessions);
         $tpl->set('certifiedSessions', $certifiedSessions);
@@ -311,5 +326,26 @@ class LightStatsAdminController extends AdminController
 
         $response->addTemplate($tpl);
         return $response;
+    }
+
+    public function saveConfig()
+    {
+        if (!isset($_POST['token']) || $_POST['token'] !== $this->user->token) {
+            \Utils\Show::msg(\Core\Lang::get('core-invalid-token'), 'error');
+            $this->core->redirect($this->router->generate('admin-lightstats-home'));
+        }
+
+        $mode = ($_POST['privacy_mode'] ?? 'consent_banner') === 'cnil_exempt'
+            ? 'cnil_exempt'
+            : 'consent_banner';
+
+        $plugin = $this->pluginsManager->getPlugin('lightstats');
+        if ($plugin) {
+            $plugin->setConfigVal('privacy_mode', $mode);
+            $this->pluginsManager->savePluginConfig($plugin);
+            \Utils\Show::msg(\Core\Lang::get('core-changes-saved'), 'success');
+        }
+
+        $this->core->redirect($this->router->generate('admin-lightstats-home'));
     }
 }

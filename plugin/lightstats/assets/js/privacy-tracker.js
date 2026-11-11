@@ -41,13 +41,16 @@
     // Contexte serveur injecté dynamiquement dans la réponse HTML (sans cookie vb_req)
     const serverCtx = (typeof window.__VB_CTX__ === 'object' && window.__VB_CTX__ !== null) ? window.__VB_CTX__ : {};
     const requestId = (typeof serverCtx.reqId === 'string' && serverCtx.reqId.length > 0) ? serverCtx.reqId : null;
+    const isCnilExempt = Boolean(serverCtx.cnilExempt);
     let sessionId = (typeof serverCtx.sid === 'string' && serverCtx.sid.length > 0) ? serverCtx.sid : null;
 
     // Gestion du consentement & visitor_id
-    const currentConsent = localStorage.getItem(CONSENT_KEY);
+    const currentConsent = isCnilExempt ? null : localStorage.getItem(CONSENT_KEY);
     let visitorId = null;
 
-    if (currentConsent === 'accepted') {
+    if (isCnilExempt) {
+        deleteCookie(VISITOR_COOKIE);
+    } else if (currentConsent === 'accepted') {
         visitorId = getCookie(VISITOR_COOKIE);
         if (!visitorId) {
             visitorId = generateUuid();
@@ -112,6 +115,9 @@
 
     // Injection du bandeau discret de consentement
     function showConsentBanner(force = false) {
+        if (isCnilExempt && !force) {
+            return;
+        }
         if (!force && localStorage.getItem(CONSENT_KEY)) {
             return;
         }

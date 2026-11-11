@@ -43,6 +43,10 @@ class antispam {
             require_once PLUGINS . 'antispam' . DS . 'lib' . DS . 'AntispamAbstractCaptcha.php';
             require_once PLUGINS . 'antispam' . DS . 'lib' . DS . 'AntispamIconCaptcha.php';
             $this->captcha = new AntispamIconCaptcha();
+        } elseif ($typeCaptcha === 'useFlexybot') {
+            require_once PLUGINS . 'antispam' . DS . 'lib' . DS . 'AntispamAbstractCaptcha.php';
+            require_once PLUGINS . 'antispam' . DS . 'lib' . DS . 'AntispamFlexyBotCaptcha.php';
+            $this->captcha = new AntispamFlexyBotCaptcha();
         }
     }
 

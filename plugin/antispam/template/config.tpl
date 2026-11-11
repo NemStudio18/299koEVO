@@ -1,4 +1,4 @@
-﻿<script>
+<script>
     function onClickRadio() {
         if (document.getElementById("radioRecaptcha").checked) {
             document.getElementById("useRecaptcha").style.display = 'block';
@@ -47,6 +47,9 @@
                         <input {{useIcon}} type="radio" name="captcha" value="useIcon" id="radioIcon"/><label for="radioIcon">{{Lang.antispam.use-icon-captcha}}</label>
                     </p>
                     <p>
+                        <input {{useFlexybot}} type="radio" name="captcha" value="useFlexybot" id="radioFlexybot"/><label for="radioFlexybot">{{Lang.antispam.use-flexybot-captcha}}</label>
+                    </p>
+                    <p>
                         <input {{useRecaptcha}} type="radio" name="captcha" id="radioRecaptcha" value="useRecaptcha" /><label for="radioRecaptcha">{{Lang.antispam.use-google-captcha}} (<a href="https://www.google.com/recaptcha/admin/create" target="_blank">{{Lang.antispam.use-google-captcha-register}}</a>)</label>
                     </p>
                     <section id="useRecaptcha">
@@ -90,6 +93,21 @@
                                 <span style="width: 42px; height: 42px; border: 2px solid #cbd5e1; border-radius: 8px; background: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; color: #334155;"><i class="fa-solid fa-star"></i></span>
                                 <span style="width: 42px; height: 42px; border: 2px solid var(--primary-color, #1d4ed8); border-radius: 8px; background: var(--primary-color, #1d4ed8); display: inline-flex; align-items: center; justify-content: center; font-size: 18px; color: #fff;"><i class="fa-solid fa-heart"></i></span>
                                 <span style="width: 42px; height: 42px; border: 2px solid #cbd5e1; border-radius: 8px; background: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; color: #334155;"><i class="fa-solid fa-star"></i></span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section style="margin: 0;">
+                        <header><i class="fa-solid fa-robot"></i> {{Lang.antispam.flexybot-captcha}}</header>
+                        <p>{{Lang.antispam.use-flexybot-desc}}</p>
+                        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; margin-top: 10px;">
+                            <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 8px;">Aperçu visiteur</div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px;">
+                                <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 600; color: #0f172a;">
+                                    <span style="width: 22px; height: 22px; border-radius: 4px; background: #16a34a; color: #fff; display: inline-flex; align-items: center; justify-content: center;"><i class="fa-solid fa-check"></i></span>
+                                    Vérifié (1 clic humain)
+                                </span>
+                                <span style="font-size: 0.72rem; color: #64748b;"><i class="fa-solid fa-shield-halved"></i> Local</span>
                             </div>
                         </div>
                     </section>

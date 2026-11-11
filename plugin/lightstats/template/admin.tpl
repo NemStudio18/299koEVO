@@ -80,12 +80,27 @@
                 <p>Mesure d'audience locale hébergée sur votre serveur</p>
             </div>
         </div>
-        <div class="ls-header-badges">
+        <div class="ls-header-badges" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <form method="post" action="{{saveConfigUrl}}" style="display: inline-flex; align-items: center; gap: 6px; margin: 0;">
+                <input type="hidden" name="token" value="{{token}}">
+                <select name="privacy_mode" onchange="this.form.submit()" aria-label="Mode de confidentialité LightStats" style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--ls-slate-200); background: #fff; font-size: 0.8rem; font-weight: 600; color: var(--ls-slate-700); margin: 0;">
+                    <option value="consent_banner" {% IF !isCnilExempt %}selected{% ENDIF %}>Mode avec bandeau (suivi récurrent 7j)</option>
+                    <option value="cnil_exempt" {% IF isCnilExempt %}selected{% ENDIF %}>Mode CNIL sans bandeau (0 cookie)</option>
+                </select>
+            </form>
             <button type="button" id="lsInfoModalBtn" class="ls-preset-btn" style="cursor: pointer;">
                 <i class="fa-solid fa-circle-info" style="color: var(--ls-primary);"></i> Fonctionnement, Fiabilité &amp; RGPD
             </button>
         </div>
     </header>
+
+    {% IF isCnilExempt %}
+    <div style="margin: 0 0 1rem; padding: 0.85rem 1rem; background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; border-radius: 10px; font-size: 0.84rem; color: #92400e; line-height: 1.55;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <strong>Mode CNIL sans bandeau actif (zéro cookie déposé) :</strong> aucun bandeau n'est affiché aux visiteurs et aucun cookie (<code>vb_sid</code> / <code>vb_vid</code>) n'est créé.
+        <strong>Impact sur la fiabilité :</strong> sans identifiant persistant, un visiteur revenant d'un jour à l'autre ou changeant de réseau est compté comme un nouveau visiteur, et les visites avec JavaScript bloqué restent non certifiées (sur l'expérience <em>Vivre-Bourges</em>, le croisement entre hits HTTP bruts et suivi JS soumis au consentement/bloqueurs montrait déjà des écarts significatifs d'un mode à l'autre).
+    </div>
+    {% ENDIF %}
 
     <!-- ── BARRE DE FILTRAGE DES DATES ── -->
     <section class="ls-filter-bar">
@@ -804,7 +819,13 @@
                 <ul style="margin: 0 0 0 18px;">
                     <li><strong>Adresses IP minimisées :</strong> le dernier octet IPv4 est remplacé par <code>0</code> (ex. <code>192.168.1.0</code>) et les IPv6 sont tronquées avant stockage ; l'empreinte journalière (<code>sha256</code> salé par la date) change chaque nuit et ne permet pas de remonter à l'IP réelle.</li>
                     <li><strong>Conservation limitée :</strong> purge automatique des journaux et événements au bout de <strong>30 jours</strong> ; aucun partage vers des tiers publicitaires.</li>
-                    <li><strong>Cookies utilisés :</strong> un cookie technique de session de 30 min (<code>vb_sid</code>, <code>HttpOnly</code>) est posé côté serveur pour regrouper les pages d'une même visite, et un cookie pseudonyme de 7 jours (<code>vb_vid</code>) n'est créé <strong>qu'après clic sur « Tout accepter »</strong> dans le bandeau de consentement (jamais en cas de refus).</li>
+                    <li><strong>Cookies utilisés :</strong>
+                        {% IF isCnilExempt %}
+                            <strong>Mode CNIL sans bandeau actif :</strong> aucun cookie n'est déposé (ni <code>vb_sid</code>, ni <code>vb_vid</code>) et aucun bandeau n'est affiché. En contrepartie, les retours multi-jours d'un même visiteur ne sont pas reliés entre eux.
+                        {% ELSE %}
+                            <strong>Mode avec bandeau actif :</strong> un cookie technique de session de 30 min (<code>vb_sid</code>, <code>HttpOnly</code>) est posé côté serveur pour regrouper les pages d'une même visite, et un cookie pseudonyme de 7 jours (<code>vb_vid</code>) n'est créé <strong>qu'après clic sur « Tout accepter »</strong> dans le bandeau de consentement (jamais en cas de refus).
+                        {% ENDIF %}
+                    </li>
                 </ul>
             </div>
 
@@ -815,11 +836,15 @@
                         <i class="fa-regular fa-copy"></i> Copier le texte
                     </button>
                 </div>
-                <textarea id="lsLegalTemplate" readonly rows="8" style="width: 100%; font-size: 0.82rem; line-height: 1.5; color: #1e293b; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; resize: vertical;">Mesure d'audience (LightStats)
+                <textarea id="lsLegalTemplate" readonly rows="8" style="width: 100%; font-size: 0.82rem; line-height: 1.5; color: #1e293b; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; resize: vertical;">{% IF isCnilExempt %}Mesure d'audience sans cookie (LightStats)
+Ce site utilise LightStats en mode exempté de consentement (CNIL / RGPD), hébergé directement sur notre serveur et sans transfert vers des tiers.
+- Absence de traceur : aucun cookie ni identifiant persistant n'est stocké sur votre terminal pour la mesure d'audience.
+- Données techniques traitées : pages consultées (sans paramètres marketing), provenance HTTP, catégorie technique de navigateur, et adresse IP immédiatement anonymisée avant stockage (masquage du dernier octet).
+- Durée de conservation : les journaux techniques bruts sont automatiquement purgés après 30 jours.{% ELSE %}Mesure d'audience (LightStats)
 Ce site utilise LightStats, une solution de mesure d'audience hébergée directement sur notre serveur, sans recours à des régies publicitaires ni transfert de données vers des tiers.
 - Données collectées : pages consultées (sans paramètres marketing), provenance HTTP, type de navigateur/système, identifiant technique de session (30 minutes) et adresse IP immédiatement anonymisée (masquage du dernier octet).
 - Suivi récurrent : un identifiant visiteur pseudonyme (cookie « vb_vid », conservé 7 jours) n'est déposé qu'avec votre accord explicite via le bandeau de consentement. Vous pouvez refuser ou modifier votre choix à tout moment.
-- Durée de conservation : les journaux techniques bruts sont automatiquement supprimés après 30 jours.</textarea>
+- Durée de conservation : les journaux techniques bruts sont automatiquement supprimés après 30 jours.{% ENDIF %}</textarea>
             </div>
         </div>
     </div>
