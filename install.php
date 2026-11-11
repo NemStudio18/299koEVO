@@ -225,19 +225,25 @@ if (count($_POST) > 0) {
                 \Core\Storage\StorageMigrationService::migrate('PageItem', 'sql', 'json');
             }
         }
-		$plugins = $pluginsManager->getPlugins();
-		if ($plugins != false) {
-			foreach ($plugins as $plugin) {
-				if ($plugin->getLibFile()) {
-					include_once($plugin->getLibFile());
-					$plugin->loadLangFile();
-					if (!$plugin->isInstalled())
-						$pluginsManager->installPlugin($plugin->getName(), true);
-					$plugin->setConfigVal('activate', '1');
-					$pluginsManager->savePluginConfig($plugin);
-				}
-			}
-		}
+        // Si le dossier /plugin existe déjà lors de l'installation, on ne pré-installe pas ses plugins :
+        // l'administrateur activera uniquement ceux de son choix depuis l'interface Plugins.
+        $skipPluginsAutoInstall = is_dir(PLUGINS);
+        if (!$skipPluginsAutoInstall) {
+            $plugins = $pluginsManager->getPlugins();
+            if ($plugins != false) {
+                foreach ($plugins as $plugin) {
+                    if ($plugin->getLibFile()) {
+                        include_once($plugin->getLibFile());
+                        $plugin->loadLangFile();
+                        if (!$plugin->isInstalled()) {
+                            $pluginsManager->installPlugin($plugin->getName(), true);
+                        }
+                        $plugin->setConfigVal('activate', '1');
+                        $pluginsManager->savePluginConfig($plugin);
+                    }
+                }
+            }
+        }
 	}
 	include(DATA . 'key.php');
     $adminPwd = hash_hmac('sha1', $adminPwdPlain, KEY);
