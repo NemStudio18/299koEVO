@@ -61,68 +61,68 @@ class Topic extends \Core\Storage\JsonActiveRecord
 
     public function getTitle(): string
     {
-        return (string)$this->title;
+        return (string)($this->attributes['title'] ?? '');
     }
 
     public function getSlug(): string
     {
-        return (string)$this->slug;
+        return (string)($this->attributes['slug'] ?? '');
     }
 
     public function getAuthorName(): string
     {
-        return (string)$this->author_name;
+        return (string)($this->attributes['author_name'] ?? '');
     }
 
     public function isLocked(): bool
     {
-        return (int)$this->is_locked === 1;
+        return (int)($this->attributes['is_locked'] ?? 0) === 1;
     }
 
     public function isPinned(): bool
     {
-        return (int)$this->is_pinned === 1;
+        return (int)($this->attributes['is_pinned'] ?? 0) === 1;
     }
 
     public function getViews(): int
     {
-        return (int)$this->views;
+        return (int)($this->attributes['views'] ?? 0);
     }
 
     public function getPostCount(): int
     {
-        return (int)$this->post_count;
+        return (int)($this->attributes['post_count'] ?? 0);
     }
 
     public function getCreatedAt(): ?string
     {
-        return $this->created_at;
+        return $this->attributes['created_at'] ?? null;
     }
 
     public function getLastPostAt(): ?string
     {
-        return $this->last_post_at;
+        return $this->attributes['last_post_at'] ?? null;
     }
 
     public function getUrl(): string
     {
         $router = \Core\Router\Router::getInstance();
-        return $router->generate('forum-topic', ['id' => $this->id]);
+        return $router->generate('forum-topic', ['id' => $this->getId()]);
     }
 
     public function getAuthorId(): ?int
     {
-        return $this->author_id ? (int)$this->author_id : null;
+        return !empty($this->attributes['author_id']) ? (int)$this->attributes['author_id'] : null;
     }
     
     public function getAuthorEmail(): ?string
     {
-        return $this->author_email;
+        return $this->attributes['author_email'] ?? null;
     }
     
     public function getCategoryId(): ?int
     {
-        return $this->category_id ? (int)$this->category_id : null;
+        return !empty($this->attributes['category_id']) ? (int)$this->attributes['category_id'] : null;
     }
 
     public function toArray(): array

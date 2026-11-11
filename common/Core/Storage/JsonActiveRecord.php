@@ -505,6 +505,8 @@ abstract class JsonActiveRecord implements \ArrayAccess
         return $relatedClass::findPK($foreignVal);
     }
 
+    private array $gettingAttributes = [];
+
     // ... other magic methods __get, __set, __isset remain valid ...
     public function __set($name, $value)
     {
@@ -512,9 +514,19 @@ abstract class JsonActiveRecord implements \ArrayAccess
     }
     public function __get($name)
     {
-        if (method_exists($this, "get$name"))
-            return $this->{"get$name"}();
-        return $this->attributes[$name] ?? null;
+        if (array_key_exists($name, $this->attributes)) {
+            return $this->attributes[$name];
+        }
+        $getter = "get$name";
+        if (method_exists($this, $getter) && empty($this->gettingAttributes[$name])) {
+            $this->gettingAttributes[$name] = true;
+            try {
+                return $this->{$getter}();
+            } finally {
+                unset($this->gettingAttributes[$name]);
+            }
+        }
+        return null;
     }
     public function __isset($name)
     {

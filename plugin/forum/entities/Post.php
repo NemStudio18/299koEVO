@@ -59,52 +59,52 @@ class Post extends \Core\Storage\JsonActiveRecord
 
     public function getTopicId(): ?int
     {
-        return $this->topic_id ? (int)$this->topic_id : null;
+        return !empty($this->attributes['topic_id']) ? (int)$this->attributes['topic_id'] : null;
     }
 
     public function getContent(): string
     {
-        return (string)$this->content;
+        return (string)($this->attributes['content'] ?? '');
     }
 
     public function getAuthorName(): string
     {
-        return (string)$this->author_name;
+        return (string)($this->attributes['author_name'] ?? '');
     }
 
     public function isApproved(): bool
     {
-        return (int)$this->is_approved === 1;
+        return (int)($this->attributes['is_approved'] ?? 0) === 1;
     }
 
     public function getCreatedAt(): string
     {
-        return (string)$this->created_at;
+        return (string)($this->attributes['created_at'] ?? '');
     }
     
     public function getUpdatedAt(): ?string
     {
-        return $this->updated_at;
+        return $this->attributes['updated_at'] ?? null;
     }
     
     public function getAuthorId(): ?int
     {
-        return $this->author_id ? (int)$this->author_id : null;
+        return !empty($this->attributes['author_id']) ? (int)$this->attributes['author_id'] : null;
     }
     
     public function getAuthorEmail(): ?string
     {
-        return $this->author_email;
+        return $this->attributes['author_email'] ?? null;
     }
     
     public function getEditedAt(): ?string
     {
-        return $this->edited_at;
+        return $this->attributes['edited_at'] ?? null;
     }
     
     public function getEditCount(): int
     {
-        return (int)$this->edit_count;
+        return (int)($this->attributes['edit_count'] ?? 0);
     }
     
     public function isEdited(): bool
@@ -114,7 +114,7 @@ class Post extends \Core\Storage\JsonActiveRecord
     
     public function getLikeCount(): int
     {
-        return (int)$this->like_count;
+        return (int)($this->attributes['like_count'] ?? 0);
     }
     
     public function isLikedByCurrentUser(): bool

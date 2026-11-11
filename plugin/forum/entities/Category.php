@@ -56,47 +56,47 @@ class Category extends \Core\Storage\JsonActiveRecord
 
     public function getName(): string
     {
-        return (string)$this->name;
+        return (string)($this->attributes['name'] ?? '');
     }
 
     public function getSlug(): string
     {
-        return (string)$this->slug;
+        return (string)($this->attributes['slug'] ?? '');
     }
 
     public function getDescription(): string
     {
-        return (string)$this->description;
+        return (string)($this->attributes['description'] ?? '');
     }
 
     public function getOrderIndex(): int
     {
-        return (int)$this->order_index;
+        return (int)($this->attributes['order_index'] ?? 0);
     }
 
     public function getTopicCount(): int
     {
-        return (int)$this->topic_count;
+        return (int)($this->attributes['topic_count'] ?? 0);
     }
 
     public function getPostCount(): int
     {
-        return (int)$this->post_count;
+        return (int)($this->attributes['post_count'] ?? 0);
     }
     
     public function setTopicCount(int $count): void
     {
-        $this->topic_count = $count;
+        $this->attributes['topic_count'] = $count;
     }
     
     public function setPostCount(int $count): void
     {
-        $this->post_count = $count;
+        $this->attributes['post_count'] = $count;
     }
     
     public function getParentId(): ?int
     {
-        return $this->parent_id ? (int)$this->parent_id : null;
+        return !empty($this->attributes['parent_id']) ? (int)$this->attributes['parent_id'] : null;
     }
     
     public function isSubcategory(): bool
@@ -106,12 +106,12 @@ class Category extends \Core\Storage\JsonActiveRecord
     
     public function getIcon(): string
     {
-        return (string)$this->icon;
+        return (string)($this->attributes['icon'] ?? '');
     }
     
     public function getColor(): string
     {
-        return (string)$this->color;
+        return (string)($this->attributes['color'] ?? '');
     }
     
     public function setSubcategories(array $subcategories): void

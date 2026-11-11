@@ -52,6 +52,32 @@ class UserEnrichmentService
     }
 
     /**
+     * Récupère les données complètes d'un utilisateur par ID (alias pour ForumController)
+     */
+    public function enrichUser(int $userId): array
+    {
+        return $this->getUserFullData($userId, null);
+    }
+
+    /**
+     * Récupère les données enrichies pour une liste d'IDs utilisateurs indexée par user_id
+     *
+     * @param array<int, int|string> $userIds
+     * @return array<int, array>
+     */
+    public function enrichUsers(array $userIds): array
+    {
+        $identifiers = [];
+        foreach (array_unique($userIds) as $uid) {
+            if ($uid !== null && $uid !== '') {
+                $id = (int) $uid;
+                $identifiers[$id] = ['user_id' => $id];
+            }
+        }
+        return $this->getBatchUsersData($identifiers);
+    }
+
+    /**
      * Récupère les données complètes d'un utilisateur (CMS + profil)
      */
     public function getUserFullData(?int $userId, ?string $email = null): array
