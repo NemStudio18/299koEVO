@@ -13,3 +13,4 @@ $router = \Core\Router\Router::getInstance();
 
 $router->map('GET', '/admin/antispam[/?]', 'AntispamAdminController#home', 'antispam-admin');
 $router->map('POST', '/admin/antispam/saveconf[/?]', 'AntispamAdminController#save', 'antispam-saveconf');
+$router->map('POST', '/admin/antispam/clear-stats[/?]', 'AntispamAdminController#clearStats', 'antispam-clear-stats');

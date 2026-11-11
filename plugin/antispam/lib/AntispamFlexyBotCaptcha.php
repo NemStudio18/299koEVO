@@ -26,78 +26,12 @@ class AntispamFlexyBotCaptcha extends AntispamAbstractCaptcha
         </button>
         <span class="fb-shield-tag"><i class="fa-solid fa-shield-halved"></i> Protection locale</span>
     </div>
-    <div class="fb-challenge-panel" style="display: none;">
+    <div class="fb-challenge-panel">
         <label class="fb-challenge-label" for="{$id}_ans">Vérification complémentaire : {$question} (en chiffres)</label>
         <input type="text" id="{$id}_ans" name="fb_answer" class="fb-answer-input" inputmode="numeric" autocomplete="off" value="" />
     </div>
 </div>
 {$this->getGenericHtml()}
-<style>
-.antispam-flexybot-box {
-    max-width: 380px;
-    padding: 12px 14px;
-    border: 1px solid var(--form-border-color, #cbd5e1);
-    border-radius: 10px;
-    background: var(--section-head-bg-color, #f8fafc);
-    margin: 10px 0;
-}
-.antispam-flexybot-box .fb-widget-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-.antispam-flexybot-box .fb-check-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: transparent;
-    border: none;
-    padding: 4px 0;
-    cursor: pointer;
-    font-size: 0.94rem;
-    font-weight: 600;
-    color: var(--font-color, #1e293b);
-}
-.antispam-flexybot-box .fb-check-square {
-    width: 24px;
-    height: 24px;
-    border: 2px solid #94a3b8;
-    border-radius: 5px;
-    background: #ffffff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: transparent;
-    transition: all 0.2s ease;
-}
-.antispam-flexybot-box.is-verified .fb-check-square {
-    border-color: #16a34a;
-    background: #16a34a;
-    color: #ffffff;
-}
-.antispam-flexybot-box .fb-shield-tag {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #64748b;
-}
-.antispam-flexybot-box .fb-challenge-panel {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #e2e8f0;
-}
-.antispam-flexybot-box .fb-challenge-label {
-    display: block;
-    font-size: 0.86rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-.antispam-flexybot-box .fb-answer-input {
-    max-width: 140px;
-    margin: 0;
-}
-</style>
 <script>
 (function() {
     const box = document.getElementById('{$id}');
@@ -131,8 +65,7 @@ class AntispamFlexyBotCaptcha extends AntispamAbstractCaptcha
     function setSubmitEnabled(enabled) {
         submitControls.forEach(function(el) {
             el.disabled = !enabled;
-            el.style.opacity = enabled ? '' : '0.55';
-            el.style.cursor = enabled ? '' : 'not-allowed';
+            el.classList.toggle('fb-submit-locked', !enabled);
             el.setAttribute('aria-disabled', enabled ? 'false' : 'true');
         });
     }
@@ -149,7 +82,7 @@ class AntispamFlexyBotCaptcha extends AntispamAbstractCaptcha
 
     if (form) {
         form.addEventListener('submit', function(e) {
-            const hasFallbackAnswer = ansInput && panel.style.display !== 'none' && ansInput.value.trim() !== '';
+            const hasFallbackAnswer = ansInput && panel.classList.contains('is-open') && ansInput.value.trim() !== '';
             if (!isVerified && !hasFallbackAnswer) {
                 e.preventDefault();
                 setSubmitEnabled(false);
@@ -178,7 +111,7 @@ class AntispamFlexyBotCaptcha extends AntispamAbstractCaptcha
             box.classList.add('is-verified');
             btn.setAttribute('aria-pressed', 'true');
             label.textContent = 'Vérifié';
-            panel.style.display = 'none';
+            panel.classList.remove('is-open');
             if (ansInput) ansInput.removeAttribute('required');
             setSubmitEnabled(true);
         } else {
@@ -186,7 +119,7 @@ class AntispamFlexyBotCaptcha extends AntispamAbstractCaptcha
             box.classList.remove('is-verified');
             btn.setAttribute('aria-pressed', 'true');
             label.textContent = 'Vérification requise';
-            panel.style.display = 'block';
+            panel.classList.add('is-open');
             if (ansInput) {
                 ansInput.setAttribute('required', 'required');
                 ansInput.focus();
@@ -208,17 +141,25 @@ HTML;
         }
         $sessionData = $_SESSION['antispam_flexybot'] ?? null;
         if (!is_array($sessionData) || empty($sessionData['nonce'])) {
+            $this->lastReason = 'missing_session';
             return false;
         }
 
         $postedNonce = trim((string) ($_POST['fb_nonce'] ?? ''));
         if ($postedNonce === '' || !hash_equals($sessionData['nonce'], $postedNonce)) {
+            $this->lastReason = 'invalid_nonce';
             return false;
         }
 
         $serverElapsed = time() - (int) ($sessionData['issued_at'] ?? 0);
-        if ($serverElapsed < 1 || $serverElapsed > 3600) {
+        if ($serverElapsed < 1) {
             unset($_SESSION['antispam_flexybot']);
+            $this->lastReason = 'server_too_fast';
+            return false;
+        }
+        if ($serverElapsed > 3600) {
+            unset($_SESSION['antispam_flexybot']);
+            $this->lastReason = 'expired';
             return false;
         }
 
@@ -227,6 +168,7 @@ HTML;
         if ($answer !== '') {
             $ok = hash_equals($sessionData['answer_hash'], sha1($answer));
             unset($_SESSION['antispam_flexybot']);
+            $this->lastReason = $ok ? 'fallback_answer' : 'wrong_answer';
             return $ok;
         }
 
@@ -235,9 +177,15 @@ HTML;
         unset($_SESSION['antispam_flexybot']);
 
         if (!is_array($proof) || empty($proof['clicked'])) {
+            $this->lastReason = 'not_clicked';
             return false;
         }
-        if (($proof['nonce'] ?? '') !== $postedNonce || !empty($proof['webdriver'])) {
+        if (($proof['nonce'] ?? '') !== $postedNonce) {
+            $this->lastReason = 'invalid_nonce';
+            return false;
+        }
+        if (!empty($proof['webdriver'])) {
+            $this->lastReason = 'webdriver';
             return false;
         }
 
@@ -248,7 +196,17 @@ HTML;
         $scrollEvents = (int) ($proof['scrollEvents'] ?? 0);
 
         $hasHumanInteraction = ($mouseMoves >= 2 || $touchEvents >= 1 || $keyPresses >= 2 || $scrollEvents >= 1);
-        return $clientElapsed >= 800 && $hasHumanInteraction;
+        if ($clientElapsed < 800) {
+            $this->lastReason = 'client_too_fast';
+            return false;
+        }
+        if (!$hasHumanInteraction) {
+            $this->lastReason = 'no_human_interaction';
+            return false;
+        }
+
+        $this->lastReason = 'human_behavior';
+        return true;
     }
 
     protected function initChallenge(): array

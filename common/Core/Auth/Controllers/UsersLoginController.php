@@ -436,10 +436,18 @@ class UsersLoginController extends PublicController
         
         $tpl->set('activities', $activities);
 
+        $statsSum = 0;
+        if (is_array($stats)) {
+            foreach ($stats as $statEntry) {
+                $statsSum += (int) ($statEntry['value'] ?? 0);
+            }
+        }
+        $hasContributions = !empty($activities) || $statsSum > 0;
+
         $tpl->set('user', $this->user); // Passer l'objet User complet
         $tpl->set('userData', (object)$userData); // Garder userData pour compatibilité si besoin
         $tpl->set('stats', $stats);
-        $tpl->set('hasStats', !empty($stats));
+        $tpl->set('hasStats', $hasContributions);
 
         // Récupérer les paramètres du plugin auth pour la localisation
         $pluginsManager = \Core\Plugin\PluginsManager::getInstance();

@@ -25,6 +25,241 @@
     display: none;
 }
 
-#first_name_a {
+#first_name_a,
+.antispam-hp-field {
     display: none;
+}
+
+/* Widget 299nobot (front & aperçu admin) */
+.antispam-flexybot-box {
+    max-width: 380px;
+    padding: 12px 14px;
+    border: 1px solid var(--evo-input-border);
+    border-radius: var(--evo-radius-sm);
+    background: var(--evo-surface);
+    margin: 10px 0;
+    color: var(--evo-text);
+}
+.antispam-flexybot-box .fb-widget-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.antispam-flexybot-box .fb-check-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    padding: 4px 0;
+    cursor: pointer;
+    font-size: 0.94rem;
+    font-weight: 600;
+    color: var(--evo-text);
+}
+.antispam-flexybot-box .fb-check-square {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--evo-border-strong);
+    border-radius: 5px;
+    background: var(--evo-input-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    transition: all 0.2s ease;
+}
+.antispam-flexybot-box.is-verified .fb-check-square {
+    border-color: var(--evo-success);
+    background: var(--evo-success);
+    color: var(--evo-accent-text);
+}
+.antispam-flexybot-box .fb-shield-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--evo-text-muted);
+}
+.antispam-flexybot-box .fb-challenge-panel {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--evo-border);
+}
+.antispam-flexybot-box .fb-challenge-panel.is-open {
+    display: block;
+}
+.antispam-flexybot-box .fb-challenge-label {
+    display: block;
+    font-size: 0.86rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+.antispam-flexybot-box .fb-answer-input {
+    max-width: 140px;
+    margin: 0;
+}
+.fb-submit-locked {
+    opacity: 0.55;
+    cursor: not-allowed !important;
+}
+
+/* Admin Antispam : aperçus & journal des blocages */
+.antispam-help-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+.antispam-help-grid > section {
+    margin: 0;
+}
+.antispam-preview-card {
+    background: var(--evo-surface);
+    border: 1px solid var(--evo-border-strong);
+    border-radius: var(--evo-radius-sm);
+    padding: 14px;
+    margin-top: 10px;
+}
+.antispam-preview-kicker {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--evo-text-muted);
+    margin-bottom: 8px;
+}
+.antispam-preview-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+.antispam-preview-sub {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+.antispam-preview-input {
+    max-width: 110px;
+    background: var(--evo-input-bg);
+    margin: 0;
+}
+.antispam-preview-icons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.antispam-preview-ico {
+    width: 42px;
+    height: 42px;
+    border: 2px solid var(--evo-border-strong);
+    border-radius: var(--evo-radius-sm);
+    background: var(--evo-card-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--evo-text);
+}
+.antispam-preview-ico.is-active {
+    border-color: var(--evo-accent);
+    background: var(--evo-accent);
+    color: var(--evo-accent-text);
+}
+.antispam-preview-widget {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--evo-card-bg);
+    border: 1px solid var(--evo-border-strong);
+    border-radius: var(--evo-radius-sm);
+    padding: 10px 12px;
+}
+.antispam-preview-widget-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--evo-text);
+}
+.antispam-preview-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    background: var(--evo-success);
+    color: var(--evo-accent-text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.antispam-preview-check-outline {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--evo-success);
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--evo-success);
+}
+.antispam-preview-local {
+    font-size: 0.72rem;
+    color: var(--evo-text-muted);
+}
+.antispam-preview-rc-icon {
+    color: var(--evo-accent);
+    margin-left: 8px;
+}
+
+.antispam-stats-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.antispam-kpi {
+    padding: 14px 16px;
+    border: 1px solid var(--evo-border);
+    border-radius: var(--evo-radius-md);
+    background: var(--evo-card-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.antispam-kpi span {
+    font-size: 0.8rem;
+    color: var(--evo-text-muted);
+    font-weight: 600;
+}
+.antispam-kpi strong {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--evo-text);
+}
+.antispam-kpi.is-danger strong {
+    color: var(--evo-danger);
+}
+.antispam-kpi.is-success strong {
+    color: var(--evo-success);
+}
+.antispam-reasons-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.antispam-logs-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.antispam-logs-head h3 {
+    margin: 0;
+}
+.antispam-logs-head form {
+    margin: 0;
 }

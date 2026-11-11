@@ -51,7 +51,15 @@ class AntispamIconCaptcha extends AntispamAbstractCaptcha {
      * @return bool True if the captcha is valid, false otherwise.
      */
     public function isValid(): bool {
-        return (isset($_SESSION['antispam_result']) && isset($_POST['iconCaptcha']) && $_SESSION['antispam_result'] === sha1($_POST['iconCaptcha']) && $this->isGenericValid());
+        if (!$this->isGenericValid()) {
+            return false;
+        }
+        if (isset($_SESSION['antispam_result']) && isset($_POST['iconCaptcha']) && $_SESSION['antispam_result'] === sha1((string) $_POST['iconCaptcha'])) {
+            $this->lastReason = 'valid_captcha';
+            return true;
+        }
+        $this->lastReason = 'wrong_captcha';
+        return false;
     }
 
     /**

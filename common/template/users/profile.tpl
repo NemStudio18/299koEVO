@@ -37,8 +37,8 @@
                 <div class="profile-info">
                     <h1 class="profile-username">{{user.username}}</h1>
                     {% if user.custom_badge %}
-                    <div style="margin-bottom: 1rem;">
-                        <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.3rem 0.8rem; border-radius: 999px; font-weight: bold; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);">
+                    <div class="profile-custom-badge-wrap">
+                        <span class="profile-custom-badge">
                             <i class="fa-solid fa-award"></i> {{ user.custom_badge }}
                         </span>
                     </div>
@@ -173,72 +173,50 @@
 
 
 <script>
-// Gestion des onglets
 (function() {
-    document.addEventListener('DOMContentLoaded', function() {
+    function initProfilePage() {
         const tabButtons = document.querySelectorAll('.profile-tab-button[data-tab]');
         const tabContents = document.querySelectorAll('.profile-tab-content');
-        
-        console.log('Profile Tabs Init:', tabButtons.length, 'buttons found');
-        console.log('Profile Tabs Content:', tabContents.length, 'contents found');
+
+        function activateTab(targetTab, updateHistory) {
+            const targetContent = document.getElementById('tab-' + targetTab);
+            if (!targetContent) return;
+
+            tabButtons.forEach(btn => {
+                const match = btn.getAttribute('data-tab') === targetTab;
+                btn.classList.toggle('active', match);
+                btn.setAttribute('aria-selected', match ? 'true' : 'false');
+            });
+            tabContents.forEach(content => {
+                content.classList.toggle('active', content.id === 'tab-' + targetTab);
+            });
+
+            if (updateHistory && history.pushState) {
+                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?tab=' + encodeURIComponent(targetTab);
+                window.history.pushState({path: newUrl}, '', newUrl);
+            }
+        }
 
         tabButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
-                console.log('Tab clicked:', this.getAttribute('data-tab'));
-                const targetTab = this.getAttribute('data-tab');
-                
-                // Désactiver tous les onglets
-                let clearedCount = 0;
-                tabButtons.forEach(btn => {
-                    btn.classList.remove('active');
-                    btn.setAttribute('aria-selected', 'false');
-                });
-                tabContents.forEach(content => {
-                    if (content.classList.contains('active')) {
-                        content.classList.remove('active');
-                        clearedCount++;
-                    }
-                });
-                console.log('Cleared active class from', clearedCount, 'content elements');
-                
-                // Activer l'onglet sélectionné
-                this.classList.add('active');
-                this.setAttribute('aria-selected', 'true');
-                const targetContent = document.getElementById('tab-' + targetTab);
-                console.log('Target content ID:', 'tab-' + targetTab, targetContent);
-                if (targetContent) {
-                    targetContent.classList.add('active');
-                    console.log('Class list after add:', targetContent.classList.toString());
-                } else {
-                    console.error('Target content NOT FOUND!');
-                }
-                
-                // Mettre à jour l'URL sans recharger la page
-                if (history.pushState) {
-                    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?tab=' + targetTab;
-                    window.history.pushState({path: newUrl}, '', newUrl);
-                }
+                activateTab(this.getAttribute('data-tab'), true);
             });
         });
-        
-        // Gérer l'onglet actif au chargement si un paramètre URL est présent ou forcé
+
         const urlParams = new URLSearchParams(window.location.search);
-        const activeTab = urlParams.get('tab');
-        if (activeTab) {
-            const defaultButton = document.querySelector(`.profile-tab-button[data-tab="${activeTab}"]`);
-            if (defaultButton) {
-                defaultButton.click();
-            }
+        const queryTab = urlParams.get('tab');
+        const hashTab = window.location.hash ? window.location.hash.substring(1) : '';
+        const initialTab = queryTab || hashTab;
+        if (initialTab) {
+            activateTab(initialTab, false);
         }
-    });
-    // Gérer l'URL hash au chargement
-    if (window.location.hash) {
-        const hash = window.location.hash.substring(1);
-        const button = document.querySelector(`[data-tab="${hash}"]`);
-        if (button) {
-            button.click();
-        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProfilePage);
+    } else {
+        initProfilePage();
     }
 
     // Gestion des réglages AJAX

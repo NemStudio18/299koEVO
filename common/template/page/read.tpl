@@ -10,9 +10,9 @@
 		</header>
 		<form method="post" action="">
 			<input type="hidden" name="unlock" value="{{sendUrl}}"/>
+			<input type="hidden" name="_csrf" value="{{_csrfToken}}"/>
 			<p>
 				<label>Mot de passe</label><br>
-				<input style="display:none;" type="text" name="_password" value=""/>
 				<input required="required" type="password" name="password" value=""/>
 			</p>
 			<p>
