@@ -10,12 +10,13 @@
     color: var(--evo-text-muted);
     line-height: 1.6;
 }
-.annonces-filters {
+.annonces-wrap .annonces-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
     background: var(--evo-surface);
+    color: var(--evo-text);
     border: 1px solid var(--evo-border);
     border-radius: var(--evo-radius-md);
     padding: 12px 14px;

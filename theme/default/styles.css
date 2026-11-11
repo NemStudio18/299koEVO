@@ -1270,6 +1270,7 @@ body.theme-dark input[type=email],
 body.theme-dark input[type=password],
 body.theme-dark input[type=url],
 body.theme-dark textarea,
+body.theme-dark select,
 body.theme-dark input[type=number],
 body.theme-dark .contact .acceptation {
     background: var(--dark-form-bg-color);
@@ -1418,6 +1419,7 @@ body.theme-light #footer {
     body:not(.theme-light) input[type=password],
     body:not(.theme-light) input[type=url],
     body:not(.theme-light) textarea,
+    body:not(.theme-light) select,
     body:not(.theme-light) input[type=number],
     body:not(.theme-light) .contact .acceptation {
         background: var(--dark-form-bg-color);
@@ -1429,6 +1431,7 @@ body.theme-light #footer {
     body:not(.theme-light) input[type=password],
     body:not(.theme-light) input[type=url],
     body:not(.theme-light) textarea,
+    body:not(.theme-light) select,
     body:not(.theme-light) input[type=number],
     body:not(.theme-light) hr,
     body:not(.theme-light) tr,
