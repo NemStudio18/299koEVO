@@ -3,10 +3,10 @@
    ========================================================================== */
 
 :root {
-    --ls-primary: #6366f1;
-    --ls-primary-hover: #4f46e5;
-    --ls-primary-soft: rgba(99, 102, 241, 0.08);
-    --ls-primary-border: rgba(99, 102, 241, 0.25);
+    --ls-primary: #1f62a9;
+    --ls-primary-hover: #164980;
+    --ls-primary-soft: rgba(31, 98, 169, 0.08);
+    --ls-primary-border: rgba(31, 98, 169, 0.25);
     
     --ls-emerald: #10b981;
     --ls-emerald-soft: rgba(16, 185, 129, 0.08);

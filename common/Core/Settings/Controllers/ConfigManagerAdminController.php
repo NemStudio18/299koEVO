@@ -59,6 +59,7 @@ class ConfigManagerAdminController extends AdminController {
         $tpl->set('dbError', $dbError);
 
         $tpl->set('registrationDefaultGroup', $this->core->getConfigVal('registrationDefaultGroup') ?? 'member');
+        $tpl->set('antispamPluginActive', PluginsManager::isActivePlugin('antispam'));
         
         // Pass available locales and current locale to template
         $availablesLocales = Lang::getAvailablesLocales();
@@ -168,8 +169,9 @@ class ConfigManagerAdminController extends AdminController {
             'defaultPlugin' => $_POST['defaultPlugin'],
             'hideTitles' => (isset($_POST['hideTitles'])) ? true : false,
             'showBanner' => (isset($_POST['showBanner'])) ? true : false,
+            'hideBannerTitle' => !isset($_POST['showBannerTitle']),
             'debug' => (isset($_POST['debug'])) ? true : false,
-            'defaultAdminPlugin' => $_POST['defaultAdminPlugin'],
+            'defaultAdminPlugin' => 'dashboard',
             'cache_enabled' => (isset($_POST['cache_enabled'])) ? true : false,
             'cache_duration' => (int)$_POST['cache_duration'],
             'cache_minify' => (isset($_POST['cache_minify'])) ? true : false,
@@ -183,6 +185,8 @@ class ConfigManagerAdminController extends AdminController {
             'enable_theme_toggle' => (isset($_POST['enable_theme_toggle'])) ? true : false,
         ];
         $config['allowRegistrations'] = isset($_POST['allowRegistrations']);
+        $config['antispamLogin'] = isset($_POST['antispamLogin']);
+        $config['antispamRegister'] = isset($_POST['antispamRegister']);
         $defaultGroupSlug = $_POST['registrationDefaultGroup'] ?? 'member';
         if ($this->core->auth()->getGroupBySlug($defaultGroupSlug) === null) {
             $defaultGroupSlug = 'member';
@@ -316,11 +320,12 @@ class ConfigManagerAdminController extends AdminController {
             return $this->home();
         }
         if ($this->core->settings()->deleteInstallFile()) {
+            unset($_SESSION['installOk']);
             $this->logger->info('Config: install files removed by ' . ($this->user->email ?? 'unknown'));
             Show::msg(Lang::get('configmanager-deleted-install'), 'success');
         } else {
             $this->logger->warning('Config: install file removal failed for ' . ($this->user->email ?? 'unknown'));
-            Show::msg(Lang::get('configmanager-error-deleting-install'), 'error');
+            Show::msg(Lang::get('configmanager-delete-install-error'), 'error');
         }
         return $this->home();
     }

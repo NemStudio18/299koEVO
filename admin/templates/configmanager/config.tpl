@@ -1,4 +1,4 @@
-﻿<section class="module-card">
+<section class="module-card">
     <header>{{Lang.configmanager.name}}</header>
     <form id="configForm" method="post" action="{{link}}" autocomplete="off">
 	{{SHOW.tokenField}}
@@ -43,28 +43,17 @@
 					<br><small>Affiche ou masque la section bannière (#banner) sur le site</small>
 				</p>
 				<p>
+					<input {% if not CORE.getConfigVal("hideBannerTitle") %} checked {% endif %} type="checkbox" name="showBannerTitle" id="showBannerTitle"/>
+					<label for="showBannerTitle">Afficher le titre du site dans la bannière</label>
+					<br><small>Affiche ou masque le nom du site au-dessus de la description dans l'en-tête (#banner)</small>
+				</p>
+				<p>
 					<label for="defaultPlugin">{{Lang.configmanager-public-default-plugin}}</label>
 					<select name="defaultPlugin">
 						<option value="page" {% IF defaultPlugin == "page" %}selected{% ENDIF %}>{{Lang.page.name}}</option>
 						{% FOR plugin IN pluginsManager.getPlugins %}
 							{% IF plugin.getCOnfigVal("activate") && plugin.getIsCallableOnPublic %}
 								<option {% IF plugin.getIsDefaultPlugin %} selected {% ENDIF %} value="{{plugin.getName}}">{{plugin.getInfoVal("name")}}</option>
-							{% ENDIF %}
-						{% ENDFOR %}
-					</select>
-				</p>
-				<p>
-					<label for="defaultAdminPlugin">{{Lang.configmanager-admin-default-plugin}}</label>
-					<select name="defaultAdminPlugin">
-						<option value="configmanager" {% IF defaultAdminPlugin == "configmanager" %}selected{% ENDIF %}>{{Lang.configmanager.name}}</option>
-						<option value="page" {% IF defaultAdminPlugin == "page" %}selected{% ENDIF %}>{{Lang.page.name}}</option>
-						<option value="users" {% IF defaultAdminPlugin == "users" %}selected{% ENDIF %}>{{Lang.users.name}}</option>
-						<option value="filemanager" {% IF defaultAdminPlugin == "filemanager" %}selected{% ENDIF %}>{{Lang.filemanager.name}}</option>
-						<option value="pluginsmanager" {% IF defaultAdminPlugin == "pluginsmanager" %}selected{% ENDIF %}>{{Lang.pluginsmanager.name}}</option>
-						<option value="marketplace" {% IF defaultAdminPlugin == "marketplace" %}selected{% ENDIF %}>{{Lang.marketplace.name}}</option>
-						{% FOR plugin IN pluginsManager.getPlugins %}
-							{% IF plugin.getConfigVal("activate") && plugin.getIsCallableOnAdmin %}
-								<option {% IF plugin.getIsDefaultAdminPlugin %} selected {% ENDIF %} value="{{plugin.getName}}">{{plugin.getInfoVal("name")}}</option>
 							{% ENDIF %}
 						{% ENDFOR %}
 					</select>
@@ -90,6 +79,22 @@
 						<option value="none" {% if CORE.getConfigVal("registrationValidationMode") == "none" %}selected{% endif %}>{{Lang.configmanager-registration-validation-mode-none}}</option>
 					</select>
 					<br><small>{{Lang.configmanager-registration-validation-mode-desc}}</small>
+				</p>
+				<p>
+					<input {% if CORE.getConfigVal("antispamLogin") %}checked{% endif %} type="checkbox" name="antispamLogin" id="antispamLogin"/>
+					<label for="antispamLogin">{{Lang.configmanager-antispam-login}}</label>
+					<br><small>{{Lang.configmanager-antispam-login-desc}}</small>
+					{% if not antispamPluginActive %}
+						<br><small style="color: #b45309;"><i class="fa-solid fa-triangle-exclamation"></i> {{Lang.configmanager-antispam-inactive-note}}</small>
+					{% endif %}
+				</p>
+				<p>
+					<input {% if CORE.getConfigVal("antispamRegister") %}checked{% endif %} type="checkbox" name="antispamRegister" id="antispamRegister"/>
+					<label for="antispamRegister">{{Lang.configmanager-antispam-register}}</label>
+					<br><small>{{Lang.configmanager-antispam-register-desc}}</small>
+					{% if not antispamPluginActive %}
+						<br><small style="color: #b45309;"><i class="fa-solid fa-triangle-exclamation"></i> {{Lang.configmanager-antispam-inactive-note}}</small>
+					{% endif %}
 				</p>
 				<p>
 					<label for="sessionLifetime">{{Lang.configmanager-session-lifetime}}</label>

@@ -1,12 +1,12 @@
-<div class="tabs-container blog-admin-tabs">
+<div class="tabs-container blog-admin-tabs" data-tab-key="blog">
     <ul class="tabs-header">
-        <li class="{% IF activeTab == 'posts' || !activeTab %}default-tab{% ENDIF %}">
+        <li data-tab="posts" class="{% IF activeTab == 'posts' || !activeTab %}default-tab{% ENDIF %}">
             <i class="fa-solid fa-file-lines"></i> {{Lang.blog-posts-list}}
         </li>
-        <li class="{% IF activeTab == 'categories' %}default-tab{% ENDIF %}">
+        <li data-tab="categories" class="{% IF activeTab == 'categories' %}default-tab{% ENDIF %}">
             <i class="fa-solid fa-folder-tree"></i> {{Lang.blog-categories}}
         </li>
-        <li class="{% IF activeTab == 'config' %}default-tab{% ENDIF %}">
+        <li data-tab="config" class="{% IF activeTab == 'config' %}default-tab{% ENDIF %}">
             <i class="fa-solid fa-gear"></i> {{Lang.core-settings}}
         </li>
     </ul>
@@ -98,7 +98,7 @@
                 <header>
                     <h3>{{Lang.core-settings}}</h3>
                 </header>
-                {% INCLUDE "blog/template/param.tpl" %}
+                {% INCLUDE PLUGINS ~ "blog/template/param.tpl" %}
             </section>
         </li>
     </ul>

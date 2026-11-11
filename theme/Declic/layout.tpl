@@ -100,7 +100,9 @@
                         {% if CORE.getConfigVal("siteLogo") != "" and CORE.getConfigVal("siteLogoPlacement") == "header" %}
                             <img class="site-logo site-logo-banner" src="{{SHOW.siteLogoUrl}}" alt="{{SHOW.siteName}}" />
                         {% endif %}
-                        <span class="declic-banner-kicker">{{SHOW.siteName}}</span>
+                        {% if not CORE.getConfigVal("hideBannerTitle") %}
+                            <span class="declic-banner-kicker">{{SHOW.siteName}}</span>
+                        {% endif %}
                         <div class="declic-tagline">{{SHOW.siteDesc}}</div>
                     </div>
                     {% HOOK.banner %}

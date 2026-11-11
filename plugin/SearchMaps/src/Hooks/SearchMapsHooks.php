@@ -14,7 +14,81 @@ class SearchMapsHooks
 
     public static function registerHooks(): void
     {
-        // Hooks are now declared in param/hooks.json
+        if (self::isEnabled() && class_exists('\Content\ContentParser')) {
+            \Content\ContentParser::addShortcode('map', [self::class, 'mapShortcode']);
+        }
+    }
+
+    public static function onBeforeRunPlugin(): void
+    {
+        if (self::isEnabled() && class_exists('\Content\ContentParser')) {
+            \Content\ContentParser::addShortcode('map', [self::class, 'mapShortcode']);
+        }
+    }
+
+    /**
+     * Retourne la configuration par défaut sauvegardée pour SearchMaps.
+     */
+    public static function getDefaults(): array
+    {
+        $plugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('SearchMaps');
+        $cfg = ($plugin && method_exists($plugin, 'getConfig')) ? ($plugin->getConfig() ?: []) : [];
+        return [
+            'lat'   => isset($cfg['center_lat']) && is_numeric($cfg['center_lat']) ? (float) $cfg['center_lat'] : 47.0833,
+            'lon'   => isset($cfg['center_lon']) && is_numeric($cfg['center_lon']) ? (float) $cfg['center_lon'] : 2.4,
+            'zoom'  => isset($cfg['zoom_default']) && (int) $cfg['zoom_default'] > 0 ? (int) $cfg['zoom_default'] : 13,
+            'debug' => !empty($cfg['debug']),
+        ];
+    }
+
+    /**
+     * Expose les réglages de carte aux éditeurs (ex: bouton TinyMCE) sans couplage fort.
+     */
+    public static function getEditorConfig($config = []): array
+    {
+        $result = is_array($config) ? $config : [];
+        if (!self::isEnabled()) {
+            return $result;
+        }
+        $defaults = self::getDefaults();
+        return array_merge($result, [
+            'enabled'    => true,
+            'lat'        => $defaults['lat'],
+            'lon'        => $defaults['lon'],
+            'zoom'       => $defaults['zoom'],
+            'leafletCss' => Util::urlBuild('plugin/SearchMaps/assets/vendor/leaflet.css?v=11'),
+            'leafletJs'  => Util::urlBuild('plugin/SearchMaps/assets/vendor/leaflet.js?v=11'),
+        ]);
+    }
+
+    /**
+     * Shortcode universel : [map lat="47.0810" lon="2.3986" zoom="14" title="Mon lieu" height="360px"]
+     */
+    public static function mapShortcode(array $attributes = []): string
+    {
+        if (!self::isEnabled()) {
+            return '';
+        }
+
+        $defaults = self::getDefaults();
+        $id = !empty($attributes['id'])
+            ? preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $attributes['id'])
+            : 'searchmaps_' . substr(md5(uniqid('', true)), 0, 8);
+
+        $lat = isset($attributes['lat']) && is_numeric($attributes['lat']) ? (float) $attributes['lat'] : $defaults['lat'];
+        $lon = isset($attributes['lon']) && is_numeric($attributes['lon']) ? (float) $attributes['lon'] : $defaults['lon'];
+        $zoom = isset($attributes['zoom']) && is_numeric($attributes['zoom']) ? max(1, min(21, (int) $attributes['zoom'])) : $defaults['zoom'];
+        $title = isset($attributes['title']) ? trim((string) $attributes['title']) : '';
+        $height = isset($attributes['height']) ? trim((string) $attributes['height']) : '';
+
+        return self::renderMap([
+            'id'     => $id,
+            'lat'    => $lat,
+            'lon'    => $lon,
+            'zoom'   => $zoom,
+            'title'  => $title,
+            'height' => $height,
+        ]);
     }
 
     public static function isEnabled($param = null): bool
@@ -75,20 +149,31 @@ class SearchMapsHooks
             return '';
         }
 
+        $defaults = self::getDefaults();
         $id = $params['id'] ?? 'map';
-        $lat = (float)($params['lat'] ?? 47.0810);
-        $lon = (float)($params['lon'] ?? 2.3986);
-        $zoom = (int)($params['zoom'] ?? 13);
+        $lat = isset($params['lat']) && is_numeric($params['lat']) ? (float)$params['lat'] : $defaults['lat'];
+        $lon = isset($params['lon']) && is_numeric($params['lon']) ? (float)$params['lon'] : $defaults['lon'];
+        $zoom = isset($params['zoom']) && is_numeric($params['zoom']) ? (int)$params['zoom'] : $defaults['zoom'];
         $editable = !empty($params['editable']);
         $onChange = $params['onChange'] ?? 'null';
         $markers = $params['markers'] ?? [];
         $fitBounds = !empty($params['fitBounds']);
+        $title = isset($params['title']) ? trim((string)$params['title']) : '';
+        $heightStyle = '';
+        if (!empty($params['height']) && preg_match('/^\d+(?:px|vh|rem|em|%)$/i', trim((string)$params['height']))) {
+            $heightStyle = ' style="height:' . htmlspecialchars(trim((string)$params['height']), ENT_QUOTES, 'UTF-8') . ';"';
+        } elseif (!empty($params['height']) && ctype_digit((string)$params['height'])) {
+            $heightStyle = ' style="height:' . (int)$params['height'] . 'px;"';
+        }
 
         $html = self::loadAssets();
-        $html .= '<div id="' . htmlspecialchars($id) . '" class="universal-map-container"></div>';
+        $html .= '<div id="' . htmlspecialchars($id) . '" class="universal-map-container"' . $heightStyle . '></div>';
         $html .= '<script>';
         $html .= 'document.addEventListener("DOMContentLoaded", function() {';
         $html .= '  if (typeof UniversalMap === "undefined") return;';
+        if ($defaults['debug']) {
+            $html .= '  console.debug("[SearchMaps] Init map", ' . json_encode(['id' => $id, 'lat' => $lat, 'lon' => $lon, 'zoom' => $zoom]) . ');';
+        }
         $html .= '  const mapInstance = new UniversalMap("' . htmlspecialchars($id) . '", {';
         $html .= '    lat: ' . $lat . ',';
         $html .= '    lon: ' . $lon . ',';
@@ -96,6 +181,10 @@ class SearchMapsHooks
         $html .= '    editable: ' . ($editable ? 'true' : 'false') . ',';
         $html .= '    onChange: ' . $onChange;
         $html .= '  });';
+        if ($title !== '') {
+            $safeTitle = json_encode(htmlspecialchars($title, ENT_QUOTES, 'UTF-8'), JSON_UNESCAPED_UNICODE);
+            $html .= '  if (mapInstance && mapInstance.marker) { mapInstance.marker.bindPopup(' . $safeTitle . '); }';
+        }
 
         if (!empty($markers) && is_array($markers)) {
             $markersJson = json_encode($markers);

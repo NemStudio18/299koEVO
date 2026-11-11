@@ -1,6 +1,5 @@
 /**
- * Vivre-Bourges Analytics — Tracker Léger & Gestionnaire de Consentement (Mode C)
- * 100% Souverain, Respectueux de la vie privée (CNIL/RGPD)
+ * LightStats Analytics — Tracker Léger & Gestionnaire de Consentement
  */
 (function() {
     'use strict';
@@ -42,13 +41,16 @@
     // Contexte serveur injecté dynamiquement dans la réponse HTML (sans cookie vb_req)
     const serverCtx = (typeof window.__VB_CTX__ === 'object' && window.__VB_CTX__ !== null) ? window.__VB_CTX__ : {};
     const requestId = (typeof serverCtx.reqId === 'string' && serverCtx.reqId.length > 0) ? serverCtx.reqId : null;
+    const isCnilExempt = Boolean(serverCtx.cnilExempt);
     let sessionId = (typeof serverCtx.sid === 'string' && serverCtx.sid.length > 0) ? serverCtx.sid : null;
 
     // Gestion du consentement & visitor_id
-    const currentConsent = localStorage.getItem(CONSENT_KEY);
+    const currentConsent = isCnilExempt ? null : localStorage.getItem(CONSENT_KEY);
     let visitorId = null;
 
-    if (currentConsent === 'accepted') {
+    if (isCnilExempt) {
+        deleteCookie(VISITOR_COOKIE);
+    } else if (currentConsent === 'accepted') {
         visitorId = getCookie(VISITOR_COOKIE);
         if (!visitorId) {
             visitorId = generateUuid();
@@ -113,6 +115,9 @@
 
     // Injection du bandeau discret de consentement
     function showConsentBanner(force = false) {
+        if (isCnilExempt && !force) {
+            return;
+        }
         if (!force && localStorage.getItem(CONSENT_KEY)) {
             return;
         }
@@ -249,69 +254,6 @@
         });
     }
 
-    // Détection des interactions enrichies
-    function initInteractionTrackers() {
-        document.addEventListener('click', function(e) {
-            // 1. Clic sur numéro de téléphone (Appels)
-            const telLink = e.target.closest('a[href^="tel:"]');
-            if (telLink) {
-                window.VBAnalytics.trackEvent('poi', 'call_click', {
-                    phone: telLink.getAttribute('href'),
-                    title: document.title
-                });
-                return;
-            }
-
-            // 2. Clic sur Itinéraire / GPS
-            const navLink = e.target.closest('a[href*="maps.google"], a[href*="openstreetmap"], a.poi-directions-btn, a.directions-btn');
-            if (navLink) {
-                window.VBAnalytics.trackEvent('poi', 'directions_click', {
-                    url: navLink.getAttribute('href'),
-                    title: document.title
-                });
-                return;
-            }
-
-            // 3. Clic sur site web officiel du commerce
-            const webLink = e.target.closest('a.poi-website-link, a[data-track="website"]');
-            if (webLink) {
-                window.VBAnalytics.trackEvent('poi', 'website_click', {
-                    url: webLink.getAttribute('href'),
-                    title: document.title
-                });
-                return;
-            }
-
-            // 4. Clic sur le widget Météo du header
-            const weatherWidget = e.target.closest('#weather-header, .weather-header-container, [data-widget="weather"]');
-            if (weatherWidget) {
-                window.VBAnalytics.trackEvent('meteo', 'meteo_open', {
-                    context: 'header_click'
-                });
-                return;
-            }
-
-            // 5. Clic / Sélection ligne Agglobus
-            const busAction = e.target.closest('.agglobus-line-btn, .agglobus-stop-item, [data-bus-line]');
-            if (busAction) {
-                window.VBAnalytics.trackEvent('agglobus', 'route_lookup', {
-                    line: busAction.dataset.busLine || busAction.textContent.trim()
-                });
-                return;
-            }
-        });
-
-        // 6. Impression QR Code sur fiche POI (si le conteneur QR est présent dans le DOM)
-        const qrContainer = document.querySelector('[data-qr-poi-id]');
-        if (qrContainer) {
-            const poiId = qrContainer.dataset.qrPoiId;
-            window.VBAnalytics.trackEvent('qr_poi', 'qr_impression', {
-                poi_id: parseInt(poiId, 10),
-                poi_name: document.title
-            });
-        }
-    }
-
     // Certification Active View JS (garantit l'exécution côté client par un vrai navigateur)
     function certifyPageView() {
         if (window.location.pathname.indexOf('/admin') === 0) {
@@ -334,12 +276,10 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             showConsentBanner();
-            initInteractionTrackers();
             certifyPageView();
         });
     } else {
         showConsentBanner();
-        initInteractionTrackers();
         certifyPageView();
     }
 })();

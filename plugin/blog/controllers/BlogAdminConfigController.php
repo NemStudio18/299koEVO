@@ -50,10 +50,8 @@ class BlogAdminConfigController extends AdminController {
                 Show::msg(Lang::get('core-changes-saved'), 'success');
             } else {
                 Show::msg(Lang::get('core-changes-not-saved'), 'error');
-            }            
+            }
         }
-        // Open the posts list
-        $controller = new BlogAdminPostsController();
-        return $controller->list();
+        return $this->list();
     }
 }

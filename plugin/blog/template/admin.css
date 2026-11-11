@@ -9,15 +9,15 @@
 }
 
 #seoDescProgress.warning {
-    background-color: #e53935;
+    background-color: var(--alert-color, #dc2626);
 }
 
 #seoDescProgress.care {
-    background-color: #ffb300;
+    background-color: var(--warning-color, #d97706);
 }
 
 #seoDescProgress.good {
-    background-color: #7cb342;
+    background-color: var(--success-color, #16a34a);
 }
 
 #seoDescCounter {

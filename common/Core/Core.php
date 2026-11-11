@@ -48,6 +48,7 @@ class Core
     private ?MediaService $mediaService = null;
     private ?SettingsService $settingsService = null;
     private ?ExtensionsService $extensionsService = null;
+    private bool $forcePublicRender = false;
 
     private ?Env $env;
 
@@ -182,13 +183,7 @@ class Core
                     $this->pluginToCall = $parts[1];
                     define('ISHOMEPAGE', false);
                 } else {
-                    $defaultAdminPlugin = $this->getConfigVal('defaultAdminPlugin');
-                    // Si defaultAdminPlugin est null, false ou vide, utiliser 'configmanager' comme module admin par défaut
-                    if ($defaultAdminPlugin === null || $defaultAdminPlugin === false || $defaultAdminPlugin === '') {
-                        $this->pluginToCall = 'configmanager';
-                    } else {
-                        $this->pluginToCall = $defaultAdminPlugin;
-                    }
+                    $this->pluginToCall = 'dashboard';
                     define('ISHOMEPAGE', true);
                 }
             } else {
@@ -439,7 +434,7 @@ class Core
      */
     public function isCoreModule(string $moduleName): bool
     {
-        $coreModules = ['page', 'menus', 'users', 'configmanager', 'filemanager', 'marketplace', 'pluginsmanager'];
+        $coreModules = ['dashboard', 'page', 'menus', 'users', 'configmanager', 'filemanager', 'marketplace', 'pluginsmanager'];
     return in_array(strtolower($moduleName), $coreModules, true);
     }
 
@@ -809,22 +804,69 @@ class Core
         die();
     }
 
+    public function setForcePublicRender(bool $force): void
+    {
+        $this->forcePublicRender = $force;
+    }
+
+    public function isForcePublicRender(): bool
+    {
+        return $this->forcePublicRender;
+    }
+
+    /**
+     * Affiche une page d'erreur HTTP unifiée sans jamais exposer le layout admin aux non-admins.
+     */
+    private function renderErrorPage(
+        string $templateName,
+        string $httpStatus,
+        string $badge,
+        string $title,
+        string $message,
+        string $icon,
+        string $tone = 'danger'
+    ): void {
+        header("HTTP/1.1 {$httpStatus}");
+        header("Status: {$httpStatus}");
+
+        $canUseAdminLayout = false;
+        if (defined('ADMIN_MODE') && ADMIN_MODE) {
+            $currentUser = $this->auth()->getCurrentUser();
+            if ($currentUser !== null) {
+                $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+                $canUseAdminLayout = $evaluator->isAdmin(new \Core\Navigation\ConditionContext($currentUser));
+            }
+        }
+
+        $this->setForcePublicRender(!$canUseAdminLayout);
+
+        $response = $canUseAdminLayout
+            ? new \Core\Responses\AdminResponse()
+            : new \Core\Responses\PublicResponse();
+
+        $tpl = $response->createCoreTemplate($templateName);
+        $tpl->set('errorPartial', COMMON . 'template/error.tpl');
+        $tpl->set('errBadge', $badge);
+        $tpl->set('errTitle', $title);
+        $tpl->set('errMessage', $message);
+        $tpl->set('errIcon', $icon);
+        $tpl->set('errTone', $tone);
+        $tpl->set('homeUrl', rtrim((string)$this->getConfigVal('siteUrl'), '/') . '/');
+        $response->addTemplate($tpl);
+        echo $response->output();
+        die();
+    }
+
     ## Renvoi une page 404
 
     public function error404()
     {
-        // Logger pour debug avec backtrace
         $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
         $caller = isset($bt[1]) ? " (called from " . ($bt[1]['class'] ?? 'unknown') . "::" . ($bt[1]['function'] ?? 'unknown') . " at " . ($bt[0]['file'] ?? 'unknown') . ":" . ($bt[0]['line'] ?? 'unknown') . ")" : "";
         $this->getLogger()->log(\Core\Logger::LEVEL_DEBUG, "Core::error404() appelé - REQUEST_URI: '{$_SERVER['REQUEST_URI']}' - Match: " . json_encode(\Core\Router\Router::getInstance()->match()) . $caller);
-        // Appeler le hook before404 pour permettre aux plugins de vérifier si c'est une route valide
         $hookCount = isset($this->hooks['before404']) ? count($this->hooks['before404']) : 0;
-        // $this->getLogger()->log(\Core\Logger::LEVEL_DEBUG, "Core::error404() - Hooks before404 enregistrés: {$hookCount}");
         if ($hookCount > 0) {
-            // $this->getLogger()->log(\Core\Logger::LEVEL_DEBUG, "Core::error404() - Appel du hook before404");
             $this->callHook('before404');
-        } else {
-            // $this->getLogger()->log(\Core\Logger::LEVEL_DEBUG, "Core::error404() - Aucun hook before404 enregistré");
         }
 
         if (!defined('ADMIN_MODE')) {
@@ -832,50 +874,45 @@ class Core
             define('ADMIN_MODE', (strpos($requestUri, '/admin/') !== false || $requestUri === '/admin'));
         }
 
-        header("HTTP/1.1 404 Not Found");
-        header("Status: 404 Not Found");
-
-        if (ADMIN_MODE) {
-            $response = new \Core\Responses\AdminResponse();
-            $tpl = $response->createCoreTemplate('404');
-            $response->addTemplate($tpl);
-            echo $response->output();
-            die();
-        }
-
-        $response = new \Core\Responses\PublicResponse();
-        $tpl = $response->createCoreTemplate('404');
-        $response->addTemplate($tpl);
-        echo $response->output();
-        die();
+        $this->renderErrorPage(
+            '404',
+            '404 Not Found',
+            'ERREUR 404 • PAGE INTROUVABLE',
+            'Cette page est introuvable',
+            'Le contenu demandé n\'existe pas ou l\'adresse a été modifiée.',
+            'fa-solid fa-compass',
+            'danger'
+        );
     }
 
     ## Renvoi une page 403 Forbidden
 
     public function error403()
     {
-        header("HTTP/1.1 403 Forbidden");
-        header("Status: 403 Forbidden");
-
-        $response = new \Core\Responses\PublicResponse();
-        $tpl = $response->createCoreTemplate('403');
-        $response->addTemplate($tpl);
-        echo $response->output();
-        die();
+        $this->renderErrorPage(
+            '403',
+            '403 Forbidden',
+            'ACCÈS REFUSÉ • ERREUR 403',
+            'Accès non autorisé',
+            'Vous ne disposez pas des droits nécessaires pour consulter cette ressource.',
+            'fa-solid fa-lock',
+            'warning'
+        );
     }
 
     ## Renvoi une page 500 Internal Server Error
 
     public function error500()
     {
-        header("HTTP/1.1 500 Internal Server Error");
-        header("Status: 500 Internal Server Error");
-
-        $response = new \Core\Responses\PublicResponse();
-        $tpl = $response->createCoreTemplate('500');
-        $response->addTemplate($tpl);
-        echo $response->output();
-        die();
+        $this->renderErrorPage(
+            '500',
+            '500 Internal Server Error',
+            'ERREUR TECHNIQUE • CODE 500',
+            'Une erreur technique est survenue',
+            'Le service rencontre un incident momentané. Vous allez être redirigé vers l\'accueil.',
+            'fa-solid fa-screwdriver-wrench',
+            'danger'
+        );
     }
 
     /**

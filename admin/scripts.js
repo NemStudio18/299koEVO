@@ -35,7 +35,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
-    document.querySelectorAll('.tabs-container').forEach(x => tabify(x));
+    document.querySelectorAll('.tabs-container').forEach(function (x, idx) {
+        tabify(x, idx);
+    });
 
     // Login : btn Quitter redirection
     if (document.querySelector('#login input.alert')) {
@@ -44,8 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    window.addEventListener("resize", resizeListener);
-    resizeListener();
+    initAdminTopNav();
 
     document.querySelectorAll(".list-item-list li i").forEach(function (item) {
         item.addEventListener('click', function () {
@@ -55,21 +56,53 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function resizeListener() {
-    var nav = document.querySelector('#adminNav');
-    if (!nav.classList.contains('manuallyChanged')) {
-        if (window.innerWidth > 1279) {
-            nav.classList.remove('withoutText');
-        } else {
-            nav.classList.add('withoutText');
-        }
-    }
-}
+function initAdminTopNav() {
+    const burgerBtn = document.getElementById('admBurgerBtn');
+    const collapse = document.getElementById('admNavCollapse');
 
-function changeMainNav() {
-    var nav = document.querySelector('#adminNav');
-    nav.classList.toggle('withoutText');
-    nav.classList.add('manuallyChanged');
+    if (burgerBtn && collapse) {
+        burgerBtn.addEventListener('click', function () {
+            const open = collapse.classList.toggle('is-mobile-open');
+            burgerBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+    }
+
+    document.querySelectorAll('.adm-has-drop > .adm-drop-btn, .adm-has-drop > .adm-avatar-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const parent = btn.closest('.adm-has-drop');
+            const willOpen = !parent.classList.contains('is-open');
+            document.querySelectorAll('.adm-has-drop.is-open').forEach(function (other) {
+                other.classList.remove('is-open');
+                const ob = other.querySelector('button[aria-expanded]');
+                if (ob) ob.setAttribute('aria-expanded', 'false');
+            });
+            if (willOpen) {
+                parent.classList.add('is-open');
+                btn.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.adm-has-drop')) {
+            document.querySelectorAll('.adm-has-drop.is-open').forEach(function (el) {
+                el.classList.remove('is-open');
+                const b = el.querySelector('button[aria-expanded]');
+                if (b) b.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.adm-has-drop.is-open').forEach(function (el) {
+                el.classList.remove('is-open');
+                const b = el.querySelector('button[aria-expanded]');
+                if (b) b.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
 }
 
 function fadeOut(el) {
@@ -95,28 +128,85 @@ function fadeIn(el, display) {
     })();
 };
 
-function tabify(element) {
-    const header = element.querySelector('.tabs-header');
-    const content = element.querySelector('.tabs');
+function tabify(element, containerIdx = 0) {
+    const header = element.querySelector(':scope > .tabs-header') || element.querySelector('.tabs-header');
+    const content = element.querySelector(':scope > .tabs') || element.querySelector('.tabs');
+    if (!header || !content) return;
+
     const tab_headers = [...header.children];
     const tab_contents = [...content.children];
-    tab_contents.forEach(x => x.style.display = 'none');
-    let current_tab_index = - 1;
-    function setTab(index) {
-        if (current_tab_index > - 1) {
+    if (!tab_headers.length || !tab_contents.length) return;
+
+    const tabKey = element.getAttribute('data-tab-key') || ('grp_' + containerIdx);
+    const storageKey = 'adm_tab:' + window.location.pathname + ':' + tabKey;
+
+    tab_contents.forEach(x => { x.style.display = 'none'; });
+    let current_tab_index = -1;
+
+    function resolveIndexByNameOrIndex(raw) {
+        if (raw === null || raw === undefined || raw === '') return -1;
+        const byName = tab_headers.findIndex(h => h.getAttribute('data-tab') === raw);
+        if (byName > -1) return byName;
+        const num = parseInt(raw, 10);
+        if (!isNaN(num) && num >= 0 && num < tab_headers.length) return num;
+        return -1;
+    }
+
+    function setTab(index, persist = true) {
+        if (index < 0 || index >= tab_headers.length) index = 0;
+        if (current_tab_index > -1 && tab_headers[current_tab_index]) {
             tab_headers[current_tab_index].classList.remove("active");
-            tab_contents[current_tab_index].style.display = 'none';
+            if (tab_contents[current_tab_index]) {
+                tab_contents[current_tab_index].style.display = 'none';
+            }
         }
         tab_headers[index].classList.add("active");
-        tab_contents[index].style.display = 'block';
+        if (tab_contents[index]) {
+            tab_contents[index].style.display = 'block';
+        }
         current_tab_index = index;
+
+        const tabName = tab_headers[index].getAttribute('data-tab') || String(index);
+        element.setAttribute('data-active-tab', tabName);
+
+        if (persist) {
+            try {
+                sessionStorage.setItem(storageKey, String(index));
+            } catch (e) {}
+        }
+
+        element.dispatchEvent(new CustomEvent('adm:tab-changed', {
+            detail: { index: index, tabName: tabName, container: element }
+        }));
+        window.dispatchEvent(new Event('resize'));
     }
-    default_tab_index = tab_headers.findIndex(x => {
-        return [...x.classList].indexOf('default-tab') > - 1;
+
+    // Priorité : 1) ?tab= dans l'URL (pour le conteneur principal), 2) sessionStorage, 3) .default-tab, 4) 0
+    let initialIndex = -1;
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlTab = urlParams.get('tab');
+    if (containerIdx === 0 && urlTab) {
+        initialIndex = resolveIndexByNameOrIndex(urlTab);
+    }
+    if (initialIndex === -1 && window.location.hash) {
+        const hashVal = window.location.hash.replace(/^#/, '');
+        initialIndex = resolveIndexByNameOrIndex(hashVal);
+    }
+    if (initialIndex === -1) {
+        try {
+            const saved = sessionStorage.getItem(storageKey);
+            initialIndex = resolveIndexByNameOrIndex(saved);
+        } catch (e) {}
+    }
+    if (initialIndex === -1) {
+        initialIndex = tab_headers.findIndex(x => x.classList.contains('default-tab') || x.classList.contains('active'));
+    }
+    if (initialIndex === -1) initialIndex = 0;
+
+    setTab(initialIndex, false);
+    tab_headers.forEach((x, i) => {
+        x.onclick = () => setTab(i, true);
     });
-    default_tab_index = default_tab_index === - 1 ? 0 : default_tab_index;
-    setTab(default_tab_index);
-    tab_headers.forEach((x, i) => x.onclick = event => setTab(i));
 }
 
 

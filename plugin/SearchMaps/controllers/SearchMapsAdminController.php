@@ -26,6 +26,11 @@ class SearchMapsAdminController extends BaseAdminController
         $response = new AdminResponse();
         $tpl = $response->createPluginTemplate('SearchMaps', 'param');
         $tpl->set('config', $config);
+        $tpl->set('zoomDefault', (int)($config['zoom_default'] ?? 13));
+        $tpl->set('centerLat', (string)($config['center_lat'] ?? '47.0833'));
+        $tpl->set('centerLon', (string)($config['center_lon'] ?? '2.4'));
+        $tpl->set('priorityVal', (int)($config['priority'] ?? 1));
+        $tpl->set('debugChecked', !empty($config['debug']));
         $tpl->set('csrfToken', \Core\Security\Csrf::token());
         $response->addTemplate($tpl);
         return $response;

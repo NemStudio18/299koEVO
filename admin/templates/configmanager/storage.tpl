@@ -7,13 +7,25 @@
         <p>Gérez ici la flexibilité de vos données et vos infrastructures de bases de données.</p>
     </div>
 
+    <div class="tabs-container" data-tab-key="storage">
+        <ul class="tabs-header">
+            <li class="default-tab" data-tab="connections">
+                <i class="fa-solid fa-server"></i> Connexions SQL Disponibles
+            </li>
+            <li data-tab="components">
+                <i class="fa-solid fa-layer-group"></i> Gestion par Composant
+            </li>
+            <li data-tab="info">
+                <i class="fa-solid fa-circle-info"></i> Informations
+            </li>
+        </ul>
 
-    <hr class="section-divider">
-
-    <!-- Gestion des Connexions -->
-    <div class="storage-section">
-        <h3><i class="fa-solid fa-server"></i> Connexions SQL Disponibles</h3>
-        <p class="section-desc">Configurez vos accès aux bases de données externes (MySQL) ou locales (SQLite).</p>
+        <ul class="tabs">
+            <!-- TAB 1 : Connexions SQL -->
+            <li class="tab">
+                <div class="storage-section">
+                    <h3><i class="fa-solid fa-server"></i> Connexions SQL Disponibles</h3>
+                    <p class="section-desc">Configurez vos accès aux bases de données externes (MySQL) ou locales (SQLite).</p>
 
         <div class="connection-tabs">
             <div class="tab-btn active" data-target="default">
@@ -98,6 +110,7 @@
                         <label>Identifiant unique de la connexion (ex: <strong>secondary</strong>)</label>
                         <input type="text" name="db_name" placeholder="Nom interne sans espaces" required>
                     </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Driver</label>
                             <select name="database[driver]" class="db-driver-selector">
@@ -191,14 +204,14 @@
             </form>
         </div>
         {% endfor %}
-    </div>
+                </div>
+            </li>
 
-    <hr class="section-divider">
-
-    <!-- Gestion par Composant -->
-    <div class="storage-section">
-        <h3><i class="fa-solid fa-layer-group"></i> Gestion par Composant</h3>
-        <p class="section-desc">Définissez le type de stockage et la base de données cible pour chaque module.</p>
+            <!-- TAB 2 : Gestion par Composant -->
+            <li class="tab">
+                <div class="storage-section">
+                    <h3><i class="fa-solid fa-layer-group"></i> Gestion par Composant</h3>
+                    <p class="section-desc">Définissez le type de stockage et la base de données cible pour chaque module.</p>
 
         <form method="post" action="{{saveUrl}}">
             {{SHOW.tokenField}}
@@ -278,6 +291,51 @@
             </div>
         </div>
         <p class="help-warning"><strong>Attention :</strong> Assurez-vous que le driver SQL cible est bien configuré (testez la connexion) avant de migrer des données sensibles.</p>
+                </div>
+            </li>
+
+            <!-- TAB 3 : Informations -->
+            <li class="tab">
+                <div class="storage-section" style="margin-bottom: 1.5rem;">
+                    <h3><i class="fa-solid fa-circle-info"></i> Comment fonctionne le Stockage</h3>
+                    <p class="section-desc">Le CMS peut stocker ses entités (Utilisateurs, Pages, Menus, Galerie, Redirections SEO…) soit dans des <strong>fichiers JSON locaux</strong> (<code>data/</code>), soit dans une <strong>base SQL</strong> (<strong>SQLite</strong>, <strong>MySQL</strong> ou <strong>PostgreSQL</strong>) configurée dans <code>data/env.json</code>.</p>
+
+                    <div class="help-grid" style="margin-bottom: 1.5rem;">
+                        <div class="storage-help">
+                            <h4><i class="fa-solid fa-database"></i> 1. Connexions SQL</h4>
+                            <p>La connexion <strong>Défaut</strong> est la base principale du site. Vous pouvez aussi déclarer des connexions secondaires nommées si vous voulez isoler un module sur une autre base.</p>
+                        </div>
+                        <div class="storage-help">
+                            <h4><i class="fa-solid fa-layer-group"></i> 2. Affectation par composant</h4>
+                            <p>Chaque composant possède sa propre cible : <code>JSON (local)</code> ou <code>Défaut (sql)</code>. C'est ici que vous choisissez quel composant lit/écrit dans JSON ou dans votre base SQL.</p>
+                        </div>
+                        <div class="storage-help">
+                            <h4><i class="fa-solid fa-arrows-rotate"></i> 3. Migration sécurisée</h4>
+                            <p>Lorsque vous changez la cible d'un composant dans le tableau, un bouton <strong>Migrer</strong> apparaît pour copier les enregistrements existants vers la nouvelle cible avant d'enregistrer.</p>
+                        </div>
+                    </div>
+
+                    <h3><i class="fa-solid fa-book"></i> Exemples concrets de paramétrage</h3>
+                    <div class="help-grid">
+                        <div class="db-config-grid">
+                            <strong style="display: block; margin-bottom: 6px; color: #0f172a;">Exemple A — Site standard autonome (Recommandé)</strong>
+                            <ul style="margin: 0 0 0 18px; line-height: 1.6; font-size: 0.9rem;">
+                                <li><strong>Connexion Défaut :</strong> Driver <code>SQLite</code>, chemin <code>/home/.../data/database.sqlite</code> (aucun serveur MySQL externe nécessaire).</li>
+                                <li><strong>Composants principaux :</strong> <code>User</code>, <code>PageItem</code>, <code>MenuItem</code>, <code>ContactMessage</code>, <code>GalerieItem</code>, <code>Redirect</code> sur <code>Défaut (SQL)</code>.</li>
+                                <li><strong>Stockage par défaut :</strong> <code>JSON</code> pour les petits réglages et caches légers.</li>
+                            </ul>
+                        </div>
+                        <div class="db-config-grid">
+                            <strong style="display: block; margin-bottom: 6px; color: #0f172a;">Exemple B — Site à fort trafic (MySQL dédié)</strong>
+                            <ul style="margin: 0 0 0 18px; line-height: 1.6; font-size: 0.9rem;">
+                                <li><strong>Connexion Défaut :</strong> Driver <code>MySQL</code> (<code>localhost</code>, base dédiée, utilisateur &amp; mot de passe).</li>
+                                <li><strong>Procédure :</strong> 1) Enregistrer la connexion MySQL et vérifier le voyant vert, 2) Cliquer sur <em>Migrer</em> pour chaque composant souhaité dans l'onglet <em>Gestion par Composant</em>, 3) Enregistrer les affectations.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
     </div>
 </section>
 
@@ -289,65 +347,82 @@
 
 /* Connections Manager */
 .connection-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-.tab-btn { padding: 6px 15px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
-.tab-btn.active { background: #0d6efd; color: white; border-color: #0d6efd; }
-.tab-btn:hover:not(.active) { background: #e9ecef; }
-.btn-add-conn { background: #e9f7ef; color: #198754; border-color: #d4edda; }
+.tab-btn { padding: 7px 14px; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; }
+.tab-btn.active { background: var(--primary-color, #1f62a9); color: #ffffff; border-color: var(--primary-color, #1f62a9); }
+.tab-btn:hover:not(.active) { background: #f1f5f9; color: #0f172a; }
+.btn-add-conn { background: #ecfdf5; color: #15803d; border-color: #bbf7d0; }
 
 .connection-panel { display: none; }
-.connection-panel.active { display: block; animation: fadeIn 0.3s ease; }
+.connection-panel.active { display: block; animation: fadeIn 0.25s ease; }
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
 /* DB Config Form */
-.db-config-grid { background: #fdfdfd; padding: 1.5rem; border: 1px solid #dee2e6; border-radius: 8px; max-width: 800px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+.db-config-grid { background: #f8fafc; padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 12px; max-width: 820px; }
 .form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
 .form-group { flex: 1; display: flex; flex-direction: column; gap: 5px; margin-bottom: 1rem; }
-.form-group label { font-weight: 600; font-size: 0.85em; color: #444; }
-.form-group input, .form-group select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; }
+.form-group label { font-weight: 600; font-size: 0.85rem; color: #334155; }
+.form-group input, .form-group select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; }
 
 /* Model Table */
-.badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; }
-.badge-json { background: #6c757d; color: white; }
-.badge-sql { background: #0d6efd; color: white; }
+.badge { padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.badge-json { background: #475569; color: white; }
+.badge-sql { background: var(--primary-color, #1f62a9); color: white; }
 
 .storage-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-.storage-table th { background: #f1f3f5; padding: 12px; font-size: 0.85em; text-align: left; border-bottom: 2px solid #dee2e6; }
-.storage-table td { padding: 15px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.storage-table th { background: #f8fafc; padding: 12px; font-size: 0.85rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+.storage-table td { padding: 14px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
 
-.button.outline { background: transparent; border: 1px solid #0d6efd; color: #0d6efd; font-size: 0.8em; }
-.button.outline:hover { background: #0d6efd; color: white; }
+.button.outline { background: transparent; border: 1px solid var(--primary-color, #1f62a9); color: var(--primary-color, #1f62a9); font-size: 0.82rem; }
+.button.outline:hover { background: var(--primary-color, #1f62a9); color: white; }
 
 .migration-status { font-size: 0.8em; margin-top: 5px; font-weight: 500; }
-.migration-status.success { color: #28a745; }
-.migration-status.error { color: #dc3545; }
+.migration-status.success { color: #16a34a; }
+.migration-status.error { color: #dc2626; }
 
-.storage-help { background: #fff; border-left: 4px solid #198754; padding: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.storage-help { background: #fff; border: 1px solid #e2e8f0; border-left: 4px solid var(--success-color, #16a34a); border-radius: 12px; padding: 1.5rem; }
 .help-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-.help-item strong { color: #198754; }
+.help-item strong { color: #15803d; }
 
 .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-left: 5px; }
-.status-online { background-color: #28a745; box-shadow: 0 0 5px #28a745; }
-.status-offline { background-color: #dc3545; box-shadow: 0 0 5px #dc3545; }
+.status-online { background-color: #16a34a; box-shadow: 0 0 5px rgba(22, 163, 74, 0.5); }
+.status-offline { background-color: #dc2626; box-shadow: 0 0 5px rgba(220, 38, 38, 0.5); }
 
 .migration-loading::after { content: "..."; animation: dots 1.5s infinite; }
 @keyframes dots { 0% { content: "."; } 33% { content: ".."; } 66% { content: "..."; } }
 </style>
 
 <script>
-// Tabs Management
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const target = this.dataset.target || (this.classList.contains('btn-add-conn') ? 'add' : '');
-        if (!target) return;
-        
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.connection-panel').forEach(p => p.classList.remove('active'));
-        
-        this.classList.add('active');
-        document.getElementById('panel-' + target).classList.add('active');
+// Tabs Management avec mémorisation de l'onglet actif
+(function () {
+    const STORAGE_KEY = 'adm_tab:' + window.location.pathname + ':storage_conn';
+    const tabBtns = document.querySelectorAll('.connection-tabs .tab-btn');
+    const panels = document.querySelectorAll('.connection-panel');
+
+    function activateConnTab(target, persist) {
+        const panel = document.getElementById('panel-' + target);
+        if (!panel) return false;
+        tabBtns.forEach(b => b.classList.toggle('active', b.dataset.target === target));
+        panels.forEach(p => p.classList.remove('active'));
+        panel.classList.add('active');
+        if (persist) {
+            try { sessionStorage.setItem(STORAGE_KEY, target); } catch (e) {}
+        }
+        return true;
+    }
+
+    try {
+        const saved = sessionStorage.getItem(STORAGE_KEY);
+        if (saved) activateConnTab(saved, false);
+    } catch (e) {}
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const target = this.dataset.target || (this.classList.contains('btn-add-conn') ? 'add' : '');
+            if (target) activateConnTab(target, true);
+        });
     });
-});
+})();
 
 // DB Driver Fields Toggle
 document.querySelectorAll('.db-driver-selector').forEach(select => {

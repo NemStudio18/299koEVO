@@ -27,6 +27,7 @@ class AntispamAdminController extends AdminController
         $tpl->set('useText', ($this->runPlugin->getConfigVal('type') === 'useText') ? 'checked' : '' );
         $tpl->set('useIcon', ($this->runPlugin->getConfigVal('type') === 'useIcon') ? 'checked' : '' );
         $tpl->set('useRecaptcha', ($this->runPlugin->getConfigVal('type') === 'useRecaptcha') ? 'checked' : '' );
+        $tpl->set('useFlexybot', ($this->runPlugin->getConfigVal('type') === 'useFlexybot') ? 'checked' : '' );
         $response->addTemplate($tpl);
         return $response;
     }

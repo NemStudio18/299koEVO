@@ -15,6 +15,7 @@ $router = \Core\Router\Router::getInstance();
 // Définir deux routes pour garantir le matching avec ou sans slash
 $router->map('GET|POST', '/admin/lightstats', 'LightStats\Controllers\LightStatsAdminController#home', 'admin-lightstats-home');
 $router->map('GET|POST', '/admin/lightstats/', 'LightStats\Controllers\LightStatsAdminController#home', 'admin-lightstats-home-slash');
+$router->map('POST', '/admin/lightstats/save-config', 'LightStats\Controllers\LightStatsAdminController#saveConfig', 'admin-lightstats-save-config');
 
 // Endpoint API pour les micro-événements (Beacon JS)
 $router->map('POST', '/lightstats/api/event', 'LightStats\Controllers\LightStatsApiController#logEvent', 'lightstats-api-event');

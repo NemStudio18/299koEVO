@@ -5,15 +5,9 @@
         <input type="text" name="_hp_website" value="" class="hp-field" aria-hidden="true" tabindex="-1" autocomplete="off" style="display:none !important; position:absolute !important; left:-9999px !important; visibility:hidden !important; pointer-events:none !important;" rel="nofollow">
 
         <p class="field">
-            <label for="register-lastname">Nom</label>
-            <input id="register-lastname" type="text" name="lastname" required minlength="2" maxlength="60" autocomplete="family-name">
-            <span class="field-validation" id="lastname-validation"></span>
-        </p>
-
-        <p class="field">
-            <label for="register-firstname">Prénom</label>
-            <input id="register-firstname" type="text" name="firstname" required minlength="2" maxlength="60" autocomplete="given-name">
-            <span class="field-validation" id="firstname-validation"></span>
+            <label for="register-username">{{Lang.users-registration-username}}</label>
+            <input id="register-username" type="text" name="username" required minlength="3" maxlength="60" autocomplete="username" placeholder="ex: mon_pseudo">
+            <span class="field-validation" id="username-validation"></span>
         </p>
 
         <p class="field">
@@ -49,6 +43,12 @@
             </div>
             <span class="field-validation" id="password-confirm-validation"></span>
         </p>
+
+        {% if antispam %}
+            <div class="field antispam-wrapper">
+                {{antispamField}}
+            </div>
+        {% endif %}
 
         <p class="actions">
             <button type="submit" class="button success">{{Lang.users-registration-submit}}</button>

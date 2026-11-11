@@ -23,7 +23,7 @@ class LightStatsAdminController extends AdminController
         require_once PLUGINS . 'lightstats/lib/LightStatsLogsManager.php';
         require_once PLUGINS . 'lightstats/lib/LightStatsLog.php';
 
-        // Onglet actif mémorisé (public/global, modules, journeys, technical/security, raw/logs, matomo)
+        // Onglet actif mémorisé (public/global, journeys, technical/security, raw/logs)
         $tabAliases = [
             'global'    => 'public',
             'security'  => 'technical',
@@ -31,7 +31,7 @@ class LightStatsAdminController extends AdminController
         ];
         $requestedTab = $_GET['tab'] ?? $_POST['tab'] ?? 'public';
         $activeTab = $tabAliases[$requestedTab] ?? $requestedTab;
-        if (!in_array($activeTab, ['public', 'modules', 'journeys', 'technical', 'raw', 'matomo'], true)) {
+        if (!in_array($activeTab, ['public', 'journeys', 'technical', 'raw'], true)) {
             $activeTab = 'public';
         }
 
@@ -218,45 +218,19 @@ class LightStatsAdminController extends AdminController
             ];
         }
 
-        // ---- Matomo Integration ----
-        require_once PLUGINS . 'lightstats/lib/MatomoConnector.php';
-        $mc = \LightStats\Lib\MatomoConnector::class;
-        $matomoSummary   = $mc::getSummary($browserDateStart, $browserDateEnd);
-        $matomoTopPages  = $mc::getTopPages($browserDateStart, $browserDateEnd);
-        $matomoReferrers = $mc::getTopReferrers($browserDateStart, $browserDateEnd);
-        $matomoBrowsers  = $mc::getTopBrowsers($browserDateStart, $browserDateEnd);
-        $matomoOs        = $mc::getTopOs($browserDateStart, $browserDateEnd);
-        $matomoCountries = $mc::getTopCountries($browserDateStart, $browserDateEnd);
-        $matomoKeywords  = $mc::getTopKeywords($browserDateStart, $browserDateEnd);
-        $matomoEntries   = $mc::getEntryPages($browserDateStart, $browserDateEnd);
-        $matomoByDay     = $mc::getByDay($browserDateStart, $browserDateEnd);
-        $matomoDayLabels = implode(',', array_map(fn($r) => "'" . substr($r['day'], 5) . "'", $matomoByDay));
-        $matomoDayVisits = implode(',', array_map(fn($r) => $r['visits'], $matomoByDay));
-        $matomoDayPv     = implode(',', array_map(fn($r) => $r['pv'], $matomoByDay));
-        // ----------------------------
-
-        // 6. Analytics consolidés & réconciliés (Phase 2A)
+        // 6. Analytics consolidés & réconciliés
         require_once PLUGINS . 'lightstats/lib/LightStatsAnalyticsService.php';
         $analytics = \LightStats\Lib\LightStatsAnalyticsService::getInstance();
 
-        // Harmonisation de la période en jours pour les recherches et POI
         $periodDays = max(1, (int)round((strtotime($browserDateEnd) - strtotime($browserDateStart)) / 86400) + 1);
 
         $consolidated = $analytics->getConsolidatedSessionStats($browserDateStart, $browserDateEnd);
-        $moduleStats = $analytics->getModuleStats($browserDateStart, $browserDateEnd);
-        $qrStats = $analytics->getQrCodeStats($browserDateStart, $browserDateEnd);
         $journeys = $analytics->getRecentJourneys(40);
-        // Filtrage temporel absolu strict sur la période sélectionnée (YYYY-MM-DD)
-        $topSearches = $analytics->getTopSearches(15, $browserDateStart, $browserDateEnd);
-        $zeroResultSearches = $analytics->getZeroResultSearches(15, $browserDateStart, $browserDateEnd);
-        $topImpressions = $analytics->getTopPoiImpressions(15, $browserDateStart, $browserDateEnd);
-        $topClicks = $analytics->getTopPoiClicks(15, $browserDateStart, $browserDateEnd);
-        $poiActions = $analytics->getPoiActionStats($browserDateStart, $browserDateEnd);
 
-        // Activité HTTP orthogonale pour Onglet 4 (Robots, Scanners & Sécurité)
+        // Activité HTTP orthogonale pour Onglet Crawlers & Sécurité
         $httpKpis = $logsManager->getHttpActivityKpis();
 
-        // Calculs des KPIs Phase 2A avec gestion stricte de la division par zéro
+        // Calculs des KPIs avec gestion stricte de la division par zéro
         $totalDbSessions = (int)($consolidated['browser_activity']['total_db_sessions'] ?? 0);
         $certifiedSessions = (int)($consolidated['browser_activity']['certified_sessions'] ?? 0);
         $certifiedPageviews = (int)($consolidated['browser_activity']['certified_pageviews'] ?? 0);
@@ -287,14 +261,26 @@ class LightStatsAdminController extends AdminController
         $topLandingPages = $consolidated['journeys_aggregate']['top_landing_pages'] ?? [];
         $topExitPages = $consolidated['journeys_aggregate']['top_exit_pages'] ?? [];
 
-        // 100% Souverain : Décompte des visiteurs et sessions réels par LightStats (Zéro dépendance de calcul envers Matomo)
         $humanVisitorsEst = (int)($kpis['unique_visitors'] ?? 0);
         $sovereignUniqueVisitors = $humanVisitorsEst > 0 ? $humanVisitorsEst : $certifiedSessions;
-        $matomoUniqueVisitors = (int)($matomoSummary['unique_visitors'] ?? 0);
-        $matomoVisitsCount = (int)($matomoSummary['visits'] ?? 0);
+
+        $lsPlugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('lightstats');
+        $privacyMode = ($lsPlugin && $lsPlugin->getConfigVal('privacy_mode') === 'cnil_exempt')
+            ? 'cnil_exempt'
+            : 'consent_banner';
+
+        try {
+            $saveConfigUrl = $this->router->generate('admin-lightstats-save-config');
+        } catch (\Exception $e) {
+            $saveConfigUrl = '/admin/lightstats/save-config';
+        }
 
         $response = new AdminResponse();
         $tpl = $response->createPluginTemplate('lightstats', 'admin');
+        $tpl->set('privacyMode', $privacyMode);
+        $tpl->set('isCnilExempt', ($privacyMode === 'cnil_exempt'));
+        $tpl->set('saveConfigUrl', $saveConfigUrl);
+        $tpl->set('token', $this->user->token);
         $tpl->set('consolidated', $consolidated);
         $tpl->set('totalDbSessions', $totalDbSessions);
         $tpl->set('certifiedSessions', $certifiedSessions);
@@ -303,21 +289,12 @@ class LightStatsAdminController extends AdminController
         $tpl->set('engagementRatePct', $engagementRatePct);
         $tpl->set('sessionBreakdown', $sessionBreakdown);
         $tpl->set('periodDays', $periodDays);
-        $tpl->set('moduleStats', $moduleStats);
-        $tpl->set('qrStats', $qrStats);
         $tpl->set('sovereignUniqueVisitors', $sovereignUniqueVisitors);
         $tpl->set('humanVisitorsEst', $humanVisitorsEst);
-        $tpl->set('matomoUniqueVisitors', $matomoUniqueVisitors);
-        $tpl->set('matomoVisitsCount', $matomoVisitsCount);
-        $tpl->set('poiActions', $poiActions);
         $tpl->set('httpKpis', $httpKpis);
         $tpl->set('topLandingPages', $topLandingPages);
         $tpl->set('topExitPages', $topExitPages);
         $tpl->set('journeys', $journeys);
-        $tpl->set('topSearches', $topSearches);
-        $tpl->set('zeroResultSearches', $zeroResultSearches);
-        $tpl->set('topImpressions', $topImpressions);
-        $tpl->set('topClicks', $topClicks);
         $tpl->set('linkToHome', $baseUrl);
         $tpl->set('activeTab', $activeTab);
         $tpl->set('activePreset', $activePreset);
@@ -347,19 +324,28 @@ class LightStatsAdminController extends AdminController
         $tpl->set('paginationStart', $paginationStart);
         $tpl->set('paginationEnd', $paginationEnd);
 
-        $tpl->set('matomoSummary',   $matomoSummary);
-        $tpl->set('matomoTopPages',  $matomoTopPages);
-        $tpl->set('matomoReferrers', $matomoReferrers);
-        $tpl->set('matomoBrowsers',  $matomoBrowsers);
-        $tpl->set('matomoOs',        $matomoOs);
-        $tpl->set('matomoCountries', $matomoCountries);
-        $tpl->set('matomoKeywords',  $matomoKeywords);
-        $tpl->set('matomoEntries',   $matomoEntries);
-        $tpl->set('matomoDayLabels', $matomoDayLabels);
-        $tpl->set('matomoDayVisits', $matomoDayVisits);
-        $tpl->set('matomoDayPv',     $matomoDayPv);
-
         $response->addTemplate($tpl);
         return $response;
+    }
+
+    public function saveConfig()
+    {
+        if (!isset($_POST['token']) || $_POST['token'] !== $this->user->token) {
+            \Utils\Show::msg(\Core\Lang::get('core-invalid-token'), 'error');
+            $this->core->redirect($this->router->generate('admin-lightstats-home'));
+        }
+
+        $mode = ($_POST['privacy_mode'] ?? 'consent_banner') === 'cnil_exempt'
+            ? 'cnil_exempt'
+            : 'consent_banner';
+
+        $plugin = $this->pluginsManager->getPlugin('lightstats');
+        if ($plugin) {
+            $plugin->setConfigVal('privacy_mode', $mode);
+            $this->pluginsManager->savePluginConfig($plugin);
+            \Utils\Show::msg(\Core\Lang::get('core-changes-saved'), 'success');
+        }
+
+        $this->core->redirect($this->router->generate('admin-lightstats-home'));
     }
 }

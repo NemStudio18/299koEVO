@@ -139,25 +139,36 @@ class Hooks
             // 6. Minimisation RGPD : nettoyage du référent (suppression des paramètres privés et tokens)
             $cleanReferer = self::sanitizeReferer($rawReferer);
 
-            // 7. Gestion unifiée de session côté serveur (PHP Maître)
+            // 7. Gestion unifiée de session selon le mode de confidentialité
+            $lsPlugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('lightstats');
+            $privacyMode = ($lsPlugin && $lsPlugin->getConfigVal('privacy_mode') === 'cnil_exempt')
+                ? 'cnil_exempt'
+                : 'consent_banner';
+            $isCnilExempt = ($privacyMode === 'cnil_exempt');
+
             $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
                 || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
                 || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 
-            $sessionId = $_COOKIE['vb_sid'] ?? null;
-            if (!is_string($sessionId) || !preg_match('/^[a-f0-9]{32}$/', $sessionId)) {
-                $sessionId = bin2hex(random_bytes(16));
-            }
+            if ($isCnilExempt) {
+                // Mode exemption CNIL stricte : aucun cookie (ni vb_sid ni vb_vid), session journalière éphémère sans persistance navigateur
+                $sessionId = substr(hash('sha256', $dailyHash . '|' . $userAgent), 0, 32);
+            } else {
+                $sessionId = $_COOKIE['vb_sid'] ?? null;
+                if (!is_string($sessionId) || !preg_match('/^[a-f0-9]{32}$/', $sessionId)) {
+                    $sessionId = bin2hex(random_bytes(16));
+                }
 
-            // Renouvellement / émission du cookie technique de session (30 min)
-            if (!headers_sent()) {
-                setcookie('vb_sid', $sessionId, [
-                    'expires'  => time() + 1800,
-                    'path'     => '/',
-                    'secure'   => $isHttps,
-                    'httponly' => true,
-                    'samesite' => 'Lax',
-                ]);
+                // Renouvellement / émission du cookie technique de session (30 min)
+                if (!headers_sent()) {
+                    setcookie('vb_sid', $sessionId, [
+                        'expires'  => time() + 1800,
+                        'path'     => '/',
+                        'secure'   => $isHttps,
+                        'httponly' => true,
+                        'samesite' => 'Lax',
+                    ]);
+                }
             }
 
             // 8. Génération d'un request_id unique pour cette réponse HTML précise
@@ -165,12 +176,12 @@ class Hooks
 
             // 9. Injection dynamique du contexte dans le HTML sans modifier le cache partagé
             // Gère uniquement le buffer propre au plugin (niveau initial conservé)
-            $pluginBufferOpened = ob_start(function($buffer) use ($requestId, $sessionId) {
+            $pluginBufferOpened = ob_start(function($buffer) use ($requestId, $sessionId, $isCnilExempt) {
                 // N'injecter que dans les pages HTML
                 if (stripos($buffer, '<html') === false && stripos($buffer, '<!DOCTYPE') === false) {
                     return $buffer;
                 }
-                $contextScript = '<script id="vb-ctx">window.__VB_CTX__={reqId:"' . htmlspecialchars($requestId, ENT_QUOTES, 'UTF-8') . '",sid:"' . htmlspecialchars($sessionId, ENT_QUOTES, 'UTF-8') . '"};</script>';
+                $contextScript = '<script id="vb-ctx">window.__VB_CTX__={reqId:"' . htmlspecialchars($requestId, ENT_QUOTES, 'UTF-8') . '",sid:"' . htmlspecialchars($sessionId, ENT_QUOTES, 'UTF-8') . '",cnilExempt:' . ($isCnilExempt ? 'true' : 'false') . '};</script>';
 
                 // 1. Si le HTML contient déjà un contexte (ex: page servie depuis le cache HTML contenant l'ID d'une précédente requête),
                 // on REMPLACE impérativement l'ancien script par le script dynamique frais de CETTE requête précise !
@@ -240,7 +251,7 @@ class Hooks
             if ($requestMethod === 'GET' && !$isBot && !$isAdmin && $statusCode === 200 && !self::isSuspiciousRequest($page, $query) && !self::isExcludedPublicRoute($page)) {
                 try {
                     require_once __DIR__ . '/lib/LightStatsAnalyticsService.php';
-                    $visitorId = $_COOKIE['vb_vid'] ?? null;
+                    $visitorId = $isCnilExempt ? null : ($_COOKIE['vb_vid'] ?? null);
                     $analytics = \LightStats\Lib\LightStatsAnalyticsService::getInstance();
                     $analytics->recordPageview(
                         $page,

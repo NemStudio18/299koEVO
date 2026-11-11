@@ -46,6 +46,7 @@ class Router extends \AltoRouter {
         $this->map('GET', '/', 'Core\Controllers\CoreController#renderHome', 'home');
         $this->map('GET', '/index.php[/?]', 'Core\Controllers\CoreController#renderHome');
         $this->map('GET', '/admin[/?]', 'Core\Controllers\CoreController#renderAdminHome', 'admin');
+        $this->map('GET', '/admin/dashboard[/?]', 'Core\Controllers\CoreController#renderAdminHome', 'admin-dashboard');
     }
     
     public function getCleanURI() {

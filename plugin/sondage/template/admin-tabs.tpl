@@ -1,44 +1,53 @@
-<section>
-    <header>{{ Lang.sondage-admin-list }}</header>
-    
-    <div class="sondage-admin-tabs">
-        <button class="tab-button active" data-tab="list">{{ Lang.sondage-admin-list }}</button>
-        <button class="tab-button" data-tab="create">{{ Lang.sondage-admin-add }}</button>
-        <button class="tab-button" data-tab="stats">{{ Lang.sondage.stats-title }}</button>
-    </div>
+<section class="module-card">
+    <header><i class="fa-solid fa-chart-bar"></i> {{ Lang.sondage-admin-list }}</header>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <div id="tab-list" class="tab-content active">
-        <a class="button" href="{{ addUrl }}">{{ Lang.sondage-admin-add }}</a>
-        <table>
-            <tr>
-                <th>{{ Lang.sondage.title }}</th>
-                <th>{{ Lang.sondage.status }}</th>
-                <th>{{ Lang.sondage.votes }}</th>
-                <th>{{ Lang.sondage.date }}</th>
-                <th>{{ Lang.sondage.actions }}</th>
-            </tr>
-            {% for sondage in sondageManager.getItems() %}
-                <tr>
-                    <td>
-                        <a title="{{ Lang.edit }}" href="{ ROUTER.generate("sondage-admin-edit-id", ["id" => sondage.getId()]) }">{{ sondage.getTitle() }}</a>
-                    </td>
-                    <td>
-                        {% if sondage.getActive() %}{{ Lang.core-active }}{% else %}{{ Lang.core-inactive }}{% endif %}
-                    </td>
-                    <td>{{ sondage.getTotalVotes() }}</td>
-                    <td>{{ util.getDate(sondage.getDate()) }}</td>
-                    <td>
-                        <a title="{{ Lang.edit }}" href="{ ROUTER.generate("sondage-admin-edit-id", ["id" => sondage.getId()]) }" class="button">{{ Lang.edit }}</a>
-                        <a title="{{ Lang.delete }}" href="{ ROUTER.generate("sondage-admin-delete", ["id" => sondage.getId(), "token" => token]) }" class="button alert" onclick="return confirm('{{ Lang.confirm.deleteItem }}')">{{ Lang.delete }}</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
-    
-    <div id="tab-create" class="tab-content">
+
+    <div class="tabs-container" data-tab-key="sondage">
+        <ul class="tabs-header">
+            <li class="default-tab" data-tab="list"><i class="fa-solid fa-list"></i> {{ Lang.sondage-admin-list }}</li>
+            <li data-tab="create"><i class="fa-solid fa-plus"></i> {{ Lang.sondage-admin-add }}</li>
+            <li data-tab="stats"><i class="fa-solid fa-chart-pie"></i> {{ Lang.sondage.stats-title }}</li>
+        </ul>
+
+        <ul class="tabs">
+            <li class="tab">
+                <div class="module-actions">
+                    <a class="button" href="{{ addUrl }}"><i class="fa-solid fa-plus"></i> {{ Lang.sondage-admin-add }}</a>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>{{ Lang.sondage.title }}</th>
+                                <th>{{ Lang.sondage.status }}</th>
+                                <th>{{ Lang.sondage.votes }}</th>
+                                <th>{{ Lang.sondage.date }}</th>
+                                <th>{{ Lang.sondage.actions }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for sondage in sondageManager.getItems() %}
+                            <tr>
+                                <td>
+                                    <a title="{{ Lang.edit }}" href="{ ROUTER.generate("sondage-admin-edit-id", ["id" => sondage.getId()]) }"><strong>{{ sondage.getTitle() }}</strong></a>
+                                </td>
+                                <td>
+                                    {% if sondage.getActive() %}{{ Lang.core-active }}{% else %}{{ Lang.core-inactive }}{% endif %}
+                                </td>
+                                <td>{{ sondage.getTotalVotes() }}</td>
+                                <td>{{ util.getDate(sondage.getDate()) }}</td>
+                                <td style="white-space: nowrap;">
+                                    <a title="{{ Lang.edit }}" href="{ ROUTER.generate("sondage-admin-edit-id", ["id" => sondage.getId()]) }" class="button small">{{ Lang.edit }}</a>
+                                    <a title="{{ Lang.delete }}" href="{ ROUTER.generate("sondage-admin-delete", ["id" => sondage.getId(), "token" => token]) }" class="button alert small" onclick="return confirm('{{ Lang.confirm.deleteItem }}')">{{ Lang.delete }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </li>
+
+            <li class="tab">
         <form method="post" action="{{ saveUrl }}">
             {{ SHOW.tokenField }}
             <input type="hidden" name="id" value="" />
@@ -86,9 +95,9 @@
                 <button type="submit" class="button primary">{{ Lang.save }}</button>
             </div>
         </form>
-    </div>
-    
-    <div id="tab-stats" class="tab-content">
+            </li>
+
+            <li class="tab">
         {% if count(allSondagesStats) == 0 %}
             <p>{{ Lang.sondage.no-sondages }}</p>
         {% else %}
@@ -160,280 +169,134 @@
                 </div>
             {% endfor %}
         {% endif %}
+            </li>
+        </ul>
     </div>
 </section>
 
 <style>
-.sondage-admin-tabs {
-    display: flex;
-    gap: 0;
-    margin-bottom: 0;
-    border-bottom: 2px solid #e0e0e0;
-    background: #f8f9fa;
-    padding: 0.5rem 0.5rem 0 0.5rem;
-    border-radius: 8px 8px 0 0;
-}
-
-.tab-button {
-    padding: 0.75rem 1.5rem;
-    background: #e9ecef;
-    border: 1px solid #dee2e6;
-    border-bottom: none;
-    border-radius: 8px 8px 0 0;
-    cursor: pointer;
-    font-size: 1rem;
-    color: #495057;
-    transition: all 0.3s;
-    margin-bottom: -1px;
-    margin-right: 0.25rem;
-}
-
-.tab-button:hover {
-    background: #dee2e6;
-    color: #212529;
-}
-
-.tab-button.active {
-    background: #ffffff;
-    color: #007bff;
-    border-color: #dee2e6;
-    border-bottom-color: #ffffff;
-    font-weight: bold;
-    z-index: 1;
-    position: relative;
-}
-
-.tab-content {
-    display: none;
-    padding: 2rem;
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    margin-top: 0;
-    min-height: 400px;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-.stats-selector {
-    margin-bottom: 2rem;
-    padding: 1rem;
-    background: #f9f9f9;
-    border-radius: 4px;
-}
-
-.stats-selector label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-.stats-selector select {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
 .sondage-stats {
-    background: #f9f9f9;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
     padding: 1.5rem;
 }
-
 .sondage-stats h3 {
     margin: 0 0 1rem 0;
-    color: #1a3a5f;
+    color: #0f172a;
 }
-
 .stats-summary {
     display: flex;
     gap: 2rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e2e8f0;
 }
-
 .stat-item {
     display: flex;
     flex-direction: column;
 }
-
 .stat-label {
-    font-size: 0.9rem;
-    color: #666;
+    font-size: 0.85rem;
+    color: #64748b;
     margin-bottom: 0.25rem;
 }
-
 .stat-value {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1a3a5f;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #0f172a;
 }
-
 .options-stats {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
-
 .option-stat-row {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
-
 .option-stat-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
 .option-stat-text {
-    font-weight: 500;
-    color: #333;
+    font-weight: 600;
+    color: #334155;
 }
-
 .option-stat-count {
     font-size: 0.9rem;
-    color: #666;
+    color: #64748b;
 }
-
 .option-stat-bar {
-    height: 24px;
-    background: #f0f0f0;
-    border-radius: 12px;
+    height: 20px;
+    background: #e2e8f0;
+    border-radius: 10px;
     overflow: hidden;
     position: relative;
 }
-
 .option-stat-progress {
     height: 100%;
-    background: linear-gradient(135deg, #6b3fa0 0%, #8b5fc0 100%);
-    border-radius: 12px;
+    background: var(--primary-color, #1f62a9);
+    border-radius: 10px;
     transition: width 0.6s ease;
 }
-
 .form-section {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
-
 .form-section label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #1a3a5f;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: #0f172a;
 }
-
-.form-section input[type="text"] {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
 .options-container {
     margin-bottom: 1rem;
 }
-
 .option-row {
     display: flex;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
     align-items: center;
 }
-
 .option-row input[type="text"] {
     flex: 1;
+    margin: 0;
 }
-
 .checkbox-field {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.5rem;
+    flex-wrap: wrap;
 }
-
 .checkbox-field label {
     margin: 0;
-    font-weight: normal;
+    font-weight: 500;
 }
-
 .checkbox-field small {
     display: block;
-    color: #666;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
+    width: 100%;
+    color: #64748b;
+    font-size: 0.85rem;
 }
-
 .form-actions {
     display: flex;
     gap: 1rem;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid #e0e0e0;
-}
-
-.button.secondary {
-    background: #6c757d;
-}
-
-.button.secondary:hover {
-    background: #5a6268;
-}
-
-.button.primary {
-    background: #007bff;
-}
-
-.button.primary:hover {
-    background: #0056b3;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Gestion des onglets
-    const tabs = document.querySelectorAll('.sondage-admin-tabs .tab-button');
-    const contents = document.querySelectorAll('.tab-content');
-    
-    // Activer l'onglet par défaut si un sondage est sélectionné
     const urlParams = new URLSearchParams(window.location.search);
-    const sondageId = urlParams.get('sondage_id');
-    const defaultTab = sondageId && sondageId > 0 ? 'stats' : 'list';
-    
-    tabs.forEach(function(button) {
-        const tabName = button.getAttribute('data-tab');
-        if (tabName === defaultTab) {
-            button.classList.add('active');
-            const targetContent = document.getElementById('tab-' + tabName);
-            if (targetContent) {
-                targetContent.classList.add('active');
-            }
-        }
-        
-        button.addEventListener('click', function() {
-            const targetTab = button.getAttribute('data-tab');
-            
-            tabs.forEach(function(t) {
-                t.classList.remove('active');
-            });
-            contents.forEach(function(c) {
-                c.classList.remove('active');
-            });
-            
-            button.classList.add('active');
-            const targetContent = document.getElementById('tab-' + targetTab);
-            if (targetContent) {
-                targetContent.classList.add('active');
-            }
-        });
-    });
+    const sondageId = parseInt(urlParams.get('sondage_id') || '0', 10);
+    if (sondageId > 0) {
+        const statsLi = document.querySelector('.tabs-container[data-tab-key="sondage"] > .tabs-header > li[data-tab="stats"]');
+        if (statsLi) statsLi.click();
+    }
     
     // Gestion des options dans le formulaire de création
     document.getElementById('add-option-new')?.addEventListener('click', function() {

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{lang.getLocale}}">
 	<head>
 		{% HOOK.adminHead %}
@@ -15,42 +15,34 @@
 	</head>
 	<body>
 		<div id="container">
-			<aside id="header">
-				<nav id="adminNav">
-					<label id="labelBurger" for="burger">
-						<i class="fa-solid fa-bars"></i>
-					</label>
-					<input type="checkbox" id="burger"/>
-					<div class="main_nav" role="navigation" aria-label="{{Lang.core-nav-admin}}">
-						<ul id="navigation">
-							<li id="nav-change-container">
-								<a role="button" onclick="changeMainNav()">
-									<i title="{{Lang.admin-change-sidebar-width}}" id="nav-icon-grow"></i>
-								</a>
-							</li>
-							<li class="site">
-								<a target="_blank" href="{{SITE_URL}}">
-									<i title="{{Lang.core-goto-site}}" class="fa-regular fa-eye"></i>
-									<span>{{Lang.core-goto-site}}</span>
-								</a>
-							</li>
+			<header id="header" class="adm-topbar">
+				<nav id="adminNav" class="adm-nav" role="navigation" aria-label="{{Lang.core-nav-admin}}">
+					<div class="adm-topbar-left">
+						<a class="adm-brand" href="{{SITE_URL}}/admin">
+							<i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+							<span>Administration</span>
+						</a>
+						<button type="button" id="admBurgerBtn" class="adm-burger-btn" aria-expanded="false" aria-controls="admNavCollapse" aria-label="Menu">
+							<i class="fa-solid fa-bars" aria-hidden="true"></i>
+						</button>
+					</div>
+
+					<div id="admNavCollapse" class="adm-nav-collapse">
+						<ul id="navigation" class="adm-nav-list">
 							{{show.adminNavigation}}
-							<li class="site">
-								<a href="{ ROUTER.generate("logout") }">
-									<i title="{{Lang.core-disconnection}}" class="fa-solid fa-arrow-right-from-bracket"></i>
-									<span>{{Lang.core-disconnection}}</span>
-								</a>
-							</li>
-							<li class="just_using">
-								<a target="_blank" href="https://299ko.ovh">
-									<i title="{{Lang.site-just-using(VERSION)}}" class="fa-solid fa-flask"></i>
-									<span>{{Lang.site-just-using(VERSION)}}</span>
-								</a>
-							</li>
 						</ul>
+
+						<div class="adm-topbar-right">
+							{% HOOK.adminTopbarBadges %}
+							<a class="adm-site-link" target="_blank" href="{{SITE_URL}}" title="{{Lang.core-goto-site}}">
+								<i class="fa-regular fa-eye" aria-hidden="true"></i>
+								<span>{{Lang.core-goto-site}}</span>
+							</a>
+							{{show.adminAvatarMenu}}
+						</div>
 					</div>
 				</nav>
-			</aside>
+			</header>
 			<div id="alert-msg">
 				{{show.displayMsg}}
 			</div>
@@ -58,19 +50,6 @@
 			<div id="body">
 				<div id="content_mask">
 					<div id="content" class="{% if runPlugin %}{{runPlugin.getName}}-admin{% else %}core-module-admin{% endif %}">
-						{% IF runPlugin && runPlugin.getParamTemplate %}
-							<a title="{{Lang.core-settings}}" data-fancybox id="param_link" href="#" data-src="#param_panel">
-								<i class="fa-solid fa-screwdriver-wrench"></i>
-							</a>
-							<div id="param_panel">
-								<section class="content">
-									<header>
-										<h2>{{Lang.core-settings}}</h2>
-									</header>
-									{% INCLUDE runPlugin.getParamTemplate %}
-								</section>
-							</div>
-						{% ENDIF %}
 						{% IF runPlugin && runPlugin.getHelpTemplate %}
 							<a title="{{Lang.core-help}}" data-fancybox id="help_link" href="#" data-src="#help_panel">
 								<i class="fa-solid fa-circle-question"></i>

@@ -24,14 +24,14 @@
 						<td><code>{{group.slug}}</code></td>
 						<td>{{group.userCount}}</td>
 						<td>
-							{% if group.permissions %}
+							{% if group.permissionLabels %}
 								<ul class="permissions-list">
-									{% for permission in group.permissions %}
+									{% for permission in group.permissionLabels %}
 										<li>
-											{% if permission == "*" %}
-												<span class="badge success">{{Lang.permissions.all}}</span>
+											{% if permission.key == "*" %}
+												<span class="badge success">{{permission.label}}</span>
 											{% else %}
-												{{permission}}
+												{{permission.label}}
 											{% endif %}
 										</li>
 									{% endfor %}

@@ -83,6 +83,11 @@ class Show
         unset($_SESSION['flash_msg']);
     }
 
+    private static function isAdminAssetsMode(): bool
+    {
+        return defined('ADMIN_MODE') && \ADMIN_MODE && !Core::getInstance()->isForcePublicRender();
+    }
+
     ## Affiche les balises "link" type css (admin + theme)
 
     public static function linkTags()
@@ -94,9 +99,10 @@ class Show
             $theme = new Theme($core->getConfigVal('theme'));
             $pluginsManager = PluginsManager::getInstance();
             $activePlugin = $core->getPluginToCall();
+            $isAdminAssets = self::isAdminAssetsMode();
             foreach ($core->getCss() as $k => $v) {
                 $ver = file_exists($v) ? ('?v=' . filemtime($v)) : '';
-                if (!\ADMIN_MODE) {
+                if (!$isAdminAssets) {
                     echo '<link href="' . Util::urlBuild($v) . $ver . '" rel="stylesheet" type="text/css" media="print" onload="this.media=\'all\'" /><noscript><link href="' . Util::urlBuild($v) . $ver . '" rel="stylesheet" type="text/css" /></noscript>';
                 } else {
                     echo '<link href="' . Util::urlBuild($v) . $ver . '" rel="stylesheet" type="text/css" />';
@@ -104,7 +110,7 @@ class Show
             }
             foreach ($pluginsManager->getPlugins() as $k => $plugin)
                 if ($plugin->getConfigval('activate') == 1) {
-                    if (!\ADMIN_MODE && $plugin->getConfigVal('activate') && $plugin->getPublicCssFile()) {
+                    if (!$isAdminAssets && $plugin->getConfigVal('activate') && $plugin->getPublicCssFile()) {
                         $cssFile = $plugin->getPublicCssFile();
                         if (file_exists($cssFile)) {
                             $ver = '?v=' . filemtime($cssFile);
@@ -117,13 +123,13 @@ class Show
                                 echo '<link href="' . Util::urlBuild($cssFile) . $ver . '" rel="stylesheet" type="text/css" media="print" onload="this.media=\'all\'" /><noscript><link href="' . Util::urlBuild($cssFile) . $ver . '" rel="stylesheet" type="text/css" /></noscript>';
                             }
                         }
-                    } elseif (\ADMIN_MODE && $plugin->getConfigVal('activate') && $plugin->getAdminCssFile()) {
+                    } elseif ($isAdminAssets && $plugin->getConfigVal('activate') && $plugin->getAdminCssFile()) {
                         $cssFile = $plugin->getAdminCssFile();
                         $ver = file_exists($cssFile) ? ('?v=' . filemtime($cssFile)) : '';
                         echo '<link href="' . $plugin->getAdminCssFile() . $ver . '" rel="stylesheet" type="text/css" />';
                     }
                 }
-            if (\ADMIN_MODE) {
+            if ($isAdminAssets) {
                 foreach (Core::getInstance()->extensions()->getAdminCssUrls() as $cssUrl) {
                     echo '<link href="' . $cssUrl . '" rel="stylesheet" type="text/css" />';
                 }
@@ -134,7 +140,7 @@ class Show
                     echo '<link href="' . $cssUrl . '" rel="stylesheet" type="text/css" />';
                 }
             }
-            if (!\ADMIN_MODE)
+            if (!$isAdminAssets)
                 echo $theme->getCSSLinks();
         }
     }
@@ -149,7 +155,8 @@ class Show
             $core = Core::getInstance();
             $theme = new Theme($core->getConfigVal('theme'));
             $pluginsManager = PluginsManager::getInstance();
-            $isFront = !\ADMIN_MODE;
+            $isAdminAssets = self::isAdminAssetsMode();
+            $isFront = !$isAdminAssets;
             $deferAttr = $isFront ? ' defer' : '';
             foreach ($core->getJs() as $k => $v) {
                 $ver = file_exists($v) ? ('?v=' . filemtime($v)) : '';
@@ -157,19 +164,19 @@ class Show
             }
             foreach ($pluginsManager->getPlugins() as $k => $plugin)
                 if ($plugin->getConfigval('activate') == 1) {
-                    if (!\ADMIN_MODE && $plugin->getConfigVal('activate') && $plugin->getPublicJsFile()) {
+                    if (!$isAdminAssets && $plugin->getConfigVal('activate') && $plugin->getPublicJsFile()) {
                         $jsFile = $plugin->getPublicJsFile();
                         if (file_exists($jsFile)) {
                             $ver = '?v=' . filemtime($jsFile);
                             echo '<script type="text/javascript" src="' . Util::urlBuild($jsFile) . $ver . '" defer></script>';
                         }
-                    } elseif (\ADMIN_MODE && $plugin->getConfigVal('activate') && $plugin->getAdminJsFile()) {
+                    } elseif ($isAdminAssets && $plugin->getConfigVal('activate') && $plugin->getAdminJsFile()) {
                         $jsFile = $plugin->getAdminJsFile();
                         $ver = file_exists($jsFile) ? ('?v=' . filemtime($jsFile)) : '';
                         echo '<script type="text/javascript" src="' . $plugin->getAdminJsFile() . $ver . '"></script>';
                     }
                 }
-            if (\ADMIN_MODE) {
+            if ($isAdminAssets) {
                 foreach (Core::getInstance()->extensions()->getAdminJsUrls() as $jsUrl) {
                     echo '<script type="text/javascript" src="' . $jsUrl . '"></script>';
                 }
@@ -180,7 +187,7 @@ class Show
                     echo '<script type="text/javascript" src="' . $jsUrl . '"></script>';
                 }
             }
-            if (!\ADMIN_MODE)
+            if (!$isAdminAssets)
                 echo $theme->getJSLinks();
         }
     }
@@ -375,73 +382,187 @@ class Show
      * It only display the <li> items. You have to put it between <ul>.
      * Links are sorted by plugin's name, and current plugin had li.activePlugin class
      */
+    /**
+     * Affiche le menu d'administration regroupé par catégories pour la barre horizontale.
+     */
     public static function adminNavigation()
     {
-        if (function_exists('adminNavigation'))
+        if (function_exists('adminNavigation')) {
             call_user_func('adminNavigation');
-        else {
-            $pluginsManager = PluginsManager::getInstance();
-            $data = '';
-            $arrPlugins = [];
-            foreach ($pluginsManager->getPlugins() as $k => $v) {
-                if ($v->getConfigVal('activate') && $v->getIsCallableOnAdmin()) {
-                    $arrPlugins[$v->getInfoVal('name')]['name'] = $v->getName();
-                    $arrPlugins[$v->getInfoVal('name')]['icon'] = $v->getInfoVal('icon');
-                    $arrPlugins[$v->getInfoVal('name')]['label'] = $v->getTranslatedName();
-                }
-            }
-            foreach (Core::getInstance()->extensions()->getAdminNavigationEntries() as $entry) {
-                $arrPlugins[$entry['label']]['name'] = $entry['name'];
-                $arrPlugins[$entry['label']]['icon'] = $entry['icon'];
-                $arrPlugins[$entry['label']]['label'] = $entry['label'];
-            }
-            foreach (Core::getInstance()->settings()->getAdminNavigationEntries() as $entry) {
-                $arrPlugins[$entry['label']]['name'] = $entry['name'];
-                $arrPlugins[$entry['label']]['icon'] = $entry['icon'];
-                $arrPlugins[$entry['label']]['label'] = $entry['label'];
-            }
-            foreach (Core::getInstance()->media()->getAdminNavigationEntries() as $entry) {
-                $arrPlugins[$entry['label']]['name'] = $entry['name'];
-                $arrPlugins[$entry['label']]['icon'] = $entry['icon'];
-                $arrPlugins[$entry['label']]['label'] = $entry['label'];
-            }
-            foreach (Core::getInstance()->auth()->getAdminNavEntries() as $entry) {
-                $arrPlugins[$entry['label']]['name'] = $entry['name'];
-                $arrPlugins[$entry['label']]['icon'] = $entry['icon'];
-                $arrPlugins[$entry['label']]['label'] = $entry['label'];
-            }
-            foreach (Core::getInstance()->pages()->getAdminNavigationEntries() as $entry) {
-                $arrPlugins[$entry['label']]['name'] = $entry['name'];
-                $arrPlugins[$entry['label']]['icon'] = $entry['icon'];
-                $arrPlugins[$entry['label']]['label'] = $entry['label'];
-            }
-            foreach (Core::getInstance()->menus()->getAdminNavigationEntries() as $entry) {
-                $arrPlugins[$entry['label']]['name'] = $entry['name'];
-                $arrPlugins[$entry['label']]['icon'] = $entry['icon'];
-                $arrPlugins[$entry['label']]['label'] = $entry['label'];
-            }
-            ksort($arrPlugins, SORT_STRING);
-            $currentPlugin = Core::getInstance()->getPluginToCall();
-            foreach ($arrPlugins as $label) {
-                $data .= '<li';
-                if ($currentPlugin === $label['name']) {
-                    $data .= ' class="activePlugin"';
-                }
-                $pluginId = strtolower($label['name']);
-                $data .= '><a href="' . Core::getInstance()->getConfigVal('siteUrl') . '/admin/' . $pluginId . '"';
-                if ($currentPlugin === $label['name'] || $currentPlugin === $pluginId) {
-                    $data .= ' aria-current="page"';
-                }
-                $data .= '>';
-                $icon = $label['icon'];
-                if ($icon == false) {
-                    $icon = "fa-regular fa-font-awesome";
-                }
-                $data .= '<i title="' . $label['label'] . '" class="' . $icon . '"></i>';
-                $data .= '<span>' . $label['label'] . '</span></a></li>';
-            }
-            echo $data;
+            return;
         }
+
+        $core = Core::getInstance();
+        $siteUrl = rtrim((string)$core->getConfigVal('siteUrl'), '/');
+        $currentPlugin = strtolower((string)$core->getPluginToCall());
+        $pluginsManager = PluginsManager::getInstance();
+
+        $categoriesMeta = [
+            'contenu'    => ['label' => 'Contenu',     'icon' => 'fa-solid fa-pen-nib'],
+            'communaute' => ['label' => 'Communauté',  'icon' => 'fa-solid fa-comments'],
+            'stats'      => ['label' => 'Stats & SEO', 'icon' => 'fa-solid fa-chart-line'],
+            'systeme'    => ['label' => 'Système',     'icon' => 'fa-solid fa-sliders'],
+        ];
+
+        $categoryByModule = [
+            'page'          => 'contenu',
+            'menus'         => 'contenu',
+            'blog'          => 'contenu',
+            'agenda'        => 'contenu',
+            'galerie'       => 'contenu',
+            'filemanager'   => 'contenu',
+            'searchmaps'    => 'contenu',
+            'livechat'      => 'communaute',
+            'contact'       => 'communaute',
+            'newsletter'    => 'communaute',
+            'sondage'       => 'communaute',
+            'users'         => 'communaute',
+            'lightstats'    => 'stats',
+            'publicstats'   => 'stats',
+            'seo'           => 'stats',
+            'configmanager' => 'systeme',
+            'pluginsmanager'=> 'systeme',
+            'marketplace'   => 'systeme',
+            'antispam'      => 'systeme',
+            'pwa'           => 'systeme',
+            'meteo'         => 'systeme',
+            'shorturl'      => 'systeme',
+            '299search'     => 'systeme',
+        ];
+
+        $grouped = [];
+        foreach (array_keys($categoriesMeta) as $catKey) {
+            $grouped[$catKey] = [];
+        }
+
+        $pushEntry = function (array $entry, ?string $customCat = null) use (&$grouped, $categoryByModule, $categoriesMeta) {
+            $idLower = strtolower((string)$entry['name']);
+            $cat = ($customCat && isset($categoriesMeta[$customCat]))
+                ? $customCat
+                : ($categoryByModule[$idLower] ?? 'systeme');
+            $grouped[$cat][] = [
+                'name'  => (string)$entry['name'],
+                'slug'  => $idLower,
+                'label' => (string)$entry['label'],
+                'icon'  => !empty($entry['icon']) ? (string)$entry['icon'] : 'fa-regular fa-font-awesome',
+            ];
+        };
+
+        foreach ($pluginsManager->getPlugins() as $plugin) {
+            if ($plugin->getConfigVal('activate') && $plugin->getIsCallableOnAdmin()) {
+                $customCat = $plugin->getInfoVal('adminCategory');
+                $pushEntry([
+                    'name'  => $plugin->getName(),
+                    'label' => $plugin->getTranslatedName(),
+                    'icon'  => $plugin->getInfoVal('icon'),
+                ], is_string($customCat) ? strtolower($customCat) : null);
+            }
+        }
+
+        $coreServices = [
+            $core->extensions()->getAdminNavigationEntries(),
+            $core->settings()->getAdminNavigationEntries(),
+            $core->media()->getAdminNavigationEntries(),
+            $core->auth()->getAdminNavEntries(),
+            $core->pages()->getAdminNavigationEntries(),
+            $core->menus()->getAdminNavigationEntries(),
+        ];
+        foreach ($coreServices as $entries) {
+            foreach ($entries as $entry) {
+                $pushEntry($entry);
+            }
+        }
+
+        $isDashActive = ($currentPlugin === 'dashboard' || $currentPlugin === '');
+        $html = '<li class="adm-nav-item' . ($isDashActive ? ' is-active activePlugin' : '') . '">'
+              . '<a class="adm-nav-link" href="' . htmlspecialchars($siteUrl . '/admin') . '">'
+              . '<i class="fa-solid fa-gauge-high" aria-hidden="true"></i>'
+              . '<span>Dashboard</span>'
+              . '</a></li>';
+
+        foreach ($categoriesMeta as $catKey => $meta) {
+            $items = $grouped[$catKey];
+            if (empty($items)) {
+                continue;
+            }
+            usort($items, fn($a, $b) => strcasecmp($a['label'], $b['label']));
+
+            $catActive = false;
+            foreach ($items as $it) {
+                if ($currentPlugin === $it['slug']) {
+                    $catActive = true;
+                    break;
+                }
+            }
+
+            $html .= '<li class="adm-nav-item adm-has-drop' . ($catActive ? ' is-active' : '') . '">';
+            $html .= '<button type="button" class="adm-drop-btn" aria-expanded="false">';
+            $html .= '<i class="' . htmlspecialchars($meta['icon']) . '" aria-hidden="true"></i>';
+            $html .= '<span>' . htmlspecialchars($meta['label']) . '</span>';
+            $html .= '<i class="fa-solid fa-chevron-down adm-caret" aria-hidden="true"></i>';
+            $html .= '</button>';
+            $html .= '<ul class="adm-drop-menu">';
+            foreach ($items as $it) {
+                $itemActive = ($currentPlugin === $it['slug']);
+                $href = $siteUrl . '/admin/' . $it['slug'];
+                $html .= '<li' . ($itemActive ? ' class="activePlugin"' : '') . '>';
+                $html .= '<a href="' . htmlspecialchars($href) . '"' . ($itemActive ? ' aria-current="page"' : '') . '>';
+                $html .= '<i class="' . htmlspecialchars($it['icon']) . '" aria-hidden="true"></i>';
+                $html .= '<span>' . htmlspecialchars($it['label']) . '</span>';
+                $html .= '</a></li>';
+            }
+            $html .= '</ul></li>';
+        }
+
+        echo $html;
+    }
+
+    /**
+     * Affiche le menu avatar administrateur à droite de la barre horizontale admin.
+     */
+    public static function adminAvatarMenu(): void
+    {
+        $user = UsersManager::getCurrentUser();
+        if (!$user) {
+            return;
+        }
+
+        $core = Core::getInstance();
+        $router = \Core\Router\Router::getInstance();
+        $siteUrl = rtrim((string)$core->getConfigVal('siteUrl'), '/');
+        $avatarData = \Core\Auth\UserAvatarHelper::prepareAvatarData($user);
+
+        $profileUrl = $router->generate('profile');
+        if ($profileUrl === '#') {
+            $profileUrl = $siteUrl . '/users/profile';
+        }
+        $logoutUrl = $router->generate('logout');
+        if ($logoutUrl === '#') {
+            $logoutUrl = $siteUrl . '/users/logout';
+        }
+        $version = defined('VERSION') ? VERSION : '0.1.0';
+
+        $html = '<div class="adm-avatar-wrap adm-has-drop">';
+        $html .= '<button type="button" class="adm-avatar-btn" aria-expanded="false" aria-label="Menu compte administrateur">';
+        if ($avatarData['has_photo']) {
+            $html .= '<img src="' . htmlspecialchars($avatarData['photo_url']) . '" alt="' . htmlspecialchars($user->username()) . '" class="adm-avatar-img">';
+        } else {
+            $html .= '<span class="adm-avatar-initials" style="background-color:' . htmlspecialchars($avatarData['color']) . ';">' . htmlspecialchars($avatarData['initials']) . '</span>';
+        }
+        $html .= '<span class="adm-avatar-name">' . htmlspecialchars($user->username()) . '</span>';
+        $html .= '<i class="fa-solid fa-chevron-down adm-caret" aria-hidden="true"></i>';
+        $html .= '</button>';
+
+        $html .= '<ul class="adm-drop-menu adm-drop-menu-right">';
+        $html .= '<li><a href="' . htmlspecialchars($profileUrl) . '"><i class="fa-solid fa-user"></i><span>Mon profil</span></a></li>';
+        $html .= '<li><a href="' . htmlspecialchars($siteUrl . '/admin/configmanager') . '"><i class="fa-solid fa-sliders"></i><span>Configuration</span></a></li>';
+        $html .= '<li><a href="' . htmlspecialchars($siteUrl . '/admin/pluginsmanager') . '"><i class="fa-solid fa-plug"></i><span>Plugins</span></a></li>';
+        $html .= '<li class="adm-drop-sep"><hr></li>';
+        $html .= '<li><a class="adm-logout-link" href="' . htmlspecialchars($logoutUrl) . '"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>' . htmlspecialchars(Lang::get('core-disconnection')) . '</span></a></li>';
+        $html .= '<li class="adm-drop-version"><span><i class="fa-solid fa-flask"></i> 299Ko v' . htmlspecialchars((string)$version) . '</span></li>';
+        $html .= '</ul></div>';
+
+        echo $html;
     }
 
     ## Affiche le theme courant (theme)
