@@ -7,13 +7,22 @@
         <p>Gérez ici la flexibilité de vos données et vos infrastructures de bases de données.</p>
     </div>
 
+    <div class="tabs-container" data-tab-key="storage">
+        <ul class="tabs-header">
+            <li class="default-tab" data-tab="connections">
+                <i class="fa-solid fa-server"></i> Connexions SQL Disponibles
+            </li>
+            <li data-tab="components">
+                <i class="fa-solid fa-layer-group"></i> Gestion par Composant
+            </li>
+        </ul>
 
-    <hr class="section-divider">
-
-    <!-- Gestion des Connexions -->
-    <div class="storage-section">
-        <h3><i class="fa-solid fa-server"></i> Connexions SQL Disponibles</h3>
-        <p class="section-desc">Configurez vos accès aux bases de données externes (MySQL) ou locales (SQLite).</p>
+        <ul class="tabs">
+            <!-- TAB 1 : Connexions SQL -->
+            <li class="tab">
+                <div class="storage-section">
+                    <h3><i class="fa-solid fa-server"></i> Connexions SQL Disponibles</h3>
+                    <p class="section-desc">Configurez vos accès aux bases de données externes (MySQL) ou locales (SQLite).</p>
 
         <div class="connection-tabs">
             <div class="tab-btn active" data-target="default">
@@ -191,14 +200,14 @@
             </form>
         </div>
         {% endfor %}
-    </div>
+                </div>
+            </li>
 
-    <hr class="section-divider">
-
-    <!-- Gestion par Composant -->
-    <div class="storage-section">
-        <h3><i class="fa-solid fa-layer-group"></i> Gestion par Composant</h3>
-        <p class="section-desc">Définissez le type de stockage et la base de données cible pour chaque module.</p>
+            <!-- TAB 2 : Gestion par Composant -->
+            <li class="tab">
+                <div class="storage-section">
+                    <h3><i class="fa-solid fa-layer-group"></i> Gestion par Composant</h3>
+                    <p class="section-desc">Définissez le type de stockage et la base de données cible pour chaque module.</p>
 
         <form method="post" action="{{saveUrl}}">
             {{SHOW.tokenField}}
@@ -278,6 +287,9 @@
             </div>
         </div>
         <p class="help-warning"><strong>Attention :</strong> Assurez-vous que le driver SQL cible est bien configuré (testez la connexion) avant de migrer des données sensibles.</p>
+                </div>
+            </li>
+        </ul>
     </div>
 </section>
 

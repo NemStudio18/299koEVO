@@ -76,20 +76,14 @@
                 <i class="fa-solid fa-chart-line"></i>
             </div>
             <div class="ls-header-titles">
-                <h1>LightStats <span style="font-weight: 400; color: var(--ls-slate-400); font-size: 1.1rem;">• Vivre-Bourges</span></h1>
-                <p>Statistiques territoriales souveraines hébergées localement (100% conformes CNIL / RGPD)</p>
+                <h1>LightStats</h1>
+                <p>Mesure d'audience locale hébergée sur votre serveur</p>
             </div>
         </div>
         <div class="ls-header-badges">
-            <span class="ls-badge-pill status-live">
-                <span class="ls-pulse-dot"></span> Surveillance Active
-            </span>
-            <span class="ls-badge-pill" title="Adresses IP masquées dès réception">
-                <i class="fa-solid fa-user-shield" style="color: var(--ls-emerald);"></i> Anonymisation IP
-            </span>
-            <span class="ls-badge-pill" title="Aucun cookie tiers ou traceur externe">
-                <i class="fa-solid fa-cookie-bite" style="color: var(--ls-primary);"></i> Zéro Traceur Tiers
-            </span>
+            <button type="button" id="lsInfoModalBtn" class="ls-preset-btn" style="cursor: pointer;">
+                <i class="fa-solid fa-circle-info" style="color: var(--ls-primary);"></i> Fonctionnement, Fiabilité &amp; RGPD
+            </button>
         </div>
     </header>
 
@@ -127,21 +121,15 @@
         <button type="button" class="ls-tab-button {% IF activeTab == 'public' %}active{% ENDIF %}" data-tab="public">
             <i class="fa-solid fa-users"></i> 1. Audience & Visiteurs
         </button>
-        <button type="button" class="ls-tab-button {% IF activeTab == 'modules' %}active{% ENDIF %}" data-tab="modules">
-            <i class="fa-solid fa-store"></i> 2. Commerces & Recherches Locales
-        </button>
         <button type="button" class="ls-tab-button {% IF activeTab == 'journeys' %}active{% ENDIF %}" data-tab="journeys">
-            <i class="fa-solid fa-route"></i> 3. Parcours Visiteurs (Mode C)
+            <i class="fa-solid fa-route"></i> 2. Parcours Visiteurs
         </button>
         <button type="button" class="ls-tab-button {% IF activeTab == 'technical' %}active{% ENDIF %}" data-tab="technical">
-            <i class="fa-solid fa-shield-halved"></i> 4. Crawlers & Sécurité
+            <i class="fa-solid fa-shield-halved"></i> 3. Crawlers & Sécurité
         </button>
         <button type="button" class="ls-tab-button {% IF activeTab == 'raw' %}active{% ENDIF %}" data-tab="raw">
-            <i class="fa-solid fa-list-ul"></i> 5. Journaux Détaillés
+            <i class="fa-solid fa-list-ul"></i> 4. Journaux Détaillés
             <span class="ls-tab-count">{{totalItems}}</span>
-        </button>
-        <button type="button" class="ls-tab-button {% IF activeTab == 'matomo' %}active{% ENDIF %}" data-tab="matomo">
-            <i class="fa-brands fa-fort-awesome"></i> 6. Matomo Analytics
         </button>
     </nav>
 
@@ -151,32 +139,13 @@
     <!-- ===================================================================== -->
     <div id="tab-public" class="tab-pane" style="{% IF activeTab != 'public' %}display: none;{% ENDIF %}">
 
-        <!-- Synthèse Clarté Audience : Mesure Souveraine 100% Autonome -->
-        <div class="ls-alert-banner" style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 0.85rem;">
-                <div style="width: 42px; height: 42px; border-radius: 10px; background: var(--ls-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-                <div>
-                    <div style="font-weight: 700; color: var(--ls-slate-800); font-size: 0.95rem;">Audience Humaine Souveraine : <span style="color: var(--ls-primary); font-size: 1.15rem;">{{sovereignUniqueVisitors}} visiteurs réels observés</span>{% IF certifiedSessions %} <span style="font-size: 0.85rem; font-weight: 600; color: var(--ls-emerald);">(dont {{certifiedSessions}} certifiés JS)</span>{% ENDIF %}</div>
-                    <div style="font-size: 0.8125rem; color: var(--ls-slate-500); margin-top: 0.15rem;">
-                        <strong style="color: var(--ls-emerald);"><i class="fa-solid fa-circle-check"></i> Mesure 100% autonome par LightStats</strong> &bull; 
-                        <span>{% IF certifiedSessions %}Exécution navigateur active vérifiée (Active View JS) &bull; {% ENDIF %}<strong>{{totalDbSessions}} sessions observées</strong> au total</span>
-                    </div>
-                </div>
-            </div>
-            <div style="font-size: 0.8rem; color: var(--ls-slate-600); display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.8); padding: 0.45rem 0.85rem; border-radius: 20px; border: 1px solid rgba(0,0,0,0.06); font-weight: 600;">
-                <i class="fa-solid fa-lock" style="color: var(--ls-emerald);"></i> Télémétrie Souveraine Locale
-            </div>
-        </div>
-
-        <!-- Grille des 4 KPIs Héroïques (Phase 2A Validée) -->
+        <!-- Grille des 4 KPIs -->
         <section class="ls-kpi-grid">
             <!-- KPI 1 : Visiteurs réels & Sessions observées -->
             <article class="ls-kpi-card indigo">
                 <div class="ls-kpi-header">
                     <span class="ls-kpi-label">Visiteurs observés</span>
-                    <span class="ls-kpi-badge indigo"><i class="fa-solid fa-users" aria-hidden="true"></i> Souverain</span>
+                    <span class="ls-kpi-badge indigo"><i class="fa-solid fa-users" aria-hidden="true"></i> Audience</span>
                 </div>
                 <div class="ls-kpi-value">{{sovereignUniqueVisitors}}</div>
                 <div class="ls-kpi-subtext">{% IF certifiedSessions %}dont <strong>{{certifiedSessions}}</strong> certifiés JS ({{totalDbSessions}} sessions observées){% ELSE %}{{totalDbSessions}} sessions observées sur la période{% ENDIF %}</div>
@@ -432,215 +401,7 @@
 
 
     <!-- ===================================================================== -->
-    <!-- ONGLET 2 : COMMERCES & RECHERCHES LOCALES (L'ANNUAIRE CITOYEN)        -->
-    <!-- ===================================================================== -->
-    <div id="tab-modules" class="tab-pane" style="{% IF activeTab != 'modules' %}display: none;{% ENDIF %}">
-
-        <!-- 4 KPIs Actions Utiles sur les Commerces & Fiches -->
-        <div class="ls-kpi-quad">
-            <div class="ls-kpi-card">
-                <div class="ls-kpi-icon icon-emerald"><i class="fa-solid fa-hand-pointer"></i></div>
-                <div class="ls-kpi-body">
-                    <div class="ls-kpi-label">Actions Utiles Totales</div>
-                    <div class="ls-kpi-num">{{poiActions.total_useful_actions}}</div>
-                    <div class="ls-kpi-sub">Contacts directs & engagement local</div>
-                </div>
-            </div>
-
-            <div class="ls-kpi-card">
-                <div class="ls-kpi-icon icon-green"><i class="fa-solid fa-phone"></i></div>
-                <div class="ls-kpi-body">
-                    <div class="ls-kpi-label">Appels Téléphoniques</div>
-                    <div class="ls-kpi-num">{{poiActions.phone_calls}}</div>
-                    <div class="ls-kpi-sub">Clics directs sur numéro d'établissement</div>
-                </div>
-            </div>
-
-            <div class="ls-kpi-card">
-                <div class="ls-kpi-icon icon-blue"><i class="fa-solid fa-location-dot"></i></div>
-                <div class="ls-kpi-body">
-                    <div class="ls-kpi-label">Itinéraires GPS</div>
-                    <div class="ls-kpi-num">{{poiActions.directions}}</div>
-                    <div class="ls-kpi-sub">Demandes d'accès (Maps / OSM)</div>
-                </div>
-            </div>
-
-            <div class="ls-kpi-card">
-                <div class="ls-kpi-icon icon-purple"><i class="fa-solid fa-globe"></i></div>
-                <div class="ls-kpi-body">
-                    <div class="ls-kpi-label">Sites Web Officiels</div>
-                    <div class="ls-kpi-num">{{poiActions.website_clicks}}</div>
-                    <div class="ls-kpi-sub">Visites envoyées vers les commerçants</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4 KPIs Physiques / QR Codes -->
-        <div class="ls-kpi-quad" style="margin-top: 1rem;">
-            <div class="ls-kpi-card">
-                <div class="ls-kpi-icon icon-green"><i class="fa-solid fa-qrcode"></i></div>
-                <div class="ls-kpi-body">
-                    <div class="ls-kpi-label">Scans QR Vitrines (Physiques)</div>
-                    <div class="ls-kpi-num">{{qrStats.total_scans}}</div>
-                    <div class="ls-kpi-sub">Passants scannant un QR code dans la rue</div>
-                </div>
-            </div>
-
-            <div class="ls-kpi-card">
-                <div class="ls-kpi-icon icon-blue"><i class="fa-solid fa-eye"></i></div>
-                <div class="ls-kpi-body">
-                    <div class="ls-kpi-label">Impressions QR Web (DOM)</div>
-                    <div class="ls-kpi-num">{{qrStats.total_impressions}}</div>
-                    <div class="ls-kpi-sub">Rendus de l'image QR sur les fiches web</div>
-                </div>
-            </div>
-
-            <div class="ls-kpi-card">
-                <div class="ls-kpi-icon icon-purple"><i class="fa-solid fa-download"></i></div>
-                <div class="ls-kpi-body">
-                    <div class="ls-kpi-label">Téléchargements Print</div>
-                    <div class="ls-kpi-num">{{qrStats.total_downloads}}</div>
-                    <div class="ls-kpi-sub">Kits vitrine imprimés par les commerçants</div>
-                </div>
-            </div>
-
-            <div class="ls-kpi-card">
-                <div class="ls-kpi-icon icon-amber"><i class="fa-solid fa-bolt"></i></div>
-                <div class="ls-kpi-body">
-                    <div class="ls-kpi-label">Taux de Scan / Affichage</div>
-                    <div class="ls-kpi-num">{{qrStats.scan_rate}}%</div>
-                    <div class="ls-kpi-sub">Ratio scans rue / consultation web</div>
-                </div>
-            </div>
-        </div>
-
-        <div style="margin-top: 0.5rem; margin-bottom: 1.5rem; padding: 0.65rem 0.85rem; background: var(--ls-slate-50); border-radius: 8px; font-size: 0.75rem; color: var(--ls-slate-500);">
-            <i class="fa-solid fa-circle-info"></i> <strong>Règle méthodologique QR :</strong> Les scans vitrines correspondent à une redirection HTTP 302 serveur exécutée depuis un smartphone dans l'espace public. Les impressions correspondent au rendu passif du QR code dans le navigateur web et ne sont pas assimilées à des scans.
-        </div>
-
-        <!-- Moteur de Recherche Interne : Ce que cherchent les Berruyers -->
-        <div class="ls-grid-2">
-            <!-- Top Mots-Clés -->
-            <section class="ls-card">
-                <div class="ls-card-header">
-                    <h3 class="ls-card-title"><i class="fa-solid fa-magnifying-glass"></i> Mots-clés les plus recherchés</h3>
-                    <span class="ls-badge-pill">Tendances locales</span>
-                </div>
-                <div class="ls-table-responsive">
-                    <table class="ls-table">
-                        <thead>
-                            <tr>
-                                <th>Requête</th>
-                                <th style="text-align: right;">Occurrences</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% FOR s IN topSearches %}
-                            <tr>
-                                <td><i class="fa-solid fa-search" style="color: var(--ls-slate-400); font-size: 0.75rem; margin-right: 6px;"></i> <strong>{{s.query_norm}}</strong></td>
-                                <td style="text-align: right; font-weight: 700; color: var(--ls-primary);">{{s.search_count}}</td>
-                            </tr>
-                            {% ENDFOR %}
-                            {% IF NOT topSearches %}
-                            <tr><td colspan="2" style="text-align: center; color: var(--ls-slate-400); padding: 2rem;">Aucune recherche enregistrée sur la période.</td></tr>
-                            {% ENDIF %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Recherches sans réponse (Opportunités de création) -->
-            <section class="ls-card">
-                <div class="ls-card-header">
-                    <h3 class="ls-card-title" style="color: #b91c1c;"><i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i> Recherches sans réponse (0 résultat)</h3>
-                    <span class="ls-badge-pill" style="background: #fef2f2; color: #b91c1c; border-color: #fecaca;">Besoins non comblés</span>
-                </div>
-                <div class="ls-table-responsive">
-                    <table class="ls-table">
-                        <thead>
-                            <tr>
-                                <th>Terme recherché sans succès</th>
-                                <th style="text-align: right;">Demandes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% FOR z IN zeroResultSearches %}
-                            <tr>
-                                <td><strong style="color: #b91c1c;">{{z.query_norm}}</strong></td>
-                                <td style="text-align: right; font-weight: 700; color: #b91c1c;">{{z.zero_count}}</td>
-                            </tr>
-                            {% ENDFOR %}
-                            {% IF NOT zeroResultSearches %}
-                            <tr><td colspan="2" style="text-align: center; color: var(--ls-emerald); padding: 2rem;"><i class="fa-solid fa-circle-check"></i> Parfait ! Toutes les recherches ont retourné des résultats.</td></tr>
-                            {% ENDIF %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </div>
-
-        <!-- Fiches Commerces les plus vues et cliquées -->
-        <div class="ls-grid-2">
-            <section class="ls-card">
-                <div class="ls-card-header">
-                    <h3 class="ls-card-title"><i class="fa-solid fa-eye"></i> Fiches les plus affichées (Impressions)</h3>
-                </div>
-                <div class="ls-table-responsive">
-                    <table class="ls-table">
-                        <thead>
-                            <tr>
-                                <th>Établissement</th>
-                                <th style="text-align: right;">Impressions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% FOR imp IN topImpressions %}
-                            <tr>
-                                <td><i class="fa-solid fa-store" style="color: var(--ls-primary); margin-right: 6px;"></i> <strong>{{imp.name}}</strong></td>
-                                <td style="text-align: right; font-weight: 700;">{{imp.impression_count}}</td>
-                            </tr>
-                            {% ENDFOR %}
-                            {% IF NOT topImpressions %}
-                            <tr><td colspan="2" style="text-align: center; color: var(--ls-slate-400); padding: 2rem;">Aucune impression enregistrée.</td></tr>
-                            {% ENDIF %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section class="ls-card">
-                <div class="ls-card-header">
-                    <h3 class="ls-card-title"><i class="fa-solid fa-arrow-pointer"></i> Fiches les plus consultées (Clics Détail)</h3>
-                </div>
-                <div class="ls-table-responsive">
-                    <table class="ls-table">
-                        <thead>
-                            <tr>
-                                <th>Établissement</th>
-                                <th style="text-align: right;">Clics</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% FOR clk IN topClicks %}
-                            <tr>
-                                <td><i class="fa-solid fa-store" style="color: var(--ls-emerald); margin-right: 6px;"></i> <strong>{{clk.name}}</strong></td>
-                                <td style="text-align: right; font-weight: 700; color: var(--ls-emerald);">{{clk.click_count}}</td>
-                            </tr>
-                            {% ENDFOR %}
-                            {% IF NOT topClicks %}
-                            <tr><td colspan="2" style="text-align: center; color: var(--ls-slate-400); padding: 2rem;">Aucun clic détaillé enregistré.</td></tr>
-                            {% ENDIF %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </div>
-
-    </div>
-
-
-    <!-- ===================================================================== -->
-    <!-- ONGLET 3 : PARCOURS VISITEURS & FIDÉLISATION (AGRÉGÉ)                -->
+    <!-- ONGLET 2 : PARCOURS VISITEURS & FIDÉLISATION (AGRÉGÉ)                -->
     <!-- ===================================================================== -->
     <div id="tab-journeys" class="tab-pane" style="{% IF activeTab != 'journeys' %}display: none;{% ENDIF %}">
 
@@ -1004,88 +765,64 @@
 
     </div>
 
+</div>
 
-    <!-- ===================================================================== -->
-    <!-- ONGLET 6 : MATOMO ANALYTICS                                           -->
-    <!-- ===================================================================== -->
-    <div id="tab-matomo" class="tab-pane" style="{% IF activeTab != 'matomo' %}display: none;{% ENDIF %}">
+<!-- ── MODAL EXPLICATIONS, FIABILITÉ & RGPD LIGHTSTATS ── -->
+<div id="lsInfoModal" style="display: none; position: fixed; inset: 0; z-index: 1200; background: rgba(15, 23, 42, 0.58); padding: 20px; overflow-y: auto;">
+    <div style="max-width: 780px; margin: 24px auto; background: #fff; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 24px 48px rgba(15, 23, 42, 0.22); overflow: hidden;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+            <h3 style="margin: 0; font-size: 1.05rem; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle-info" style="color: var(--ls-primary, #1d4ed8);"></i>
+                LightStats : fonctionnement, fiabilité &amp; conformité RGPD
+            </h3>
+            <button type="button" id="lsInfoModalClose" aria-label="Fermer" style="background: none; border: none; font-size: 1.15rem; color: #64748b; cursor: pointer; padding: 4px 8px;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div style="padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; color: #334155; font-size: 0.9rem; line-height: 1.6;">
             <div>
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--ls-slate-900); margin: 0;">
-                    <i class="fa-brands fa-fort-awesome" style="color: #7c3aed;"></i> Matomo Analytics
-                </h2>
-                <p style="margin: 0.2rem 0 0; font-size: 0.85rem; color: var(--ls-slate-500);">Données synchronisées avec l'instance de métriques</p>
+                <h4 style="margin: 0 0 6px; color: #0f172a; font-size: 0.95rem;"><i class="fa-solid fa-gears" style="color: #1d4ed8;"></i> 1. À quoi sert LightStats et comment fonctionne-t-il ?</h4>
+                <p style="margin: 0;">LightStats mesure la fréquentation et les parcours du site directement sur votre serveur (sans service externe), en combinant deux signaux :</p>
+                <ul style="margin: 6px 0 0 18px;">
+                    <li><strong>Collecte serveur (PHP) :</strong> chaque requête HTTP publique enregistre la page vue (sans paramètres marketing <code>utm_*</code>, <code>fbclid</code>, <code>gclid</code>…), le référent nettoyé, la catégorie du client (navigateur humain, robot vérifié par DNS ou scanner suspect) et un journal quotidien sur 30 jours glissants.</li>
+                    <li><strong>Certification navigateur (« Active View JS ») :</strong> sur les pages HTML, un script léger (<code>privacy-tracker.js</code>) envoie un signal de confirmation lié à la requête pour distinguer un vrai navigateur d'un robot ou préchargement.</li>
+                </ul>
             </div>
-            <a href="https://metriques.flexcb.fr/matomo/index.php?module=CoreHome&action=index&idSite=3&period=day&date=yesterday" target="_blank" rel="noopener" class="ls-submit-btn" style="background: #7c3aed;">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> Ouvrir Matomo Pro
-            </a>
+
+            <div>
+                <h4 style="margin: 0 0 6px; color: #0f172a; font-size: 0.95rem;"><i class="fa-solid fa-gauge-high" style="color: #059669;"></i> 2. Quel est son taux de fiabilité ?</h4>
+                <p style="margin: 0;">La fiabilité est directement visible dans l'indicateur <strong>Taux de certification Active View</strong> (onglet Audience). En pratique :</p>
+                <ul style="margin: 6px 0 0 18px;">
+                    <li>Les faux positifs (bots, crawlers SEO, scanners <code>.env</code>/<code>wp-config</code>) sont largement écartés des statistiques humaines.</li>
+                    <li>Les visiteurs bloquant JavaScript ou coupant la page avant la fin du chargement apparaissent en <em>sessions HTTP non certifiées</em> (écart habituel de ~5 à 20 % selon le public). Sans consentement cookie, un visiteur revenant d'un jour sur l'autre est compté comme un nouveau visiteur chaque jour.</li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 style="margin: 0 0 6px; color: #0f172a; font-size: 0.95rem;"><i class="fa-solid fa-user-shield" style="color: #d97706;"></i> 3. Vérification RGPD / Vie privée</h4>
+                <ul style="margin: 0 0 0 18px;">
+                    <li><strong>Adresses IP minimisées :</strong> le dernier octet IPv4 est remplacé par <code>0</code> (ex. <code>192.168.1.0</code>) et les IPv6 sont tronquées avant stockage ; l'empreinte journalière (<code>sha256</code> salé par la date) change chaque nuit et ne permet pas de remonter à l'IP réelle.</li>
+                    <li><strong>Conservation limitée :</strong> purge automatique des journaux et événements au bout de <strong>30 jours</strong> ; aucun partage vers des tiers publicitaires.</li>
+                    <li><strong>Cookies utilisés :</strong> un cookie technique de session de 30 min (<code>vb_sid</code>, <code>HttpOnly</code>) est posé côté serveur pour regrouper les pages d'une même visite, et un cookie pseudonyme de 7 jours (<code>vb_vid</code>) n'est créé <strong>qu'après clic sur « Tout accepter »</strong> dans le bandeau de consentement (jamais en cas de refus).</li>
+                </ul>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+                    <h4 style="margin: 0; color: #0f172a; font-size: 0.92rem;"><i class="fa-solid fa-file-contract" style="color: #1d4ed8;"></i> 4. Exemple à intégrer dans vos Mentions légales / Politique de confidentialité</h4>
+                    <button type="button" id="lsCopyLegalBtn" style="padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; color: #0f172a; font-size: 0.78rem; font-weight: 600; cursor: pointer;">
+                        <i class="fa-regular fa-copy"></i> Copier le texte
+                    </button>
+                </div>
+                <textarea id="lsLegalTemplate" readonly rows="8" style="width: 100%; font-size: 0.82rem; line-height: 1.5; color: #1e293b; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; resize: vertical;">Mesure d'audience (LightStats)
+Ce site utilise LightStats, une solution de mesure d'audience hébergée directement sur notre serveur, sans recours à des régies publicitaires ni transfert de données vers des tiers.
+- Données collectées : pages consultées (sans paramètres marketing), provenance HTTP, type de navigateur/système, identifiant technique de session (30 minutes) et adresse IP immédiatement anonymisée (masquage du dernier octet).
+- Suivi récurrent : un identifiant visiteur pseudonyme (cookie « vb_vid », conservé 7 jours) n'est déposé qu'avec votre accord explicite via le bandeau de consentement. Vous pouvez refuser ou modifier votre choix à tout moment.
+- Durée de conservation : les journaux techniques bruts sont automatiquement supprimés après 30 jours.</textarea>
+            </div>
         </div>
-
-        <div style="margin-bottom: 1.5rem; padding: 0.85rem 1rem; background: var(--ls-slate-50); border-left: 4px solid #7c3aed; border-radius: 8px; font-size: 0.8rem; color: var(--ls-slate-600); line-height: 1.6;">
-            <i class="fa-solid fa-circle-info" style="color: #7c3aed;"></i> <strong>Règle méthodologique de comparaison :</strong> Matomo et LightStats utilisent deux approches de mesure indépendantes. Matomo s'appuie sur son script tiers avec cookies de pistage et empreinte navigateur, tandis que LightStats repose sur une réconciliation souveraine HTTP/JS sans traceur. Les écarts constatés proviennent des bloqueurs de publicité (qui bloquent Matomo), du refus de consentement et des définitions distinctes du rebond.
-        </div>
-
-        {% IF matomoSummary.error %}
-            <div class="ls-empty-card" style="border-color: #fecaca; background: #fef2f2; color: #b91c1c;">
-                <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; color: #ef4444; margin-bottom: 0.75rem;"></i>
-                <h4 style="color: #b91c1c; font-weight: 700;">Connexion Matomo Indisponible</h4>
-                <p style="font-size: 0.85rem; margin: 0;">{{matomoSummary.error}}</p>
-            </div>
-        {% ELSE %}
-
-            <div class="ls-kpi-quad">
-                <div class="ls-kpi-card">
-                    <div class="ls-kpi-icon icon-blue"><i class="fa-solid fa-person-walking"></i></div>
-                    <div class="ls-kpi-body">
-                        <div class="ls-kpi-label">Visites (Matomo)</div>
-                        <div class="ls-kpi-num">{{matomoSummary.visits}}</div>
-                        <div class="ls-kpi-sub">Sessions complètes</div>
-                    </div>
-                </div>
-
-                <div class="ls-kpi-card">
-                    <div class="ls-kpi-icon icon-green"><i class="fa-solid fa-eye"></i></div>
-                    <div class="ls-kpi-body">
-                        <div class="ls-kpi-label">Pages Vues (Matomo)</div>
-                        <div class="ls-kpi-num">{{matomoSummary.pageviews}}</div>
-                        <div class="ls-kpi-sub">{{matomoSummary.pages_per_visit}} pages / visite</div>
-                    </div>
-                </div>
-
-                <div class="ls-kpi-card">
-                    <div class="ls-kpi-icon icon-purple"><i class="fa-solid fa-fingerprint"></i></div>
-                    <div class="ls-kpi-body">
-                        <div class="ls-kpi-label">Visiteurs Uniques (Matomo)</div>
-                        <div class="ls-kpi-num">{{matomoSummary.unique_visitors}}</div>
-                        <div class="ls-kpi-sub">Empreinte navigateur</div>
-                    </div>
-                </div>
-
-                <div class="ls-kpi-card">
-                    <div class="ls-kpi-icon icon-amber"><i class="fa-solid fa-right-from-bracket"></i></div>
-                    <div class="ls-kpi-body">
-                        <div class="ls-kpi-label">Taux de Rebond</div>
-                        <div class="ls-kpi-num">{{matomoSummary.bounce_rate}}</div>
-                        <div class="ls-kpi-sub">Durée moy. : {{matomoSummary.avg_time}}</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Graphique Matomo -->
-            <section class="ls-card">
-                <div class="ls-card-header">
-                    <h3 class="ls-card-title"><i class="fa-solid fa-chart-line" style="color: #7c3aed;"></i> Évolution Quotidienne (Matomo)</h3>
-                </div>
-                <div style="height: 280px; position: relative;">
-                    <canvas id="matomoDayChart"></canvas>
-                </div>
-            </section>
-
-        {% ENDIF %}
-
     </div>
-
 </div>
 
 <!-- ── SCRIPTS CHART.JS & NAVIGATION DES ONGLETS ── -->
@@ -1276,30 +1013,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 6. Matomo Day Chart
-    const ctxMatomo = document.getElementById('matomoDayChart');
-    if (ctxMatomo && typeof Chart !== 'undefined') {
-        const mLabels = [{{matomoDayLabels}}];
-        const mVisits = [{{matomoDayVisits}}];
-        const mPv = [{{matomoDayPv}}];
-        if (mLabels.length > 0) {
-            new Chart(ctxMatomo, {
-                type: 'line',
-                data: {
-                    labels: mLabels,
-                    datasets: [
-                        { label: 'Visites', data: mVisits, borderColor: '#7c3aed', backgroundColor: 'rgba(124, 58, 237, 0.08)', borderWidth: 2, tension: 0.35, fill: true, pointRadius: 3 },
-                        { label: 'Pages Vues', data: mPv, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.05)', borderWidth: 2, tension: 0.35, fill: true, pointRadius: 3 }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top' } },
-                    scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
-                }
-            });
+    // 6. Modal Informations / RGPD LightStats
+    const lsModal = document.getElementById('lsInfoModal');
+    const lsModalBtn = document.getElementById('lsInfoModalBtn');
+    const lsModalClose = document.getElementById('lsInfoModalClose');
+    const lsCopyBtn = document.getElementById('lsCopyLegalBtn');
+    const lsLegalArea = document.getElementById('lsLegalTemplate');
+
+    if (lsModal && lsModalBtn) {
+        lsModalBtn.addEventListener('click', () => { lsModal.style.display = 'block'; });
+        if (lsModalClose) {
+            lsModalClose.addEventListener('click', () => { lsModal.style.display = 'none'; });
         }
+        lsModal.addEventListener('click', (e) => {
+            if (e.target === lsModal) lsModal.style.display = 'none';
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lsModal.style.display === 'block') lsModal.style.display = 'none';
+        });
+    }
+    if (lsCopyBtn && lsLegalArea) {
+        lsCopyBtn.addEventListener('click', function() {
+            const text = lsLegalArea.value;
+            const orig = lsCopyBtn.innerHTML;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    lsCopyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copié !';
+                    setTimeout(() => { lsCopyBtn.innerHTML = orig; }, 1800);
+                });
+            } else {
+                lsLegalArea.select();
+                document.execCommand('copy');
+                lsCopyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copié !';
+                setTimeout(() => { lsCopyBtn.innerHTML = orig; }, 1800);
+            }
+        });
     }
 });
 

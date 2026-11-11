@@ -1,5 +1,5 @@
 <section class="module-card">
-    <header><i class="fa-solid fa-magnifying-glass-chart"></i> {{ Lang.seo.name|default("SEO & Référencement") }}</header>
+    <header><i class="fa-solid fa-magnifying-glass-chart"></i> {{ Lang.seo.name }}</header>
 
     <form method="post" action="{{ ROUTER.generate("seo-admin-save")}}" enctype="multipart/form-data">
         {{ SHOW.tokenField }}
@@ -7,13 +7,16 @@
         <div class="tabs-container" data-tab-key="seo">
             <ul class="tabs-header">
                 <li class="default-tab" data-tab="general">
-                    <i class="fa-solid fa-sliders"></i> {{ Lang.seo.tab.general|default("Général") }}
+                    <i class="fa-solid fa-sliders"></i> {{ Lang.seo.tab.general }}
                 </li>
                 <li data-tab="social">
-                    <i class="fa-solid fa-share-nodes"></i> {{ Lang.seo.tab.social|default("Social / OG") }}
+                    <i class="fa-solid fa-share-nodes"></i> {{ Lang.seo.tab.social }}
                 </li>
                 <li data-tab="redirects">
-                    <i class="fa-solid fa-route"></i> {{ Lang.seo.tab.redirects|default("Redirections") }}
+                    <i class="fa-solid fa-route"></i> {{ Lang.seo.tab.redirects }}
+                </li>
+                <li data-tab="help">
+                    <i class="fa-solid fa-circle-question"></i> {{ Lang.seo.tab.help }}
                 </li>
             </ul>
 
@@ -55,11 +58,11 @@
                 <!-- TAB SOCIAL -->
                 <li class="tab">
                     <section>
-                        <header>{{ Lang.seo.og.image.global|default("Image OpenGraph Globale") }}</header>
+                        <header>{{ Lang.seo.og.image.global }}</header>
                         <p>
-                            <label for="defaultOgImage">{{ Lang.seo.og.image.label|default("URL ou fichier Image") }}</label>
+                            <label for="defaultOgImage">{{ Lang.seo.og.image.label }}</label>
                             <input type="text" name="defaultOgImage" id="defaultOgImage" value="{{ runPlugin.getConfigVal("defaultOgImage") }}" placeholder="https://..." />
-                            <small>{{ Lang.seo.og.image.help|default("Cette image sera utilisée si aucune autre image n'est définie pour la page.") }}</small>
+                            <small>{{ Lang.seo.og.image.help }}</small>
                         </p>
                     </section>
 
@@ -95,18 +98,18 @@
                 <!-- TAB REDIRECTS -->
                 <li class="tab">
                     <section>
-                        <header>{{ Lang.seo.redirects.new|default("Ajouter une redirection") }}</header>
+                        <header>{{ Lang.seo.redirects.new }}</header>
                         <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
                             <p style="flex: 2; min-width: 200px;">
-                                <label>{{ Lang.seo.redirects.from|default("URL Source (ex: /ancienne-page)") }}</label>
+                                <label>{{ Lang.seo.redirects.from }}</label>
                                 <input type="text" name="new_redirect_from" placeholder="/ancienne-page">
                             </p>
                             <p style="flex: 2; min-width: 200px;">
-                                <label>{{ Lang.seo.redirects.to|default("URL Destination (ex: /nouvelle-page)") }}</label>
+                                <label>{{ Lang.seo.redirects.to }}</label>
                                 <input type="text" name="new_redirect_to" placeholder="/nouvelle-page">
                             </p>
                             <p style="flex: 1; min-width: 140px;">
-                                <label>{{ Lang.seo.redirects.code|default("Code") }}</label>
+                                <label>{{ Lang.seo.redirects.code }}</label>
                                 <select name="new_redirect_code">
                                     <option value="301">301 (Permanent)</option>
                                     <option value="302">302 (Temporaire)</option>
@@ -119,10 +122,10 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>{{ Lang.seo.redirects.from|default("Source") }}</th>
-                                    <th>{{ Lang.seo.redirects.to|default("Destination") }}</th>
-                                    <th>{{ Lang.seo.redirects.code|default("Code") }}</th>
-                                    <th>{{ Lang.seo.redirects.hits|default("Hits") }}</th>
+                                    <th>{{ Lang.seo.redirects.from }}</th>
+                                    <th>{{ Lang.seo.redirects.to }}</th>
+                                    <th>{{ Lang.seo.redirects.code }}</th>
+                                    <th>{{ Lang.seo.redirects.hits }}</th>
                                     <th style="text-align: right;">Actions</th>
                                 </tr>
                             </thead>
@@ -132,7 +135,7 @@
                                     <td><code>{{ r.old_url }}</code></td>
                                     <td><code>{{ r.new_url }}</code></td>
                                     <td>{{ r.code }}</td>
-                                    <td>{{ r.hits }} <small>({{ r.last_hit|default("-") }})</small></td>
+                                    <td>{{ r.hits }} {% if r.last_hit %}<small>({{ r.last_hit }})</small>{% endif %}</td>
                                     <td style="text-align: right;">
                                         <button type="submit" formaction="{{ ROUTER.generate("seo-admin-delete-redirect", {"id": r.id}) }}" class="button alert small" onclick="return confirm('Supprimer cette redirection ?')">
                                             <i class="fa-solid fa-trash"></i>
@@ -143,6 +146,34 @@
                             </tbody>
                         </table>
                     </div>
+                </li>
+
+                <!-- TAB HELP -->
+                <li class="tab">
+                    <section>
+                        <header><i class="fa-brands fa-google"></i> {{ Lang.seo.google }}</header>
+                        <p><strong>{{ Lang.seo.analytics.id }} :</strong> {{ Lang.seo.analytics.id.desc }}<br>
+                        <small>Note technique : ce champ injecte le script historique Google Analytics (<code>analytics.js</code>). Si vous préférez une mesure locale sans traceur Google, laissez ce champ vide et utilisez <strong>LightStats</strong>.</small></p>
+                        <p><strong>{{ Lang.seo.analytics.meta }} :</strong> {{ Lang.seo.analytics.meta.desc }} Permet à Google Search Console de vérifier que vous êtes propriétaire du site.</p>
+                        <p><strong>{{ Lang.seo.sitemap.title }} :</strong> Génère le fichier <code>/sitemap.xml</code> à la racine du site afin d'aider les moteurs de recherche à indexer vos pages et articles publics.</p>
+                    </section>
+
+                    <section>
+                        <header><i class="fa-solid fa-share-nodes"></i> OpenGraph, Liens &amp; Partage Social (Facebook / X)</header>
+                        <p><strong>Image OpenGraph globale :</strong> Définit l'image affichée par défaut en aperçu lorsqu'une page du site est partagée sur Facebook, WhatsApp, Discord ou LinkedIn (si la page ou l'article n'a pas déjà d'image mise en avant).</p>
+                        <p><strong>Liens sur les réseaux sociaux :</strong> Affiche les icônes vers vos profils officiels dans la zone choisie (<em>Menu</em>, <em>Pied de page</em> ou <em>Flottant</em>).</p>
+                        <p><strong>Partage automatique (App ID Facebook / Access Token / Bearer Token X) :</strong> Lorsqu'un réseau est coché et configuré, le plugin tente de publier automatiquement un lien sur votre Page Facebook ou compte X à chaque enregistrement d'un nouvel article de blog (via l'API Graph Facebook avec votre <em>Page Access Token</em> issu de votre App Facebook, ou l'API X avec votre <em>Bearer Token</em>).</p>
+                    </section>
+
+                    <section>
+                        <header><i class="fa-solid fa-route"></i> Fonctionnement des Redirections (301 / 302)</header>
+                        <p>Avant d'afficher une page ou une erreur 404, le site vérifie si l'URL demandée correspond à une règle enregistrée :</p>
+                        <ul>
+                            <li><strong>301 (Permanent) :</strong> à utiliser quand une ancienne page a changé d'adresse définitivement (transfère le référencement vers la nouvelle URL).</li>
+                            <li><strong>302 (Temporaire) :</strong> à utiliser pour une redirection ponctuelle sans modifier l'indexation définitive.</li>
+                        </ul>
+                        <p>La colonne <strong>{{ Lang.seo.redirects.hits }}</strong> indique combien de fois chaque redirection a été déclenchée côté visiteurs.</p>
+                    </section>
                 </li>
             </ul>
         </div>
