@@ -137,7 +137,6 @@ class NavigationService
         $menuService->ensureMigrated();
 
         $menuItems = MenuItem::queryBuilder()
-            ->where('is_enabled', 1)
             ->orderBy('position', 'asc')
             ->get();
 
@@ -152,6 +151,9 @@ class NavigationService
         }
 
         foreach ($menuItems as $menuItem) {
+            if (!$menuItem->isEnabled()) {
+                continue;
+            }
             $resolved = $menuService->resolveMenuItemTarget($menuItem, $pagesById, $pageManager);
             if (!$resolved['active']) {
                 continue;
@@ -166,12 +168,14 @@ class NavigationService
                 }
             }
 
-            $parentId = $menuItem->getParentId() > 0 ? 'menu.' . $menuItem->getParentId() : null;
+            $rawParent = $menuItem->attributes['parentId'] ?? $menuItem->attributes['parent_id'] ?? 0;
+            $parentId = (!empty($rawParent) && (string)$rawParent !== '0') ? 'menu.' . $rawParent : null;
+            $rawId = (string)($menuItem->attributes['id'] ?? $menuItem->getId());
             $visibility = $menuItem->toNavigationVisibility($resolved['conditions']);
 
             try {
                 $navItem = new NavigationItem(
-                    'menu.' . $menuItem->getId(),
+                    'menu.' . $rawId,
                     $menuItem->getLabel(),
                     $resolved['url'],
                     $menuItem->getTargetAttr(),
