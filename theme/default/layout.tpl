@@ -19,18 +19,20 @@
 				<nav id="header_content">
 					<div class="header-brand">
 						<a href="{{SHOW.siteUrl}}" class="brand-logo">
+							{% if CORE.getConfigVal("siteLogo") != "" and CORE.getConfigVal("siteLogoPlacement") == "siteName" %}
+								<img class="site-logo site-logo-inline" src="{{SHOW.siteLogoUrl}}" alt="{{SHOW.siteName}}" />
+							{% endif %}
 							<p id="siteName">{{SHOW.siteName}}</p>
 						</a>
 					</div>
 					<div class="nav-wrapper">
 						<input type="checkbox" id="nav_toggle" class="nav-toggle" aria-hidden="true" />
-						<label for="nav_toggle" id="mobile_menu" aria-label="{{Lang.site-menu-label}}"><i class="fa-solid fa-bars"></i></label>
 						<div class="header-links">
 							<ul id="navigation">
 								{{SHOW.mainNavigation('<li><a class="[cssClass]" href="[target]" target="[targetAttribut]">[icon] [label]</a>[childrens]</li>')}}
 								{% HOOK.endMainNavigation("") %}
 								<li class="nav-search-item">
-									{{SHOW.headerSearch("header")}}
+									{% HOOK.299search:navbar %}
 								</li>
 								{% if REGISTRATION_ENABLED and IS_LOGGED == false %}
 									<li class="nav-auth-links">
@@ -41,26 +43,39 @@
 								{% if IS_LOGGED %}
 									{{SHOW.userAvatarMenu}}
 								{% endif %}
-							</ul>{% HOOK.meteoWidgetHeader %}
+							</ul>
+						</div>
+						<div class="header-utilities">
+							{% HOOK.meteoWidgetHeader %}
+							{% if CORE.getConfigVal("enable_theme_toggle") %}
+								<button type="button" id="theme-toggle-btn" class="default-theme-toggle" title="Changer de thème (Auto / Sombre / Clair)" aria-label="Changer de thème">
+									<span id="theme-icon" aria-hidden="true">🌓</span>
+									<span id="theme-label">Auto</span>
+								</button>
+							{% endif %}
+							<label for="nav_toggle" id="mobile_menu" aria-label="{{Lang.site-menu-label}}"><i class="fa-solid fa-bars"></i></label>
 						</div>
 					</div>
 				</nav>
 			</div>
-			<div id="banner">
-				<div id="alert-msg">
-					{{SHOW.displayMsg}}
-				</div>
-				{% HOOK.afterHeader %}
-				<div id="siteDesc">
-				{{SHOW.siteDesc}}
-				{% if PAGE_TITLE %}
-					<h1>{{PAGE_TITLE}}</h1>
-				{% else %}
-					{{SHOW.mainTitle}}
-				{% endif %}
-				{% HOOK.banner %}
+			<div id="alert-msg">
+				{{SHOW.displayMsg}}
 			</div>
-		</div>
+			{% HOOK.afterHeader %}
+			{% if CORE.getConfigVal("showBanner") != false %}
+			<div id="banner">
+				<div id="siteDesc">
+					{% if CORE.getConfigVal("siteLogo") != "" and CORE.getConfigVal("siteLogoPlacement") == "header" %}
+						<img class="site-logo site-logo-banner" src="{{SHOW.siteLogoUrl}}" alt="{{SHOW.siteName}}" />
+					{% endif %}
+					{% if not CORE.getConfigVal("hideBannerTitle") %}
+						<p class="banner-site-title">{{SHOW.siteName}}</p>
+					{% endif %}
+					{{SHOW.siteDesc}}
+					{% HOOK.banner %}
+				</div>
+			</div>
+			{% endif %}
 		<main id="body">
 			{% IF CORE.getConfigVal(hideTitles) == 0 and not HIDE_PAGE_TITLE %}
 				<div id="pageTitle">

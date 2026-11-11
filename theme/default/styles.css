@@ -2241,3 +2241,40 @@ body.theme-light .card>header {
 }
 
 /* REMOVED DUPLICATE TOGGLE AND CARD STYLES AS THEY ARE NOW UNIFIED ABOVE */
+
+.site-logo {
+    max-height: 44px;
+    width: auto;
+    display: block;
+}
+.site-logo-banner {
+    max-height: 84px;
+    margin: 0 auto 12px;
+}
+.banner-site-title {
+    margin: 0 0 8px;
+    font-size: 2rem;
+    font-weight: 700;
+}
+.header-utilities {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.default-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    background: transparent;
+    color: var(--font-color, inherit);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+body.theme-dark .default-theme-toggle {
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #f8fafc;
+}
