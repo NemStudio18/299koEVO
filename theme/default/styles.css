@@ -437,6 +437,23 @@ input[type=button].alert:hover,
 button.alert:hover,
 .button.alert:hover {
     background: var(--alert-hover-color);
+    color: #fff;
+}
+
+input[type=submit].warning,
+input[type=button].warning,
+button.warning,
+.button.warning {
+    background: var(--warning-color);
+    color: #fff;
+}
+
+input[type=submit].warning:hover,
+input[type=button].warning:hover,
+button.warning:hover,
+.button.warning:hover {
+    background: var(--warning-hover-color);
+    color: #fff;
 }
 
 input[type=submit].success,
