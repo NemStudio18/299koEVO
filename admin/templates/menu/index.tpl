@@ -306,6 +306,22 @@
     margin-left: auto;
     font-size: 0.72rem;
 }
+.source-check-row.is-already-added {
+    opacity: 0.65;
+    cursor: not-allowed;
+    background: #f8fafc;
+}
+.source-added-badge {
+    margin-left: auto;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+    white-space: nowrap;
+}
 .source-form {
     display: flex;
     flex-direction: column;
@@ -551,9 +567,29 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function esc(str) {
-    const d = document.createElement('div');
-    d.textContent = str == null ? '' : String(str);
-    return d.innerHTML;
+    return String(str == null ? '' : str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function idKey(v) {
+    if (v === null || v === undefined || v === '' || v === 0 || v === '0') return '0';
+    return String(v);
+}
+
+function collectExistingRefs(nodes, out = new Set()) {
+    (nodes || []).forEach(node => {
+        if ((node.type === 'page' || node.type === 'plugin') && node.targetRef) {
+            out.add(`${node.type}:${String(node.targetRef).trim()}`);
+        }
+        if (node.children && node.children.length) {
+            collectExistingRefs(node.children, out);
+        }
+    });
+    return out;
 }
 
 function showToast(msg, isError = false) {
@@ -573,45 +609,55 @@ function updateCounts(counts) {
 }
 
 function renderSources() {
-    renderSourcePages('');
-    renderSourcePlugins('');
+    const pFilter = document.getElementById('filterPagesInput');
+    const mFilter = document.getElementById('filterPluginsInput');
+    renderSourcePages(pFilter ? pFilter.value : '');
+    renderSourcePlugins(mFilter ? mFilter.value : '');
 }
 
 function renderSourcePages(query) {
     const box = document.getElementById('sourcePagesList');
     if (!box) return;
+    const existing = collectExistingRefs(treeData);
     const q = (query || '').trim().toLowerCase();
     const filtered = pagesData.filter(p => !q || p.name.toLowerCase().includes(q));
     if (!filtered.length) {
         box.innerHTML = '<div style="font-size:0.82rem;color:#64748b;padding:6px;">Aucune page trouvée.</div>';
         return;
     }
-    box.innerHTML = filtered.map(p => `
-        <label class="source-check-row">
-            <input type="checkbox" class="src-check-page" value="${p.id}" data-label="${esc(p.name)}">
+    box.innerHTML = filtered.map(p => {
+        const already = existing.has(`page:${String(p.id)}`);
+        return `
+        <label class="source-check-row ${already ? 'is-already-added' : ''}">
+            <input type="checkbox" class="src-check-page" value="${esc(p.id)}" data-label="${esc(p.name)}" ${already ? 'disabled' : ''}>
             <span>${esc(p.name)}</span>
-            ${p.isHidden ? '<small>Brouillon</small>' : (p.isHomepage ? '<small>Accueil</small>' : '')}
-        </label>
-    `).join('');
+            ${already
+                ? '<span class="source-added-badge">Déjà dans le menu</span>'
+                : (p.isHidden ? '<small>Brouillon</small>' : (p.isHomepage ? '<small>Accueil</small>' : ''))}
+        </label>`;
+    }).join('');
 }
 
 function renderSourcePlugins(query) {
     const box = document.getElementById('sourcePluginsList');
     if (!box) return;
+    const existing = collectExistingRefs(treeData);
     const q = (query || '').trim().toLowerCase();
     const filtered = catalogData.filter(m => !q || m.label.toLowerCase().includes(q) || m.plugin.toLowerCase().includes(q));
     if (!filtered.length) {
         box.innerHTML = '<div style="font-size:0.82rem;color:#64748b;padding:6px;">Aucun module public.</div>';
         return;
     }
-    box.innerHTML = filtered.map(m => `
-        <label class="source-check-row" title="${esc(m.description || m.url)}">
-            <input type="checkbox" class="src-check-plugin" value="${esc(m.key)}" data-label="${esc(m.label)}" data-icon="${esc(m.icon)}">
+    box.innerHTML = filtered.map(m => {
+        const already = existing.has(`plugin:${String(m.key)}`);
+        return `
+        <label class="source-check-row ${already ? 'is-already-added' : ''}" title="${esc(m.description || m.url)}">
+            <input type="checkbox" class="src-check-plugin" value="${esc(m.key)}" data-label="${esc(m.label)}" data-icon="${esc(m.icon)}" ${already ? 'disabled' : ''}>
             <i class="${esc(m.icon)}"></i>
             <span>${esc(m.label)}</span>
-            <small>${esc(m.plugin)}</small>
-        </label>
-    `).join('');
+            ${already ? '<span class="source-added-badge">Déjà dans le menu</span>' : `<small>${esc(m.plugin)}</small>`}
+        </label>`;
+    }).join('');
 }
 
 async function apiPost(url, params) {
@@ -630,10 +676,10 @@ async function apiPost(url, params) {
 }
 
 async function addCheckedSources(kind) {
-    const selector = kind === 'page' ? '.src-check-page:checked' : '.src-check-plugin:checked';
+    const selector = kind === 'page' ? '.src-check-page:checked:not(:disabled)' : '.src-check-plugin:checked:not(:disabled)';
     const checks = Array.from(document.querySelectorAll(selector));
     if (!checks.length) {
-        showToast('Cochez au moins un élément à ajouter.', true);
+        showToast('Cochez au moins un élément non présent à ajouter.', true);
         return;
     }
     const items = checks.map(c => ({
@@ -644,10 +690,15 @@ async function addCheckedSources(kind) {
         target_attr: '_self'
     }));
     try {
-        await apiPost('/admin/menus/add', { location: activeLocation, items });
+        const data = await apiPost('/admin/menus/add', { location: activeLocation, items });
         checks.forEach(c => c.checked = false);
         renderTree();
-        showToast(`${items.length} élément(s) ajouté(s) au menu.`);
+        const addedCount = Array.isArray(data.createdIds) ? data.createdIds.length : items.length;
+        const skipped = Number(data.skippedCount || 0);
+        const msg = skipped > 0
+            ? `${addedCount} élément(s) ajouté(s), ${skipped} déjà présent(s) ignoré(s).`
+            : `${addedCount} élément(s) ajouté(s) au menu.`;
+        showToast(msg);
     } catch (e) {
         showToast(e.message, true);
     }
@@ -710,6 +761,7 @@ function typeLabel(type) {
 }
 
 function renderTree() {
+    renderSources();
     const container = document.getElementById('menuTreeContainer');
     if (!container) return;
     if (!treeData.length) {
@@ -720,21 +772,24 @@ function renderTree() {
 }
 
 function renderNodeHtml(node, parentId, idx, siblingsLen) {
-    const isOpen = openEditors.has(node.id);
+    const idStr = idKey(node.id);
+    const idAttr = esc(idStr);
+    const isRoot = idKey(parentId) === '0';
+    const isOpen = openEditors.has(idStr);
     const visMode = (node.visibility && node.visibility.mode) ? node.visibility.mode : 'public';
     const childrenHtml = (node.children && node.children.length)
-        ? `<div class="menu-node-children">${node.children.map((c, ci) => renderNodeHtml(c, node.id, ci, node.children.length)).join('')}</div>`
+        ? `<div class="menu-node-children">${node.children.map((c, ci) => renderNodeHtml(c, idStr, ci, node.children.length)).join('')}</div>`
         : '';
     const statusWarn = !node.targetActive ? `<span class="menu-vis-pill" style="color:#b91c1c;border-color:#fecaca;">Cible inactive</span>` : '';
 
     return `
-        <div class="menu-node-wrap" data-id="${node.id}">
+        <div class="menu-node-wrap" data-id="${idAttr}">
             <div class="menu-node-card ${node.isEnabled ? '' : 'is-disabled'}"
                  draggable="true"
-                 ondragstart="onNodeDragStart(event, ${node.id})"
-                 ondragover="onNodeDragOver(event, ${node.id})"
+                 ondragstart="onNodeDragStart(event, '${idAttr}')"
+                 ondragover="onNodeDragOver(event, '${idAttr}')"
                  ondragleave="onNodeDragLeave(event)"
-                 ondrop="onNodeDrop(event, ${node.id})"
+                 ondrop="onNodeDrop(event, '${idAttr}')"
                  ondragend="onNodeDragEnd()">
                 <div class="menu-node-bar">
                     <span class="menu-drag-handle" title="Glisser pour déplacer"><i class="fa-solid fa-grip-vertical"></i></span>
@@ -746,15 +801,15 @@ function renderNodeHtml(node, parentId, idx, siblingsLen) {
                         ${statusWarn}
                     </div>
                     <div class="menu-node-tools">
-                        <button type="button" class="menu-icon-btn" title="Monter" ${idx === 0 ? 'disabled' : ''} onclick="moveNode(${node.id}, -1)"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button type="button" class="menu-icon-btn" title="Descendre" ${idx === siblingsLen - 1 ? 'disabled' : ''} onclick="moveNode(${node.id}, 1)"><i class="fa-solid fa-arrow-down"></i></button>
-                        <button type="button" class="menu-icon-btn" title="Mettre en sous-menu" ${idx === 0 ? 'disabled' : ''} onclick="indentNode(${node.id})"><i class="fa-solid fa-indent"></i></button>
-                        <button type="button" class="menu-icon-btn" title="Remonter d'un niveau" ${parentId === 0 ? 'disabled' : ''} onclick="outdentNode(${node.id})"><i class="fa-solid fa-outdent"></i></button>
-                        <button type="button" class="menu-icon-btn" title="Modifier" onclick="toggleNodeEditor(${node.id})"><i class="fa-solid ${isOpen ? 'fa-chevron-up' : 'fa-pen'}"></i></button>
+                        <button type="button" class="menu-icon-btn" title="Monter" ${idx === 0 ? 'disabled' : ''} onclick="moveNode('${idAttr}', -1)"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button type="button" class="menu-icon-btn" title="Descendre" ${idx === siblingsLen - 1 ? 'disabled' : ''} onclick="moveNode('${idAttr}', 1)"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button type="button" class="menu-icon-btn" title="Mettre en sous-menu" ${idx === 0 ? 'disabled' : ''} onclick="indentNode('${idAttr}')"><i class="fa-solid fa-indent"></i></button>
+                        <button type="button" class="menu-icon-btn" title="Remonter d'un niveau" ${isRoot ? 'disabled' : ''} onclick="outdentNode('${idAttr}')"><i class="fa-solid fa-outdent"></i></button>
+                        <button type="button" class="menu-icon-btn" title="Modifier" onclick="toggleNodeEditor('${idAttr}')"><i class="fa-solid ${isOpen ? 'fa-chevron-up' : 'fa-pen'}"></i></button>
                     </div>
                 </div>
                 ${isOpen ? `
-                <form class="menu-node-editor" onsubmit="saveNodeEdit(event, ${node.id})">
+                <form class="menu-node-editor" onsubmit="saveNodeEdit(event, '${idAttr}')">
                     <label>Libellé dans le menu
                         <input type="text" name="label" value="${esc(node.label)}" required>
                     </label>
@@ -792,7 +847,7 @@ function renderNodeHtml(node, parentId, idx, siblingsLen) {
                         </div>
                     </label>
                     <div class="menu-editor-footer">
-                        <button type="button" class="menu-btn-danger" onclick="removeNode(${node.id})">
+                        <button type="button" class="menu-btn-danger" onclick="removeNode('${idAttr}')">
                             <i class="fa-solid fa-trash"></i> Retirer du menu
                         </button>
                         <button type="submit" class="menus-btn-primary">
@@ -808,8 +863,9 @@ function renderNodeHtml(node, parentId, idx, siblingsLen) {
 }
 
 function toggleNodeEditor(id) {
-    if (openEditors.has(id)) openEditors.delete(id);
-    else openEditors.add(id);
+    const key = idKey(id);
+    if (openEditors.has(key)) openEditors.delete(key);
+    else openEditors.add(key);
     renderTree();
 }
 
@@ -817,7 +873,7 @@ async function saveNodeEdit(e, id) {
     e.preventDefault();
     const form = e.target;
     const payload = {
-        id,
+        id: idKey(id),
         label: form.label.value.trim(),
         visibility_mode: form.visibility_mode.value,
         icon: form.icon.value.trim(),
@@ -838,9 +894,10 @@ async function saveNodeEdit(e, id) {
 
 async function removeNode(id) {
     if (!confirm('Retirer cet élément du menu ? (La page ou le plugin associé reste intact.)')) return;
+    const key = idKey(id);
     try {
-        openEditors.delete(id);
-        await apiPost('/admin/menus/delete', { id });
+        openEditors.delete(key);
+        await apiPost('/admin/menus/delete', { id: key });
         renderTree();
         showToast('Élément retiré du menu.');
     } catch (err) {
@@ -849,10 +906,11 @@ async function removeNode(id) {
 }
 
 function findNodeAndList(list, id, parentNode = null) {
+    const key = idKey(id);
     for (let i = 0; i < list.length; i++) {
-        if (list[i].id === id) return { list, index: i, node: list[i], parentNode };
+        if (idKey(list[i].id) === key) return { list, index: i, node: list[i], parentNode };
         if (list[i].children && list[i].children.length) {
-            const found = findNodeAndList(list[i].children, id, list[i]);
+            const found = findNodeAndList(list[i].children, key, list[i]);
             if (found) return found;
         }
     }
@@ -860,8 +918,9 @@ function findNodeAndList(list, id, parentNode = null) {
 }
 
 function containsNodeId(node, targetId) {
-    if (node.id === targetId) return true;
-    return (node.children || []).some(c => containsNodeId(c, targetId));
+    const targetKey = idKey(targetId);
+    if (idKey(node.id) === targetKey) return true;
+    return (node.children || []).some(c => containsNodeId(c, targetKey));
 }
 
 function moveNode(id, delta) {
@@ -898,9 +957,10 @@ function outdentNode(id) {
 }
 
 function onNodeDragStart(e, id) {
-    dragState = { id };
+    const key = idKey(id);
+    dragState = { id: key };
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', String(id));
+    e.dataTransfer.setData('text/plain', key);
     setTimeout(() => {
         const card = e.target.closest('.menu-node-card');
         if (card) card.classList.add('is-dragging');
@@ -908,7 +968,8 @@ function onNodeDragStart(e, id) {
 }
 
 function onNodeDragOver(e, targetId) {
-    if (!dragState || dragState.id === targetId) return;
+    const targetKey = idKey(targetId);
+    if (!dragState || dragState.id === targetKey) return;
     e.preventDefault();
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
@@ -926,14 +987,15 @@ function onNodeDrop(e, targetId) {
     const card = e.currentTarget;
     const makeChild = card.classList.contains('drag-over-inside');
     card.classList.remove('drag-over-top', 'drag-over-inside');
-    if (!dragState || dragState.id === targetId) return;
+    const targetKey = idKey(targetId);
+    if (!dragState || dragState.id === targetKey) return;
 
     const src = findNodeAndList(treeData, dragState.id);
-    const dst = findNodeAndList(treeData, targetId);
-    if (!src || !dst || containsNodeId(src.node, targetId)) return;
+    const dst = findNodeAndList(treeData, targetKey);
+    if (!src || !dst || containsNodeId(src.node, targetKey)) return;
 
     const [moved] = src.list.splice(src.index, 1);
-    const dstAfter = findNodeAndList(treeData, targetId);
+    const dstAfter = findNodeAndList(treeData, targetKey);
     if (!dstAfter) return;
 
     if (makeChild) {

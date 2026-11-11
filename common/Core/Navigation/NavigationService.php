@@ -147,7 +147,7 @@ class NavigationService
         $pageManager = new Page();
         $pagesById = [];
         foreach ($pageManager->getItems() as $p) {
-            $pagesById[(int)$p->getId()] = $p;
+            $pagesById[(string)$p->getId()] = $p;
         }
 
         foreach ($menuItems as $menuItem) {

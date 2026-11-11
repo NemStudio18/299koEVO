@@ -421,10 +421,10 @@ abstract class JsonActiveRecord implements \ArrayAccess
         $isSql = ($storage instanceof \Core\Storage\SqlStorage) || ($storage instanceof \Core\Storage\FallbackStorage);
 
         if (empty($id)) {
-            // Only generate uniqid if we are NOT using SQL driver (or Fallback which implies SQL primary)
+            // Only generate a random hex id if we are NOT using SQL driver (or Fallback which implies SQL primary)
             // For SQL, we want to let the database handle AUTO_INCREMENT
             if (!$isSql) {
-                $id = uniqid(); 
+                $id = bin2hex(random_bytes(8));
             }
         }
 

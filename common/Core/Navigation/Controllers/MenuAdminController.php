@@ -70,7 +70,7 @@ class MenuAdminController extends AdminController
                 continue;
             }
             $cmsPages[] = [
-                'id'         => (int)$p->getId(),
+                'id'         => MenuItem::normalizeId($p->getId()),
                 'name'       => (string)$p->getName(),
                 'isHomepage' => (bool)$p->getIsHomepage(),
                 'isHidden'   => (bool)$p->getIsHidden(),
@@ -109,11 +109,12 @@ class MenuAdminController extends AdminController
                 'label'       => (string)$this->request->post('label', ''),
                 'icon'        => (string)$this->request->post('icon', ''),
                 'target_attr' => (string)$this->request->post('target_attr', '_self'),
-                'parent_id'   => (int)$this->request->post('parent_id', 0),
+                'parent_id'   => MenuItem::normalizeId($this->request->post('parent_id', 0)),
             ]];
         }
 
         $createdIds = [];
+        $skippedCount = 0;
         foreach ($itemsPayload as $entry) {
             if (!is_array($entry)) {
                 continue;
@@ -122,11 +123,17 @@ class MenuAdminController extends AdminController
             if ($label === '') {
                 continue;
             }
+            $type = (string)($entry['type'] ?? 'url');
+            $targetRef = trim((string)($entry['target_ref'] ?? ''));
+            if (in_array($type, ['page', 'plugin'], true) && $targetRef !== '' && $this->menuService->hasTargetInLocation($location, $type, $targetRef)) {
+                $skippedCount++;
+                continue;
+            }
             $created = $this->menuService->createItem([
                 'location'    => $location,
-                'parent_id'   => (int)($entry['parent_id'] ?? 0),
-                'type'        => (string)($entry['type'] ?? 'url'),
-                'target_ref'  => (string)($entry['target_ref'] ?? ''),
+                'parent_id'   => MenuItem::normalizeId($entry['parent_id'] ?? 0),
+                'type'        => $type,
+                'target_ref'  => $targetRef,
                 'label'       => $label,
                 'icon'        => (string)($entry['icon'] ?? ''),
                 'target_attr' => (string)($entry['target_attr'] ?? '_self'),
@@ -139,15 +146,23 @@ class MenuAdminController extends AdminController
         }
 
         if (empty($createdIds)) {
+            if ($skippedCount > 0) {
+                $this->jsonResponse([
+                    'success'      => false,
+                    'error'        => 'Cet élément est déjà présent dans ce menu.',
+                    'skippedCount' => $skippedCount,
+                ], 409);
+            }
             $this->jsonResponse(['success' => false, 'error' => 'Aucun élément valide à ajouter'], 422);
         }
 
         $this->jsonResponse([
-            'success'    => true,
-            'createdIds' => $createdIds,
-            'tree'       => $this->menuService->getLocationTree($location),
-            'counts'     => $this->menuService->getLocationCounts(),
-            'csrfToken'  => Csrf::token(),
+            'success'      => true,
+            'createdIds'   => $createdIds,
+            'skippedCount' => $skippedCount,
+            'tree'         => $this->menuService->getLocationTree($location),
+            'counts'       => $this->menuService->getLocationCounts(),
+            'csrfToken'    => Csrf::token(),
         ]);
     }
 
@@ -155,8 +170,8 @@ class MenuAdminController extends AdminController
     {
         $this->verifyApiCsrf();
 
-        $id = (int)$this->request->post('id', 0);
-        $item = \Core\Navigation\MenuItem::findPK($id);
+        $id = MenuItem::normalizeId($this->request->post('id', 0));
+        $item = $id !== 0 ? \Core\Navigation\MenuItem::findPK($id) : null;
         if (!$item) {
             $this->jsonResponse(['success' => false, 'error' => 'Élément introuvable'], 404);
         }
@@ -191,8 +206,8 @@ class MenuAdminController extends AdminController
     {
         $this->verifyApiCsrf();
 
-        $id = (int)$this->request->post('id', 0);
-        $item = \Core\Navigation\MenuItem::findPK($id);
+        $id = MenuItem::normalizeId($this->request->post('id', 0));
+        $item = $id !== 0 ? \Core\Navigation\MenuItem::findPK($id) : null;
         if (!$item) {
             $this->jsonResponse(['success' => false, 'error' => 'Élément introuvable'], 404);
         }
