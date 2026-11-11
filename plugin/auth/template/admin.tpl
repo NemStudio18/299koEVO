@@ -10,6 +10,7 @@
                 <li data-tab="fields"><i class="fa-solid fa-id-card"></i> Champs Profil</li>
                 <li data-tab="register"><i class="fa-solid fa-user-plus"></i> Inscription</li>
                 <li data-tab="help"><i class="fa-solid fa-circle-question"></i> Aide &amp; Spoiler</li>
+                <li data-tab="info"><i class="fa-solid fa-circle-info"></i> Informations</li>
             </ul>
 
             <ul class="tabs">
@@ -62,7 +63,12 @@
                 <!-- TAB: FIELDS -->
                 <li class="tab">
             <h4>Gestion des champs de profil</h4>
-            <p><small>Activez ou désactivez les champs de profil et gérez leurs sources de données (JSON pour les listes).</small></p>
+            <p><small>Ajoutez vos propres champs de profil (texte, nombre ou liste déroulante) et choisissez s'ils apparaissent dès l'inscription.</small></p>
+            {% if not config.dynamic_fields %}
+                <p id="dynamic-fields-empty" style="padding: 12px 14px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; color: #64748b; font-size: 0.9rem;">
+                    Aucun champ de profil configuré pour le moment. Cliquez sur <strong>Ajouter un champ personnalisé</strong> ci-dessous si vous souhaitez en créer.
+                </p>
+            {% endif %}
             
             <div id="dynamic-fields-container">
                 {% FOR i, field IN config.dynamic_fields %}
@@ -96,7 +102,7 @@
                         <p class="field-options-box" style="{% if field.type != 'select' %}display:none;{% endif %}">
                             <label>Options (Format: <code>val:Label,val2:Label2</code>) OU Source JSON (Chemin relatif)</label>
                             <input type="text" name="dynamic_fields[{{i}}][options]" value="{{field.options}}" placeholder="M:Homme,F:Femme" />
-                            <input type="text" name="dynamic_fields[{{i}}][source]" value="{{field.source}}" placeholder="common/data/agglo.json" style="margin-top:0.5rem;" />
+                            <input type="text" name="dynamic_fields[{{i}}][source]" value="{{field.source}}" placeholder="data/exemple.json" style="margin-top:0.5rem;" />
                         </p>
                     </div>
                 {% ENDFOR %}
@@ -169,6 +175,46 @@
                 <textarea id="spoiler_content" name="spoiler_content" class="editor" rows="8">{{config.spoiler_content}}</textarea>
             </p>
                 </li>
+                <!-- TAB: INFO -->
+                <li class="tab">
+            <h4>À quoi sert le plugin Auth ?</h4>
+            <p>
+                Le plugin <strong>Auth</strong> étend les formulaires natifs de connexion (<code>/users/login</code>), d'inscription (<code>/users/register</code>) et de profil membre (<code>/users/profile/edit</code>) sans modifier le cœur du CMS.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;">
+                    <strong><i class="fa-solid fa-plug"></i> 1. OAuth (Facebook / Google)</strong>
+                    <p style="margin: 8px 0 0; font-size: 0.88rem; line-height: 1.5; color: #334155;">
+                        Active les boutons de connexion rapide via Facebook ou Google. Renseignez vos clés d'application puis copiez exactement l'<strong>URL de callback</strong> affichée dans votre console Facebook Developers ou Google Cloud.
+                    </p>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;">
+                    <strong><i class="fa-solid fa-id-card"></i> 2. Champs Profil</strong>
+                    <p style="margin: 8px 0 0; font-size: 0.88rem; line-height: 1.5; color: #334155;">
+                        Permet d'ajouter des champs libres ou listes au profil utilisateur. Chaque ligne dispose de 3 options :
+                        <br>• <strong>Activé</strong> : rend le champ visible dans l'édition de profil.
+                        <br>• <strong>Obligatoire</strong> : impose une valeur lors de l'envoi.
+                        <br>• <strong>Afficher à l'inscription</strong> : affiche aussi ce champ dès la création de compte.
+                        <br>Pour un <em>Sélecteur</em>, saisissez soit <code>val:Label,val2:Label2</code>, soit le chemin d'un fichier JSON local.
+                    </p>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;">
+                    <strong><i class="fa-solid fa-user-plus"></i> 3. Inscription &amp; Textes</strong>
+                    <p style="margin: 8px 0 0; font-size: 0.88rem; line-height: 1.5; color: #334155;">
+                        Permet d'afficher un texte personnalisé au-dessus ou en dessous des formulaires de connexion / inscription, ainsi que des <strong>cases à cocher de consentement</strong> (ex : acceptation des CGU ou charte) uniquement sur la page d'inscription.
+                    </p>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;">
+                    <strong><i class="fa-solid fa-circle-question"></i> 4. Aide &amp; Spoiler</strong>
+                    <p style="margin: 8px 0 0; font-size: 0.88rem; line-height: 1.5; color: #334155;">
+                        Ajoute un bouton d'assistance sous les formulaires (en <em>Accordéon</em> repliable ou en fenêtre <em>Modale</em>) pour guider vos visiteurs (règles de mot de passe, contact support, etc.).
+                    </p>
+                </div>
+            </div>
+            <p style="font-size: 0.86rem; color: #475569;">
+                <i class="fa-solid fa-floppy-disk"></i> <strong>Action « Sauvegarder toute la configuration »</strong> : enregistre ensemble les réglages des 4 onglets dans <code>data/plugin/auth/auth_conf.json</code>.
+            </p>
+                </li>
             </ul>
         </div>
 
@@ -205,6 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add Field Logic
     document.getElementById('add-field').addEventListener('click', function() {
+        const emptyHint = document.getElementById('dynamic-fields-empty');
+        if (emptyHint) emptyHint.style.display = 'none';
         const container = document.getElementById('dynamic-fields-container');
         const index = 'new_' + Date.now();
         const row = document.createElement('div');
@@ -239,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p class="field-options-box" style="display:none;">
                 <label>Options (val:Label) OU Source JSON</label>
                 <input type="text" name="dynamic_fields[` + index + `][options]" placeholder="M:Homme,F:Femme" />
-                <input type="text" name="dynamic_fields[` + index + `][source]" placeholder="common/data/agglo.json" style="margin-top:0.5rem;" />
+                <input type="text" name="dynamic_fields[` + index + `][source]" placeholder="data/exemple.json" style="margin-top:0.5rem;" />
             </p>
         `;
         container.appendChild(row);

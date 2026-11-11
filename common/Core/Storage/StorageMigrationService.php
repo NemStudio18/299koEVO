@@ -66,7 +66,7 @@ class StorageMigrationService
                 // On tente de récupérer le table name et le schema depuis storage.json
                 $plugins = \Core\Plugin\PluginsManager::getInstance()->getPlugins();
                 foreach ($plugins as $plugin) {
-                    $storageFile = $plugin->getPath() . 'param' . DS . 'storage.json';
+                    $storageFile = PLUGINS . $plugin->getName() . DS . 'param' . DS . 'storage.json';
                     if (file_exists($storageFile)) {
                         $manifest = json_decode(file_get_contents($storageFile), true);
                         if (isset($manifest[$modelClass]['table'], $manifest[$modelClass]['schema'])) {
@@ -83,7 +83,7 @@ class StorageMigrationService
                         }
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // On log mais on tente quand même la suite au cas où la table existerait déjà sans SHOW TABLES compatible
                 \Core\Core::getInstance()->getLogger()->log('WARNING', "Schema provisioning failed for $modelClass: " . $e->getMessage());
             }

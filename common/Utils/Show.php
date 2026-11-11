@@ -426,7 +426,6 @@ class Show
             'antispam'      => 'systeme',
             'pwa'           => 'systeme',
             'meteo'         => 'systeme',
-            'shorturl'      => 'systeme',
             '299search'     => 'systeme',
         ];
 

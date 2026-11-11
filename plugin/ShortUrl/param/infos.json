@@ -1,7 +1,0 @@
-{
-    "name": "short-url",
-    "description": "Gère les URL courtes pour les POIs",
-    "author": "Antigravity",
-    "version": "1.0.0",
-    "icon": "fa-solid fa-link"
-}
