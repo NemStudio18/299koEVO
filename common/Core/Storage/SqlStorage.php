@@ -133,21 +133,29 @@ class SqlStorage implements StorageInterface
         $idx = 0;
 
         foreach ($conditions as $k => $condition) {
-            if (is_array($condition) && isset($condition['column'], $condition['operator'], $condition['value'])) {
+            if (is_array($condition) && isset($condition['column'], $condition['operator']) && array_key_exists('value', $condition)) {
                 $col = $this->map($condition['column']);
                 $op = $condition['operator'];
+                $opUpper = strtoupper(trim((string) $op));
                 $val = $condition['value'];
 
-                // Detect IN operator with array value
-                if (strtoupper($op) === 'IN' && is_array($val)) {
-                    $inParams = [];
-                    foreach ($val as $kVal => $vVal) {
-                        $pName = ":p{$idx}_{$kVal}";
-                        $inParams[] = $pName;
-                        $params[$pName] = $vVal;
+                if ($opUpper === 'IS NULL' || ($opUpper === '=' && $val === null)) {
+                    $where[] = "$col IS NULL";
+                } elseif ($opUpper === 'IS NOT NULL' || (($opUpper === '!=' || $opUpper === '<>') && $val === null)) {
+                    $where[] = "$col IS NOT NULL";
+                } elseif ($opUpper === 'IN' && is_array($val)) {
+                    if (empty($val)) {
+                        $where[] = "1 = 0";
+                    } else {
+                        $inParams = [];
+                        foreach (array_values($val) as $kVal => $vVal) {
+                            $pName = ":p{$idx}_{$kVal}";
+                            $inParams[] = $pName;
+                            $params[$pName] = $vVal;
+                        }
+                        $where[] = "$col IN (" . implode(', ', $inParams) . ")";
+                        $idx++;
                     }
-                    $where[] = "$col IN (" . implode(', ', $inParams) . ")";
-                    $idx++;
                 } else {
                     $paramName = ":p$idx";
                     $where[] = "$col $op $paramName";
@@ -317,19 +325,28 @@ class SqlStorage implements StorageInterface
         $idx = 0;
 
         foreach ($conditions as $k => $condition) {
-            if (is_array($condition) && isset($condition['column'], $condition['operator'], $condition['value'])) {
+            if (is_array($condition) && isset($condition['column'], $condition['operator']) && array_key_exists('value', $condition)) {
                 $col = $this->map($condition['column']);
                 $op  = $condition['operator'];
+                $opUpper = strtoupper(trim((string) $op));
                 $val = $condition['value'];
-                if (strtoupper($op) === 'IN' && is_array($val)) {
-                    $inParams = [];
-                    foreach ($val as $kVal => $vVal) {
-                        $pName = ":p{$idx}_{$kVal}";
-                        $inParams[] = $pName;
-                        $params[$pName] = $vVal;
+                if ($opUpper === 'IS NULL' || ($opUpper === '=' && $val === null)) {
+                    $where[] = "$col IS NULL";
+                } elseif ($opUpper === 'IS NOT NULL' || (($opUpper === '!=' || $opUpper === '<>') && $val === null)) {
+                    $where[] = "$col IS NOT NULL";
+                } elseif ($opUpper === 'IN' && is_array($val)) {
+                    if (empty($val)) {
+                        $where[] = "1 = 0";
+                    } else {
+                        $inParams = [];
+                        foreach (array_values($val) as $kVal => $vVal) {
+                            $pName = ":p{$idx}_{$kVal}";
+                            $inParams[] = $pName;
+                            $params[$pName] = $vVal;
+                        }
+                        $where[] = "$col IN (" . implode(', ', $inParams) . ")";
+                        $idx++;
                     }
-                    $where[] = "$col IN (" . implode(', ', $inParams) . ")";
-                    $idx++;
                 } else {
                     $paramName = ":p$idx";
                     $where[] = "$col $op $paramName";

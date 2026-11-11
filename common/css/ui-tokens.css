@@ -131,6 +131,34 @@ body.theme-dark {
     }
 }
 
+/* Garde-fou responsive multi-thèmes : empêche les plugins de faire déborder le conteneur central sur mobile */
+#body,
+#body-page,
+#content,
+.declic-main,
+.declic-grid,
+.declic-content {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+#content table,
+.declic-content table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 769px) {
+    #content table,
+    .declic-content table {
+        display: table;
+    }
+}
+
 /* Composants utilitaires communs réutilisables par tous les plugins */
 .evo-card {
     background: var(--evo-card-bg);

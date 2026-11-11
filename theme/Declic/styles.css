@@ -574,12 +574,15 @@ hr { border: 0; border-top: 1px solid var(--dc-border); margin: 2rem 0; }
 
 .declic-content {
     flex: 1;
+    width: 100%;
+    max-width: 100%;
     min-width: 0;
     background: var(--dc-surface);
     border: 1px solid var(--dc-border);
     border-radius: var(--dc-radius);
     padding: 32px 36px;
     box-shadow: var(--dc-shadow-sm);
+    overflow-wrap: break-word;
 }
 
 .declic-content > *:first-child { margin-top: 0; }
@@ -669,8 +672,8 @@ th { background: var(--dc-surface-alt); font-weight: 600; }
    Responsive
    ========================================================================== */
 @media (max-width: 1024px) {
-    .declic-grid { flex-direction: column; }
-    #modulesSidebar { width: 100%; }
+    .declic-grid { flex-direction: column; align-items: stretch; }
+    #modulesSidebar { width: 100%; max-width: 100%; }
     #mobile_menu { display: inline-flex; }
     .header-links {
         display: none;
