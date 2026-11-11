@@ -1,0 +1,352 @@
+/* Claim form styles */
+.claim-form {
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.claim-status-box {
+	padding: 16px;
+	border-radius: 8px;
+	margin-bottom: 24px;
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+}
+
+.claim-status-box i {
+	font-size: 20px;
+	margin-top: 2px;
+}
+
+.claim-status-box--pending {
+	background: #fef3c7;
+	border: 1px solid #fbbf24;
+	color: #92400e;
+}
+
+.claim-poi-info {
+	background: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	padding: 20px;
+	margin-bottom: 24px;
+}
+
+.claim-poi-name {
+	margin: 0 0 12px 0;
+	font-size: 24px;
+	font-weight: 700;
+	color: #1f2937;
+}
+
+.claim-poi-address {
+	margin: 12px 0;
+	color: #4b5563;
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+.claim-poi-address i {
+	color: #6b7280;
+	margin-right: 6px;
+}
+
+.claim-poi-map {
+	width: 100%;
+	height: 250px;
+	border-radius: 8px;
+	margin-top: 16px;
+	border: 1px solid #e5e7eb;
+	overflow: hidden;
+}
+
+.claim-form-fields {
+	margin-top: 24px;
+}
+
+.claim-form .form-group {
+	margin-bottom: 20px;
+}
+
+.claim-form label {
+	display: block;
+	margin-bottom: 6px;
+	font-weight: 600;
+	color: #374151;
+}
+
+.claim-form .required {
+	color: #dc2626;
+}
+
+.claim-form textarea,
+.claim-form input[type="file"] {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	font-size: 14px;
+	font-family: inherit;
+}
+
+.claim-form textarea {
+	resize: vertical;
+	min-height: 100px;
+}
+
+.claim-form small {
+	display: block;
+	margin-top: 4px;
+	color: #6b7280;
+	font-size: 13px;
+}
+
+.claim-form .form-actions {
+	margin-top: 24px;
+}
+
+.claim-actions {
+	margin-top: 24px;
+	padding-top: 20px;
+	border-top: 1px solid #e5e7eb;
+}
+
+.claim-login-required {
+	padding: 16px;
+	background: #fef3c7;
+	border: 1px solid #fbbf24;
+	border-radius: 6px;
+	color: #92400e;
+	text-align: center;
+}
+
+/* My claims list */
+.claim-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.claim-item {
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	padding: 16px;
+	margin-bottom: 16px;
+	background: #fff;
+	transition: box-shadow 0.2s;
+}
+
+.claim-item:hover {
+	box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.claim-item-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 12px;
+	gap: 12px;
+}
+
+.claim-item-header h3 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+	color: #1f2937;
+	flex: 1;
+}
+
+.claim-status-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.claim-status-badge--pending {
+	background: #fef3c7;
+	color: #92400e;
+}
+
+.claim-status-badge--approved {
+	background: #dcfce7;
+	color: #166534;
+}
+
+.claim-status-badge--rejected {
+	background: #fee2e2;
+	color: #991b1b;
+}
+
+.claim-item-address {
+	margin: 8px 0;
+	color: #6b7280;
+	font-size: 14px;
+}
+
+.claim-item-address i {
+	color: #9ca3af;
+	margin-right: 6px;
+}
+
+.claim-item-meta {
+	margin: 8px 0;
+	color: #9ca3af;
+	font-size: 13px;
+}
+
+.claim-item-actions {
+	margin-top: 12px;
+	padding-top: 12px;
+	border-top: 1px solid #f3f4f6;
+}
+
+/* Navigation menu dropdown */
+#navigation .claim-menu-dropdown {
+	position: relative;
+	display: inline-block;
+}
+
+#navigation .claim-menu-dropdown:hover .claim-menu-list,
+#navigation .claim-menu-dropdown:focus-within .claim-menu-list {
+	display: block !important;
+}
+
+#navigation .claim-menu-dropdown:hover > a,
+#navigation .claim-menu-dropdown:focus-within > a {
+	pointer-events: none;
+}
+
+#navigation .claim-menu-list {
+	display: none !important;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	background: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+	min-width: 280px;
+	max-width: 400px;
+	max-height: 400px;
+	overflow-y: auto;
+	z-index: 1000;
+	margin-top: 4px;
+	padding: 0;
+	list-style: none;
+}
+
+/* Mode mobile : style classique (pas d'infobulle décalée) */
+@media (max-width: 1024px) {
+	#navigation .claim-menu-dropdown {
+		position: static;
+		display: block;
+		width: 100%;
+	}
+	
+	#navigation .claim-menu-list {
+		position: static !important;
+		display: none !important;
+		width: 100%;
+		min-width: auto;
+		max-width: none;
+		margin-top: 8px;
+		margin-left: 0;
+		box-shadow: none;
+		border: none;
+		border-top: 1px solid #e5e7eb;
+		border-radius: 0;
+		background: #f9fafb;
+	}
+	
+	#navigation .claim-menu-dropdown:focus-within .claim-menu-list,
+	#navigation .claim-menu-dropdown.active .claim-menu-list {
+		display: block !important;
+	}
+	
+	#navigation .claim-menu-dropdown > a {
+		pointer-events: auto !important;
+		position: relative;
+	}
+	
+	#navigation .claim-menu-dropdown > a::after {
+		content: '\f107';
+		font-family: 'Font Awesome 6 Free';
+		font-weight: 900;
+		margin-left: 8px;
+		transition: transform 0.3s;
+	}
+	
+	#navigation .claim-menu-dropdown.active > a::after {
+		transform: rotate(180deg);
+	}
+}
+
+.claim-menu-item {
+	padding: 12px 16px;
+	border-bottom: 1px solid #f3f4f6;
+	display: block;
+	text-decoration: none;
+	color: #1f2937 !important;
+	transition: background 0.2s;
+	background: transparent !important;
+	border-radius: 0 !important;
+	text-transform: none !important;
+	font-weight: normal !important;
+}
+
+.claim-menu-item::after {
+	display: none !important;
+}
+
+.claim-menu-item:last-child {
+	border-bottom: none;
+}
+
+.claim-menu-item:hover {
+	background: #f9fafb;
+}
+
+.claim-menu-item-title {
+	font-weight: 600;
+	font-size: 14px;
+	margin-bottom: 4px;
+}
+
+.claim-menu-item-address {
+	font-size: 12px;
+	color: #6b7280;
+	margin-bottom: 4px;
+}
+
+.claim-menu-item-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 11px;
+	padding: 2px 6px;
+	border-radius: 4px;
+	margin-top: 4px;
+}
+
+.claim-menu-item-status--pending {
+	background: #fef3c7;
+	color: #92400e;
+}
+
+.claim-menu-item-status--approved {
+	background: #dcfce7;
+	color: #166534;
+}
+
+.claim-menu-empty {
+	padding: 16px;
+	text-align: center;
+	color: #6b7280;
+	font-size: 14px;
+}
+

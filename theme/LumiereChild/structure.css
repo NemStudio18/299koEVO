@@ -1,0 +1,845 @@
+/*
+   STRUCTURE & COMPONENT STYLES
+   --------------------------------------------------
+   Contains layout, specific component overrides (Header, Search),
+   Animations, and Landing Page styles.
+*/
+
+/* Header Image Override */
+#banner {
+    background-image: url('header.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Fix Z-Index Overlap with SearchUi */
+#header {
+    z-index: 2000 !important;
+    position: sticky;
+}
+
+/* --- ANIMATED WEATHER ICONS (GLOBAL - SCALED 140px) --- */
+.weather-icon-container {
+    width: 140px;
+    height: 140px;
+    border-radius: 40%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    overflow: visible;
+    z-index: 10;
+}
+
+/* Scaled version for lists (forecast, hourly) */
+.weather-icon-container.is-mini {
+    transform: scale(0.4);
+    width: 60px;
+    height: 60px;
+    margin: -20px auto;
+}
+
+.weather-icon-container.hot {
+    background: linear-gradient(to top right, rgba(255, 87, 34, 1) 0%, rgba(251, 140, 0, 1) 100%);
+    box-shadow: 1px 1px 40px rgba(255, 111, 0, 1);
+}
+
+.weather-icon-container.cloudy {
+    background: linear-gradient(to top right, rgba(63, 81, 181, 1) 0%, rgba(3, 155, 229, 1) 40%);
+    box-shadow: 1px 1px 40px rgba(2, 119, 189, 1);
+}
+
+.weather-icon-container.stormy {
+    background: linear-gradient(to top right, rgba(117, 117, 117, 1) 0%, rgba(33, 33, 33, 1) 90%);
+    box-shadow: 1px 1px 40px rgba(33, 33, 33, 1);
+}
+
+.weather-icon-container.breezy {
+    background: linear-gradient(to top right, rgba(156, 204, 101, 1) 0%, rgba(38, 198, 218, 1) 50%);
+    box-shadow: 1px 1px 40px rgba(38, 198, 218, 1);
+}
+
+.weather-icon-container.night {
+    background: linear-gradient(to bottom right, rgba(63, 81, 181, 1) 0%, rgba(171, 71, 188, 1) 70%);
+    box-shadow: 1px 1px 40px rgba(81, 45, 168, 1);
+}
+
+.sun {
+    position: absolute;
+    top: -10%;
+    left: 65%;
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    background: linear-gradient(to bottom left, rgba(255, 235, 59, 1) 0%, rgba(249, 168, 37, 1) 90%);
+    box-shadow: 1px 1px 40px rgba(255, 160, 0, 1);
+    animation: inex 3s infinite linear;
+}
+
+.sunx {
+    position: absolute;
+    top: 30%;
+    left: 45%;
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+    background-color: #fff;
+    opacity: 0.2;
+}
+
+.moon {
+    position: absolute;
+    top: -10%;
+    left: 65%;
+    width: 120px;
+    height: 120px;
+    border-radius: 100%;
+    background: rgba(255, 241, 118, 1);
+    box-shadow: 1px 1px 40px rgba(224, 224, 224, 1);
+}
+
+.spot1 {
+    position: absolute;
+    top: 0%;
+    left: 85%;
+    width: 18px;
+    height: 18px;
+    border-radius: 100%;
+    background-color: #777;
+}
+
+.spot2 {
+    position: absolute;
+    top: 30%;
+    left: 75%;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: #777;
+}
+
+.cloud {
+    position: absolute;
+    top: 5%;
+    left: 70%;
+    width: 130px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: rgba(129, 212, 250, 1);
+    box-shadow: 1px 1px 40px rgba(0, 151, 167, 1);
+    animation: move 3s infinite linear;
+}
+
+.cloudx {
+    position: absolute;
+    top: 23%;
+    left: 55%;
+    width: 130px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: rgba(129, 212, 250, 1);
+    animation: move 3s infinite linear;
+}
+
+.cloudr {
+    position: absolute;
+    top: 5%;
+    left: 60%;
+    width: 130px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: rgba(96, 125, 139, 1);
+    box-shadow: 1px 1px 40px rgba(84, 110, 122, 1);
+    animation: flash 1.5s infinite linear;
+}
+
+.weather-icon-container ul {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.stormy li {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 100%;
+    background-color: #777;
+    box-shadow: 1px 1px 30px #555;
+    animation: fall 3s infinite linear;
+    opacity: 0;
+}
+
+@keyframes inex {
+    50% {
+        opacity: 0.4;
+    }
+
+    60% {
+        opacity: 1;
+    }
+}
+
+@keyframes move {
+    50% {
+        transform: translateX(-20px);
+    }
+}
+
+@keyframes fall {
+    10% {
+        opacity: 0.8;
+    }
+
+    50% {
+        opacity: 1;
+        transform: translate(-10px, 60px);
+    }
+
+    100% {
+        transform: translate(-25px, 120px);
+    }
+}
+
+@keyframes flash {
+    48% {
+        background-color: rgba(96, 125, 139, 1);
+    }
+
+    50% {
+        background-color: #fff;
+    }
+
+    55% {
+        background-color: rgba(96, 125, 139, 1);
+    }
+
+    57% {
+        background-color: #fff;
+    }
+}
+
+/* =========================================
+   HOME PAGE / LANDING STYLES
+   ========================================= */
+
+.lumiere-landing-wrapper {
+    margin: 0 -20px;
+    width: calc(100% + 40px);
+}
+
+.lumiere-landing-wrapper .landing-hero {
+    position: relative;
+    padding: 120px 20px 100px;
+    text-align: center;
+    color: #fff;
+    border-radius: 0 0 50px 50px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    background-size: cover;
+    /*! background-position: center; REMOVED - managed by #banner */
+}
+
+.lumiere-landing-wrapper .landing-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 100%);
+    z-index: 1;
+}
+
+.lumiere-landing-wrapper .landing-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.lumiere-landing-wrapper .landing-hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+    line-height: 1.1;
+}
+
+.lumiere-landing-wrapper .landing-hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 3rem;
+    opacity: 0.95;
+    font-weight: 300;
+}
+
+/* Search Form pill in Hero */
+.lumiere-landing-wrapper .search-form-container {
+    max-width: 650px;
+    margin: 0 auto 2.5rem;
+}
+
+.lumiere-landing-wrapper .search-input-group-with-button {
+    display: flex;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    border-radius: 50px;
+    padding: 6px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.lumiere-landing-wrapper .search-input-group {
+    flex: 1;
+}
+
+.lumiere-landing-wrapper .search-input-group input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    outline: none;
+    color: #1a3a5c;
+}
+
+.lumiere-landing-wrapper .search-button-group button {
+    background: var(--lumiere-orange);
+    color: #fff;
+    border: none;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.lumiere-landing-wrapper .search-button-group button:hover {
+    transform: scale(1.1) rotate(5deg);
+    background: var(--lumiere-orange-hover);
+}
+
+/* CTA Buttons */
+.lumiere-landing-wrapper .landing-hero-cta {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.lumiere-landing-wrapper .cta-button {
+    padding: 14px 28px;
+    border-radius: 35px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lumiere-landing-wrapper .cta-primary {
+    background: var(--lumiere-orange);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(255, 140, 66, 0.4);
+}
+
+.lumiere-landing-wrapper .cta-primary:hover {
+    background: var(--lumiere-orange-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 140, 66, 0.5);
+}
+
+.lumiere-landing-wrapper .cta-secondary {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.lumiere-landing-wrapper .cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+}
+
+/* Section Header Styles */
+.lumiere-landing-wrapper .landing-section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 3.5rem;
+    color: var(--lumiere-blue-dark);
+    position: relative;
+}
+
+.lumiere-landing-wrapper .landing-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--lumiere-orange);
+    border-radius: 2px;
+}
+
+/* Card Grid & Cards */
+.lumiere-landing-wrapper .landing-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2.5rem;
+    padding: 2rem 0;
+}
+
+.lumiere-landing-wrapper .landing-card {
+    flex: 1 1 300px;
+    max-width: 380px;
+    background: var(--section-bg-color);
+    border-radius: 24px;
+    padding: 2.5rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-items: center;
+    border: 1px solid var(--form-border-color);
+}
+
+.lumiere-landing-wrapper .landing-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+    border-color: rgba(255, 140, 66, 0.2);
+}
+
+.lumiere-landing-wrapper .landing-card-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 140, 66, 0.08);
+    color: var(--lumiere-orange);
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.lumiere-landing-wrapper .landing-card h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--lumiere-blue-dark);
+    margin-bottom: 12px;
+}
+
+.lumiere-landing-wrapper .landing-card p {
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.lumiere-landing-wrapper .landing-card-link {
+    font-weight: 700;
+    color: var(--lumiere-orange);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1.2px;
+    margin-top: auto;
+}
+
+/* Carousel 3D Styles */
+.poi-carousel-container {
+    position: relative;
+    perspective: 1500px;
+    overflow: hidden;
+    height: 520px;
+    display: flex;
+    align-items: center;
+}
+
+.poi-carousel {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    transform-style: preserve-3d;
+}
+
+.poi-card-wrapper {
+    position: absolute;
+    width: 320px;
+    height: 420px;
+    transition: all 0.85s cubic-bezier(0.23, 1, 0.32, 1);
+    left: 50%;
+    margin-left: -160px;
+}
+
+.poi-discovery-card {
+    height: 100%;
+    width: 100%;
+    padding: 0 !important;
+    overflow: hidden;
+    text-align: left !important;
+    align-items: stretch !important;
+}
+
+.poi-discovery-image {
+    height: 220px;
+    background: #f1f5f9;
+}
+
+.poi-discovery-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.poi-discovery-body {
+    padding: 1.8rem;
+    flex: 1;
+}
+
+.carousel-navigation {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2rem;
+    z-index: 50;
+}
+
+.carousel-btn {
+    width: 50px;
+    height: 50px;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.carousel-btn:hover {
+    background: var(--lumiere-orange);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* --- SEARCH UI FIXES --- */
+/* Ensure the container has padding on connected SearchUI page */
+.searchV2-home .container {
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* =========================================
+   EXTRACTED STYLES (Refactor)
+   ========================================= */
+
+/* From home.tpl */
+.landing-hero {
+    background-image: url('header.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.landing-hero-cta {
+    margin-top: 1.5rem;
+}
+
+.landing-how,
+.landing-activity {
+    padding: 4rem 1rem;
+}
+
+.landing-discovery {
+    padding: 4rem 1rem;
+    background: #fff;
+}
+
+.landing-activity {
+    background: #f8f9fa;
+}
+
+.poi-minimap {
+    width: 100%;
+    height: 100%;
+}
+
+.poi-discovery-body h3 {
+    margin-bottom: 0.5rem;
+}
+
+.poi-discovery-body p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+/* Landing Cards Typography overrides */
+.landing-card p {
+    text-align: left;
+    width: 100%;
+}
+
+.landing-card .activity-excerpt {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    text-align: left;
+}
+
+.landing-card-link {
+    margin-top: auto;
+}
+
+.activity-item {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item-title {
+    display: block;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.activity-item-date,
+.activity-item-meta {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.activity-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.activity-date-badge {
+    background: #ff8c42;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.activity-offer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+}
+
+.activity-discount {
+    color: #e74c3c;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* From functions.php (Header Transparency & Layout Fixes) */
+
+/* Header stays with its default background - no transparent override */
+body.page-home #header,
+body.page-SearchUi #header,
+body.page-SearchUi-result #header,
+body.page-search-pretty-1 #header,
+body.page-search-pretty-2 #header,
+body.page-search-pretty-3 #header,
+body.page-search #header {
+    position: relative;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.page-home #header.scrolled,
+body.page-SearchUi #header.scrolled,
+body.page-SearchUi-result #header.scrolled,
+body.page-search-pretty-1 #header.scrolled,
+body.page-search-pretty-2 #header.scrolled,
+body.page-search-pretty-3 #header.scrolled,
+body.page-search #header.scrolled {
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+/* Layout resets for Home/Search pages */
+body.page-home #body-page,
+body.page-SearchUi #body-page,
+body.page-SearchUi-result #body-page,
+body.page-search-pretty-1 #body-page,
+body.page-search-pretty-2 #body-page,
+body.page-search-pretty-3 #body-page,
+body.page-search #body-page {
+    padding-top: 0 !important;
+}
+
+/* Remove specific margins for Home and SearchUI */
+body.page-home main#body,
+body.page-SearchUi main#body,
+body.page-SearchUi-result main#body {
+    padding: 0 !important;
+    margin-top: 0 !important;
+}
+
+body.page-home .search-home-V2,
+body.page-SearchUi .search-home-V2,
+body.page-home #content,
+body.page-SearchUi #content,
+body.page-SearchUi-result #content,
+body.page-home .content-panel,
+body.page-SearchUi .content-panel,
+body.page-SearchUi-result .content-panel,
+body.page-home .lumiere-landing-wrapper,
+body.page-home .landing-hero,
+body.page-SearchUi .main-search-section {
+    margin-top: 0 !important;
+    /* padding-top: 0 !important;*/
+}
+
+/* Header search bar - light theme fix for Lumiere white header */
+.search-pos-header .header-search-form {
+    background: rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.search-pos-header .header-search-form:focus-within,
+.search-pos-header .header-search-form:hover {
+    background: rgba(0, 0, 0, 0.08) !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.search-pos-header .header-search-form input {
+    color: #333 !important;
+}
+
+.search-pos-header .header-search-form input::placeholder {
+    color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.search-pos-header .header-search-form button {
+    color: #555 !important;
+}
+
+/* Hide banner specifically on home and search pages */
+body.page-home #banner,
+body.page-SearchUi #banner,
+body.page-SearchUi-result #banner,
+body.page-search-pretty-1 #banner,
+body.page-search-pretty-2 #banner,
+body.page-search-pretty-3 #banner,
+body.page-search #banner {
+    display: none !important;
+}
+
+/* Hide afterHeader dashboard on home/search pages (shown via hero instead) */
+body.page-home .lumiere-dashboard-container,
+body.page-SearchUi .lumiere-dashboard-container,
+body.page-SearchUi-result .lumiere-dashboard-container,
+body.page-search .lumiere-dashboard-container {
+    display: none !important;
+}
+
+/* SearchUI main-search-section - ensure proper container padding */
+body.page-SearchUi .main-search-section .container,
+body.page-SearchUi-result .main-search-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Homepage hero search bar - dark mode support */
+@media (prefers-color-scheme: dark) {
+    .lumiere-landing-wrapper .search-input-group-with-button {
+        background: rgba(30, 30, 40, 0.92) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .lumiere-landing-wrapper .search-input-group input {
+        color: #e0e0e0 !important;
+    }
+
+    .lumiere-landing-wrapper .search-input-group input::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+}
+
+/* Dark mode toggle class support */
+body.dark-mode .lumiere-landing-wrapper .search-input-group-with-button,
+body.theme-dark .lumiere-landing-wrapper .search-input-group-with-button,
+[data-theme="dark"] .lumiere-landing-wrapper .search-input-group-with-button {
+    background: rgba(30, 30, 40, 0.92) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .lumiere-landing-wrapper .search-input-group input,
+body.theme-dark .lumiere-landing-wrapper .search-input-group input,
+[data-theme="dark"] .lumiere-landing-wrapper .search-input-group input {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .lumiere-landing-wrapper .search-input-group input::placeholder,
+body.theme-dark .lumiere-landing-wrapper .search-input-group input::placeholder,
+[data-theme="dark"] .lumiere-landing-wrapper .search-input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* From functions.php (Dashboard) */
+.lumiere-dashboard-container {
+    margin: 1rem 0 0 0;
+    padding: 0 24px;
+}
+
+.lumiere-dashboard-container .hero-dashboard {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem !important;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Dark Mode Support for Dashboard */
+@media (prefers-color-scheme: dark) {
+    body:not(.theme-light) .lumiere-dashboard-container .hero-dashboard {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+        border: 1px solid #334155;
+    }
+}
+
+body.theme-dark .lumiere-dashboard-container .hero-dashboard,
+body.dark-mode .lumiere-dashboard-container .hero-dashboard,
+[data-theme="dark"] .lumiere-dashboard-container .hero-dashboard {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    border: 1px solid #334155;
+}
+
+.lumiere-dashboard-container .hero-guest {
+    display: none;
+}

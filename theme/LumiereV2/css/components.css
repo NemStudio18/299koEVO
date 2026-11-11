@@ -1,0 +1,769 @@
+/* =========================================
+   LUMIERE V2 - COMPONENTS
+   Buttons, Inputs, Cards, Badges, Loaders.
+   ========================================= */
+
+/* --- BUTTONS --- */
+.button,
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    /* Modern pill shape */
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.button:active {
+    transform: translateY(0);
+}
+
+.button.primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.button.primary:hover {
+    background: var(--primary-hover);
+}
+
+.button.secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.button.secondary:hover {
+    background: var(--secondary-hover);
+}
+
+.button.outline {
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.button.outline:hover {
+    border-color: var(--text-main);
+}
+
+.button.danger,
+.button.alert {
+    background: #ef4444;
+    color: white;
+}
+
+/* --- FORMS --- */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: #fdfdfd;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+/* Specific padding for Hero Search Bars (to clear the icon) */
+.landing-hero .search-input-field,
+.search-hero-wrapper .search-input-field,
+.search-main-form .search-input-field {
+    padding-left: 65px !important;
+}
+
+
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: var(--text-main);
+    font-size: 0.9rem;
+}
+
+/* --- CARDS --- */
+.card {
+    padding: 20px;
+    /* Styles handled in design.css, layout in structure.css */
+    /* This class combines them */
+}
+
+.card-header {
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.card-footer {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* --- BADGES --- */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge.success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge.warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge.danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge.info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* --- LOGIN REQUIRED NOTICE --- */
+.login-required-notice {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 30px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    margin: 30px auto;
+    max-width: 600px;
+    border: 1px solid var(--border-color);
+}
+
+.login-required-content {
+    margin-bottom: 25px;
+}
+
+.login-required-notice .icon-main {
+    font-size: 3rem;
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+.login-required-text h3 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.login-required-text p {
+    color: var(--text-muted);
+}
+
+.login-required-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-register {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-login {
+    background: white;
+    border: 2px solid var(--border-color);
+    color: var(--text-main);
+}
+
+/* --- TABLES --- */
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    vertical-align: top;
+    border-top: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid var(--border-color);
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* --- ALERTS --- */
+.alert {
+    position: relative;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+.alert-primary {
+    color: #084298;
+    background-color: #cfe2ff;
+    border-color: #b6d4fe;
+}
+
+.alert-success {
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+}
+
+.alert-danger {
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+}
+
+.alert-warning {
+    color: #664d03;
+    background-color: #fff3cd;
+    border-color: #ffecb5;
+}
+
+.alert-info {
+    color: #055160;
+    background-color: #cff4fc;
+    border-color: #b6effb;
+}
+
+/* =========================================
+   USER PROFILE TABS & LAYOUT
+   Adapted from Lumiere Legacy for LumiereV2
+   ========================================= */
+
+/* Système d'onglets Profil */
+.profile-tabs {
+    margin-top: 2rem;
+}
+
+.profile-tabs-nav {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.profile-tab-button {
+    padding: 1rem 1.5rem;
+    border: none;
+    border-bottom: 3px solid transparent;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-muted);
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+    border-radius: 6px 6px 0 0;
+}
+
+.profile-tab-button:hover {
+    color: var(--primary-color);
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.profile-tab-button.active {
+    border-bottom-color: var(--primary-color);
+    font-weight: 600;
+    color: var(--primary-color);
+    background: transparent;
+}
+
+.profile-tab-button.profile-tab-danger {
+    margin-left: auto;
+    color: var(--alert-color);
+}
+
+.profile-tab-button.profile-tab-danger:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.profile-tab-content {
+    display: none;
+    padding: 10px 0;
+    animation: fadeIn 0.3s ease;
+}
+
+.profile-tab-content.active {
+    display: block !important;
+}
+
+/* Header profil */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    background: var(--panel-bg);
+    box-shadow: var(--panel-shadow);
+}
+
+.profile-avatar-section {
+    flex-shrink: 0;
+}
+
+.profile-avatar-img,
+.profile-avatar-css {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.profile-avatar-img {
+    object-fit: cover;
+}
+
+.profile-avatar-css {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    background: var(--primary-color);
+    color: white;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-username {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.8rem;
+    color: var(--text-main);
+}
+
+.profile-data-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.profile-data-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1rem;
+}
+
+.data-label {
+    min-width: 40px;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+}
+
+.data-value {
+    font-weight: 500;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Badge specific for profile */
+.profile-badge {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+/* Settings Section */
+.profile-settings-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+}
+
+.profile-settings-title {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.setting-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.setting-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-main);
+}
+
+.setting-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-tabs-nav {
+        flex-direction: column;
+        gap: 0;
+        border-bottom: none;
+    }
+
+    .profile-tab-button {
+        width: 100%;
+        border-bottom: 1px solid var(--border-color);
+        border-left: 3px solid transparent;
+        border-radius: var(--border-radius);
+        background: var(--bg-surface);
+        margin-bottom: 5px;
+        border-radius: 8px;
+    }
+
+    .profile-tab-button.active {
+        border-left-color: var(--primary-color);
+        border-bottom-color: var(--border-color);
+        background: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .profile-tab-button.profile-tab-danger {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .profile-data-list {
+        align-items: center;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* --- TOGGLE SWITCHES --- */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    margin-bottom: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e2e8f0;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+input:checked+.toggle-slider {
+    background-color: var(--primary-color);
+}
+
+input:focus+.toggle-slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked+.toggle-slider:before {
+    transform: translateX(24px);
+}
+
+/* Compact Setting Item */
+.setting-item {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    /* Better alignment for toggles */
+}
+
+/* --- CTA BUTTONS (Promoted from Landing) --- */
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s;
+    position: relative;
+    z-index: 2;
+    border: none;
+    cursor: pointer;
+    line-height: normal;
+}
+
+.cta-button.primary {
+    background: var(--primary-color, #ff8c42);
+    color: white;
+}
+
+.cta-button.primary:hover {
+    background: var(--primary-hover, #e67e3a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cta-button.secondary {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    /* Default to white if on dark bg, will override if needed */
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.cta-button.secondary:hover {
+    background: white;
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+/* Variant for light backgrounds */
+.cta-button.secondary.dark-mode {
+    background: transparent;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.cta-button.secondary.dark-mode:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* --- TOGGLE SWITCHES --- */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    margin-bottom: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e2e8f0;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+input:checked+.toggle-slider {
+    background-color: var(--primary-color);
+}
+
+input:focus+.toggle-slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked+.toggle-slider:before {
+    transform: translateX(24px);
+}
+
+/* Compact Setting Item */
+.setting-item {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    /* Better alignment for toggles */
+}
+
+/* --- CTA BUTTONS (Promoted from Landing) --- */
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s;
+    position: relative;
+    z-index: 2;
+    border: none;
+    cursor: pointer;
+    line-height: normal;
+}
+
+.cta-button.primary {
+    background: var(--primary-color, #ff8c42);
+    color: white;
+}
+
+.cta-button.primary:hover {
+    background: var(--primary-hover, #e67e3a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cta-button.secondary {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    /* Default to white if on dark bg, will override if needed */
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.cta-button.secondary:hover {
+    background: white;
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+/* Variant for light backgrounds */
+.cta-button.secondary.dark-mode {
+    background: transparent;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.cta-button.secondary.dark-mode:hover {
+    background: var(--primary-color);
+    color: white;
+}

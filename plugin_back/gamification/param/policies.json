@@ -1,0 +1,27 @@
+{
+    "gamification:admin": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "role",
+                "type": "role",
+                "value": "ADM"
+            },
+            {
+                "provider": "role",
+                "type": "role",
+                "value": "admin"
+            }
+        ]
+    },
+    "user:progression:view": {
+        "logic": "AND",
+        "conditions": [
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": true
+            }
+        ]
+    }
+}

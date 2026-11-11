@@ -1,0 +1,7 @@
+{
+  "beforeRunPlugin": "offersBeforeRunPlugin",
+  "endFrontHead": "offersEndFrontHead",
+  "notifications:collect": "offersNotificationsCollect",
+  "claim:my-claims-item-actions": "offersClaimMyClaimsItemActions",
+  "user:avatar-menu": "\\Offers\\Hooks::userAvatarMenu"
+}

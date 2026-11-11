@@ -1,0 +1,13 @@
+{
+    "slug" : "telemetryadmin",
+    "name" : "Telemetry Admin",
+    "icon" : "fa-solid fa-chart-line",
+    "description" : "Dashboard d'administration pour la télémétrie et les rapports",
+    "authorEmail" : "mx.koder@gmail.com",
+    "authorWebsite" : "https://299ko.ovh",
+    "version" : "0.1.0b",
+    "homeAdminMethod" : "TelemetryAdminController#dashboard",
+    "isCallableOnAdmin" : true,
+    "isCallableOnPublic" : false
+}
+

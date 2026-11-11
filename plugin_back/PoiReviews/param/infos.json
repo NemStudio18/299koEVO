@@ -1,0 +1,11 @@
+{
+  "slug": "poi-reviews",
+  "name": "Avis POI",
+  "icon": "fa-solid fa-star",
+  "description": "Plugin de notation et commentaires pour les POI",
+  "version": "1.0.0",
+  "author": "299Ko Team",
+  "authorEmail": "mx.koder@gmail.com",
+  "authorWebsite": "https://299ko.ovh",
+  "homeAdminMethod": "PoiReviews\\Controllers\\ReviewsAdminController#index"
+}

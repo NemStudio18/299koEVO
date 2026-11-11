@@ -1,0 +1,11 @@
+{
+    "slug": "auth",
+    "name": "Authentification",
+    "icon": "fa-solid fa-user-shield",
+    "description": "Gestion des utilisateurs et des permissions",
+    "version": "1.0",
+    "author": "299Ko",
+    "license": "GPLv3",
+    "require": [],
+    "homeAdminMethod": "Auth\\Controllers\\AuthAdminController#dashboard"
+}

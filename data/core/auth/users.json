@@ -1,0 +1,14 @@
+[
+    {
+        "id": "1",
+        "email": "maximeblanc@flexcb.fr",
+        "username": "Declic18",
+        "pwd": "$2y$12$FD8QncCc5RuoeeCHgFIIz.iNG.R6rSJERIGy0ZSftEjebfhIBeZ26",
+        "token": "8e23f66f5e33c5fe417a5a22c8e8e60c23051d1d",
+        "group_id": 1,
+        "status": "active",
+        "permissions": "[\"*\"]",
+        "role": "1",
+        "tokens": "[{\"token\":\"8e23f66f5e33c5fe417a5a22c8e8e60c23051d1d\",\"created_at\":1794340514,\"last_seen\":1794340514,\"user_agent\":\"Mozilla\\/5.0 (X11; Linux x86_64; rv:159.0) Gecko\\/20100101 Firefox\\/159.0\",\"ip_hash\":\"12ca17b49af2289436f303e0166030a21e525d266e209267433801a8fd4071a0\"}]"
+    }
+]

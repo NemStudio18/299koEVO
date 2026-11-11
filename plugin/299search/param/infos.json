@@ -1,0 +1,11 @@
+{
+  "slug": "299search",
+  "name": "299Search",
+  "icon": "fa-solid fa-magnifying-glass",
+  "description": "Recherche interne de pages et contenus sur tout le site",
+  "version": "1.0.0",
+  "author": "299Ko",
+  "authorEmail": "contact@vivre-bourges.fr",
+  "authorWebsite": "https://vivre-bourges.fr",
+  "hideInPublicMenu": true
+}

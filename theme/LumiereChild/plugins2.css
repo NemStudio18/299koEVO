@@ -1,0 +1,1544 @@
+/**
+ * Adaptations des styles des plugins pour le thème Lumiere
+ * 
+ * NOTE: Les styles du plugin search sont centralisés ici pour éviter la duplication.
+ * Le plugin charge public.css, mais ces styles surchargent pour harmoniser avec le thème.
+ */
+
+/* ============================================
+   PLUGIN CLAIM
+   ============================================ */
+
+.claim-form {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--panel-radius);
+    padding: 24px;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.claim-status-box {
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+}
+
+.claim-status-box--pending {
+    background: rgba(254, 243, 199, 0.9);
+    border: 1px solid #fbbf24;
+    color: #92400e;
+}
+
+.claim-poi-info {
+    background: rgba(249, 250, 251, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.claim-poi-name {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--font-color);
+}
+
+.claim-poi-address {
+    margin: 12px 0;
+    color: #4b5563;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.claim-form textarea,
+.claim-form input[type="file"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #ffffff;
+}
+
+.claim-item {
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    transition: box-shadow 0.2s;
+}
+
+.claim-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#navigation .claim-menu-list {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.claim-menu-item:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+/* ============================================
+   PLUGIN SUBSCRIPTION
+   ============================================ */
+
+.plan-card {
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    padding: 1.5rem;
+    text-align: center;
+    transition: box-shadow 0.2s;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+}
+
+.plan-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.plan-price {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 1rem 0;
+    color: var(--font-color);
+}
+
+.subscription-status,
+.subscription-addons,
+.available-addons,
+.payment-methods {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--panel-radius);
+    padding: 24px;
+    border: 1px solid var(--panel-border);
+    margin-bottom: 2rem;
+}
+
+.subscription-disabled {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--panel-radius);
+    padding: 2rem;
+    border: 1px solid var(--panel-border);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.05);
+    color: #374151;
+}
+
+.badge.success {
+    background: rgba(16, 185, 129, 0.15);
+    color: #065f46;
+}
+
+.badge.alert {
+    background: rgba(239, 68, 68, 0.15);
+    color: #991b1b;
+}
+
+.badge.warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #92400e;
+}
+
+
+/* ============================================
+   PLUGIN METEO
+   ============================================ */
+
+.meteo-widget {
+    background: var(--panel-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    color: var(--font-color);
+    padding: 20px;
+    border-radius: var(--panel-radius);
+    margin: 20px 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--panel-border);
+}
+
+.meteo-widget-compact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--font-color);
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.meteo-widget-compact:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: var(--font-color);
+    text-decoration: none;
+}
+
+.meteo-widget__forecast-item {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   PLUGIN SEARCH
+   ============================================ */
+
+.module-card,
+.osm-public .osm-card {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--panel-shadow);
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-md);
+    transition: all 0.3s ease;
+}
+
+.module-card header {
+    padding-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--panel-border);
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.search-hero {
+    background: var(--panel-bg);
+    backdrop-filter: blur(15px);
+    border-radius: var(--panel-radius);
+    margin-bottom: var(--spacing-xl);
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--panel-shadow);
+    padding: var(--spacing-xl) var(--spacing-md);
+    text-align: center;
+}
+
+.search-hero__inputs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+    .search-hero__inputs {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.search-hero__inputs input[type="text"] {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: var(--panel-radius-small, 8px);
+    border: 1px solid var(--panel-border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--font-color);
+}
+
+.search-chips {
+    margin-top: var(--spacing-md);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.stat-card-label,
+.user-stat-card-label {
+    color: var(--font-color) !important;
+    opacity: 0.7;
+}
+
+.stat-card-value,
+.user-stat-card-value {
+    color: var(--primary-color) !important;
+    font-weight: 800;
+}
+
+
+/* ============================================
+   PLUGIN AUTH
+   ============================================ */
+
+.auth-card {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ============================================
+   PLUGIN DOCS / WIKI
+   ============================================ */
+
+.docs-page #banner {
+    display: none;
+}
+
+.docs-content {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.wikiv2-sidebar {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: var(--panel-radius);
+    box-shadow: var(--panel-shadow);
+}
+
+.wikiv2-article {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: var(--panel-radius);
+    box-shadow: var(--panel-shadow);
+}
+
+/* ============================================
+   PLUGIN GALERIE
+   ============================================ */
+
+.galerie-item {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    overflow: hidden;
+    box-shadow: var(--panel-shadow);
+}
+
+#content.galerie #list li {
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ============================================
+   PLUGIN FORUM
+   ============================================ */
+
+.forum-post {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--panel-shadow);
+}
+
+.forum-admin-tabs .stat-card {
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    padding: 1rem;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    text-align: center;
+    box-shadow: var(--panel-shadow);
+}
+
+/* ============================================
+   PLUGIN ECOMMERCE
+   ============================================ */
+
+.product-card,
+.ecommerce-product-card {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: var(--panel-shadow);
+}
+
+.product-card:hover,
+.ecommerce-product-card:hover {
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.ecommerce-cart-table th,
+.ecommerce-cart-table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ecommerce-cart-table th {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.ecommerce-checkout-form input,
+.ecommerce-checkout-form textarea,
+.ecommerce-checkout-form select {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--font-color);
+}
+
+.ecommerce-checkout-form input:focus,
+.ecommerce-checkout-form textarea:focus,
+.ecommerce-checkout-form select:focus {
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.ecommerce-order-summary {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--panel-shadow);
+}
+
+.ecommerce-order-summary .summary-total {
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   FORMULAIRES GÉNÉRIQUES (tous plugins)
+   ============================================ */
+
+.form-section,
+.poi-edit-form,
+.poi-contribute-form {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--panel-shadow);
+}
+
+.form-section h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--font-color);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--font-color);
+    font-size: 14px;
+}
+
+.field input[type="text"],
+.field input[type="email"],
+.field input[type="password"],
+.field input[type="number"],
+.field input[type="file"],
+.field textarea,
+.field select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--font-color);
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.field textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+/* ============================================
+   PLUGIN AUTH
+   ============================================ */
+
+.user-auth-form.auth-card {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    box-shadow: var(--panel-shadow);
+}
+
+.user-auth-form .field input[type="email"],
+.user-auth-form .field input[type="text"],
+.user-auth-form .field input[type="password"] {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.user-auth-form .field input:focus {
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   PLUGIN SUBSCRIPTION
+   ============================================ */
+
+.subscription-status,
+.subscription-plans,
+.subscription-addons,
+.available-addons,
+.payment-methods {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--panel-shadow);
+}
+
+/* ============================================
+   PLUGIN CLAIM - Formulaires
+   ============================================ */
+
+.claim-poi-info {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
+}
+
+.claim-item {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--panel-shadow);
+}
+
+.claim-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.claim-form textarea,
+.claim-form input[type="file"] {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.claim-form textarea:focus,
+.claim-form input[type="file"]:focus {
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   PLUGIN POI-EDIT - Styles simplifiés (plus de dropdown)
+   ============================================ */
+/* Le menu poi-edit est maintenant une simple liste ul/li, pas de dropdown */
+
+.button-search {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    text-align: center;
+    background: #4b5563;
+    color: #ffffff;
+}
+
+/* ============================================
+   PLUGIN BLOG
+   ============================================ */
+
+.blog-author {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    margin-bottom: var(--spacing-lg);
+}
+
+.blog-avatar img {
+    max-width: 80px;
+    border-radius: 50%;
+    border: 2px solid var(--panel-border);
+    box-shadow: var(--panel-shadow);
+}
+
+.blog-infos {
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-infos-name span {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.blog-infos-bio {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.blog-label-category:after {
+    content: ',';
+    margin-left: 2px;
+    margin-right: 5px;
+}
+
+.blog-label-category:last-of-type:after {
+    content: '';
+}
+
+#comments-add-respond {
+    position: relative;
+    padding: var(--spacing-lg);
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--panel-shadow);
+}
+
+#comments-cancel-respond {
+    display: none;
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+}
+
+/* ============================================
+   PLUGIN ANTISPAM
+   ============================================ */
+
+.grecaptcha-badge {
+    visibility: hidden;
+}
+
+.antispam-icon-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--panel-bg);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+}
+
+.antispam-icon label {
+    font-size: 2rem;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.antispam-icon label:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.antispam-icon>input[type="radio"]:checked+label {
+    color: var(--primary-color);
+    background: rgba(255, 140, 66, 0.15);
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.antispam-icon>input[type="radio"] {
+    display: none;
+}
+
+/* ============================================
+   PLUGIN POI FAVORITES
+   ============================================ */
+
+.poi-favorite-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--panel-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: var(--font-color);
+    min-height: 44px;
+}
+
+.poi-favorite-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary-color);
+}
+
+.poi-favorite-button.active {
+    background: rgba(255, 140, 66, 0.15);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.poi-favorite-button.active i {
+    color: var(--primary-color);
+}
+
+.poi-notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.poi-notification-item {
+    padding: var(--spacing-md);
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    border-left: 4px solid var(--primary-color);
+    box-shadow: var(--panel-shadow);
+}
+
+.poi-notification-item.unread {
+    background: rgba(255, 140, 66, 0.05);
+}
+
+.poi-notification-item.read {
+    opacity: 0.7;
+    border-left-color: #9ca3af;
+}
+
+.poi-notification-type {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   PLUGIN POI REVIEWS
+   ============================================ */
+
+.poi-reviews-container {
+    margin: var(--spacing-xl) 0;
+}
+
+.poi-reviews-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--panel-border);
+}
+
+@media (min-width: 640px) {
+    .poi-reviews-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.poi-reviews-rating-summary {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.poi-reviews-average {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.poi-reviews-stars {
+    display: flex;
+    gap: 2px;
+    color: #ffc107;
+    font-size: 1.25rem;
+}
+
+.poi-reviews-form {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-lg);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    margin-bottom: var(--spacing-xl);
+}
+
+.poi-reviews-rating-input {
+    display: flex;
+    gap: 4px;
+    margin-bottom: var(--spacing-md);
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.poi-reviews-rating-input input[type="radio"] {
+    display: none;
+}
+
+.poi-reviews-rating-input label {
+    cursor: pointer;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.2);
+    transition: color 0.2s, transform 0.2s;
+}
+
+.poi-reviews-rating-input label:hover,
+.poi-reviews-rating-input label:hover~label,
+.poi-reviews-rating-input input[type="radio"]:checked~label {
+    color: #ffc107;
+}
+
+.poi-reviews-rating-input label:hover {
+    transform: scale(1.2);
+}
+
+.poi-review-item {
+    padding: var(--spacing-md);
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    box-shadow: var(--panel-shadow);
+    margin-bottom: var(--spacing-md);
+}
+
+.poi-review-author {
+    font-weight: 700;
+    color: var(--font-color);
+}
+
+.poi-review-rating {
+    color: #ffc107;
+    font-size: 1rem;
+    margin: 4px 0;
+}
+
+/* ============================================
+   PLUGIN OFFERS
+   ============================================ */
+
+.offers-index,
+.offer-view,
+.offer-unlock {
+    padding: var(--spacing-lg) 0;
+}
+
+.offer-card {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--panel-shadow);
+}
+
+.offer-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.code-display {
+    background: rgba(255, 255, 255, 0.1);
+    padding: var(--spacing-md);
+    border-radius: 8px;
+    font-family: monospace;
+    font-weight: 700;
+    text-align: center;
+    border: 1px dashed var(--panel-border);
+    color: var(--primary-color);
+}
+
+/* ============================================
+   PLUGIN BugTracker
+   ============================================ */
+
+.BugTracker-home,
+.BugTracker-form,
+.BugTracker-list,
+.BugTracker-view {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.BugTracker-intro {
+    background: var(--panel-bg);
+    backdrop-filter: blur(5px);
+    padding: var(--spacing-md);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    margin-bottom: var(--spacing-lg);
+}
+
+.BugTracker-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+@media (min-width: 640px) {
+    .BugTracker-actions {
+        flex-direction: row;
+    }
+}
+
+.bug-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+}
+
+.stat-card {
+    padding: var(--spacing-md);
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    text-align: center;
+    box-shadow: var(--panel-shadow);
+}
+
+.stat-card .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.stat-card.stat-pending .stat-value {
+    color: var(--warning-color);
+}
+
+.stat-card.stat-progress .stat-value {
+    color: var(--info-color, #3b82f6);
+}
+
+.stat-card.stat-fixed .stat-value {
+    color: var(--success-color);
+}
+
+.stat-card.stat-rejected .stat-value {
+    color: var(--alert-color);
+}
+
+.bug-item {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--panel-shadow);
+}
+
+.bug-item:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.bug-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+@media (min-width: 640px) {
+    .bug-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.bug-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.bug-images {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+@media (min-width: 640px) {
+    .bug-images {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+.bug-comment {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--panel-radius);
+    border-left: 3px solid var(--panel-border);
+}
+
+.bug-comment-admin {
+    background: rgba(255, 140, 66, 0.05);
+    border-left-color: var(--primary-color);
+}
+
+/* ============================================
+   PLUGIN POI-EDIT
+   ============================================ */
+
+/* Mobile: Default state (no dropdown, links visible) */
+#navigation .poi-edit-menu-dropdown {
+    position: static;
+}
+
+#navigation .poi-edit-menu-dropdown>a {
+    display: none;
+}
+
+#navigation .poi-edit-menu-dropdown>.poi-edit-menu-list {
+    position: static;
+    display: block !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#navigation .poi-edit-menu-dropdown .poi-edit-menu-list li a {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--header-text);
+    font-weight: 500;
+    font-size: 1rem;
+    min-height: var(--touch-target-min);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Desktop: Re-enable dropdown */
+@media (min-width: 1024px) {
+    #navigation .poi-edit-menu-dropdown {
+        position: relative;
+    }
+
+    #navigation .poi-edit-menu-dropdown>a {
+        display: flex;
+    }
+
+    #navigation .poi-edit-menu-dropdown>.poi-edit-menu-list {
+        display: none !important;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: var(--header-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--panel-border);
+        box-shadow: var(--panel-shadow);
+        min-width: 200px;
+        z-index: 1000;
+        margin-top: 4px;
+        border-radius: var(--panel-radius);
+    }
+
+    #navigation .poi-edit-menu-dropdown:hover>.poi-edit-menu-list {
+        display: block !important;
+    }
+}
+
+.tabs-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--panel-radius);
+    border: 1px solid var(--panel-border);
+    margin: var(--spacing-lg) 0;
+    overflow: hidden;
+    box-shadow: var(--panel-shadow);
+}
+
+.tabs-header {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.05);
+    margin: 0;
+    list-style: none;
+}
+
+.tabs-header>li {
+    cursor: pointer;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--panel-border);
+    transition: all 0.3s ease;
+    text-align: center;
+    font-weight: 600;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (min-width: 640px) {
+    .tabs-header {
+        flex-direction: row;
+    }
+
+    .tabs-header>li {
+        flex: 1;
+        border-right: 1px solid var(--panel-border);
+        border-bottom: 3px solid transparent;
+    }
+}
+
+.tabs-header>li.active {
+    color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+@media (min-width: 640px) {
+    .tabs-header>li.active {
+        border-bottom: 3px solid var(--primary-color);
+    }
+}
+
+.tab {
+    padding: var(--spacing-md);
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .tab {
+        padding: var(--spacing-lg);
+    }
+}
+
+.tab.active {
+    display: block;
+}
+
+/* ============================================
+   PLUGIN METEO - Additional Styles
+   ============================================ */
+
+.meteo-widget__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+@media (min-width: 640px) {
+    .meteo-widget__header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.meteo-widget__temperature {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-align: center;
+    margin: var(--spacing-md) 0;
+}
+
+.meteo-widget__details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+@media (min-width: 640px) {
+    .meteo-widget__details {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+}
+
+.meteo-widget__forecast {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+@media (min-width: 640px) {
+    .meteo-widget__forecast {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+}
+
+/* ============================================
+   PLUGIN SEARCHEVO - Detailed Styles
+   ============================================ */
+
+/* Map Legend */
+.map-legend {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--panel-radius-small, 8px);
+    padding: 1rem;
+    box-shadow: var(--panel-shadow);
+    max-width: 250px;
+    font-size: 0.9rem;
+    border: 1px solid var(--panel-border);
+}
+
+.map-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.map-legend-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+/* Tabs System */
+.main-categories-tabs-container {
+    background: var(--panel-bg);
+    border-radius: var(--panel-radius);
+    box-shadow: var(--panel-shadow);
+    overflow: hidden;
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid var(--panel-border);
+}
+
+.main-categories-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+}
+
+.main-category-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: var(--panel-radius-small, 8px);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--font-color);
+    transition: all 0.2s;
+    white-space: nowrap;
+    min-height: 44px;
+}
+
+.main-category-tab:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.main-category-tab.active {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+}
+
+/* Subcategories */
+.subcategories-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.subcategory-tab {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--panel-border);
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+.subcategory-tab.active {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+/* POI Grid & Cards */
+.pois-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+@media (min-width: 640px) {
+    .pois-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+.poi-card {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    padding: var(--spacing-md);
+    box-shadow: var(--panel-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.poi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.poi-card h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.poi-link {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius-small, 8px);
+    text-decoration: none;
+    color: var(--font-color);
+    transition: all 0.2s;
+}
+
+.poi-link:hover {
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Search Map */
+.search-map {
+    height: 400px;
+    width: 100%;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    box-shadow: var(--panel-shadow);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.map-radius-control #map-radius-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--panel-border);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.map-radius-control #map-radius-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Detail Page */
+.search-detail {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--panel-radius);
+    padding: var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--panel-shadow);
+}
+
+.detail-header-top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+@media (min-width: 640px) {
+    .detail-header-top {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.detail-logo img {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: var(--panel-radius-small, 8px);
+    border: 2px solid var(--panel-border);
+    box-shadow: var(--panel-shadow);
+}
+
+.detail-photos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+@media (min-width: 640px) {
+    .detail-photos {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+.photo-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: var(--panel-radius-small, 8px);
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--panel-shadow);
+    transition: transform 0.2s;
+}
+
+.photo-item img:hover {
+    transform: scale(1.02);
+}

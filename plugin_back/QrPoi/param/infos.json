@@ -1,0 +1,11 @@
+{
+  "slug": "qr-poi",
+  "name": "QR Code POI",
+  "icon": "fa-solid fa-qrcode",
+  "description": "Plugin pour générer des QR codes liés aux POI",
+  "version": "1.0.0",
+  "author": "299Ko Team",
+  "authorEmail": "mx.koder@gmail.com",
+  "authorWebsite": "https://299ko.ovh",
+  "homeAdminMethod": "QrPoi\\Controllers\\QrPoiAdminController#list"
+}

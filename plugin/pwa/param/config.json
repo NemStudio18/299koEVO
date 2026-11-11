@@ -1,0 +1,12 @@
+{
+    "priority": "5",
+    "label": "PWA",
+    "description": "Progressive Web App",
+    "backgroundColor": "#ffffff",
+    "themeColor": "#000000",
+    "orientation": "portrait",
+    "icon192": "plugin/pwa/icons/icon-192.png",
+    "icon512": "plugin/pwa/icons/icon-512.png"
+}
+
+

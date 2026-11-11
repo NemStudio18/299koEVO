@@ -1,0 +1,10 @@
+{
+    "name": "Dons",
+    "icon": "fa-solid fa-hand-holding-heart",
+    "description": "Collecte de dons avec PayPal et Stripe",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://www.flexcb.fr",
+    "version": "0.1.0b",
+    "homePublicMethod": "Dons\\Controllers\\DonController#home",
+    "homeAdminMethod": "Dons\\Controllers\\DonAdminController#list"
+}

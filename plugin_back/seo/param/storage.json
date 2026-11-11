@@ -1,0 +1,28 @@
+{
+    "drivers": [
+        "json",
+        "mysql",
+        "sqlite"
+    ],
+    "tables": {
+        "seo_redirects": {
+            "engine": "InnoDB",
+            "charset": "utf8mb4",
+            "collate": "utf8mb4_unicode_ci",
+            "columns": {
+                "id": "INT AUTO_INCREMENT PRIMARY KEY",
+                "old_url": "VARCHAR(255) NOT NULL UNIQUE",
+                "new_url": "VARCHAR(255) NOT NULL",
+                "code": "INT DEFAULT 301",
+                "hits": "INT DEFAULT 0",
+                "last_hit": "DATETIME NULL",
+                "active": "TINYINT(1) DEFAULT 1",
+                "created_at": "DATETIME DEFAULT CURRENT_TIMESTAMP",
+                "updated_at": "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+            }
+        }
+    },
+    "entities": {
+        "Seo\\Entities\\Redirect": "seo_redirects"
+    }
+}

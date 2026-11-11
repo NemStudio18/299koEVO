@@ -1,0 +1,11 @@
+{
+    "name": "poi-data",
+    "icon": "fa-solid fa-database",
+    "description": "Core POI Data Management Plugin - Provides Data Access Layer for POIs",
+    "version": "1.0.0",
+    "author": "Antigravity",
+    "provider": "299Ko",
+    "type": "tool",
+    "targetPrototype": "poi-data",
+    "homeAdminMethod": "PoiData\\Controllers\\PoiDataAdminController#home"
+}

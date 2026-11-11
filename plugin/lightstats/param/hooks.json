@@ -1,0 +1,5 @@
+{
+    "core:page-hit": "LightStats\\Hooks::addVisitor",
+    "endFrontBody": "LightStats\\Hooks::addFrontTracker",
+    "adminHead": "LightStats\\Hooks::addScript"
+}

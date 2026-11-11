@@ -1,0 +1,13 @@
+{
+    "Claim": {
+        "label": "Revendications de POI",
+        "class": "Claim\\Entities\\Claim",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "poi_claims",
+        "schema": "CREATE TABLE poi_claims (id INT AUTO_INCREMENT PRIMARY KEY, poi_id INT, user_id INT, status VARCHAR(20) DEFAULT 'pending', note TEXT, proof_path TEXT, requested_at DATETIME, approved_at DATETIME)"
+    }
+}

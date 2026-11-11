@@ -1,0 +1,24 @@
+{
+    "QrScan": {
+        "label": "Scans de QR Codes",
+        "class": "QrPoi\\Entities\\QrScan",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "qr_scans",
+        "schema": "CREATE TABLE qr_scans (id INT AUTO_INCREMENT PRIMARY KEY, poi_id INT, scanned_at DATETIME, ip_address VARCHAR(45), user_agent TEXT, referer TEXT)"
+    },
+    "QrStyle": {
+        "label": "Styles de QR Codes",
+        "class": "QrPoi\\Entities\\QrStyle",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "qr_styles",
+        "schema": "CREATE TABLE qr_styles (poi_id INT PRIMARY KEY, user_id INT, color VARCHAR(10) DEFAULT '000000', bgcolor VARCHAR(10) DEFAULT 'FFFFFF', size INT DEFAULT 300, format VARCHAR(10) DEFAULT 'png', qzone INT DEFAULT 1, logo_path TEXT, created_at DATETIME, updated_at DATETIME)"
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "meteo",
+  "name": "Météo",
+  "icon": "fa-solid fa-cloud-sun",
+  "description": "Plugin d'affichage de la météo avec API externe",
+  "version": "1.0.0",
+  "author": "299Ko Team",
+  "authorEmail": "mx.koder@gmail.com",
+  "authorWebsite": "https://299ko.ovh",
+  "homeAdminMethod": "Meteo\\Controllers\\MeteoAdminController#home",
+  "hideInPublicMenu": false
+}
+

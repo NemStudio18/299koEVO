@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maquette LightStats • Dashboard de Pilotage Vivre-Bourges</title>
+  <!-- FontAwesome 6 pour iconographie vectorielle -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+
+  <div class="ls-app-container">
+
+    <!-- ── BANDEAU SIGNALÉTIQUE : DONNÉES FICTIVES ── -->
+    <div class="ls-demo-banner" role="alert">
+      <div class="ls-demo-banner-content">
+        <span class="ls-demo-badge"><i class="fa-solid fa-flask"></i> Maquette Statique</span>
+        <span><strong>Données de démonstration :</strong> Toutes les valeurs et indicateurs présentés sur ce tableau de bord sont strictement fictifs. Aucun branchement ni modification des données réelles n'a été effectué.</span>
+      </div>
+      <div style="font-size: 0.75rem; font-weight: 700; opacity: 0.8; white-space: nowrap;">
+        Phase 1 • Validation UX
+      </div>
+    </div>
+
+    <!-- ── EN-TÊTE DU TABLEAU DE BORD ── -->
+    <header class="ls-header">
+      <div class="ls-header-brand">
+        <div class="ls-header-icon" aria-hidden="true">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div class="ls-header-titles">
+          <h1>LightStats <span style="font-weight: 400; color: var(--ls-slate-400); font-size: 1rem;">• Vivre-Bourges</span></h1>
+          <p class="ls-header-tagline">Outil de pilotage éditorial et territorial des usages locaux</p>
+        </div>
+      </div>
+      <div class="ls-header-badges">
+        <span class="ls-pill-tag live">
+          <span class="ls-pulse-dot" aria-hidden="true"></span> Collecte active
+        </span>
+        <span class="ls-pill-tag" title="Adresses IP masquées dès réception réseau">
+          <i class="fa-solid fa-user-shield" style="color: var(--ls-emerald);" aria-hidden="true"></i> Anonymisation IP
+        </span>
+        <span class="ls-pill-tag" title="Statistiques hébergées sur le serveur local">
+          <i class="fa-solid fa-server" style="color: var(--ls-indigo);" aria-hidden="true"></i> Données locales souveraines
+        </span>
+      </div>
+    </header>
+
+    <!-- ── BARRE DE FILTRAGE TACTILE DES DATES ── -->
+    <section class="ls-filter-bar" aria-label="Filtres de période">
+      <div class="ls-presets-scroller" role="group" aria-label="Raccourcis de période">
+        <span class="ls-preset-label"><i class="fa-solid fa-calendar-day" aria-hidden="true"></i> Période :</span>
+        <button type="button" class="ls-preset-btn" data-preset="today">Aujourd'hui</button>
+        <button type="button" class="ls-preset-btn" data-preset="yesterday">Hier</button>
+        <button type="button" class="ls-preset-btn active" data-preset="7days" aria-pressed="true">7 derniers jours</button>
+        <button type="button" class="ls-preset-btn" data-preset="30days">30 derniers jours</button>
+        <button type="button" class="ls-preset-btn" data-preset="month">Ce mois-ci</button>
+      </div>
+
+      <div class="ls-custom-date-group">
+        <div class="ls-date-input-wrap">
+          <span>Du</span>
+          <input type="date" id="dateStart" value="2026-10-27" aria-label="Date de début">
+        </div>
+        <div class="ls-date-input-wrap">
+          <span>Au</span>
+          <input type="date" id="dateEnd" value="2026-11-02" aria-label="Date de fin">
+        </div>
+        <button type="button" class="ls-btn-refresh" id="btnRefreshDemo">
+          <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+          <span>Actualiser</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ── NAVIGATION PAR ONGLETS (Scrollable & Tactile) ── -->
+    <nav class="ls-tabs-container" aria-label="Sections du tableau de bord">
+      <div class="ls-tabs-nav" role="tablist">
+        <button type="button" role="tab" class="ls-tab-btn active" id="tab-btn-global" aria-selected="true" aria-controls="pane-global" data-pane="pane-global">
+          <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
+          <span>1. Vue globale</span>
+        </button>
+        <button type="button" role="tab" class="ls-tab-btn" id="tab-btn-local" aria-selected="false" aria-controls="pane-local" data-pane="pane-local">
+          <i class="fa-solid fa-store" aria-hidden="true"></i>
+          <span>2. Vie locale & commerces</span>
+        </button>
+        <button type="button" role="tab" class="ls-tab-btn" id="tab-btn-journeys" aria-selected="false" aria-controls="pane-journeys" data-pane="pane-journeys">
+          <i class="fa-solid fa-route" aria-hidden="true"></i>
+          <span>3. Parcours & rétention</span>
+        </button>
+        <button type="button" role="tab" class="ls-tab-btn" id="tab-btn-security" aria-selected="false" aria-controls="pane-security" data-pane="pane-security">
+          <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+          <span>4. Robots & sécurité</span>
+        </button>
+        <button type="button" role="tab" class="ls-tab-btn" id="tab-btn-logs" aria-selected="false" aria-controls="pane-logs" data-pane="pane-logs">
+          <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+          <span>5. Journaux détaillés</span>
+          <span class="ls-tab-badge">Demo</span>
+        </button>
+        <button type="button" role="tab" class="ls-tab-btn" id="tab-btn-matomo" aria-selected="false" aria-controls="pane-matomo" data-pane="pane-matomo">
+          <i class="fa-brands fa-fort-awesome" aria-hidden="true"></i>
+          <span>6. Matomo</span>
+        </button>
+      </div>
+    </nav>
+
+
+    <!-- ===================================================================== -->
+    <!-- ONGLET 1 : VUE GLOBALE (La santé de Vivre-Bourges)                     -->
+    <!-- ===================================================================== -->
+    <main id="pane-global" class="ls-tab-pane active" role="tabpanel" aria-labelledby="tab-btn-global">
+
+      <!-- Les 4 Grands KPI Pilotes (Harmonisés selon exigences de terminologie) -->
+      <section class="ls-kpi-grid" aria-label="Indicateurs de synthèse">
+        
+        <!-- KPI 1 : Sessions observées -->
+        <article class="ls-kpi-card indigo">
+          <div class="ls-kpi-header">
+            <span class="ls-kpi-label">Sessions observées</span>
+            <span class="ls-kpi-badge indigo"><i class="fa-solid fa-eye" aria-hidden="true"></i> Global</span>
+          </div>
+          <div class="ls-kpi-value">384</div>
+          <div class="ls-kpi-subtext">Identifiées et anonymes sur la période</div>
+        </article>
+
+        <!-- KPI 2 : Pages certifiées -->
+        <article class="ls-kpi-card emerald">
+          <div class="ls-kpi-header">
+            <span class="ls-kpi-label">Pages certifiées</span>
+            <span class="ls-kpi-badge emerald"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Réconciliées</span>
+          </div>
+          <div class="ls-kpi-value">946</div>
+          <div class="ls-kpi-subtext">Pages confirmées par le navigateur client</div>
+        </article>
+
+        <!-- KPI 3 : Taux d'engagement -->
+        <article class="ls-kpi-card emerald">
+          <div class="ls-kpi-header">
+            <span class="ls-kpi-label">Taux d'engagement</span>
+            <span class="ls-kpi-badge emerald"><i class="fa-solid fa-fire" aria-hidden="true"></i> Qualifié</span>
+          </div>
+          <div class="ls-kpi-value">77,4 %</div>
+          <div class="ls-kpi-subtext">Multi-pages ou action utile sur sessions certifiées</div>
+        </article>
+
+        <!-- KPI 4 : Durée mesurée -->
+        <article class="ls-kpi-card amber">
+          <div class="ls-kpi-header">
+            <span class="ls-kpi-label">Durée mesurée</span>
+            <span class="ls-kpi-badge amber"><i class="fa-solid fa-stopwatch" aria-hidden="true"></i> Réelle</span>
+          </div>
+          <div class="ls-kpi-value">1 min 45</div>
+          <div class="ls-kpi-subtext">Sessions mesurables uniquement (≥ 2 actions)</div>
+        </article>
+
+      </section>
+
+      <!-- Graphique de Rythme de Fréquentation -->
+      <section class="ls-panel" style="margin-bottom: 1.5rem;">
+        <div class="ls-panel-header">
+          <div>
+            <h2 class="ls-panel-title"><i class="fa-solid fa-chart-column" style="color: var(--ls-indigo);" aria-hidden="true"></i> Rythme de fréquentation</h2>
+            <p class="ls-panel-subtitle">Illustration des pages HTTP admissibles et des pages certifiées sur les 7 derniers jours</p>
+          </div>
+          <span class="ls-pill-tag">Illustration fictive</span>
+        </div>
+
+        <div class="ls-chart-wrap">
+          <!-- Graphique SVG Responsive -->
+          <svg class="ls-chart-svg" viewBox="0 0 700 240" aria-label="Histogramme d'activité quotidienne" role="img">
+            <!-- Grille horizontale de fond -->
+            <line x1="40" y1="30" x2="680" y2="30" stroke="#f1f5f9" stroke-width="1" />
+            <line x1="40" y1="80" x2="680" y2="80" stroke="#f1f5f9" stroke-width="1" />
+            <line x1="40" y1="130" x2="680" y2="130" stroke="#f1f5f9" stroke-width="1" />
+            <line x1="40" y1="180" x2="680" y2="180" stroke="#e2e8f0" stroke-width="1" />
+
+            <!-- Axe Y Échelle -->
+            <text x="30" y="34" font-size="10" fill="#94a3b8" text-anchor="end">240</text>
+            <text x="30" y="84" font-size="10" fill="#94a3b8" text-anchor="end">160</text>
+            <text x="30" y="134" font-size="10" fill="#94a3b8" text-anchor="end">80</text>
+            <text x="30" y="184" font-size="10" fill="#94a3b8" text-anchor="end">0</text>
+
+            <!-- Lundi (Col 1) -->
+            <rect x="70" y="85" width="24" height="95" rx="3" fill="#cbd5e1" />
+            <rect x="98" y="105" width="24" height="75" rx="3" fill="#4f46e5" />
+            <text x="96" y="202" font-size="11" fill="#64748b" text-anchor="middle" font-weight="600">Lun 27</text>
+
+            <!-- Mardi (Col 2) -->
+            <rect x="155" y="70" width="24" height="110" rx="3" fill="#cbd5e1" />
+            <rect x="183" y="90" width="24" height="90" rx="3" fill="#4f46e5" />
+            <text x="181" y="202" font-size="11" fill="#64748b" text-anchor="middle" font-weight="600">Mar 28</text>
+
+            <!-- Mercredi (Col 3) -->
+            <rect x="240" y="60" width="24" height="120" rx="3" fill="#cbd5e1" />
+            <rect x="268" y="78" width="24" height="102" rx="3" fill="#4f46e5" />
+            <text x="266" y="202" font-size="11" fill="#64748b" text-anchor="middle" font-weight="600">Mer 29</text>
+
+            <!-- Jeudi (Col 4) -->
+            <rect x="325" y="65" width="24" height="115" rx="3" fill="#cbd5e1" />
+            <rect x="353" y="82" width="24" height="98" rx="3" fill="#4f46e5" />
+            <text x="351" y="202" font-size="11" fill="#64748b" text-anchor="middle" font-weight="600">Jeu 30</text>
+
+            <!-- Vendredi (Col 5) -->
+            <rect x="410" y="50" width="24" height="130" rx="3" fill="#cbd5e1" />
+            <rect x="438" y="68" width="24" height="112" rx="3" fill="#4f46e5" />
+            <text x="436" y="202" font-size="11" fill="#64748b" text-anchor="middle" font-weight="600">Ven 31</text>
+
+            <!-- Samedi (Col 6 - Pic Marché & Sorties) -->
+            <rect x="495" y="38" width="24" height="142" rx="3" fill="#cbd5e1" />
+            <rect x="523" y="52" width="24" height="128" rx="3" fill="#4f46e5" />
+            <text x="521" y="202" font-size="11" fill="#4f46e5" text-anchor="middle" font-weight="700">Sam 01</text>
+
+            <!-- Dimanche (Col 7) -->
+            <rect x="580" y="75" width="24" height="105" rx="3" fill="#cbd5e1" />
+            <rect x="608" y="92" width="24" height="88" rx="3" fill="#4f46e5" />
+            <text x="606" y="202" font-size="11" fill="#64748b" text-anchor="middle" font-weight="600">Dim 02</text>
+          </svg>
+        </div>
+
+        <div class="ls-chart-legend">
+          <div class="ls-legend-item">
+            <span class="ls-legend-color" style="background: #cbd5e1;"></span>
+            <span>Pages HTTP admissibles (1 162 total)</span>
+          </div>
+          <div class="ls-legend-item">
+            <span class="ls-legend-color" style="background: #4f46e5;"></span>
+            <span>Pages certifiées par navigateur (946 total • 81,4%)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Deuxième rangée : Répartition des Sessions & Canaux d'arrivée -->
+      <section class="ls-panels-grid two-cols">
+
+        <!-- Répartition Qualifiée des Sessions -->
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-pie-chart" style="color: var(--ls-emerald);" aria-hidden="true"></i> Qualification des sessions</h3>
+              <p class="ls-panel-subtitle">Détail des 384 sessions observées</p>
+            </div>
+            <span class="ls-pill-tag">384 total</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.875rem;">
+            <!-- Multi-pages -->
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.8125rem; font-weight: 600; margin-bottom: 0.25rem;">
+                <span style="color: var(--ls-slate-800);"><i class="fa-solid fa-layer-group" style="color: var(--ls-emerald);" aria-hidden="true"></i> Multi-pages (≥ 2 pages certifiées)</span>
+                <span style="color: var(--ls-emerald); font-weight: 700;">161 (42,0 %)</span>
+              </div>
+              <div class="ls-progress-track">
+                <div class="ls-progress-bar emerald" style="width: 42%;"></div>
+              </div>
+            </div>
+
+            <!-- Monopage engagée -->
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.8125rem; font-weight: 600; margin-bottom: 0.25rem;">
+                <span style="color: var(--ls-slate-800);"><i class="fa-solid fa-hand-pointer" style="color: var(--ls-indigo);" aria-hidden="true"></i> Monopage engagée (1 page + interaction locale)</span>
+                <span style="color: var(--ls-indigo); font-weight: 700;">79 (20,5 %)</span>
+              </div>
+              <div class="ls-progress-track">
+                <div class="ls-progress-bar indigo" style="width: 20.5%;"></div>
+              </div>
+            </div>
+
+            <!-- Rebond strict -->
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.8125rem; font-weight: 600; margin-bottom: 0.25rem;">
+                <span style="color: var(--ls-slate-800);"><i class="fa-solid fa-arrow-right-from-bracket" style="color: var(--ls-slate-400);" aria-hidden="true"></i> Rebond strict (1 page sans action)</span>
+                <span style="color: var(--ls-slate-600); font-weight: 700;">70 (18,2 %)</span>
+              </div>
+              <div class="ls-progress-track">
+                <div class="ls-progress-bar" style="background: var(--ls-slate-300); width: 18.2%;"></div>
+              </div>
+            </div>
+
+            <!-- Sessions HTTP non certifiées -->
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.8125rem; font-weight: 600; margin-bottom: 0.25rem;">
+                <span style="color: var(--ls-slate-800);"><i class="fa-solid fa-globe" style="color: var(--ls-slate-400);" aria-hidden="true"></i> Sessions HTTP non certifiées</span>
+                <span style="color: var(--ls-slate-500); font-weight: 700;">74 (19,3 %)</span>
+              </div>
+              <div class="ls-progress-track">
+                <div class="ls-progress-bar" style="background: var(--ls-slate-200); width: 19.3%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem; padding: 0.65rem 0.85rem; background: var(--ls-slate-50); border-radius: var(--ls-radius-sm); font-size: 0.75rem; color: var(--ls-slate-500);">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i> <strong>Règle méthodologique :</strong> Les sessions HTTP non certifiées (ex. JavaScript désactivé, bloqueurs, interruption ou refus de consentement) sont isolées et exclues du dénominateur du taux d'engagement.
+          </div>
+        </article>
+
+        <!-- Canaux d'arrivée & Actions Locales -->
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-signs-post" style="color: var(--ls-indigo);" aria-hidden="true"></i> Provenance & Actions Locales</h3>
+              <p class="ls-panel-subtitle">Canaux d'entrée connus et interactions enregistrées</p>
+            </div>
+            <span class="ls-pill-tag">Synthèse</span>
+          </div>
+
+          <!-- Canaux -->
+          <div style="margin-bottom: 1.25rem;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--ls-slate-400); text-transform: uppercase; margin-bottom: 0.5rem;">
+              Canaux d'arrivée constatés
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8125rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-solid fa-compass" style="width: 18px; color: var(--ls-indigo);" aria-hidden="true"></i> Accès direct / Favoris</span>
+                <span style="font-weight: 700;">188 (49 %)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-brands fa-google" style="width: 18px; color: #ea4335;" aria-hidden="true"></i> Moteurs de recherche</span>
+                <span style="font-weight: 700;">132 (34 %)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-brands fa-facebook" style="width: 18px; color: #1877f2;" aria-hidden="true"></i> Réseaux sociaux</span>
+                <span style="font-weight: 700;">42 (11 %)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-solid fa-qrcode" style="width: 18px; color: var(--ls-emerald);" aria-hidden="true"></i> QR Codes affiches / vitrines</span>
+                <span style="font-weight: 700;">22 (6 %)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Synthèse Actions Utiles -->
+          <div style="border-top: 1px solid var(--ls-slate-100); padding-top: 0.875rem;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--ls-slate-400); text-transform: uppercase; margin-bottom: 0.5rem;">
+              Actions locales utiles déclenchées
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+              <div style="padding: 0.5rem; background: var(--ls-slate-50); border-radius: 6px; text-align: center;">
+                <div style="font-size: 1.125rem; font-weight: 800; color: var(--ls-emerald-hover);">58</div>
+                <div style="font-size: 0.7rem; color: var(--ls-slate-600); font-weight: 600;">Itinéraires GPS</div>
+              </div>
+              <div style="padding: 0.5rem; background: var(--ls-slate-50); border-radius: 6px; text-align: center;">
+                <div style="font-size: 1.125rem; font-weight: 800; color: var(--ls-emerald-hover);">39</div>
+                <div style="font-size: 0.7rem; color: var(--ls-slate-600); font-weight: 600;">Appels tél.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Statistique secondaire discrète sur les visiteurs consentis -->
+          <div style="margin-top: 1rem; border-top: 1px dashed var(--ls-slate-200); padding-top: 0.75rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: var(--ls-slate-500);">
+            <span><i class="fa-solid fa-id-badge" aria-hidden="true"></i> Identifiants visiteurs consentis distincts :</span>
+            <span style="font-weight: 700; color: var(--ls-slate-700);">47</span>
+          </div>
+        </article>
+
+      </section>
+
+    </main>
+
+
+    <!-- ===================================================================== -->
+    <!-- ONGLET 2 : VIE LOCALE ET COMMERCES (Cœur de Vivre-Bourges)            -->
+    <!-- ===================================================================== -->
+    <section id="pane-local" class="ls-tab-pane" role="tabpanel" aria-labelledby="tab-btn-local">
+
+      <!-- En-tête de section -->
+      <div style="margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.125rem; font-weight: 800; margin: 0; color: var(--ls-slate-900);">
+          <i class="fa-solid fa-store" style="color: var(--ls-emerald);" aria-hidden="true"></i> Pilotage Commercial & Recherches Berruyères
+        </h2>
+        <p style="font-size: 0.8125rem; color: var(--ls-slate-500); margin: 0.25rem 0 0;">
+          Comprendre les besoins des habitants, détecter les manques et valoriser les commerçants de proximité
+        </p>
+      </div>
+
+      <!-- Rangée 1 : Recherches Fréquentes vs Recherches Zéro Résultat -->
+      <div class="ls-panels-grid two-cols">
+
+        <!-- 1. Ce que les internautes recherchent -->
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-magnifying-glass" style="color: var(--ls-indigo);" aria-hidden="true"></i> Recherches fréquentes</h3>
+              <p class="ls-panel-subtitle">Top requêtes tapées dans le moteur local</p>
+            </div>
+            <span class="ls-pill-tag">Volume</span>
+          </div>
+
+          <div class="ls-table-responsive">
+            <table class="ls-data-table ls-desktop-only-table">
+              <thead>
+                <tr>
+                  <th>Mot-clé / Recherche</th>
+                  <th style="text-align: right;">Volume</th>
+                  <th style="text-align: right;">Moy. Résultats</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>boulangerie centre ville</strong></td>
+                  <td style="text-align: right; font-weight: 700; color: var(--ls-indigo);">28</td>
+                  <td style="text-align: right;"><span class="ls-pill-tag">4.2 fiches</span></td>
+                </tr>
+                <tr>
+                  <td><strong>marché de la halle</strong></td>
+                  <td style="text-align: right; font-weight: 700; color: var(--ls-indigo);">22</td>
+                  <td style="text-align: right;"><span class="ls-pill-tag">2.0 fiches</span></td>
+                </tr>
+                <tr>
+                  <td><strong>médecin de garde</strong></td>
+                  <td style="text-align: right; font-weight: 700; color: var(--ls-indigo);">19</td>
+                  <td style="text-align: right;"><span class="ls-pill-tag">1.0 fiche</span></td>
+                </tr>
+                <tr>
+                  <td><strong>horaires cathédrale</strong></td>
+                  <td style="text-align: right; font-weight: 700; color: var(--ls-indigo);">16</td>
+                  <td style="text-align: right;"><span class="ls-pill-tag">3.5 fiches</span></td>
+                </tr>
+                <tr>
+                  <td><strong>restaurant terrasse marais</strong></td>
+                  <td style="text-align: right; font-weight: 700; color: var(--ls-indigo);">14</td>
+                  <td style="text-align: right;"><span class="ls-pill-tag">8.0 fiches</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Vue Cartes Mobiles pour smartphones -->
+            <div class="ls-mobile-cards-list ls-mobile-only-cards">
+              <div class="ls-mobile-card">
+                <div class="ls-mobile-card-top">
+                  <span class="ls-mobile-card-title">boulangerie centre ville</span>
+                  <span class="ls-kpi-badge indigo">28 recherches</span>
+                </div>
+                <div class="ls-mobile-card-stats">
+                  <span>Moyenne : 4.2 résultats trouvés</span>
+                </div>
+              </div>
+              <div class="ls-mobile-card">
+                <div class="ls-mobile-card-top">
+                  <span class="ls-mobile-card-title">marché de la halle</span>
+                  <span class="ls-kpi-badge indigo">22 recherches</span>
+                </div>
+                <div class="ls-mobile-card-stats">
+                  <span>Moyenne : 2.0 résultats trouvés</span>
+                </div>
+              </div>
+              <div class="ls-mobile-card">
+                <div class="ls-mobile-card-top">
+                  <span class="ls-mobile-card-title">médecin de garde</span>
+                  <span class="ls-kpi-badge indigo">19 recherches</span>
+                </div>
+                <div class="ls-mobile-card-stats">
+                  <span>Moyenne : 1.0 résultat</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2. Ce qu'ils ne trouvent pas (Zéro Résultat) -->
+        <article class="ls-panel" style="border-left: 4px solid var(--ls-amber);">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title">
+                <i class="fa-solid fa-triangle-exclamation" style="color: var(--ls-amber);" aria-hidden="true"></i> Recherches à 0 résultat
+              </h3>
+              <p class="ls-panel-subtitle">Opportunités de contenu & commerces manquants</p>
+            </div>
+            <span class="ls-kpi-badge amber">Vigilance éditoriale</span>
+          </div>
+
+          <div class="ls-table-responsive">
+            <table class="ls-data-table ls-desktop-only-table">
+              <thead>
+                <tr>
+                  <th>Recherche sans réponse</th>
+                  <th style="text-align: right;">Occurrences</th>
+                  <th>Action suggérée</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>cordonnier ouvert lundi</strong></td>
+                  <td style="text-align: right; font-weight: 700; color: #b45309;">9</td>
+                  <td><span class="ls-pill-tag" style="color: #b45309;">Ajouter horaires fiches</span></td>
+                </tr>
+                <tr>
+                  <td><strong>reparation velo saint bonnet</strong></td>
+                  <td style="text-align: right; font-weight: 700; color: #b45309;">7</td>
+                  <td><span class="ls-pill-tag" style="color: #b45309;">Commerce à référencer</span></td>
+                </tr>
+                <tr>
+                  <td><strong>pressing ecologique</strong></td>
+                  <td style="text-align: right; font-weight: 700; color: #b45309;">5</td>
+                  <td><span class="ls-pill-tag" style="color: #b45309;">Créer synonyme</span></td>
+                </tr>
+                <tr>
+                  <td><strong>cours poterie adulte</strong></td>
+                  <td style="text-align: right; font-weight: 700; color: #b45309;">4</td>
+                  <td><span class="ls-pill-tag" style="color: #b45309;">Article associatif</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Vue Cartes Mobiles -->
+            <div class="ls-mobile-cards-list ls-mobile-only-cards">
+              <div class="ls-mobile-card" style="border-left: 3px solid var(--ls-amber);">
+                <div class="ls-mobile-card-top">
+                  <span class="ls-mobile-card-title">cordonnier ouvert lundi</span>
+                  <span class="ls-kpi-badge amber">9 fois</span>
+                </div>
+                <div class="ls-mobile-card-stats">
+                  <span>Action : Vérifier les horaires des cordonneries</span>
+                </div>
+              </div>
+              <div class="ls-mobile-card" style="border-left: 3px solid var(--ls-amber);">
+                <div class="ls-mobile-card-top">
+                  <span class="ls-mobile-card-title">reparation velo saint bonnet</span>
+                  <span class="ls-kpi-badge amber">7 fois</span>
+                </div>
+                <div class="ls-mobile-card-stats">
+                  <span>Action : Artisan/atelier à intégrer au radar</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Rangée 2 : Fiches les Plus Consultées & Actions Déclenchées -->
+      <div class="ls-panels-grid two-cols">
+
+        <!-- 3. Fiches les plus consultées (Distinction HTTP vs Certifié) -->
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-map-location-dot" style="color: var(--ls-emerald);" aria-hidden="true"></i> Fiches les plus consultées</h3>
+              <p class="ls-panel-subtitle">Distingue vues brutes et consultations certifiées</p>
+            </div>
+            <span class="ls-pill-tag">Top 5</span>
+          </div>
+
+          <div class="ls-table-responsive">
+            <table class="ls-data-table ls-desktop-only-table">
+              <thead>
+                <tr>
+                  <th>Fiche Commerce / Lieu</th>
+                  <th style="text-align: right;">Vues HTTP</th>
+                  <th style="text-align: right;">Certifiées</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Cathédrale Saint-Étienne</strong></td>
+                  <td style="text-align: right; color: var(--ls-slate-400);">142</td>
+                  <td style="text-align: right; font-weight: 700; color: var(--ls-emerald);">118</td>
+                  <td style="text-align: right;"><span class="ls-pill-tag">28 itinéraires</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Les Halles de Bourges</strong></td>
+                  <td style="text-align: right; color: var(--ls-slate-400);">98</td>
+                  <td style="text-align: right; font-weight: 700; color: var(--ls-emerald);">84</td>
+                  <td style="text-align: right;"><span class="ls-pill-tag">19 itinéraires</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Librairie Les Pages du Berry</strong></td>
+                  <td style="text-align: right; color: var(--ls-slate-400);">76</td>
+                  <td style="text-align: right; font-weight: 700; color: var(--ls-emerald);">62</td>
+                  <td style="text-align: right;"><span class="ls-pill-tag">14 appels</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Boulangerie Patisserie Avaricum</strong></td>
+                  <td style="text-align: right; color: var(--ls-slate-400);">65</td>
+                  <td style="text-align: right; font-weight: 700; color: var(--ls-emerald);">55</td>
+                  <td style="text-align: right;"><span class="ls-pill-tag">12 appels</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Vue Cartes Mobiles -->
+            <div class="ls-mobile-cards-list ls-mobile-only-cards">
+              <div class="ls-mobile-card">
+                <div class="ls-mobile-card-top">
+                  <span class="ls-mobile-card-title">Cathédrale Saint-Étienne</span>
+                  <span class="ls-kpi-badge emerald">118 certifiées</span>
+                </div>
+                <div class="ls-mobile-card-stats">
+                  <span>142 vues HTTP • 28 itinéraires demandés</span>
+                </div>
+              </div>
+              <div class="ls-mobile-card">
+                <div class="ls-mobile-card-top">
+                  <span class="ls-mobile-card-title">Les Halles de Bourges</span>
+                  <span class="ls-kpi-badge emerald">84 certifiées</span>
+                </div>
+                <div class="ls-mobile-card-stats">
+                  <span>98 vues HTTP • 19 itinéraires demandés</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4. QR Codes Physiques (Affiches & Vitrines) -->
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-qrcode" style="color: var(--ls-indigo);" aria-hidden="true"></i> QR Codes & Affichage Terrain</h3>
+              <p class="ls-panel-subtitle">Mesure des interactions issues de l'affichage urbain</p>
+            </div>
+            <span class="ls-pill-tag">Terrain</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
+            <div style="padding: 0.75rem; background: var(--ls-slate-50); border-radius: var(--ls-radius-sm); text-align: center;">
+              <div style="font-size: 1.5rem; font-weight: 800; color: var(--ls-indigo);">22</div>
+              <div style="font-size: 0.75rem; color: var(--ls-slate-600); font-weight: 600;">Scans physiques certifiés</div>
+            </div>
+            <div style="padding: 0.75rem; background: var(--ls-slate-50); border-radius: var(--ls-radius-sm); text-align: center;">
+              <div style="font-size: 1.5rem; font-weight: 800; color: var(--ls-slate-700);">145</div>
+              <div style="font-size: 0.75rem; color: var(--ls-slate-600); font-weight: 600;">Impressions web du code</div>
+            </div>
+          </div>
+
+          <!-- Note d'honnêteté et de faisabilité des données -->
+          <div class="ls-unavailable-box">
+            <div class="ls-unavailable-icon"><i class="fa-solid fa-circle-question" aria-hidden="true"></i></div>
+            <div class="ls-unavailable-title">Provenance par support (Affiche vs Vitrine) : Non disponible</div>
+            <p style="margin: 0;">La collecte actuelle enregistre l'événement technique de scan, mais pas l'identifiant du support imprimé. Pour mesurer l'efficacité d'une affiche spécifique, il faudra ajouter des tags de campagne aux QR codes imprimés.</p>
+          </div>
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================================== -->
+    <!-- ONGLET 3 : PARCOURS ET RÉTENTION                                      -->
+    <!-- ===================================================================== -->
+    <section id="pane-journeys" class="ls-tab-pane" role="tabpanel" aria-labelledby="tab-btn-journeys">
+
+      <div style="margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.125rem; font-weight: 800; margin: 0; color: var(--ls-slate-900);">
+          <i class="fa-solid fa-route" style="color: var(--ls-indigo);" aria-hidden="true"></i> Parcours Visiteurs & Analyse de Rétention
+        </h2>
+        <p style="font-size: 0.8125rem; color: var(--ls-slate-500); margin: 0.25rem 0 0;">
+          Comprendre comment les Berruyers naviguent, sans traçage individuel intrusif
+        </p>
+      </div>
+
+      <!-- Durée mesurée vs non mesurable & Portes d'entrée -->
+      <div class="ls-panels-grid two-cols">
+
+        <!-- Durée mesurée vs non mesurable -->
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-stopwatch-20" style="color: var(--ls-amber);" aria-hidden="true"></i> Fiabilité des durées de visite</h3>
+              <p class="ls-panel-subtitle">Mesure objective basée sur au moins deux horodatages distincts</p>
+            </div>
+            <span class="ls-pill-tag">Rigueur</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0.85rem; background: var(--ls-emerald-light); border-radius: var(--ls-radius-sm); border: 1px solid var(--ls-emerald-border);">
+              <div>
+                <strong style="color: var(--ls-emerald-hover); font-size: 0.875rem;">219 sessions à durée mesurée</strong>
+                <div style="font-size: 0.75rem; color: #047857;">Moyenne : 1 min 45 • Médiane : 1 min 18</div>
+              </div>
+              <span class="ls-pill-tag" style="background: #ffffff; color: #047857; font-weight: 700;">70,6 %</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0.85rem; background: var(--ls-slate-100); border-radius: var(--ls-radius-sm); border: 1px solid var(--ls-slate-200);">
+              <div>
+                <strong style="color: var(--ls-slate-700); font-size: 0.875rem;">91 sessions non mesurables</strong>
+                <div style="font-size: 0.75rem; color: var(--ls-slate-500);">Interaction unique (aucune durée extrapolée arbitraire)</div>
+              </div>
+              <span class="ls-pill-tag" style="background: #ffffff; color: var(--ls-slate-600); font-weight: 700;">29,4 %</span>
+            </div>
+          </div>
+
+          <p style="margin-top: 1rem; font-size: 0.75rem; color: var(--ls-slate-500); line-height: 1.4;">
+            <i class="fa-solid fa-shield-cat" aria-hidden="true"></i> <strong>Respect des principes de LightStats :</strong> Aucune durée n'est inventée pour une session qui ne consulte qu'une seule page sans clic ultérieur.
+          </p>
+        </article>
+
+        <!-- Portes d'entrée et sorties -->
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-door-open" style="color: var(--ls-indigo);" aria-hidden="true"></i> Pages d'entrée & de sortie</h3>
+              <p class="ls-panel-subtitle">Calculé sur les sessions multi-pages qualifiées</p>
+            </div>
+            <span class="ls-pill-tag">Structure</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.625rem; font-size: 0.8125rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--ls-slate-100); padding-bottom: 0.4rem;">
+              <span><strong>Accueil</strong> <code>/</code></span>
+              <span class="ls-pill-tag">Entrée : 52 % • Sortie : 22 %</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--ls-slate-100); padding-bottom: 0.4rem;">
+              <span><strong>Fiches POI</strong> <code>/poi/*</code></span>
+              <span class="ls-pill-tag">Entrée : 28 % • Sortie : 46 %</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--ls-slate-100); padding-bottom: 0.4rem;">
+              <span><strong>Agenda</strong> <code>/agenda</code></span>
+              <span class="ls-pill-tag">Entrée : 12 % • Sortie : 18 %</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span><strong>Articles Actualités</strong> <code>/actualites/*</code></span>
+              <span class="ls-pill-tag">Entrée : 8 % • Sortie : 14 %</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Parcours Agrégés Anonymisés (SANS liste d'identifiants de sessions) -->
+      <article class="ls-panel">
+        <div class="ls-panel-header">
+          <div>
+            <h3 class="ls-panel-title"><i class="fa-solid fa-diagram-project" style="color: var(--ls-emerald);" aria-hidden="true"></i> Principaux schémas de navigation (Parcours agrégés)</h3>
+            <p class="ls-panel-subtitle">Flux d'usages agrégés sans jamais exposer d'identifiant individuel</p>
+          </div>
+          <span class="ls-pill-tag">Agrégation</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          
+          <!-- Schéma 1 -->
+          <div class="ls-flow-chain">
+            <span class="ls-flow-step"><i class="fa-solid fa-house" aria-hidden="true"></i> Accueil</span>
+            <span class="ls-flow-arrow"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+            <span class="ls-flow-step"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Recherche locale</span>
+            <span class="ls-flow-arrow"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+            <span class="ls-flow-step"><i class="fa-solid fa-store" aria-hidden="true"></i> Fiche commerce</span>
+            <span class="ls-flow-metric">38 % des parcours</span>
+          </div>
+
+          <!-- Schéma 2 -->
+          <div class="ls-flow-chain">
+            <span class="ls-flow-step"><i class="fa-solid fa-store" aria-hidden="true"></i> Fiche commerce</span>
+            <span class="ls-flow-arrow"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+            <span class="ls-flow-step" style="border-color: var(--ls-emerald); color: var(--ls-emerald-hover);"><i class="fa-solid fa-location-arrow" aria-hidden="true"></i> Clic itinéraire GPS</span>
+            <span class="ls-flow-metric">18 % des parcours</span>
+          </div>
+
+          <!-- Schéma 3 -->
+          <div class="ls-flow-chain">
+            <span class="ls-flow-step"><i class="fa-solid fa-newspaper" aria-hidden="true"></i> Article actualité</span>
+            <span class="ls-flow-arrow"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+            <span class="ls-flow-step"><i class="fa-solid fa-newspaper" aria-hidden="true"></i> Autre article</span>
+            <span class="ls-flow-arrow"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+            <span class="ls-flow-step"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Agenda sorties</span>
+            <span class="ls-flow-metric">14 % des parcours</span>
+          </div>
+
+          <!-- Schéma 4 -->
+          <div class="ls-flow-chain">
+            <span class="ls-flow-step"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Agenda sorties</span>
+            <span class="ls-flow-arrow"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+            <span class="ls-flow-step"><i class="fa-solid fa-ticket" aria-hidden="true"></i> Fiche événement</span>
+            <span class="ls-flow-arrow"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+            <span class="ls-flow-step" style="border-color: var(--ls-emerald); color: var(--ls-emerald-hover);"><i class="fa-solid fa-phone" aria-hidden="true"></i> Appel organisateur</span>
+            <span class="ls-flow-metric">11 % des parcours</span>
+          </div>
+
+        </div>
+      </article>
+
+    </section>
+
+
+    <!-- ===================================================================== -->
+    <!-- ONGLET 4 : ROBOTS ET SÉCURITÉ                                         -->
+    <!-- ===================================================================== -->
+    <section id="pane-security" class="ls-tab-pane" role="tabpanel" aria-labelledby="tab-btn-security">
+
+      <div style="margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.125rem; font-weight: 800; margin: 0; color: var(--ls-slate-900);">
+          <i class="fa-solid fa-shield-halved" style="color: var(--ls-coral);" aria-hidden="true"></i> Robots, Scanners & Surveillance Technique
+        </h2>
+        <p style="font-size: 0.8125rem; color: var(--ls-slate-500); margin: 0.25rem 0 0;">
+          Distinguer les moteurs d'indexation légitimes, les scans détectés et la santé des réponses HTTP
+        </p>
+      </div>
+
+      <!-- Les 3 Familles Visuellement Séparées -->
+      <div class="ls-panels-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+
+        <!-- Famille 1 : Robots Identifiés -->
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-robot" style="color: var(--ls-indigo);" aria-hidden="true"></i> 1. Robots d'indexation</h3>
+              <p class="ls-panel-subtitle">Moteurs de recherche officiels déclarés</p>
+            </div>
+            <span class="ls-pill-tag">Déclarés</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8125rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--ls-slate-100);">
+              <span><i class="fa-brands fa-google" style="color: #ea4335;" aria-hidden="true"></i> Googlebot</span>
+              <span class="ls-pill-tag" style="font-weight: 700;">640 requêtes</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--ls-slate-100);">
+              <span><i class="fa-brands fa-microsoft" style="color: #00a4ef;" aria-hidden="true"></i> Bingbot</span>
+              <span class="ls-pill-tag" style="font-weight: 700;">210 requêtes</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--ls-slate-100);">
+              <span><i class="fa-solid fa-globe" style="color: var(--ls-emerald);" aria-hidden="true"></i> Qwantbot</span>
+              <span class="ls-pill-tag" style="font-weight: 700;">45 requêtes</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0;">
+              <span><i class="fa-brands fa-apple" style="color: var(--ls-slate-700);" aria-hidden="true"></i> Applebot</span>
+              <span class="ls-pill-tag" style="font-weight: 700;">32 requêtes</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Famille 2 : Requêtes Suspectes & Scans -->
+        <article class="ls-panel" style="border-top: 3px solid var(--ls-coral);">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-radiation" style="color: var(--ls-coral);" aria-hidden="true"></i> 2. Scans détectés</h3>
+              <p class="ls-panel-subtitle">Sondes automatisées rejetées (404 / 403)</p>
+            </div>
+            <span class="ls-kpi-badge coral">Surveillance</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8125rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--ls-slate-100);">
+              <code>/.env</code>
+              <span class="ls-status-pill ls-status-404">404 • Rejeté</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--ls-slate-100);">
+              <code>/wp-login.php</code>
+              <span class="ls-status-pill ls-status-404">404 • Rejeté</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--ls-slate-100);">
+              <code>/xmlrpc.php</code>
+              <span class="ls-status-pill ls-status-404">404 • Rejeté</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0;">
+              <code>/.git/config</code>
+              <span class="ls-status-pill ls-status-404">404 • Rejeté</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--ls-slate-500);">
+            <i class="fa-solid fa-circle-check" style="color: var(--ls-emerald);" aria-hidden="true"></i> Ces sondes de vulnérabilité sont identifiées et traitées normalement sans impacter le service.
+          </div>
+        </article>
+
+        <!-- Famille 3 : Santé HTTP -->
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-heart-pulse" style="color: var(--ls-emerald);" aria-hidden="true"></i> 3. Répartition HTTP</h3>
+              <p class="ls-panel-subtitle">Codes de réponse du serveur web</p>
+            </div>
+            <span class="ls-pill-tag">Santé</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.625rem; font-size: 0.8125rem;">
+            <div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+                <span><span class="ls-status-pill ls-status-200">200 OK</span> Succès</span>
+                <span style="font-weight: 700;">92,0 %</span>
+              </div>
+              <div class="ls-progress-track">
+                <div class="ls-progress-bar emerald" style="width: 92%;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+                <span><span class="ls-status-pill ls-status-30x">301 / 302</span> Redirections</span>
+                <span style="font-weight: 700;">3,2 %</span>
+              </div>
+              <div class="ls-progress-track">
+                <div class="ls-progress-bar indigo" style="width: 3.2%;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+                <span><span class="ls-status-pill ls-status-404">404</span> Non trouvé</span>
+                <span style="font-weight: 700; color: #b45309;">4,6 %</span>
+              </div>
+              <div class="ls-progress-track">
+                <div class="ls-progress-bar amber" style="width: 4.6%;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+                <span><span class="ls-status-pill ls-status-500">500</span> Erreurs serveur</span>
+                <span style="font-weight: 700; color: var(--ls-coral);">0,2 %</span>
+              </div>
+              <div class="ls-progress-track">
+                <div class="ls-progress-bar coral" style="width: 0.2%;"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================================== -->
+    <!-- ONGLET 5 : JOURNAUX DÉTAILLÉS (Avec cartes tactiles mobiles)          -->
+    <!-- ===================================================================== -->
+    <section id="pane-logs" class="ls-tab-pane" role="tabpanel" aria-labelledby="tab-btn-logs">
+
+      <div style="margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.125rem; font-weight: 800; margin: 0; color: var(--ls-slate-900);">
+          <i class="fa-solid fa-list-check" style="color: var(--ls-indigo);" aria-hidden="true"></i> Journaux d'Audit & Requêtes Récentes
+        </h2>
+        <p style="font-size: 0.8125rem; color: var(--ls-slate-500); margin: 0.25rem 0 0;">
+          Consultation technique des événements sans exposer d'identifiants de session ni d'adresses IP brutes
+        </p>
+      </div>
+
+      <!-- Filtres du journal -->
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; align-items: center;">
+        <div style="flex: 1; min-width: 200px;">
+          <input type="text" placeholder="Rechercher par URL ou statut..." style="width: 100%; min-height: 44px; padding: 0 0.875rem; border: 1px solid var(--ls-slate-200); border-radius: var(--ls-radius-sm); font-size: 0.8125rem;">
+        </div>
+        <select style="min-height: 44px; padding: 0 0.75rem; border: 1px solid var(--ls-slate-200); border-radius: var(--ls-radius-sm); font-size: 0.8125rem; background: #ffffff;">
+          <option>Tous statuts HTTP</option>
+          <option>200 OK</option>
+          <option>404 Non trouvé</option>
+          <option>500 Erreurs</option>
+        </select>
+        <select style="min-height: 44px; padding: 0 0.75rem; border: 1px solid var(--ls-slate-200); border-radius: var(--ls-radius-sm); font-size: 0.8125rem; background: #ffffff;">
+          <option>Tous appareils</option>
+          <option>Mobile</option>
+          <option>Desktop</option>
+          <option>Tablette</option>
+        </select>
+      </div>
+
+      <!-- 1. Version Tableau Desktop -->
+      <div class="ls-panel ls-desktop-only-table" style="padding: 0; overflow: hidden;">
+        <table class="ls-data-table">
+          <thead>
+            <tr>
+              <th>Horodatage</th>
+              <th>Méthode</th>
+              <th>URL / Ressource</th>
+              <th>Statut</th>
+              <th>Appareil</th>
+              <th>Classification</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>14:32:05</td>
+              <td><span class="ls-pill-tag">GET</span></td>
+              <td><code>/poi/les-halles-de-bourges</code></td>
+              <td><span class="ls-status-pill ls-status-200">200 OK</span></td>
+              <td><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> Mobile</td>
+              <td><span class="ls-pill-tag" style="color: var(--ls-emerald);"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Certifiée</span></td>
+            </tr>
+            <tr>
+              <td>14:31:40</td>
+              <td><span class="ls-pill-tag">GET</span></td>
+              <td><code>/recherche?q=boulangerie</code></td>
+              <td><span class="ls-status-pill ls-status-200">200 OK</span></td>
+              <td><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> Mobile</td>
+              <td><span class="ls-pill-tag" style="color: var(--ls-emerald);"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Certifiée</span></td>
+            </tr>
+            <tr>
+              <td>14:28:12</td>
+              <td><span class="ls-pill-tag">GET</span></td>
+              <td><code>/.env</code></td>
+              <td><span class="ls-status-pill ls-status-404">404</span></td>
+              <td><i class="fa-solid fa-robot" aria-hidden="true"></i> Inconnu</td>
+              <td><span class="ls-status-pill ls-status-suspect"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Scan détecté</span></td>
+            </tr>
+            <tr>
+              <td>14:25:01</td>
+              <td><span class="ls-pill-tag">GET</span></td>
+              <td><code>/agenda</code></td>
+              <td><span class="ls-status-pill ls-status-200">200 OK</span></td>
+              <td><i class="fa-solid fa-laptop" aria-hidden="true"></i> Desktop</td>
+              <td><span class="ls-pill-tag" style="color: var(--ls-emerald);"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Certifiée</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2. Version Cartes Dépliables Mobiles (Tactile >= 44px) -->
+      <div class="ls-mobile-only-cards" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        
+        <!-- Carte Mobile 1 (Ouverte par défaut pour démonstration) -->
+        <article class="ls-log-card-mobile open">
+          <div class="ls-log-summary" role="button" tabindex="0" aria-expanded="true" onclick="this.parentElement.classList.toggle('open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('open'));">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span class="ls-status-pill ls-status-200">200</span>
+              <strong style="font-size: 0.8125rem;">/poi/les-halles-de-bourges</strong>
+            </div>
+            <i class="fa-solid fa-chevron-down" style="color: var(--ls-slate-400); font-size: 0.75rem;" aria-hidden="true"></i>
+          </div>
+          <div class="ls-log-details">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+              <span>Horodatage : 14:32:05</span>
+              <span>Appareil : Mobile (Safari iOS)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Statut : Consultation certifiée</span>
+              <span>IP : Anonymisée (192.168.***.***)</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Carte Mobile 2 -->
+        <article class="ls-log-card-mobile">
+          <div class="ls-log-summary" role="button" tabindex="0" aria-expanded="false" onclick="this.parentElement.classList.toggle('open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('open'));">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span class="ls-status-pill ls-status-404">404</span>
+              <strong style="font-size: 0.8125rem;">/.env</strong>
+            </div>
+            <i class="fa-solid fa-chevron-down" style="color: var(--ls-slate-400); font-size: 0.75rem;" aria-hidden="true"></i>
+          </div>
+          <div class="ls-log-details">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+              <span>Horodatage : 14:28:12</span>
+              <span>Sonde suspecte automatique</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Code : 404 Non trouvé (Rejeté)</span>
+              <span>IP : Anonymisée</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================================== -->
+    <!-- ONGLET 6 : MATOMO ANALYTICS (Présentation Indépendante)                -->
+    <!-- ===================================================================== -->
+    <section id="pane-matomo" class="ls-tab-pane" role="tabpanel" aria-labelledby="tab-btn-matomo">
+
+      <!-- Avertissement de séparation stricte des données -->
+      <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: var(--ls-radius-md); padding: 0.875rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.8125rem; color: #3730a3;">
+        <i class="fa-solid fa-circle-info" aria-hidden="true"></i> <strong>Source externe Matomo Analytics :</strong>
+        Ces statistiques proviennent de l'instance Matomo indépendante. Elles permettent la comparaison des tendances globales. <strong>Aucune donnée n'est fusionnée artificiellement avec LightStats.</strong>
+      </div>
+
+      <!-- Métriques Matomo -->
+      <div class="ls-kpi-grid">
+        <article class="ls-kpi-card indigo">
+          <div class="ls-kpi-header">
+            <span class="ls-kpi-label">Visites Matomo</span>
+            <span class="ls-kpi-badge indigo">Matomo API</span>
+          </div>
+          <div class="ls-kpi-value">412</div>
+          <div class="ls-kpi-subtext">Visites comptabilisées par l'algorithme Matomo</div>
+        </article>
+
+        <article class="ls-kpi-card indigo">
+          <div class="ls-kpi-header">
+            <span class="ls-kpi-label">Pages vues Matomo</span>
+            <span class="ls-kpi-badge indigo">Matomo API</span>
+          </div>
+          <div class="ls-kpi-value">1 028</div>
+          <div class="ls-kpi-subtext">Pageviews enregistrés par le script Matomo</div>
+        </article>
+
+        <article class="ls-kpi-card slate">
+          <div class="ls-kpi-header">
+            <span class="ls-kpi-label">Durée moyenne Matomo</span>
+            <span class="ls-kpi-badge slate">Extrapolée</span>
+          </div>
+          <div class="ls-kpi-value">2 min 14</div>
+          <div class="ls-kpi-subtext">Calculée selon la méthode statistique de Matomo</div>
+        </article>
+
+        <article class="ls-kpi-card slate">
+          <div class="ls-kpi-header">
+            <span class="ls-kpi-label">Taux de rebond Matomo</span>
+            <span class="ls-kpi-badge slate">Standard</span>
+          </div>
+          <div class="ls-kpi-value">48,2 %</div>
+          <div class="ls-kpi-subtext">Définition standard monopage Matomo</div>
+        </article>
+      </div>
+
+      <!-- Comparatif de Tendance -->
+      <div class="ls-panels-grid two-cols">
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-file-lines" style="color: var(--ls-indigo);" aria-hidden="true"></i> Top Pages selon Matomo</h3>
+              <p class="ls-panel-subtitle">Mesure Matomo concurrente</p>
+            </div>
+            <span class="ls-pill-tag">Matomo</span>
+          </div>
+          <div style="font-size: 0.8125rem;">
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--ls-slate-100);">
+              <span>1. Page d'accueil</span>
+              <strong>418 vues</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--ls-slate-100);">
+              <span>2. Les Halles de Bourges</span>
+              <strong>122 vues</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0;">
+              <span>3. Agenda du week-end</span>
+              <strong>89 vues</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="ls-panel">
+          <div class="ls-panel-header">
+            <div>
+              <h3 class="ls-panel-title"><i class="fa-solid fa-laptop" style="color: var(--ls-indigo);" aria-hidden="true"></i> Navigateurs & Systèmes (Matomo)</h3>
+              <p class="ls-panel-subtitle">Détection par User-Agent Matomo</p>
+            </div>
+            <span class="ls-pill-tag">Matomo</span>
+          </div>
+          <div style="font-size: 0.8125rem;">
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--ls-slate-100);">
+              <span>Chrome / Android</span>
+              <strong>54 %</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--ls-slate-100);">
+              <span>Safari / iOS</span>
+              <strong>31 %</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0;">
+              <span>Firefox / Windows & Linux</span>
+              <strong>15 %</strong>
+            </div>
+          </div>
+        </article>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Script d'interaction de la maquette (Bascule d'onglets, accessibilité clavier) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabButtons = document.querySelectorAll('.ls-tab-btn');
+      const tabPanes = document.querySelectorAll('.ls-tab-pane');
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetPaneId = btn.getAttribute('data-pane');
+
+          // Mise à jour de l'état des boutons
+          tabButtons.forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+
+          // Mise à jour de l'affichage des panneaux
+          tabPanes.forEach(pane => {
+            if (pane.id === targetPaneId) {
+              pane.classList.add('active');
+            } else {
+              pane.classList.remove('active');
+            }
+          });
+        });
+      });
+
+      // Détection automatique de l'onglet via URL (?tab=local ou #pane-local)
+      const urlParams = new URLSearchParams(window.location.search);
+      const reqTab = urlParams.get('tab') || window.location.hash.replace('#', '');
+      if (reqTab) {
+        const targetBtn = document.querySelector(`.ls-tab-btn[data-pane="pane-${reqTab}"]`) || document.querySelector(`.ls-tab-btn[data-pane="${reqTab}"]`);
+        if (targetBtn) {
+          targetBtn.click();
+        }
+      }
+
+      // Gestion des boutons de période (Presets)
+      const presetButtons = document.querySelectorAll('.ls-preset-btn');
+      presetButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          presetButtons.forEach(b => {
+            b.classList.remove('active');
+            b.removeAttribute('aria-pressed');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

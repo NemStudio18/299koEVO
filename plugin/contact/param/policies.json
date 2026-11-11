@@ -1,0 +1,37 @@
+{
+    "contact:access": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": true
+            },
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": false
+            }
+        ]
+    },
+    "contact:logged": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": true
+            }
+        ]
+    },
+    "contact:admin": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "role",
+                "type": "role",
+                "value": "admin"
+            }
+        ]
+    }
+}

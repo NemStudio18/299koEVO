@@ -1,0 +1,13 @@
+{
+    "Block": {
+        "label": "Blocs de Page",
+        "class": "HomeBuilder\\Entities\\Block",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "homepage_blocks",
+        "schema": "CREATE TABLE homepage_blocks (id VARCHAR(50) PRIMARY KEY, type VARCHAR(50), title VARCHAR(255), content TEXT, `order` INT DEFAULT 1, active TINYINT(1) DEFAULT 1, options TEXT, parentId VARCHAR(50), children TEXT, styles TEXT)"
+    }
+}

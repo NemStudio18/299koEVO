@@ -1,0 +1,42 @@
+{
+    "Poi": {
+        "label": "Établissements (POI)",
+        "class": "PoiData\\Entities\\Poi",
+        "drivers": [
+            "mysql",
+            "sqlite"
+        ],
+        "table": "poi_public",
+        "schema": "CREATE TABLE poi_public (id BIGINT PRIMARY KEY, name VARCHAR(255), type VARCHAR(50), lat DECIMAL(10,8), lon DECIMAL(11,8), addr_street VARCHAR(255), addr_housenumber VARCHAR(20), addr_postcode VARCHAR(10), addr_city VARCHAR(100), status VARCHAR(20) DEFAULT 'published', is_closed TINYINT(1) DEFAULT 0, closed_at DATETIME, closed_reason TEXT, claimed_by BIGINT, claimed_at DATETIME, status_claim VARCHAR(20))"
+    },
+    "PoiReport": {
+        "label": "Signalements de POI",
+        "class": "PoiData\\Entities\\PoiReport",
+        "drivers": [
+            "mysql",
+            "sqlite"
+        ],
+        "table": "poi_reports",
+        "schema": "CREATE TABLE poi_reports (id BIGINT AUTO_INCREMENT PRIMARY KEY, poi_id BIGINT, user_id BIGINT, report_type VARCHAR(20), reason TEXT, status VARCHAR(20) DEFAULT 'pending', reviewed_by BIGINT, reviewed_at DATETIME, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+    },
+    "PoiContribution": {
+        "label": "Contributions de POI",
+        "class": "PoiData\\Entities\\PoiContribution",
+        "drivers": [
+            "mysql",
+            "sqlite"
+        ],
+        "table": "poi_contributions",
+        "schema": "CREATE TABLE poi_contributions (id BIGINT AUTO_INCREMENT PRIMARY KEY, poi_id BIGINT, user_id BIGINT, contribution_type VARCHAR(20), fields_modified TEXT, fields_count INT, contribution_score INT, status VARCHAR(20) DEFAULT 'auto_approved', reviewed_by BIGINT, reviewed_at DATETIME, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+    },
+    "CommuneGeometry": {
+        "label": "Géométrie des communes (centroids)",
+        "class": "PoiData\\Entities\\CommuneGeometry",
+        "drivers": [
+            "mysql",
+            "sqlite"
+        ],
+        "table": "commune_geometry",
+        "schema": "CREATE TABLE commune_geometry (name VARCHAR(100) PRIMARY KEY, centroid_lat DECIMAL(10,8), centroid_lon DECIMAL(11,8), bounding_radius_km DECIMAL(8,4))"
+    }
+}

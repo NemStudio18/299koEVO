@@ -1,0 +1,944 @@
+/* ==========================================================================
+   LightStats Modern Dashboard & Executive UI (Vivre-Bourges)
+   ========================================================================== */
+
+:root {
+    --ls-primary: #6366f1;
+    --ls-primary-hover: #4f46e5;
+    --ls-primary-soft: rgba(99, 102, 241, 0.08);
+    --ls-primary-border: rgba(99, 102, 241, 0.25);
+    
+    --ls-emerald: #10b981;
+    --ls-emerald-soft: rgba(16, 185, 129, 0.08);
+    --ls-emerald-border: rgba(16, 185, 129, 0.25);
+
+    --ls-cyan: #06b6d4;
+    --ls-cyan-soft: rgba(6, 182, 212, 0.08);
+    --ls-cyan-border: rgba(6, 182, 212, 0.25);
+
+    --ls-amber: #f59e0b;
+    --ls-amber-soft: rgba(245, 158, 11, 0.08);
+    
+    --ls-rose: #f43f5e;
+    --ls-rose-soft: rgba(244, 63, 94, 0.08);
+
+    --ls-purple: #8b5cf6;
+    --ls-purple-soft: rgba(139, 92, 246, 0.08);
+
+    --ls-slate-900: #0f172a;
+    --ls-slate-800: #1e293b;
+    --ls-slate-700: #334155;
+    --ls-slate-600: #475569;
+    --ls-slate-500: #64748b;
+    --ls-slate-400: #94a3b8;
+    --ls-slate-200: #e2e8f0;
+    --ls-slate-100: #f1f5f9;
+    --ls-slate-50: #f8fafc;
+
+    --ls-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+    --ls-card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+    --ls-radius: 12px;
+}
+
+.lightstats-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+    font-family: inherit;
+    color: var(--ls-slate-800);
+}
+
+/* --- En-tête Général --- */
+.ls-header {
+    background: #ffffff;
+    border: 1px solid var(--ls-slate-200);
+    border-radius: var(--ls-radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--ls-card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+}
+
+.ls-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ls-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--ls-primary), #4338ca);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.ls-header-titles h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--ls-slate-900);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ls-header-titles p {
+    margin: 0.2rem 0 0;
+    font-size: 0.85rem;
+    color: var(--ls-slate-500);
+}
+
+.ls-header-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.ls-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    background: var(--ls-slate-100);
+    color: var(--ls-slate-700);
+    border: 1px solid var(--ls-slate-200);
+}
+
+.ls-badge-pill.status-live {
+    background: var(--ls-emerald-soft);
+    color: var(--ls-emerald);
+    border-color: var(--ls-emerald-border);
+}
+
+.ls-pulse-dot {
+    width: 7px;
+    height: 7px;
+    background-color: var(--ls-emerald);
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: lsPulse 2s infinite;
+}
+
+@keyframes lsPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* --- Barre de Filtre des Dates --- */
+.ls-filter-bar {
+    background: #ffffff;
+    border: 1px solid var(--ls-slate-200);
+    border-radius: var(--ls-radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--ls-card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.ls-presets-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.ls-preset-btn {
+    background: var(--ls-slate-50);
+    border: 1px solid var(--ls-slate-200);
+    color: var(--ls-slate-600);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.ls-preset-btn:hover {
+    background: var(--ls-primary-soft);
+    color: var(--ls-primary);
+    border-color: var(--ls-primary-border);
+}
+
+.ls-preset-btn.active {
+    background: var(--ls-primary);
+    color: #ffffff;
+    border-color: var(--ls-primary);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+}
+
+.ls-custom-dates-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.ls-date-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--ls-slate-50);
+    border: 1px solid var(--ls-slate-200);
+    border-radius: 8px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.85rem;
+    color: var(--ls-slate-600);
+}
+
+.ls-date-field input[type="date"] {
+    border: none;
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ls-slate-800);
+    outline: none;
+}
+
+.ls-submit-btn {
+    background: var(--ls-slate-800);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.45rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ls-submit-btn:hover {
+    background: var(--ls-slate-900);
+}
+
+/* --- Onglets Principaux --- */
+.ls-tabs-nav {
+    display: flex;
+    gap: 0.4rem;
+    background: #ffffff;
+    padding: 0.4rem;
+    border: 1px solid var(--ls-slate-200);
+    border-radius: var(--ls-radius);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--ls-card-shadow);
+    overflow-x: auto;
+}
+
+.ls-tab-button {
+    background: transparent;
+    border: none;
+    padding: 0.65rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ls-slate-600);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.ls-tab-button:hover {
+    color: var(--ls-primary);
+    background: var(--ls-primary-soft);
+}
+
+.ls-tab-button.active {
+    background: var(--ls-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.25);
+}
+
+.ls-tab-button .ls-tab-count {
+    background: var(--ls-slate-200);
+    color: var(--ls-slate-700);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+    line-height: 1;
+}
+
+.ls-tab-button.active .ls-tab-count {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+/* --- Triptyque de Mesure de Qualité (Indicateurs Internes) --- */
+.ls-quality-trio {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.ls-trio-card {
+    background: #ffffff;
+    border: 1px solid var(--ls-slate-200);
+    border-radius: var(--ls-radius);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--ls-card-shadow);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ls-trio-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ls-card-shadow-hover);
+}
+
+.ls-trio-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.ls-trio-card.step-http::before { background: var(--ls-slate-400); }
+.ls-trio-card.step-js::before { background: var(--ls-cyan); }
+.ls-trio-card.step-human::before { background: var(--ls-emerald); }
+
+.ls-trio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.ls-trio-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ls-slate-500);
+}
+
+.ls-trio-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.ls-trio-card.step-http .ls-trio-badge { background: var(--ls-slate-100); color: var(--ls-slate-600); }
+.ls-trio-card.step-js .ls-trio-badge { background: var(--ls-cyan-soft); color: var(--ls-cyan); }
+.ls-trio-card.step-human .ls-trio-badge { background: var(--ls-emerald-soft); color: var(--ls-emerald); }
+
+.ls-trio-value {
+    font-size: 2.1rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.25rem;
+    color: var(--ls-slate-900);
+}
+
+.ls-trio-card.step-js .ls-trio-value { color: #0284c7; }
+.ls-trio-card.step-human .ls-trio-value { color: #059669; }
+
+.ls-trio-desc {
+    font-size: 0.8rem;
+    color: var(--ls-slate-500);
+    margin: 0;
+}
+
+/* --- Grille des 4 Grands KPIs Héroïques (Spécifications Mockup UX) --- */
+.ls-kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 600px) {
+    .ls-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .ls-kpi-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.ls-kpi-card {
+    background: #ffffff;
+    border: 1px solid var(--ls-slate-200);
+    border-radius: var(--ls-radius);
+    padding: 1.25rem;
+    box-shadow: var(--ls-card-shadow);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ls-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ls-card-shadow-hover);
+}
+
+.ls-kpi-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.ls-kpi-card.indigo::before { background: var(--ls-primary); }
+.ls-kpi-card.emerald::before { background: var(--ls-emerald); }
+.ls-kpi-card.amber::before { background: var(--ls-amber); }
+.ls-kpi-card.teal::before { background: var(--ls-cyan); }
+.ls-kpi-card.coral::before { background: var(--ls-rose); }
+
+.ls-kpi-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.ls-kpi-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--ls-slate-500);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.ls-kpi-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.ls-kpi-badge.indigo { background: var(--ls-primary-soft); color: var(--ls-primary); }
+.ls-kpi-badge.emerald { background: var(--ls-emerald-soft); color: var(--ls-emerald); }
+.ls-kpi-badge.amber { background: var(--ls-amber-soft); color: var(--ls-amber); }
+.ls-kpi-badge.teal { background: var(--ls-cyan-soft); color: var(--ls-cyan); }
+
+.ls-kpi-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--ls-slate-900);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.35rem;
+}
+
+.ls-kpi-subtext {
+    font-size: 0.78rem;
+    color: var(--ls-slate-400);
+    line-height: 1.3;
+}
+
+/* Ancienne classe pour compatibilité */
+.ls-kpi-quad {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.ls-kpi-num {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--ls-slate-900);
+    line-height: 1.1;
+    margin-bottom: 0.2rem;
+}
+.ls-kpi-sub {
+    font-size: 0.75rem;
+    color: var(--ls-slate-400);
+}
+
+/* --- Cartes Conteneurs & Graphiques --- */
+.ls-card {
+    background: #ffffff;
+    border: 1px solid var(--ls-slate-200);
+    border-radius: var(--ls-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--ls-card-shadow);
+}
+
+.ls-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ls-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ls-slate-900);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ls-card-title i {
+    color: var(--ls-primary);
+}
+
+.ls-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ls-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Tableaux Modernes & Progressives --- */
+.ls-table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.ls-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+}
+
+.ls-table th {
+    background: var(--ls-slate-50);
+    color: var(--ls-slate-500);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--ls-slate-200);
+    text-align: left;
+}
+
+.ls-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--ls-slate-100);
+    color: var(--ls-slate-700);
+    vertical-align: middle;
+}
+
+.ls-table tr:last-child td {
+    border-bottom: none;
+}
+
+.ls-table tr:hover td {
+    background: var(--ls-slate-50);
+}
+
+.ls-progress-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ls-progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--ls-slate-100);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.ls-progress-fill {
+    height: 100%;
+    background: var(--ls-primary);
+    border-radius: 9999px;
+}
+
+.ls-progress-fill.green { background: var(--ls-emerald); }
+.ls-progress-fill.amber { background: var(--ls-amber); }
+.ls-progress-fill.purple { background: var(--ls-purple); }
+
+/* --- Badges & Statuts HTTP --- */
+.status-pill {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+
+.status-200 { background: #dcfce7; color: #15803d; }
+.status-30x { background: #e0f2fe; color: #0369a1; }
+.status-404 { background: #fef3c7; color: #b45309; }
+.status-500 { background: #fee2e2; color: #b91c1c; }
+.status-other { background: var(--ls-slate-100); color: var(--ls-slate-600); }
+
+.bot-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.bot-verified { background: #dcfce7; color: #15803d; }
+.bot-declared { background: #e0e7ff; color: #4338ca; }
+.bot-tool { background: #fee2e2; color: #b91c1c; }
+.bot-unknown { background: #f1f5f9; color: #475569; }
+.bot-human { background: #ecfdf5; color: #047857; }
+
+/* --- Pagination Moderne --- */
+.ls-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ls-slate-200);
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.ls-page-links {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.ls-page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--ls-slate-200);
+    background: #ffffff;
+    color: var(--ls-slate-700);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.ls-page-btn:hover {
+    background: var(--ls-primary-soft);
+    color: var(--ls-primary);
+    border-color: var(--ls-primary-border);
+}
+
+.ls-page-btn.active {
+    background: var(--ls-primary);
+    color: #ffffff;
+    border-color: var(--ls-primary);
+}
+
+/* --- Timeline des Parcours Visiteurs --- */
+.journey-timeline-item {
+    border-left: 2px solid var(--ls-slate-200);
+    padding-left: 1.25rem;
+    margin-left: 0.75rem;
+    padding-bottom: 1.5rem;
+    position: relative;
+}
+
+.journey-timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -7px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--ls-primary);
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 2px var(--ls-primary-border);
+}
+
+.journey-step-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: var(--ls-slate-100);
+    color: var(--ls-slate-700);
+}
+
+/* --- Empty States Élégants --- */
+.ls-empty-card {
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+    background: #ffffff;
+    border: 1px dashed var(--ls-slate-300);
+    border-radius: var(--ls-radius);
+    color: var(--ls-slate-500);
+}
+
+.ls-empty-icon {
+    font-size: 3rem;
+    color: var(--ls-slate-300);
+    margin-bottom: 1rem;
+}
+
+.ls-empty-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ls-slate-800);
+    margin: 0 0 0.4rem;
+}
+
+.ls-empty-text {
+    font-size: 0.85rem;
+    color: var(--ls-slate-500);
+    margin: 0;
+}
+
+/* ==========================================================================
+   SHIELD & OPTIMISATIONS MOBILES ET TABLETTES (Isolant 299Ko Admin)
+   ========================================================================== */
+
+/* 1. Neutralisation des styles invasifs de 299Ko (admin/styles.css) sur boutons */
+.lightstats-dashboard button,
+.lightstats-dashboard .button,
+.lightstats-dashboard input[type="button"],
+.lightstats-dashboard input[type="submit"] {
+    clear: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    margin: 0 !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+}
+
+/* 2. Filtres rapides : alignement fluide sans boutons étirés */
+.lightstats-dashboard .ls-presets-group {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 0.4rem !important;
+}
+
+.lightstats-dashboard .ls-preset-btn {
+    display: inline-flex !important;
+    width: auto !important;
+    background: var(--ls-slate-50) !important;
+    border: 1px solid var(--ls-slate-200) !important;
+    color: var(--ls-slate-600) !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    padding: 0.45rem 0.85rem !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+.lightstats-dashboard .ls-preset-btn:hover {
+    background: var(--ls-primary-soft) !important;
+    color: var(--ls-primary) !important;
+    border-color: var(--ls-primary-border) !important;
+}
+
+.lightstats-dashboard .ls-preset-btn.active {
+    background: var(--ls-primary) !important;
+    color: #ffffff !important;
+    border-color: var(--ls-primary) !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35) !important;
+}
+
+/* 3. Barre de navigation des 6 onglets sur mobile : bandeau défilant horizontal moderne */
+.lightstats-dashboard .ls-tabs-nav {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
+    padding: 0.25rem 0.25rem 0.75rem 0.25rem !important;
+    scrollbar-width: thin !important;
+}
+
+.lightstats-dashboard .ls-tabs-nav::-webkit-scrollbar {
+    height: 4px;
+}
+
+.lightstats-dashboard .ls-tabs-nav::-webkit-scrollbar-thumb {
+    background: var(--ls-slate-300);
+    border-radius: 4px;
+}
+
+.lightstats-dashboard .ls-tab-button {
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    background: #ffffff !important;
+    color: var(--ls-slate-600) !important;
+    border: 1px solid var(--ls-slate-200) !important;
+    border-radius: 10px !important;
+    padding: 0.65rem 1rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    gap: 0.5rem !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.lightstats-dashboard .ls-tab-button:hover {
+    background: var(--ls-primary-soft) !important;
+    color: var(--ls-primary) !important;
+    border-color: var(--ls-primary-border) !important;
+}
+
+.lightstats-dashboard .ls-tab-button.active {
+    background: var(--ls-primary) !important;
+    color: #ffffff !important;
+    border-color: var(--ls-primary) !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+}
+
+.lightstats-dashboard .ls-tab-button .ls-tab-count {
+    background: var(--ls-slate-100) !important;
+    color: var(--ls-slate-600) !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    padding: 0.15rem 0.5rem !important;
+    border-radius: 9999px !important;
+}
+
+.lightstats-dashboard .ls-tab-button.active .ls-tab-count {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* 4. Bouton Soumettre / Actualiser */
+.lightstats-dashboard .ls-submit-btn {
+    display: inline-flex !important;
+    width: auto !important;
+    background: var(--ls-slate-800) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    gap: 0.4rem !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease !important;
+}
+
+.lightstats-dashboard .ls-submit-btn:hover {
+    background: var(--ls-slate-900) !important;
+}
+
+/* 5. Cartes KPIs héroïques et sections sur mobile */
+@media (max-width: 640px) {
+    .lightstats-dashboard {
+        padding: 0.25rem !important;
+    }
+
+    .lightstats-dashboard .ls-header {
+        padding: 1rem !important;
+        gap: 0.75rem !important;
+    }
+
+    .lightstats-dashboard .ls-header-brand {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.5rem !important;
+    }
+
+    .lightstats-dashboard .ls-header-titles h1 {
+        font-size: 1.25rem !important;
+    }
+
+    .lightstats-dashboard .ls-filter-bar {
+        padding: 0.85rem !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .lightstats-dashboard .ls-custom-dates-form {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+    }
+
+    .lightstats-dashboard .ls-date-field {
+        flex: 1 1 calc(50% - 0.25rem) !important;
+        min-width: 130px !important;
+    }
+
+    .lightstats-dashboard .ls-submit-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .lightstats-dashboard .ls-kpi-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    .lightstats-dashboard .ls-kpi-card {
+        padding: 1rem !important;
+    }
+
+    .lightstats-dashboard .ls-grid-2col {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    .lightstats-dashboard .ls-table-container {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+}
+

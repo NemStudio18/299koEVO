@@ -1,0 +1,4 @@
+{
+    "endFrontHead": "LightStats\\Hooks::addVisitor",
+    "adminHead": "LightStats\\Hooks::addScript"
+}

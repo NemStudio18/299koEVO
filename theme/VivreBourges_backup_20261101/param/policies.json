@@ -1,0 +1,37 @@
+{
+    "search-ui:admin": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "role",
+                "type": "role",
+                "value": "admin"
+            }
+        ]
+    },
+    "search-ui:access": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": false
+            },
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": true
+            }
+        ]
+    },
+    "search-ui:logged": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": true
+            }
+        ]
+    }
+}

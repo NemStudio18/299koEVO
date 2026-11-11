@@ -1,0 +1,42 @@
+{
+    "priority": "8",
+    "debug": 0,
+    "storage": {
+        "backend": "mysql",
+        "requiresDatabase": true
+    },
+    "dependencies": {
+        "required": [
+            "PoiData"
+        ],
+        "optional": [
+            "claim",
+            "subscription"
+        ],
+        "provides": [
+            "poi:edit-form"
+        ]
+    },
+    "config": {
+        "max_pois_per_owner": 1
+    },
+    "limits": {
+        "free": {
+            "max_photos": 3,
+            "max_links": 2
+        },
+        "pro": {
+            "max_photos": 10,
+            "max_links": 5
+        },
+        "pro_plus": {
+            "max_photos": 20,
+            "max_links": 10
+        }
+    },
+    "notifications": {
+        "admin_email_on_proposal": true,
+        "admin_email_on_suggestion": true,
+        "member_email_on_decision": true
+    }
+}

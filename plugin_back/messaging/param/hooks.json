@@ -1,0 +1,14 @@
+{
+    "beforeRunPlugin": "messagingBeforeRunPlugin",
+    "notifications:collect": "messagingNotificationsCollect",
+    "forum:topic-post-actions": "messagingForumTopicPostActions",
+    "user:profile-sections": "messagingUserProfileSections",
+    "user:profile-stats": "messagingUserProfileStats",
+    "search:get-results": "messagingSearchResultsHook",
+    "endFrontHead": "messagingEndFrontHead",
+    "user:profile-settings": "messagingUserProfileSettings",
+    "user:profile-edit-settings": "messagingUserProfileEditSettings",
+    "user:profile-allowed-settings": "messagingUserProfileAllowedSettings",
+    "user:avatar-menu": "messagingUserAvatarMenu",
+    "messaging:message-sent": "messagingOnMessageSent"
+}

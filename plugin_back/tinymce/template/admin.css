@@ -1,0 +1,7 @@
+.tox-tinymce{
+    margin: 20px 0px;
+}
+
+.tox .tox-toolbar, .tox .tox-toolbar__overflow, .tox .tox-toolbar__primary {
+    transform: none !important;
+}

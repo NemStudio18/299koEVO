@@ -1,0 +1,10 @@
+{
+  "slug": "poi-favorites",
+  "name": "Favoris POI",
+  "icon": "fa-solid fa-heart",
+  "description": "Plugin pour s'abonner aux POI et recevoir des notifications",
+  "version": "1.0.0",
+  "author": "299Ko Team",
+  "authorEmail": "mx.koder@gmail.com",
+  "authorWebsite": "https://299ko.ovh"
+}

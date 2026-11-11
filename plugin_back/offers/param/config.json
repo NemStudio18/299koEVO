@@ -1,0 +1,11 @@
+{
+"priority": "9",
+  "maxActiveOffersPerPoi": 2,
+  "maxOfferDurationDays": 30,
+  "requireModeration": true,
+  "freeTierActiveOffers": 1,
+  "premiumTierActiveOffers": 2,
+  "premiumMonthlyPrice": 5,
+  "premiumYearlyPrice": 49
+}
+

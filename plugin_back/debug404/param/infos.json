@@ -1,0 +1,9 @@
+{
+    "slug": "debug404",
+    "name": "Debug 404",
+    "icon": "fa-solid fa-bug",
+    "description": "Logger pour les erreurs 404",
+    "author": "Antigravity",
+    "version": "1.0",
+    "homeAdminMethod": "Debug404\\Controllers\\Debug404AdminController#list"
+}

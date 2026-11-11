@@ -1,0 +1,313 @@
+/* ================================================================
+   PoiManager — admin.css
+   Styles pour le plugin admin, chargé via endFrontHead hook.
+   Utilise les classes du framework admin existant comme base.
+   ================================================================ */
+
+/* ---------- Stats dashboard ---------- */
+.pm-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.pm-stat-card {
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid;
+}
+
+.pm-stat-card .pm-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.pm-stat-card .pm-stat-label {
+    font-size: .9rem;
+    margin-top: .25rem;
+}
+
+.pm-stat-blue {
+    background: #f0f9ff;
+    border-color: #bae6fd;
+}
+
+.pm-stat-blue .pm-stat-value {
+    color: #0369a1;
+}
+
+.pm-stat-blue .pm-stat-label {
+    color: #0c4a6e;
+}
+
+.pm-stat-amber {
+    background: #fef3c7;
+    border-color: #fde68a;
+}
+
+.pm-stat-amber .pm-stat-value {
+    color: #d97706;
+}
+
+.pm-stat-amber .pm-stat-label {
+    color: #92400e;
+}
+
+.pm-stat-pink {
+    background: #fce7f3;
+    border-color: #fbcfe8;
+}
+
+.pm-stat-pink .pm-stat-value {
+    color: #be185d;
+}
+
+.pm-stat-pink .pm-stat-label {
+    color: #831843;
+}
+
+.pm-stat-green {
+    background: #d1fae5;
+    border-color: #86efac;
+}
+
+.pm-stat-green .pm-stat-value {
+    color: #059669;
+}
+
+.pm-stat-green .pm-stat-label {
+    color: #047857;
+}
+
+/* ---------- Toolbar (search + actions) ---------- */
+.pm-toolbar {
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.pm-toolbar .pm-search {
+    display: flex;
+    gap: .5rem;
+    flex: 1;
+    min-width: 240px;
+}
+
+.pm-toolbar .pm-search input {
+    flex: 1;
+}
+
+.pm-result-count {
+    font-size: .9rem;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+/* ---------- Galerie photos ---------- */
+.pm-photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.pm-photo-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.pm-photo-item img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    display: block;
+}
+
+.pm-photo-item .pm-photo-meta {
+    padding: .5rem;
+}
+
+.pm-photo-item .pm-photo-meta input {
+    width: 100%;
+    font-size: .8rem;
+}
+
+.pm-photo-delete {
+    position: absolute;
+    top: .25rem;
+    right: .25rem;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: .2rem .4rem;
+    line-height: 1;
+}
+
+/* ---------- Drop zone upload ---------- */
+.pm-drop-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    transition: border-color .2s, background .2s;
+    cursor: pointer;
+}
+
+.pm-drop-zone:hover,
+.pm-drop-zone.dragover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.pm-drop-zone .pm-drop-icon {
+    font-size: 2rem;
+    color: #9ca3af;
+    display: block;
+    margin-bottom: .5rem;
+}
+
+.pm-drop-hint {
+    font-size: .8rem;
+    color: #9ca3af;
+    margin-top: .5rem;
+}
+
+/* ---------- Liens dynamiques ---------- */
+.pm-link-row {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: .5rem;
+    align-items: center;
+}
+
+.pm-link-row .pm-link-label {
+    flex: 0 0 180px;
+}
+
+.pm-link-row .pm-link-url {
+    flex: 1;
+}
+
+/* ---------- Tags ---------- */
+.pm-tag-row {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: .5rem;
+    align-items: center;
+}
+
+.pm-tag-row .pm-tag-key {
+    flex: 0 0 180px;
+}
+
+.pm-tag-row .pm-tag-val {
+    flex: 1;
+}
+
+/* ---------- Proposals / Suggestions ---------- */
+.pm-decision-form {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pm-old-value {
+    color: #6b7280;
+    text-decoration: line-through;
+    font-size: .85rem;
+}
+
+.pm-new-value {
+    color: #111827;
+}
+
+/* ---------- Vide / Placeholder ---------- */
+.pm-empty-state {
+    text-align: center;
+    color: #6b7280;
+    padding: 3rem;
+}
+
+.pm-empty-state i {
+    font-size: 3rem;
+    opacity: .3;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+/* ---------- Actions rapides dashboard ---------- */
+.pm-actions {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.pm-actions .pm-actions-right {
+    margin-left: auto;
+}
+
+/* ---------- Section title ---------- */
+.pm-section-title {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: .5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* ---------- Quota bar ---------- */
+.pm-quota-bar {
+    background: #e5e7eb;
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: .25rem;
+}
+
+.pm-quota-bar-fill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 4px;
+    transition: width .3s;
+}
+
+.pm-quota-bar-fill.full {
+    background: #ef4444;
+}
+
+/* ---------- Public forms ---------- */
+.pm-form-public {
+    max-width: 720px;
+}
+
+.pm-poi-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: .75rem;
+}
+
+.pm-poi-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .75rem 1rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.pm-poi-card-body {
+    padding: .75rem 1rem;
+    font-size: .9rem;
+    color: #6b7280;
+}

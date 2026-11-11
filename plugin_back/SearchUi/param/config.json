@@ -1,0 +1,21 @@
+{
+    "priority": "10",
+    "debug": 0,
+    "enableSimulation": "1",
+    "storage": {
+        "backend": "mysql",
+        "requiresDatabase": true,
+        "databaseDriver": "mysql",
+        "customRequirements": []
+    },
+    "dependencies": {
+        "required": [],
+        "optional": [
+            "poi-favorites"
+        ],
+        "provides": [
+            "search:filter-inject",
+            "search:result-card"
+        ]
+    }
+}

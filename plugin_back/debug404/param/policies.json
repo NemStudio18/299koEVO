@@ -1,0 +1,8 @@
+{
+    "debug404:admin": [
+        {
+            "type": "role",
+            "value": "admin"
+        }
+    ]
+}

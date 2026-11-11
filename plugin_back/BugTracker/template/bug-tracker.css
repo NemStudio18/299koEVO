@@ -1,0 +1,460 @@
+/* Bug Tracker Plugin Styles */
+
+.BugTracker-home,
+.BugTracker-form,
+.BugTracker-list,
+.BugTracker-view {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.BugTracker-intro {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.BugTracker-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.BugTracker-stats {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.BugTracker-stats h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.stat-pending .stat-value {
+    color: #f39c12;
+}
+
+.stat-progress .stat-value {
+    color: #3498db;
+}
+
+.stat-fixed .stat-value {
+    color: #27ae60;
+}
+
+/* Formulaire */
+.BugTracker-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.BugTracker-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.BugTracker-form .required {
+    color: #e74c3c;
+}
+
+.BugTracker-form input[type="text"],
+.BugTracker-form input[type="email"],
+.BugTracker-form textarea,
+.BugTracker-form select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.BugTracker-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.image-uploads {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.image-upload-item label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.image-upload-item input[type="file"] {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Liste des bugs */
+.BugTracker-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.tab-link {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: #666;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.tab-link:hover {
+    color: #333;
+    background: #f8f9fa;
+}
+
+.tab-link.active {
+    color: #3498db;
+    border-bottom-color: #3498db;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.bug-item {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    transition: box-shadow 0.3s;
+}
+
+.bug-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bug-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.bug-header h3 {
+    margin: 0;
+    flex: 1;
+}
+
+.bug-header h3 a {
+    color: #333;
+    text-decoration: none;
+}
+
+.bug-header h3 a:hover {
+    color: #3498db;
+}
+
+.bug-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+}
+
+.bug-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.bug-description {
+    color: #555;
+    line-height: 1.6;
+}
+
+.no-bugs {
+    text-align: center;
+    padding: 3rem;
+    color: #999;
+    font-style: italic;
+}
+
+/* Vue détaillée */
+.bug-details {
+    padding: 1.5rem 0;
+}
+
+.bug-header {
+    margin-bottom: 1.5rem;
+}
+
+.bug-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-warning {
+    background: #f39c12;
+    color: white;
+}
+
+.badge-info {
+    background: #3498db;
+    color: white;
+}
+
+.badge-success {
+    background: #27ae60;
+    color: white;
+}
+
+.badge-alert {
+    background: #e74c3c;
+    color: white;
+}
+
+.badge-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.bug-section {
+    margin-bottom: 2rem;
+}
+
+.bug-section h3 {
+    margin-bottom: 0.75rem;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.bug-section p {
+    line-height: 1.8;
+    color: #555;
+}
+
+.bug-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.bug-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.bug-image {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bug-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.bug-comments {
+    margin-top: 1rem;
+}
+
+.bug-comment {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #ddd;
+}
+
+.bug-comment-admin {
+    background: #e3f2fd;
+    border-left-color: #3498db;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.comment-date {
+    margin-left: auto;
+    color: #999;
+}
+
+.comment-body {
+    color: #555;
+    line-height: 1.6;
+}
+
+.bug-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Admin */
+.bug-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    padding: 1.5rem;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.stat-card .stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card.stat-total .stat-value {
+    color: #333;
+}
+
+.stat-card.stat-pending .stat-value {
+    color: #f39c12;
+}
+
+.stat-card.stat-progress .stat-value {
+    color: #3498db;
+}
+
+.stat-card.stat-fixed .stat-value {
+    color: #27ae60;
+}
+
+.stat-card.stat-rejected .stat-value {
+    color: #e74c3c;
+}
+
+.bug-actions-admin {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.bug-actions-admin h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.inline-form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.inline-form label {
+    margin: 0;
+    font-weight: 600;
+}
+
+.inline-form select {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .form-row,
+    .image-uploads,
+    .bug-comparison {
+        grid-template-columns: 1fr;
+    }
+
+    .BugTracker-actions {
+        flex-direction: column;
+    }
+
+    .bug-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .inline-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

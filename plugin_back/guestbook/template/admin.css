@@ -1,0 +1,28 @@
+/* Plugin Guestbook - Styles admin */
+
+.guestbook-stats {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.status-approved {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.status-pending {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+table tr.pending {
+    background: #fffbf0;
+}
+
+table tr.pending:hover {
+    background: #fff8e1;
+}
+
+

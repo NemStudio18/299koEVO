@@ -1,0 +1,47 @@
+{
+    "sondage:admin": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "role",
+                "type": "role",
+                "value": "admin"
+            },
+            {
+                "provider": "role",
+                "type": "role",
+                "value": "ADM"
+            },
+            {
+                "provider": "role",
+                "type": "role",
+                "value": "moderator"
+            }
+        ]
+    },
+    "sondage:access": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": true
+            }
+        ]
+    },
+    "sondage:vote": {
+        "logic": "AND",
+        "conditions": [
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": true
+            },
+            {
+                "provider": "role",
+                "type": "role",
+                "value": "member"
+            }
+        ]
+    }
+}

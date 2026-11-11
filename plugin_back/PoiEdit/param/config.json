@@ -1,0 +1,19 @@
+{
+    "priority": "10",
+    "debug": 0,
+    "storage": {
+        "backend": "mysql",
+        "requiresDatabase": true,
+        "databaseDriver": "mysql",
+        "customRequirements": []
+    },
+    "dependencies": {
+        "optional": [
+            "search-maps",
+            "poi-favorites"
+        ],
+        "provides": [
+            "poi:edit-form"
+        ]
+    }
+}

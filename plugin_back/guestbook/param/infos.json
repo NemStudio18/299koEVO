@@ -1,0 +1,10 @@
+{
+    "name" : "Livre d'or",
+    "icon" : "fa-solid fa-book",
+    "description" : "Gestion du livre d'or et des messages des visiteurs",
+    "authorEmail" : "maximeblanc@flexcb.fr",
+    "authorWebsite" : "https://www.flexcb.fr",
+    "version" : "0.1.0b",
+    "homePublicMethod" : "GuestbookController#home",
+    "homeAdminMethod" : "GuestbookAdminController#list"
+}

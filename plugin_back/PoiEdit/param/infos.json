@@ -1,0 +1,13 @@
+{
+    "slug": "poi-edit",
+    "name": "POI Editor",
+    "icon": "fa-solid fa-pen-to-square",
+    "description": "Édition et gestion des fiches POI avec permissions (membre, propriétaire, admin).",
+    "version": "0.1.0",
+    "homePublicMethod": "PoiEdit\\Controllers\\PoiEditPublicController#home",
+    "homeAdminMethod": "PoiEdit\\Controllers\\PoiEditAdminController#dashboard"
+}
+
+
+
+

@@ -1,0 +1,11 @@
+{
+    "slug" : "contact",
+    "name" : "Contact",
+    "icon" : "fa-solid fa-address-card",
+    "description" : "Formulaire de contact",
+    "authorEmail" : "mx.koder@gmail.com",
+    "authorWebsite" : "https://299ko.ovh",
+    "version" : "0.1.0b",
+    "homePublicMethod" : "ContactController#home",
+    "homeAdminMethod" : "ContactAdminController#home"
+}

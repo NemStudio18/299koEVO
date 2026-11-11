@@ -1,0 +1,63 @@
+#configmanager-backup {
+    float: right;
+    opacity: 0.65;
+    transition: opacity 0.4s ease-in-out;
+    font-size: 22px;
+    margin-left: 10px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border-radius: 50%;
+    padding: 10px;
+    text-align: center;
+    width: 47px;
+    height: 47px;
+}
+
+/* Cache Settings Styles */
+.cache-stats {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.cache-stats p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.cache-stats strong {
+    color: #495057;
+}
+
+/* Cache duration input */
+#cache_duration {
+    width: 120px;
+}
+
+/* Cache section styling */
+section:last-of-type {
+    border-top: 2px solid #e9ecef;
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
+/* Button styling for cache actions */
+.cache-actions .button {
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .cache-stats {
+        padding: 10px;
+    }
+    
+    #cache_duration {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+

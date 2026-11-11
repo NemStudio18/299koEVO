@@ -1,0 +1,184 @@
+/* ================================================================
+   PoiManager — public.css
+   Styles spécifiques aux pages front-end du plugin.
+   ================================================================ */
+
+/* Plan badge (dashboard propriétaire) */
+.pm-plan-badge {
+    display: inline-block;
+    font-size: .75rem;
+    background: #e5e7eb;
+    color: #374151;
+    border-radius: 999px;
+    padding: .1rem .6rem;
+    margin-left: .5rem;
+    vertical-align: middle;
+    font-weight: 600;
+    letter-spacing: .05em;
+}
+
+/* Liste de fiches propriétaire */
+.pm-poi-list {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.pm-poi-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.pm-poi-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .75rem 1rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.pm-poi-card-body {
+    padding: .75rem 1rem;
+    font-size: .9rem;
+    color: #6b7280;
+}
+
+/* Quota bar */
+.pm-quota-group {
+    margin-bottom: .75rem;
+    font-size: .9rem;
+}
+
+.pm-quota-bar {
+    background: #e5e7eb;
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: .25rem;
+}
+
+.pm-quota-bar-fill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 4px;
+    transition: width .3s;
+}
+
+.pm-quota-bar-fill.full {
+    background: #ef4444;
+}
+
+/* Formulaire public (propose / suggest) */
+.pm-form-public {
+    max-width: 720px;
+}
+
+.pm-old-field {
+    background: #f9fafb;
+    color: #9ca3af;
+    flex: 1;
+}
+
+.pm-new-field {
+    flex: 1;
+}
+
+/* Upload zone */
+.pm-drop-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+}
+
+.pm-drop-zone:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.pm-drop-icon {
+    font-size: 2rem;
+    color: #9ca3af;
+    display: block;
+    margin-bottom: .5rem;
+}
+
+.pm-drop-hint {
+    font-size: .8rem;
+    color: #9ca3af;
+    margin-top: .5rem;
+}
+
+/* Galerie photos */
+.pm-photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.pm-photo-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.pm-photo-item img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+}
+
+.pm-photo-meta {
+    padding: .5rem;
+}
+
+.pm-photo-meta input {
+    width: 100%;
+    font-size: .8rem;
+}
+
+/* Liens */
+.pm-link-row {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: .5rem;
+    align-items: center;
+}
+
+.pm-link-label {
+    flex: 0 0 160px;
+}
+
+.pm-link-url {
+    flex: 1;
+}
+
+/* État vide */
+.pm-empty-state {
+    text-align: center;
+    color: #9ca3af;
+    padding: 2.5rem;
+}
+
+.pm-empty-state i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: .75rem;
+    opacity: .3;
+}
+
+/* Actions toolbar */
+.pm-toolbar {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}

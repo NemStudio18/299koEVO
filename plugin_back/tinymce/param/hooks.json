@@ -1,0 +1,5 @@
+{
+	"endAdminHead": "tinymceAdminHead",
+	"endFrontHead": "tinymceAdminHead",
+	"insertCodeBeforeFirstEditor": "tinymceInsertScriptBeforeEditor"
+}

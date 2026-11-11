@@ -1,0 +1,46 @@
+{
+    "newsletter:access": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "auth",
+                "value": true
+            },
+            {
+                "type": "auth",
+                "value": false
+            }
+        ]
+    },
+    "newsletter:logged": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "auth",
+                "value": true
+            }
+        ]
+    },
+    "newsletter:admin": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "role",
+                "value": "ADM"
+            },
+            {
+                "type": "role",
+                "value": "admin"
+            }
+        ]
+    },
+    "newsletter:personal": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "auth",
+                "value": true
+            }
+        ]
+    }
+}

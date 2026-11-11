@@ -1,0 +1,19 @@
+{
+    "priority": 1,
+    "storage": {
+        "backend": "json",
+        "requiresDatabase": false,
+        "databaseDriver": null,
+        "customRequirements": []
+    },
+    "dependencies": {
+        "required": [],
+        "optional": [
+            "pwa"
+        ],
+        "provides": [
+            "notification:send",
+            "notification:get-unread"
+        ]
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "guestbook:admin": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "role",
+                "type": "role",
+                "value": "ADM"
+            }
+        ]
+    },
+    "guestbook:post": {
+        "logic": "OR",
+        "conditions": []
+    }
+}

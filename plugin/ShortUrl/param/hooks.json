@@ -1,0 +1,3 @@
+{
+    "before404": "ShortUrl\\Hooks\\ShortUrlHooks::onBefore404"
+}

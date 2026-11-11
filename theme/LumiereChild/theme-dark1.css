@@ -1,0 +1,162 @@
+/* 
+   THEME DARK
+   --------------------------------------------------
+   This file contains variable definitions for Dark Mode
+   and manual overrides for .theme-dark class.
+*/
+
+/* --- DARK MODE OVERRIDES (Nuit Palette) --- */
+@media (prefers-color-scheme: dark) {
+
+    /* Scoped to body:not(.theme-light) so that manual Light mode toggle prevents these from applying */
+    body:not(.theme-light) {
+        /* Base Colors - Slate Palette */
+        --dark-background-color: #0f172a;
+        /* Slate 900 */
+        --dark-font-color: #e2e8f0;
+        /* Slate 200 */
+
+        /* Headers & Sections */
+        --dark-header-bg-color: #0f172a;
+        /* Slate 900 (was #020617 Slate 950 - "Too Black") */
+        --dark-header-links-color: #e2e8f0;
+
+        --dark-section-bg-color: #1e293b;
+        /* Slate 800 */
+        --dark-section-head-bg-color: #0f172a;
+
+        /* Forms */
+        --dark-form-bg-color: #1e293b;
+        --dark-form-border-color: #334155;
+
+        /* Accents for Dark Mode */
+        /* User requested Orange (Lumiere) instead of Sky Blue for Dark Mode */
+        --dark-primary-color: #ff8c42;
+        /* Orange */
+        --dark-primary-hover-color: #ff7a2e;
+        --dark-primary-inverse-color: #0f172a;
+
+        /* --- PLUGIN & PARENT THEME COMPATIBILITY --- */
+        /* Force Parent/Plugin variables to Dark Mode equivalents */
+        --header-bg: var(--dark-header-bg-color);
+        --header-text: var(--dark-header-links-color);
+        --panel-bg: var(--dark-section-bg-color);
+        --panel-border: var(--dark-form-border-color);
+        --table-bg: var(--dark-section-bg-color);
+        --table-border: var(--dark-form-border-color);
+        --input-bg: var(--dark-form-bg-color);
+        --input-border: var(--dark-form-border-color);
+        --modal-bg: var(--dark-section-bg-color);
+    }
+
+    /* Force Footer update in dark mode if needed */
+    #footer {
+        background: #020617;
+        color: #94a3b8;
+    }
+
+    /* --- HERO SEARCH DARK MODE --- */
+    .lumiere-landing-wrapper .search-input-group-with-button {
+        background: var(--dark-form-bg-color);
+        border: 1px solid var(--dark-form-border-color);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .lumiere-landing-wrapper .search-input-group input {
+        color: var(--dark-font-color);
+    }
+
+    .lumiere-landing-wrapper .search-input-group input::placeholder {
+        color: rgba(226, 232, 240, 0.5);
+    }
+
+    /* --- SEARCH UI DARK MODE --- */
+    .searchV2-home .main-search-section {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    }
+
+    .searchV2-home #main-search-form {
+        background: var(--dark-section-bg-color) !important;
+        border: 1px solid var(--dark-form-border-color);
+    }
+
+    .searchV2-home #main-search-form input,
+    .searchV2-home #main-search-form select {
+        color: var(--dark-font-color) !important;
+    }
+
+    .searchV2-home #main-search-form input::placeholder {
+        color: rgba(226, 232, 240, 0.5) !important;
+    }
+
+    .searchV2-home i.fa-search,
+    .searchV2-home i.fa-location-dot {
+        color: var(--dark-primary-color) !important;
+    }
+}
+
+/* --- MANUAL TOGGLE SUPPORT (.theme-dark class) --- */
+body.theme-dark {
+    --background-color: #0f172a;
+    --font-color: #e2e8f0;
+    --header-bg-color: #0f172a;
+    --header-links-color: #e2e8f0;
+    --section-bg-color: #1e293b;
+    --section-head-bg-color: #0f172a;
+    --form-bg-color: #1e293b;
+    --form-border-color: #334155;
+    --primary-color: #ff8c42;
+    /* Orange */
+    --primary-hover-color: #ff7a2e;
+
+    /* Parent Overrides */
+    --header-bg: #0f172a;
+    --header-text: #e2e8f0;
+    --panel-bg: #1e293b;
+}
+
+body.theme-dark #footer {
+    background: #020617;
+    color: #94a3b8;
+}
+
+/* --- MANUAL OVERRIDES FOR SPECIFIC ELEMENTS (that don't use variables) --- */
+
+/* Hero Search */
+body.theme-dark .lumiere-landing-wrapper .search-input-group-with-button {
+    background: var(--dark-form-bg-color);
+    border: 1px solid var(--dark-form-border-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+body.theme-dark .lumiere-landing-wrapper .search-input-group input {
+    color: var(--dark-font-color);
+}
+
+body.theme-dark .lumiere-landing-wrapper .search-input-group input::placeholder {
+    color: rgba(226, 232, 240, 0.5);
+}
+
+/* Search UI */
+body.theme-dark .searchV2-home .main-search-section {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+}
+
+body.theme-dark .searchV2-home #main-search-form {
+    background: var(--dark-section-bg-color) !important;
+    border: 1px solid var(--dark-form-border-color);
+}
+
+body.theme-dark .searchV2-home #main-search-form input,
+body.theme-dark .searchV2-home #main-search-form select {
+    color: var(--dark-font-color) !important;
+}
+
+body.theme-dark .searchV2-home #main-search-form input::placeholder {
+    color: rgba(226, 232, 240, 0.5) !important;
+}
+
+body.theme-dark .searchV2-home i.fa-search,
+body.theme-dark .searchV2-home i.fa-location-dot {
+    color: var(--dark-primary-color) !important;
+}

@@ -1,0 +1,13 @@
+{
+  "beforeRunPlugin": "claimBeforeRunPlugin",
+  "endFrontHead": "claimEndFrontHead",
+  "searchEVO:poi-actions": "claimSearchEVOPoiActions",
+  "poi:card-actions": "claimPoiCardActions",
+  "poi:detail-actions": "claimPoiDetailActions",
+  "entity:ownership-verify": "claimVerifyOwnership",
+  "core:stats-collector": "claimCollectStats",
+  "user:profile-stats": "claimProfileStats",
+  "user:profile-activity": "claimProfileActivity",
+  "user:collect-context-data": "claimCollectUserContextData",
+  "user:avatar-menu": "claimUserAvatarMenu"
+}

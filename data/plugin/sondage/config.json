@@ -1,0 +1,1 @@
+{"priority":2,"allowMultipleVotes":"0","requireLogin":"0","storage":{"backend":"json","requiresDatabase":false,"databaseDriver":null,"customRequirements":[]},"dependencies":{"required":[],"optional":[],"provides":["sondage:inject-dashboard-widgets","sondage:user-profile-stats","sondage:user-profile-activity"]},"activate":1}

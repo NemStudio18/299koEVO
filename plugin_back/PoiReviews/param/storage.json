@@ -1,0 +1,13 @@
+{
+    "Review": {
+        "label": "Avis (Reviews)",
+        "class": "PoiReviews\\Entities\\Review",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "poi_reviews",
+        "schema": "CREATE TABLE poi_reviews (id INT AUTO_INCREMENT PRIMARY KEY, poi_id INT NOT NULL, user_id INT NOT NULL, rating INT NOT NULL, comment TEXT, status VARCHAR(20) DEFAULT 'active', created_at DATETIME, updated_at DATETIME)"
+    }
+}

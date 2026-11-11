@@ -1,0 +1,16 @@
+{
+    "slug": "ConversionOrchestrator",
+    "name": "Conversion Orchestrator",
+    "icon": "fa-solid fa-traffic-light",
+    "description": "Orchestrates user tunnels (Citizen, Contributor, Pro) and conversion triggers.",
+    "version": "1.0",
+    "author": "Antigravity",
+    "website": "https://antigravity.ai",
+    "email": "contact@antigravity.ai",
+    "require": [
+        "core",
+        "auth",
+        "notifications"
+    ],
+    "category": "system"
+}

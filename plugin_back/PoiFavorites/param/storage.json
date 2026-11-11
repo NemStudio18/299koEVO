@@ -1,0 +1,13 @@
+{
+    "Favorite": {
+        "label": "Favoris",
+        "class": "PoiFavorites\\Entities\\Favorite",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "poi_favorites",
+        "schema": "CREATE TABLE poi_favorites (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, poi_id INT NOT NULL, created_at DATETIME, updated_at DATETIME)"
+    }
+}

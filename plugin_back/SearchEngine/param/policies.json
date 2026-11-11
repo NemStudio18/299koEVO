@@ -1,0 +1,8 @@
+{
+    "search-engine:admin": [
+        {
+            "type": "role",
+            "value": "admin"
+        }
+    ]
+}

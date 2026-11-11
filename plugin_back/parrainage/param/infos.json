@@ -1,0 +1,16 @@
+{
+    "slug" : "parrainage",
+    "name" : "Parrainage",
+    "icon" : "fa-solid fa-handshake-angle",
+    "description" : "Système de parrainage et d'affiliation pour partenaires associés",
+    "author" : "MaximeB",
+    "authorEmail" : "admin@vivre-bourges.fr",
+    "authorWebsite" : "https://vivre-bourges.fr",
+    "version" : "1.0.0",
+    "priority" : 50,
+    "homePublicMethod" : "ParrainagePublicController#dashboard",
+    "homeAdminMethod" : "ParrainageAdminController#dashboard",
+    "require": {
+        "core": ">=1.0.0"
+    }
+}

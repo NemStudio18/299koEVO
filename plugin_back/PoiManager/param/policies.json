@@ -1,0 +1,38 @@
+{
+    "poi-manager:admin": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "role",
+                "value": "admin"
+            }
+        ]
+    },
+    "poi-manager:owner-edit": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "auth",
+                "value": true
+            }
+        ]
+    },
+    "poi-manager:suggest": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "auth",
+                "value": true
+            }
+        ]
+    },
+    "poi-manager:propose": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "auth",
+                "value": true
+            }
+        ]
+    }
+}

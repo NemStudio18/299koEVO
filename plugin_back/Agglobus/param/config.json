@@ -1,0 +1,14 @@
+{
+    "priority": "15",
+    "debug": 0,
+    "storage": {
+        "backend": "mysql",
+        "requiresDatabase": true,
+        "databaseDriver": "mysql"
+    },
+    "dependencies": {
+        "required": [],
+        "optional": [],
+        "provides": []
+    }
+}

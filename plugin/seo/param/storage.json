@@ -1,0 +1,13 @@
+{
+    "Redirect": {
+        "label": "Redirections (SEO)",
+        "class": "Seo\\Entities\\Redirect",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "seo_redirects",
+        "schema": "CREATE TABLE seo_redirects (id INT AUTO_INCREMENT PRIMARY KEY, old_url VARCHAR(255) NOT NULL UNIQUE, new_url VARCHAR(255) NOT NULL, code INT DEFAULT 301, hits INT DEFAULT 0, last_hit DATETIME NULL, active TINYINT(1) DEFAULT 1, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)"
+    }
+}

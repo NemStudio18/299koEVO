@@ -1,0 +1,11 @@
+# robots.txt - Vivre-Bourges.fr
+User-agent: *
+Allow: /
+
+# Espaces d'administration et de gestion des comptes
+Disallow: /admin/
+Disallow: /users/
+Disallow: /messaging/
+
+# Sitemap XML canonique
+Sitemap: https://vivre-bourges.fr/sitemap.xml

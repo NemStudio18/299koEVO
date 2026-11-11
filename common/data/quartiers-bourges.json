@@ -1,0 +1,54 @@
+{
+  "quartiers": [
+    {
+      "categorie": "Le Cœur Historique (Centre-Ville)",
+      "quartiers": [
+        "L'Hôtel de Ville / Cathédrale",
+        "Saint-Bonnet",
+        "Auron",
+        "Le Quartier Médiéval"
+      ]
+    },
+    {
+      "categorie": "Les Quartiers Nord",
+      "quartiers": [
+        "La Chancellerie",
+        "Les Gibjoncs",
+        "Le Moulon",
+        "Turly"
+      ]
+    },
+    {
+      "categorie": "Les Quartiers Est et Sud-Est",
+      "quartiers": [
+        "Pignoux",
+        "Lahitolle",
+        "Baudens",
+        "Saint-Abraham"
+      ]
+    },
+    {
+      "categorie": "Les Quartiers Sud",
+      "quartiers": [
+        "Le Val d'Auron",
+        "Séraucourt"
+      ]
+    },
+    {
+      "categorie": "Les Quartiers Ouest et Sud-Ouest",
+      "quartiers": [
+        "L'Aéroport",
+        "Pierrelay / Beaumont",
+        "Le Prado"
+      ]
+    },
+    {
+      "categorie": "Les Quartiers Périphériques et Anciens Villages",
+      "quartiers": [
+        "Asnières-lès-Bourges"
+      ]
+    }
+  ]
+}
+
+

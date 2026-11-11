@@ -1,0 +1,114 @@
+/* Plugin Styles Extracted from Inline CSS */
+
+/* SearchUi Plugin */
+.searchV2-home {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.main-search-section {
+    padding: 2.5rem 0;
+    background: linear-gradient(135deg, #ff8c42 0%, #ff5722 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.main-search-container-inner {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+#main-search-form {
+    display: flex;
+    gap: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 60px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    align-items: center;
+}
+
+.search-input-group {
+    flex: 2;
+    position: relative;
+    border-right: 1px solid #eee;
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ff8c42;
+    font-size: 1.2rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 15px 15px 15px 55px;
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    outline: none;
+}
+
+.city-select-group {
+    flex: 1;
+    position: relative;
+}
+
+.city-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ff8c42;
+    font-size: 1.2rem;
+}
+
+.city-select {
+    width: 100%;
+    padding: 15px 45px 15px 45px;
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+}
+
+.locate-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #ff8c42;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    transition: color 0.2s;
+}
+
+.search-submit-btn {
+    padding: 15px 35px;
+    background: #ff8c42;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hero-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+}

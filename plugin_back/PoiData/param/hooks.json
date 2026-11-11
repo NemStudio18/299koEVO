@@ -1,0 +1,8 @@
+{
+    "entity:provider-request": "PoiData\\Hooks\\PoiDataHooks::handleProviderRequest",
+    "commune:load-agglo": "PoiData\\Hooks\\PoiDataHooks::handleLoadAgglo",
+    "commune:get-centroids": "PoiData\\Hooks\\PoiDataHooks::handleGetCentroids",
+    "core:stats-collector": "PoiData\\Hooks\\PoiDataHooks::collectStats",
+    "offer:activated": "PoiData\\Hooks\\PoiDataHooks::handleActivity",
+    "agenda:event-created": "PoiData\\Hooks\\PoiDataHooks::handleActivity"
+}

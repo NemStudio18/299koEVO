@@ -1,0 +1,143 @@
+.poi-reviews-container {
+    margin: 2rem 0;
+}
+
+.poi-reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.poi-reviews-rating-summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.poi-reviews-average {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.poi-reviews-count {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.poi-reviews-stars {
+    display: flex;
+    gap: 0.25rem;
+    color: #ffc107;
+    font-size: 1.5rem;
+}
+
+.poi-reviews-form {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.poi-reviews-form h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.poi-reviews-rating-input {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.poi-reviews-rating-input input[type="radio"] {
+    display: none;
+}
+
+.poi-reviews-rating-input label {
+    cursor: pointer;
+    font-size: 2rem;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+.poi-reviews-rating-input label:hover,
+.poi-reviews-rating-input label:hover ~ label,
+.poi-reviews-rating-input input[type="radio"]:checked ~ label {
+    color: #ffc107;
+}
+
+.poi-reviews-comment-input {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.poi-reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.poi-review-item {
+    padding: 1rem;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+.poi-review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+
+.poi-review-author {
+    font-weight: 500;
+    color: #333;
+}
+
+.poi-review-date {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.poi-review-rating {
+    color: #ffc107;
+    font-size: 1.2rem;
+}
+
+.poi-review-comment {
+    color: #555;
+    line-height: 1.6;
+    margin-top: 0.5rem;
+}
+
+.poi-review-moderated {
+    opacity: 0.6;
+    background: #fff3cd;
+    border-color: #ffc107;
+}
+
+.poi-review-moderated-badge {
+    display: inline-block;
+    background: #ffc107;
+    color: #000;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
+
+

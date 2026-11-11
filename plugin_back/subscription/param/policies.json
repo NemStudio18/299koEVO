@@ -1,0 +1,22 @@
+{
+    "user:subscription:view": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": true
+            }
+        ]
+    },
+    "user:subscription:manage": {
+        "logic": "AND",
+        "conditions": [
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": true
+            }
+        ]
+    }
+}

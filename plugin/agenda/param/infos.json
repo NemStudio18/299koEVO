@@ -1,0 +1,13 @@
+{
+  "slug": "agenda",
+  "name": "Agenda",
+  "icon": "fa-solid fa-calendar",
+  "description": "Plugin agenda et calendrier événements",
+  "version": "1.0.0",
+  "author": "299Ko Team",
+  "authorEmail": "mx.koder@gmail.com",
+  "authorWebsite": "https://299ko.ovh",
+  "homePublicMethod": "Agenda\\Controllers\\AgendaController#home",
+  "homeAdminMethod": "Agenda\\\\Controllers\\\\AgendaAdminController#home",
+  "hideInPublicMenu": false
+}

@@ -1,0 +1,15 @@
+{
+    "agenda:admin": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "role",
+                "value": "admin"
+            },
+            {
+                "type": "meta",
+                "value": "is_owner"
+            }
+        ]
+    }
+}

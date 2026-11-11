@@ -1,0 +1,8 @@
+{
+    "priority": 5,
+    "pageTitle": "Newsletter",
+    "subscriptionMessage": "Merci pour votre inscription à notre newsletter !",
+    "unsubscriptionMessage": "Vous avez été désabonné de notre newsletter.",
+    "alreadySubscribedMessage": "Cette adresse email est déjà inscrite à notre newsletter."
+}
+

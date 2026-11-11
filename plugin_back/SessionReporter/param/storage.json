@@ -1,0 +1,14 @@
+{
+    "events": {
+        "drivers": [
+            "sql"
+        ],
+        "description": "Buffer for debug events (SQLite)"
+    },
+    "beta_codes": {
+        "drivers": [
+            "sql"
+        ],
+        "description": "Beta invitation codes (SQLite)"
+    }
+}

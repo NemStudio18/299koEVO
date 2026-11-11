@@ -1,0 +1,91 @@
+/* 
+   THEME LIGHT
+   --------------------------------------------------
+   This file contains variable definitions for the default (Light) theme
+   and specific overrides for light mode elements.
+*/
+
+:root {
+    /* --- LUMIERE PALETTE DEFINITION --- */
+    --lumiere-orange: #ff8c42;
+    --lumiere-orange-hover: #ff7a2e;
+
+    --lumiere-blue-dark: #1a3a5c;
+    /* Used for heavy accents or footer */
+    --lumiere-blue-light: #3b82f6;
+
+    --lumiere-green: #10b981;
+    --lumiere-green-hover: #059669;
+
+    --lumiere-red: #ef4444;
+
+    /* --- MAPPING TO DEFAULT THEME VARIABLES (LIGHT MODE) --- */
+
+    /* Primary Action Color (was Cyan in Default) -> Orange from Lumiere */
+    --primary-color: var(--lumiere-orange);
+    --primary-hover-color: var(--lumiere-orange-hover);
+
+    /* Secondary/Info Colors */
+    --info-color: var(--lumiere-blue-light);
+    --success-color: var(--lumiere-green);
+    --alert-color: var(--lumiere-red);
+
+    /* Header Structure -> KEEP DEFAULT STRUCTURE (White) to ensure contrast */
+    --header-bg-color: #ffffff;
+    --header-links-color: #415462;
+    /* Lumiere font color */
+
+    /* Body & Sections */
+    --background-color: #fafafa;
+    /* Lumiere background grey/white */
+    --font-color: #415462;
+    /* Lumiere font color */
+    --font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", sans-serif;
+
+    /* Footer - Optional: Use Lumiere Blue for Footer to add character */
+    --footer-bg: var(--lumiere-blue-dark);
+    /* This variable might need custom rule if default doesn't use it same way */
+
+    /* --- PARENT THEME OVERRIDES (Lumiere) --- */
+    /* Force Parent variables to match Child Scheme to avoid "Blue Header" in Auto Mode */
+    --header-bg: var(--header-bg-color);
+    --header-text: var(--header-links-color);
+    --panel-bg: #ffffff;
+    --banner-text: var(--font-color);
+
+    /* --- MISSING BASE VARIABLES (For Dark Mode parity) --- */
+    --section-bg-color: #ffffff;
+    --section-head-bg-color: #f1f5f9;
+    --form-bg-color: #ffffff;
+    --form-border-color: #e2e8f0;
+}
+
+/* --- APPLY VARIABLES TO BASE ELEMENTS --- */
+body {
+    background-color: var(--background-color);
+    color: var(--font-color);
+    font-family: var(--font-family);
+}
+
+#header {
+    background-color: var(--header-bg-color);
+}
+
+a {
+    color: var(--primary-color);
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-hover-color);
+}
+
+/* Fix Footer background if Default theme uses specific selector */
+#footer {
+    background: var(--lumiere-blue-dark);
+    color: #ffffff;
+}
+
+#footer a {
+    color: #e2e8f0;
+}

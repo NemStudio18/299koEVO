@@ -1,0 +1,84 @@
+/* PWA Install Banner Styles */
+.pwa-install-banner {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    right: 2rem;
+    background: var(--section-bg-color, #ffffff);
+    padding: 1rem 1.5rem;
+    border-radius: 16px;
+    box-shadow: var(--dc-shadow-md, 0 10px 25px rgba(0, 0, 0, 0.15));
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    border: 1px solid var(--border-color, transparent);
+    border-left: 4px solid var(--primary-color);
+    animation: slideUp 0.5s ease-out;
+}
+
+.pwa-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.pwa-banner-content i {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.pwa-banner-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.pwa-banner-text strong {
+    font-size: 1.1rem;
+    color: var(--font-color, #333);
+}
+
+.pwa-banner-text span {
+    font-size: 0.9rem;
+    color: var(--font-secondary, #666);
+}
+
+.pwa-banner-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .pwa-install-banner {
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.25rem;
+    }
+
+    .pwa-banner-content i {
+        font-size: 1.5rem;
+    }
+
+    .pwa-banner-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

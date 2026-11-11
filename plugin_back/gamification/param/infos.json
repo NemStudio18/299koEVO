@@ -1,0 +1,11 @@
+{
+    "slug": "gamification",
+    "name": "Gamification",
+    "icon": "fa-solid fa-trophy",
+    "description": "Système de gamification avec points, paliers et badges",
+    "version": "1.0.0",
+    "author": "299Ko",
+    "license": "GPLv3",
+    "require": [],
+    "homeAdminMethod": "Gamification\\Controllers\\GamificationAdminController#dashboard"
+}

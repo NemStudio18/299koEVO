@@ -1,0 +1,15 @@
+{
+    "id": "LocalFeed",
+    "name": "Local Feed - Le Mur de Bourges",
+    "description": "Flux d'actualités local hyper-connecté combinant publications des commerçants, événements et offres de proximité.",
+    "version": "1.0",
+    "author": "Vivre-Bourges",
+    "website": "https://vivre-bourges.fr",
+    "email": "contact@vivre-bourges.fr",
+    "require": [
+        "core",
+        "auth",
+        "PoiManager"
+    ],
+    "category": "social"
+}

@@ -1,0 +1,16 @@
+{
+    "name": "SearchUi",
+    "icon": "fa-solid fa-window-maximize",
+    "description": "Public User Interface for Search & POIs",
+    "version": "1.0.0",
+    "author": "Antigravity",
+    "provider": "299Ko",
+    "type": "tool",
+    "targetPrototype": "SearchUi",
+    "dependencies": [
+        "poi-data",
+        "search-engine"
+    ],
+    "homePublicMethod": "SearchUI\\Controllers\\HomeController#home",
+    "homeAdminMethod": "SearchUI\\Controllers\\SearchUIAdminController#home"
+}

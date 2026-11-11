@@ -1,0 +1,30 @@
+
+.grecaptcha-badge {
+    visibility: hidden;
+}
+
+.antispam-icon-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.antispam-icon label {
+    font-size: 2em;
+    padding: 0.1em 0.25em ;
+    cursor: pointer;
+    transition: all 0.4s ease-in-out;
+}
+
+.antispam-icon > input[type="radio"]:checked + label {
+    color: var(--primary-color);
+}
+.antispam-icon > input[type="radio"] {
+    display: none;
+}
+
+#first_name_a {
+    display: none;
+}

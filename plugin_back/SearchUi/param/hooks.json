@@ -1,0 +1,7 @@
+{
+    "endFrontHead": "SearchUI\\Hooks\\SearchUIHooks::onEndFrontHead",
+    "before404": "SearchUI\\Hooks\\SearchUIHooks::onBefore404",
+    "afterHeader": "SearchUI\\Hooks\\SearchUIHooks::onAfterHeader",
+    "poi:detail-actions": "SearchUI\\Hooks\\SearchUIHooks::onPoiDetailActions",
+    "SearchUi:header-bar": "SearchUI\\Hooks\\SearchUIHooks::onHeaderBar"
+}

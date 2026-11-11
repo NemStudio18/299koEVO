@@ -1,0 +1,13 @@
+{
+    "Sondage": {
+        "label": "Sondages",
+        "class": "Sondage\\Entities\\Sondage",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "sondages",
+        "schema": "CREATE TABLE sondages (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255) NOT NULL, options TEXT, active TINYINT(1) DEFAULT 0, votes TEXT, date DATETIME, updated_at DATETIME, closeDate DATETIME NULL, isMultipleChoice TINYINT(1) DEFAULT 0, allowOther TINYINT(1) DEFAULT 0)"
+    }
+}

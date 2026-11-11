@@ -1,0 +1,7 @@
+{
+    "subscription:verify": ["subscriptionVerifySubscription"],
+    "subscription:get-details": ["subscriptionGetSubscriptionDetails"],
+    "user:avatar-menu": ["subscriptionUserAvatarMenu"],
+    "user:subscription-verify": "subscriptionVerifySubscription",
+    "user:collect-context-data": "subscriptionCollectUserContextData"
+}

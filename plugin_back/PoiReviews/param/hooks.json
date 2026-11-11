@@ -1,0 +1,8 @@
+{
+  "beforeRunPlugin": "poiReviewsBeforeRunPlugin",
+  "endFrontHead": "poiReviewsEndFrontHead",
+  "poi:get-reviews": "poiReviewsGetReviews",
+  "storage:migration:finished": "poiReviewsOnStorageMigrationFinished",
+  "user:profile-tabs": "poiReviewsUserProfileTabs",
+  "user:profile-tabs-content": "poiReviewsUserProfileTabsContent"
+}

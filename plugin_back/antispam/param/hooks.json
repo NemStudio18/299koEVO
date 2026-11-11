@@ -1,0 +1,4 @@
+{
+    "antispam:get-captcha": "antispamGetCaptcha",
+    "antispam:validate": "antispamValidate"
+}

@@ -1,0 +1,35 @@
+{
+    "News": {
+        "label": "Actualités (Blog)",
+        "class": "Blog\\Entities\\News",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "news",
+        "schema": "CREATE TABLE news (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), date DATETIME, content TEXT, intro TEXT, seoDesc TEXT, draft TINYINT(1) DEFAULT 0, img VARCHAR(255), commentsOff TINYINT(1) DEFAULT 0)"
+    },
+    "BlogCategory": {
+        "label": "Catégories (Blog)",
+        "class": "Blog\\Entities\\BlogCategory",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "news_categories",
+        "schema": "CREATE TABLE news_categories (id INT AUTO_INCREMENT PRIMARY KEY, label VARCHAR(255), parentId INT DEFAULT 0, items TEXT, pluginArgs TEXT)"
+    },
+    "NewsComment": {
+        "label": "Commentaires (Blog)",
+        "class": "Blog\\Entities\\NewsComment",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "news_comments",
+        "schema": "CREATE TABLE news_comments (id INT AUTO_INCREMENT PRIMARY KEY, news_id INT, author_name VARCHAR(100), author_email VARCHAR(150), author_website VARCHAR(255), content TEXT, date DATETIME, status VARCHAR(20) DEFAULT 'approved', replies_id TEXT)"
+    }
+}

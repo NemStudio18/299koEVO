@@ -1,0 +1,13 @@
+{
+  "beforeRunPlugin": "poiFavoritesBeforeRunPlugin",
+  "endFrontHead": "poiFavoritesEndFrontHead",
+  "poi:updated": "poiFavoritesPoiUpdated",
+  "notifications:collect": "poiFavoritesNotificationsCollect",
+  "user:avatar-menu": "poiFavoritesUserAvatarMenu",
+  "user:notifications": "poiFavoritesUserNotifications",
+  "poi:get-user-favorite-status": "poiFavoritesGetUserFavoriteStatus",
+  "poi:detail-actions": "poiFavoritesPoiDetailActions",
+  "offer:activated": "poiFavoritesOfferActivated",
+  "user:profile-tabs": "poiFavoritesUserProfileTabs",
+  "user:profile-tabs-content": "poiFavoritesUserProfileTabsContent"
+}

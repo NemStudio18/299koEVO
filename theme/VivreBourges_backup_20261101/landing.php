@@ -1,0 +1,377 @@
+<?php
+/**
+ * Theme VivreBourges - landing.php
+ * Préparation des données dynamiques pour landing.tpl
+ */
+
+defined('ROOT') or exit('Access denied!');
+
+use Core\Core;
+use Core\Router\Router;
+use Core\Plugin\PluginsManager;
+use Template\Template;
+
+$core = Core::getInstance();
+$router = Router::getInstance();
+$pluginsManager = PluginsManager::getInstance();
+
+Template::addGlobal('isLandingPage', true);
+
+// Météo Header Dynamique (Plugin WeatherHeader)
+$weatherHeaderHtml = $core->callHook('weatherHeroBanner', '');
+if (!empty($weatherHeaderHtml)) {
+    Template::addGlobal('hasWeatherHero', true);
+    Template::addGlobal('weatherHeroHtml', $weatherHeaderHtml);
+} else {
+    Template::addGlobal('hasWeatherHero', false);
+    Template::addGlobal('weatherHeroHtml', '');
+}
+
+// Connexion DB
+$pdo = null;
+try {
+    $pdo = \Core\Database::getInstance()->getPdo();
+} catch (\Exception $e) {
+    $core->getLogger()->log(\Core\Logger::LEVEL_ERROR, "VivreBourges landing: " . $e->getMessage());
+}
+
+// 1. Agenda : Événements réels à venir (Dédupliqués et filtrés à partir d aujourd hui)
+$upcomingEvents = [];
+if ($pdo) {
+    try {
+        $stmt = $pdo->query("
+            SELECT e.id, e.title, e.description, o.date_start, o.date_end, o.time_start, o.location_raw
+            FROM event_public e
+            JOIN event_occurrences o ON o.event_id = e.id
+            WHERE e.status = 'PUBLISHED' AND o.status = 'SCHEDULED' AND o.date_start >= CURDATE()
+            ORDER BY o.date_start ASC, o.time_start ASC
+            LIMIT 25
+        ");
+        if ($stmt) {
+            $rawEvents = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $seenTitles = [];
+            foreach ($rawEvents as $ev) {
+                // Déduplication par titre normalisé
+                $normTitle = mb_strtolower(trim(preg_replace('/[^a-zA-Z0-9À-ÿ]/u', '', $ev['title'])));
+                if (isset($seenTitles[$normTitle])) {
+                    continue;
+                }
+                $seenTitles[$normTitle] = true;
+
+                if (!empty($ev['date_start'])) {
+                    $dt = new \DateTime($ev['date_start']);
+                    $ev['formatted_date'] = $dt->format('d/m/Y');
+                    $ev['day'] = $dt->format('d');
+                    $ev['month'] = $dt->format('M');
+                } else {
+                    $ev['formatted_date'] = '';
+                }
+                $ev['url'] = 'agenda/' . $ev['id'];
+                $upcomingEvents[] = $ev;
+                if (count($upcomingEvents) >= 4) {
+                    break;
+                }
+            }
+        }
+    } catch (\Exception $e) {
+        $core->getLogger()->log(\Core\Logger::LEVEL_WARNING, "Events query: " . $e->getMessage());
+    }
+}
+
+// Cartes agenda / actualités pour la grille du bas
+$agendaCards = [
+    [
+        'title' => 'Temps forts et festivités à Bourges',
+        'subtitle' => 'Découvrez les grands rendez-vous culturels et animations du moment',
+        'tag' => 'Culture',
+        'image' => 'theme/VivreBourges/img/news_1.png',
+        'url' => 'agenda'
+    ],
+    [
+        'title' => 'Spectacles & Scène Nationale MCB',
+        'subtitle' => 'Théâtre, musique live et créations contemporaines au cœur de la ville',
+        'tag' => 'Spectacle',
+        'image' => 'theme/VivreBourges/img/news_2.png',
+        'url' => 'agenda'
+    ],
+    [
+        'title' => 'Commerçants & Artisans Locaux',
+        'subtitle' => 'Soutenez les savoir-faire et commerces de proximité berruyers',
+        'tag' => 'Économie',
+        'image' => 'theme/VivreBourges/img/news_3.png',
+        'url' => 'SearchUi?family=shops'
+    ],
+    [
+        'title' => 'Associations, Clubs & Bénévolat',
+        'subtitle' => 'Participez à la dynamique associative et sportive de Bourges',
+        'tag' => 'Vie locale',
+        'image' => 'theme/VivreBourges/img/news_4.png',
+        'url' => 'SearchUi?query=association'
+    ]
+];
+
+if (!empty($upcomingEvents)) {
+    for ($i = 0; $i < min(count($upcomingEvents), 4); $i++) {
+        $ev = $upcomingEvents[$i];
+        $agendaCards[$i]['title'] = $ev['title'];
+        if (!empty($ev['location_raw'])) {
+            $agendaCards[$i]['subtitle'] = $ev['location_raw'] . (' • ' . $ev['formatted_date']);
+        } else {
+            $agendaCards[$i]['subtitle'] = !empty($ev['formatted_date']) ? ('Le ' . $ev['formatted_date']) : 'Événement à venir';
+        }
+        $agendaCards[$i]['url'] = $ev['url'];
+    }
+}
+
+// 2. POIs pour la carte interactive Leaflet
+$mapPois = [];
+$carouselPois = [];
+$totalPoiCount = 0;
+
+if ($pdo) {
+    try {
+        // Total count synchronisé exactement avec le moteur de recherche SearchUi (100% identique)
+        if (class_exists('\SearchEngine\Services\Search\SearchService') && class_exists('\PoiData\Services\CommuneService')) {
+            $communeService = new \PoiData\Services\CommuneService();
+            $aggloCommunes = $communeService->loadAggloCommunes();
+            $centroids = $communeService->getCommuneCentroids([], $aggloCommunes);
+
+            $searchService = new \SearchEngine\Services\Search\SearchService();
+            $sRes = $searchService->search('', null, null, 5.0, '', '', '', 1, 0, 'relevance', null, null, $centroids, '', true);
+            $totalPoiCount = $sRes['total'] ?? 0;
+        } else {
+            $totalPoiCount = (int)$pdo->query("SELECT count(DISTINCT poi_id) FROM poi_search WHERE status = 'public' AND is_closed = 0")->fetchColumn();
+        }
+
+        // Map POIs
+        $stmt = $pdo->query("
+            SELECT id, name, slug, category, subcategory, lat, lon, addr_street, addr_city, stars, datascore, phone
+            FROM poi_public
+            WHERE lat IS NOT NULL AND lon IS NOT NULL 
+              AND lat BETWEEN 47.04 AND 47.13 
+              AND lon BETWEEN 2.34 AND 2.46
+            ORDER BY datascore DESC
+            LIMIT 25
+        ");
+        if ($stmt) {
+            $mapPois = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        }
+
+        // Carousel POIs (échantillon de lieux emblématiques et commerces de Bourges)
+        $cStmt = $pdo->query("
+            SELECT id, name, slug, category, subcategory, addr_street, addr_city, stars, datascore, phone
+            FROM poi_public
+            WHERE name IS NOT NULL AND name != ''
+            ORDER BY datascore DESC, stars DESC
+            LIMIT 12
+        ");
+        if ($cStmt) {
+            $carouselPois = $cStmt->fetchAll(\PDO::FETCH_ASSOC);
+            foreach ($carouselPois as &$cp) {
+                $slug = !empty($cp['slug']) ? $cp['slug'] : \Utils\Util::strToUrl($cp['name']);
+                $cp['detail_url'] = $slug . '-' . $cp['id'];
+                
+                // Icône FontAwesome par catégorie
+                $cat = strtolower($cp['category'] ?? '');
+                if (strpos($cat, 'sante') !== false) {
+                    $cp['icon'] = 'fa-solid fa-notes-medical';
+                    $cp['cat_label'] = 'Santé & Soins';
+                } elseif (strpos($cat, 'admin') !== false) {
+                    $cp['icon'] = 'fa-solid fa-landmark-flag';
+                    $cp['cat_label'] = 'Service Public';
+                } elseif (strpos($cat, 'commerce') !== false) {
+                    $cp['icon'] = 'fa-solid fa-shop';
+                    $cp['cat_label'] = 'Commerce Local';
+                } elseif (strpos($cat, 'tourisme') !== false || strpos($cat, 'heberg') !== false) {
+                    $cp['icon'] = 'fa-solid fa-hotel';
+                    $cp['cat_label'] = 'Tourisme & Séjour';
+                } elseif (strpos($cat, 'restaur') !== false) {
+                    $cp['icon'] = 'fa-solid fa-utensils';
+                    $cp['cat_label'] = 'Restauration';
+                } else {
+                    $cp['icon'] = 'fa-solid fa-location-dot';
+                    $cp['cat_label'] = $cp['category'] ?: 'Lieu utile';
+                }
+            }
+            unset($cp);
+        }
+    } catch (\Exception $e) {
+        $core->getLogger()->log(\Core\Logger::LEVEL_WARNING, "POI queries: " . $e->getMessage());
+    }
+}
+
+// 3. Articles de blog récents
+$recentArticles = [];
+try {
+    if (file_exists(ROOT . 'data/plugin/blog/blog.json')) {
+        $blogData = \Utils\Util::readJsonFile(ROOT . 'data/plugin/blog/blog.json');
+        if (is_array($blogData)) {
+            $blogData = \Utils\Util::sort2DimArray($blogData, 'date', 'desc');
+            $recentArticles = array_slice($blogData, 0, 3);
+            foreach ($recentArticles as &$ra) {
+                $ra['url'] = 'blog/' . ($ra['id'] ?? '');
+            }
+            unset($ra);
+        }
+    }
+} catch (\Exception $e) {
+    // Graceful fallback
+}
+
+if (empty($recentArticles)) {
+    $recentArticles = [
+        ['id' => '1', 'name' => 'Bienvenue à Bourges : guide des nouveaux arrivants', 'date' => date('d/m/Y'), 'url' => 'blog'],
+        ['id' => '2', 'name' => 'Les Marais de Bourges sous les couleurs d\'automne', 'date' => date('d/m/Y'), 'url' => 'blog'],
+        ['id' => '3', 'name' => 'Commerces de proximité : nouvelle dynamique', 'date' => date('d/m/Y'), 'url' => 'blog']
+    ];
+}
+
+// 4. Statistiques de la communauté (Données 100% réelles, sans plancher artificiel)
+$realUsersCount = 0;
+// Compte des utilisateurs du CMS 299Ko (data/core/auth/users.json)
+$cmsUsersFile = (defined('DATA_CORE_AUTH') ? DATA_CORE_AUTH : ROOT . '/data/core/auth/') . 'users.json';
+if (file_exists($cmsUsersFile)) {
+    $cmsUsers = json_decode(file_get_contents($cmsUsersFile), true);
+    if (is_array($cmsUsers)) {
+        $realUsersCount += count($cmsUsers);
+    }
+}
+
+// Compte des utilisateurs de la base MySQL (table `users`)
+if ($pdo) {
+    try {
+        $uStmt = $pdo->query("SELECT COUNT(*) FROM users");
+        if ($uStmt) {
+            $realUsersCount += (int)$uStmt->fetchColumn();
+        }
+    } catch (\Exception $e) {}
+}
+
+// 5. Compteurs réels des commodités citoyennes (poi_search)
+$civicCounts = [
+    'pharmacies' => 0,
+    'atms' => 0,
+    'defibrillators' => 0,
+    'fountains' => 0,
+    'toilets' => 0,
+    'bookcases' => 0,
+    'community_centres' => 0
+];
+
+if ($pdo) {
+    try {
+        $cStmt = $pdo->query("
+            SELECT subcategory, COUNT(*) as cnt 
+            FROM poi_search 
+            WHERE subcategory IN (
+                'urgences-defibrillateurs',
+                'pharmacies-parapharmacies',
+                'distributeurs-billets-dab',
+                'fontaines-eau-potable',
+                'toilettes-publiques',
+                'boites-a-livres',
+                'centres-sociaux-quartiers'
+            ) 
+            GROUP BY subcategory
+        ");
+        if ($cStmt) {
+            $rows = $cStmt->fetchAll(\PDO::FETCH_KEY_PAIR);
+            if (isset($rows['pharmacies-parapharmacies'])) $civicCounts['pharmacies'] = (int)$rows['pharmacies-parapharmacies'];
+            if (isset($rows['distributeurs-billets-dab'])) $civicCounts['atms'] = (int)$rows['distributeurs-billets-dab'];
+            if (isset($rows['urgences-defibrillateurs'])) $civicCounts['defibrillators'] = (int)$rows['urgences-defibrillateurs'];
+            if (isset($rows['fontaines-eau-potable'])) $civicCounts['fountains'] = (int)$rows['fontaines-eau-potable'];
+            if (isset($rows['toilettes-publiques'])) $civicCounts['toilets'] = (int)$rows['toilettes-publiques'];
+            if (isset($rows['boites-a-livres'])) $civicCounts['bookcases'] = (int)$rows['boites-a-livres'];
+            if (isset($rows['centres-sociaux-quartiers'])) $civicCounts['community_centres'] = (int)$rows['centres-sociaux-quartiers'];
+        }
+    } catch (\Exception $e) {}
+}
+
+// 6. Visiteurs réels des 7 derniers jours issus de Matomo (avec cache 30 min et fallback LightStats anti-bots)
+$weeklyVisitorsCount = 0;
+$cacheFile = (defined('ROOT') ? ROOT : '') . 'data/cache/landing_weekly_visitors.json';
+
+if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < 1800)) {
+    $cachedData = json_decode(file_get_contents($cacheFile), true);
+    if (isset($cachedData['weekly_visitors']) && is_numeric($cachedData['weekly_visitors'])) {
+        $weeklyVisitorsCount = (int)$cachedData['weekly_visitors'];
+    }
+}
+
+if ($weeklyVisitorsCount === 0) {
+    // Tentative 1 : Récupération depuis Matomo (visiteurs uniques réels des 7 derniers jours)
+    $matomoFile = (defined('PLUGINS') ? PLUGINS : (defined('ROOT') ? ROOT . 'plugin/' : 'plugin/')) . 'lightstats/lib/MatomoConnector.php';
+    if (file_exists($matomoFile)) {
+        require_once $matomoFile;
+        try {
+            $start = (new \DateTime("-7 days"))->format('Y-m-d');
+            $end = (new \DateTime())->format('Y-m-d');
+            $matomoSummary = \LightStats\Lib\MatomoConnector::getSummary($start, $end);
+            if (!empty($matomoSummary['unique_visitors']) && (int)$matomoSummary['unique_visitors'] > 0) {
+                $weeklyVisitorsCount = (int)$matomoSummary['unique_visitors'];
+            }
+        } catch (\Throwable $e) {}
+    }
+
+    // Tentative 2 : Fallback LightStats avec exclusion stricte des bots
+    if ($weeklyVisitorsCount === 0) {
+        $lightstatsDir = (defined('DATA_PLUGIN') ? DATA_PLUGIN : ROOT . 'data/plugin/') . 'lightstats/logs';
+        $uniqueIps = [];
+        for ($i = 0; $i < 7; $i++) {
+            $d = new \DateTime("-$i days");
+            $basePath = $lightstatsDir . '/' . $d->format('Y/m/d');
+            foreach ([$basePath . '.jsonl', $basePath . '.json'] as $f) {
+                if (file_exists($f)) {
+                    $dayLogs = (substr($f, -6) === '.jsonl')
+                        ? array_filter(array_map(fn($l) => json_decode(trim($l), true), file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: []))
+                        : json_decode(file_get_contents($f), true);
+                    if (is_array($dayLogs)) {
+                        foreach ($dayLogs as $entry) {
+                            if (is_array($entry) && !empty($entry['ip']) && empty($entry['isBot'])) {
+                                $uniqueIps[$entry['ip']] = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $weeklyVisitorsCount = count($uniqueIps);
+    }
+
+    // Sauvegarde en cache
+    if ($weeklyVisitorsCount > 0 && is_dir(dirname($cacheFile))) {
+        @file_put_contents($cacheFile, json_encode([
+            'weekly_visitors' => $weeklyVisitorsCount,
+            'source' => (!empty($matomoSummary['unique_visitors'])) ? 'matomo' : 'lightstats_human',
+            'updated_at' => date('Y-m-d H:i:s')
+        ]));
+    }
+}
+
+// 7. Mises à jour récentes (dernières 24h) et POIs revendiqués
+$recentUpdatesCount = 0;
+$claimedPoisCount = 0;
+if ($pdo) {
+    try {
+        $recentUpdatesCount = (int)$pdo->query("SELECT COUNT(*) FROM poi WHERE updated_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")->fetchColumn();
+        $claimedPoisCount = (int)$pdo->query("SELECT COUNT(*) FROM claims WHERE status = 'APPROVED'")->fetchColumn();
+    } catch (\Exception $e) {}
+}
+
+$communityStats = [
+    'total_pois' => $totalPoiCount ?: 0,
+    'total_users' => $realUsersCount,
+    'weekly_visitors' => $weeklyVisitorsCount,
+    'recent_updates' => $recentUpdatesCount,
+    'claimed_pois' => $claimedPoisCount
+];
+
+$tpl->set('upcomingEvents', $upcomingEvents);
+$tpl->set('agendaCards', $agendaCards);
+$tpl->set('mapPoisJson', json_encode($mapPois, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP));
+$tpl->set('mapPois', $mapPois);
+$tpl->set('carouselPois', $carouselPois);
+$tpl->set('hasCarouselPois', !empty($carouselPois));
+$tpl->set('recentArticles', $recentArticles);
+$tpl->set('communityStats', $communityStats);
+$tpl->set('civicCounts', $civicCounts);

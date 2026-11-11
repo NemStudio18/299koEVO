@@ -1,0 +1,12 @@
+{
+    "name": "SearchMaps",
+    "icon": "fa-solid fa-map-location-dot",
+    "description": "Leaflet integration for Search UI",
+    "version": "1.0.0",
+    "author": "Antigravity",
+    "provider": "299Ko",
+    "type": "tool",
+    "targetPrototype": "SearchMaps",
+    "dependencies": [],
+    "homeAdminMethod": "SearchMaps\\Controllers\\SearchMapsAdminController#home"
+}

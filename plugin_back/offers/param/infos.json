@@ -1,0 +1,12 @@
+{
+  "slug": "offers",
+  "name": "Offres promotionnelles",
+  "icon": "fa-solid fa-tags",
+  "description": "Plugin de gestion des offres promotionnelles pour les POI",
+  "version": "1.0.0",
+  "author": "299Ko Team",
+  "authorEmail": "mx.koder@gmail.com",
+  "authorWebsite": "https://299ko.ovh",
+  "homePublicMethod": "Offers\\Controllers\\OffersPublicController#index",
+  "homeAdminMethod": "Offers\\Controllers\\OffersAdminController#list"
+}

@@ -1,0 +1,51 @@
+{
+    "poi:access": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "auth",
+                "value": true
+            }
+        ]
+    },
+    "poi:edit": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "auth",
+                "value": true
+            }
+        ]
+    },
+    "poi:suggest": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "auth",
+                "value": true
+            }
+        ]
+    },
+    "poi:contribute": {
+        "logic": "OR",
+        "conditions": []
+    },
+    "poi:admin": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "role",
+                "value": "admin"
+            }
+        ]
+    },
+    "poi:enrich": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "auth",
+                "value": true
+            }
+        ]
+    }
+}

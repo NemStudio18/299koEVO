@@ -1,0 +1,16 @@
+{
+    "slug": "BusinessDashboard",
+    "name": "Business Dashboard",
+    "icon": "fa-solid fa-chart-line",
+    "description": "Advanced analytics and tools for POI owners (Professionals).",
+    "version": "1.0",
+    "author": "Antigravity",
+    "website": "https://antigravity.ai",
+    "email": "contact@antigravity.ai",
+    "require": [
+        "core",
+        "auth",
+        "ConversionOrchestrator"
+    ],
+    "category": "business"
+}

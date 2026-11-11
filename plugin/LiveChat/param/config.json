@@ -1,0 +1,8 @@
+{
+    "activate": 1,
+    "priority": 10,
+    "discord_webhook": "",
+    "admin_name": "Équipe Vivre-Bourges",
+    "welcome_message": "Bonjour ! Une question sur votre établissement ou sur le site ? Discutons en direct.",
+    "auto_notify_discord": true
+}

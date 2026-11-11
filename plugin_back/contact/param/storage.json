@@ -1,0 +1,13 @@
+{
+    "ContactMessage": {
+        "label": "Messages de Contact",
+        "class": "Contact\\Entities\\ContactMessage",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "contact_messages",
+        "schema": "CREATE TABLE contact_messages (id VARCHAR(50) PRIMARY KEY, date DATETIME, name VARCHAR(100), firstname VARCHAR(100), email VARCHAR(150), topic VARCHAR(255), message TEXT, ip VARCHAR(45))"
+    }
+}

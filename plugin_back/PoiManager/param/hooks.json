@@ -1,0 +1,8 @@
+{
+    "beforeRunPlugin": "poiManagerBeforeRunPlugin",
+    "endFrontHead": "poiManagerEndFrontHead",
+    "poi:card-actions": "poiManagerPoiCardActions",
+    "poi:detail-actions": "poiManagerPoiDetailActions",
+    "endAdminHead": "poiManagerEndAdminHead",
+    "user:avatar-menu": "poiManagerUserAvatarMenu"
+}

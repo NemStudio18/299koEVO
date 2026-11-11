@@ -1,0 +1,453 @@
+/* =========================================
+   LUMIERE V2 - LANDING PAGE STYLES
+   Specific styles for the homepage/landing.
+   ========================================= */
+
+/* --- WRAPPER --- */
+.lumiere-landing-wrapper {
+    width: 100%;
+    overflow-x: hidden; /* Prevent 3D carousel from causing horizontal scrollbars */
+}
+
+/* --- HERO SECTION --- */
+.landing-hero {
+    /* Background handled via inline or specific class if dynamic */
+    background: #2c3e50;
+    /* Fallback */
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(26, 26, 26, 0.6) 100%), url('../header.jpg') center/cover no-repeat;
+    border-radius: var(--border-radius);
+    padding: 60px 20px;
+    margin-bottom: 40px;
+    text-align: center;
+    color: white;
+    box-shadow: var(--shadow-lg);
+}
+
+.landing-hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.landing-hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    color: white;
+}
+
+.landing-hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    line-height: 1.6;
+    color: #e9ecef;
+}
+
+/* --- SEARCH FORM (Hero) --- */
+.search-form-container {
+    margin-bottom: 2rem;
+}
+
+.search-input-group-with-button {
+    display: flex;
+    background: white;
+    border-radius: 50px;
+    padding: 5px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.search-input-group {
+    flex: 1;
+}
+
+.search-input-group input {
+    width: 100%;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 50px 0 0 50px;
+    font-size: 1rem;
+}
+
+.search-input-group input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Carousel 3D Styles */
+.poi-carousel-container {
+    position: relative;
+    perspective: 1000px;
+    /* Reduced perspective for stronger 3D effect */
+    overflow: visible;
+    /* Changed from hidden to visible to preventing clipping of 3D elements */
+    height: 460px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 40px auto;
+    max-width: 1000px;
+}
+
+.poi-carousel {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    /* Safari support */
+}
+
+.poi-card-wrapper {
+    position: absolute;
+    width: 300px;
+    height: 400px;
+    transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.8s ease;
+    left: 50%;
+    top: 50%;
+    margin-left: -150px;
+    /* Half of width */
+    margin-top: -200px;
+    /* Half of height */
+    opacity: 0;
+    /* Hidden by default until JS positions it */
+    will-change: transform, opacity;
+}
+
+.poi-discovery-card {
+    height: 100%;
+    width: 100%;
+    padding: 0 !important;
+    overflow: hidden;
+    text-align: left !important;
+    display: flex !important;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    /* Ensure content doesn't break 3D */
+    transform: translateZ(0);
+}
+
+/* Map Styles */
+.poi-discovery-image {
+    height: 200px;
+    /* Fixed height */
+    min-height: 200px;
+    width: 100%;
+    position: relative;
+    /* Context for absolute positioning */
+    overflow: hidden;
+    flex: none;
+    /* Disable flex sizing to avoid shrinking */
+    background: #f1f5f9;
+}
+
+.poi-minimap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    /* Map covers the entire container */
+}
+
+/* Carousel Navigation Buttons */
+.carousel-navigation {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 200;
+}
+
+.carousel-btn {
+    width: 50px;
+    height: 50px;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color, #2c3e50);
+}
+
+.carousel-btn:hover {
+    background: var(--primary-color, #ff8c42);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.search-select-group {
+    border-left: 1px solid #eee;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+}
+
+.search-hero-select {
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    color: #333;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.search-button-group button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-button-group button:hover {
+    background: var(--primary-hover);
+}
+
+/* --- HERO CTA --- */
+/* Override parent theme (Lumiere/styles.css) auto-qualification system
+   which hides CTAs with opacity:0 until body.intent-selected is set */
+.landing-hero-cta {
+    display: flex !important;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 2;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+}
+
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s;
+    position: relative;
+    z-index: 2;
+}
+
+.cta-primary {
+    display: inline-flex !important;
+    background: var(--primary-color, #ff8c42);
+    color: white;
+}
+
+.cta-primary:hover {
+    background: var(--primary-hover, #e67e3a);
+    transform: translateY(-2px);
+}
+
+.cta-secondary {
+    display: inline-flex !important;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.cta-secondary:hover {
+    background: white;
+    color: var(--primary-color);
+}
+
+/* --- SECTIONS COMMON --- */
+.landing-section-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 3rem;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.landing-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+/* --- CARDS GRID --- */
+.landing-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.landing-card {
+    background: white;
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.landing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.landing-card-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 140, 66, 0.1);
+    /* Primary light */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.landing-card h3 {
+    margin-bottom: 15px;
+    font-size: 1.25rem;
+}
+
+.landing-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.landing-card-link {
+    margin-top: auto;
+    color: var(--secondary-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* --- STATS SECTION --- */
+.landing-stats {
+    background: white;
+    padding: 60px 0;
+    margin: 40px 0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    font-family: var(--font-heading);
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.stat-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* --- ACTIVITY SECTION --- */
+.landing-activity .landing-card {
+    align-items: flex-start;
+    text-align: left;
+}
+
+.activity-list-container {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.activity-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item-title {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-main);
+}
+
+.activity-item-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .landing-hero-title {
+        font-size: 2rem;
+    }
+
+    .search-input-group-with-button {
+        flex-direction: column;
+        border-radius: 20px;
+    }
+
+    .search-input-group input {
+        border-radius: 20px 20px 0 0;
+    }
+
+    .search-select-group {
+        border-left: none;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+    }
+
+    .search-button-group {
+        width: 100%;
+        padding: 5px;
+    }
+
+    .search-button-group button {
+        width: 100%;
+        border-radius: 20px;
+    }
+}

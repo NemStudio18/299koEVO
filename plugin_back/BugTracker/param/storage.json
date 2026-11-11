@@ -1,0 +1,13 @@
+{
+    "BugReport": {
+        "label": "Rapports de bugs",
+        "class": "BugTracker\\Entities\\BugReport",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "bugs",
+        "schema": "CREATE TABLE bugs (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), description TEXT, status VARCHAR(20) DEFAULT 'pending', priority VARCHAR(20) DEFAULT 'medium', category VARCHAR(50), author_id INT, created_at DATETIME, updated_at DATETIME)"
+    }
+}
