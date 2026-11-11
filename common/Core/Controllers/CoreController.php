@@ -73,6 +73,9 @@ class CoreController extends Controller
             } elseif ($moduleName === 'page') {
                 $controller = new PageAdminController();
                 return $controller->list();
+            } elseif ($moduleName === 'menus') {
+                $controller = new \Core\Navigation\Controllers\MenuAdminController();
+                return $controller->index();
             } elseif ($moduleName === 'configmanager') {
                 $controller = new ConfigManagerAdminController();
                 return $controller->home();

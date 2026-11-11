@@ -192,40 +192,25 @@ function sondageEndFrontHead($param = ''): string
 }
 
 /**
- * Hook: Enregistre le plugin dans le menu de navigation
+ * Hook: navigation:catalog
+ * Déclare le plugin dans le catalogue du gestionnaire de menus (/admin/menus).
  */
-function sondageNavigationBuild($tree)
+function sondageNavigationCatalog(array $catalog): array
 {
-    try {
-        $plugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('sondage');
-        if (!$plugin || !$plugin->isInstalled() || !$plugin->getConfigVal('activate')) {
-            return;
-        }
-
-        $navigationService = \Core\Navigation\NavigationService::getInstance();
-        $router = \Core\Router\Router::getInstance();
-        
-        try {
-            $url = $router->generate('sondage-home');
-        } catch (\Exception $e) {
-            $url = '/sondage';
-        }
-
-        $navigationService->register('plugin.sondage.main', [
-            'label' => 'Sondages',
-            'target' => $url,
-            'position' => 90,
-            'source' => 'plugin:sondage',
-            'visibility' => [
-                'public' => true,
-                'admin' => false,
-                'logged' => false
-            ],
-            'icon' => 'fa-solid fa-chart-bar'
-        ]);
-    } catch (\Exception $e) {
-        // Log error if needed
+    $plugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('sondage');
+    if (!$plugin || !$plugin->isInstalled() || !$plugin->getConfigVal('activate')) {
+        return $catalog;
     }
+
+    $catalog[] = [
+        'plugin'      => 'sondage',
+        'key'         => 'sondage:sondage-home',
+        'route'       => 'sondage-home',
+        'label'       => 'Sondages',
+        'icon'        => 'fa-solid fa-chart-bar',
+        'description' => 'Liste des sondages en cours',
+    ];
+    return $catalog;
 }
 
 /**

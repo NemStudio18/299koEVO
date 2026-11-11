@@ -130,50 +130,13 @@ class Page
         }
     }
 
+    /**
+     * Conservé pour compatibilité de boot : déclenche la migration initiale vers MenuService
+     * sans plus injecter ni créer automatiquement de PageItem pour les plugins.
+     */
     public static function addToNavigation()
     {
-        $page = new Page();
-        $pluginsManager = PluginsManager::getInstance();
-        $logger = Core::getInstance()->getLogger();
-
-        $page->cleanupDuplicatePluginItems($logger);
-        $page->items = $page->loadPages();
-
-        foreach ($pluginsManager->getPlugins() as $plugin) {
-            $pluginName = $plugin->getName();
-            if ($plugin->getConfigVal('activate') && $plugin->getInfoVal('hideInPublicMenu') !== true && ($plugin->getPublicFile() || $plugin->getIsCallableOnPublic()) && $pluginName !== 'page') {
-                $find = false;
-                foreach ($page->getItems() as $pageItem) {
-                    if ($pageItem->getTarget() === $pluginName) {
-                        $find = true;
-                        break;
-                    }
-                }
-                if ($find) continue;
-
-                $pageItem = new PageItem();
-                $pageItem->setName($plugin->getInfoVal('name'));
-                $pageItem->setPosition($page->makePosition());
-                $pageItem->setIsHidden(0);
-                $pageItem->setTarget($pluginName);
-                $page->save($pageItem);
-            }
-        }
-
-        foreach ($page->getItems() as $pageItem) {
-            if (!$pageItem->getIsHidden()) {
-                if ($pageItem->targetIs() == 'plugin' && !$pluginsManager->isActivePlugin($pageItem->getTarget())) {
-                    continue;
-                }
-                $url = ($pageItem->targetIs() == 'parent') ? $pageItem->getTarget() : $page->makeUrl($pageItem);
-                $icon = $pageItem->getIcon();
-                if (empty($icon) && $pageItem->getShowIcon() && $pageItem->targetIs() == 'plugin') {
-                    $icon = $pluginsManager->getPlugin($pageItem->getTarget())?->getInfoVal('icon') ?: 'fa-solid fa-puzzle-piece';
-                }
-                Core::getInstance()->addToCoreNavigation($pageItem->getName(), $url, $pageItem->getTargetAttr() ?: '_self', $pageItem->getId(), $pageItem->getParent(), $pageItem->getCssClass() ?: '', $icon, $pageItem->getNavContext());
-            }
-        }
-        \Core\Navigation\NavigationService::getInstance()->reset();
+        \Core\Navigation\MenuService::getInstance()->ensureMigrated();
     }
 
     public static function getPageContent($id)

@@ -9,5 +9,6 @@
   "user:notification-preferences": "agendaUserProfileNotificationPreferences",
   "user:profile-allowed-settings": "agendaUserProfileAllowedSettings",
   "seo:collect-sitemap-urls": "agendaCollectSitemapUrls",
-  "user:avatar-menu": "agendaUserAvatarMenu"
+  "user:avatar-menu": "agendaUserAvatarMenu",
+  "navigation:catalog": "agendaNavigationCatalog"
 }

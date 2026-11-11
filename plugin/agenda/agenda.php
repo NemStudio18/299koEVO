@@ -290,67 +290,25 @@ namespace {
     }
 
     /**
-     * Hook pour enregistrer l'agenda dans la navigation
+     * Hook: navigation:catalog
+     * Déclare l'entrée Agenda dans le catalogue du gestionnaire de menus (/admin/menus).
      */
-    function agendaNavigationBuild($tree): void
+    function agendaNavigationCatalog(array $catalog): array
     {
-        try {
-            $plugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('agenda');
-            if (!$plugin || !$plugin->isInstalled() || !$plugin->getConfigVal('activate')) {
-                return;
-            }
-            
-            // Vérifier hideInPublicMenu dans infos.json
-            $infosFile = PLUGINS . 'agenda/param/infos.json';
-            if (file_exists($infosFile)) {
-                $infos = json_decode(file_get_contents($infosFile), true);
-                if (isset($infos['hideInPublicMenu']) && $infos['hideInPublicMenu'] === true) {
-                    return;
-                }
-            }
-            
-            $navigationService = \Core\Navigation\NavigationService::getInstance();
-            $router = \Core\Router\Router::getInstance();
-            
-            try {
-                $agendaUrl = $router->generate('agenda-index');
-            } catch (\Exception $e) {
-                $agendaUrl = '/agenda';
-            }
-
-            // Check if Agenda is already managed by Page system
-            if (class_exists('\Core\Page\Page')) {
-                $pageManager = new \Core\Page\Page();
-                foreach ($pageManager->getItems() as $p) {
-                    if ($p->getTarget() === 'agenda' && !$p->getIsHidden()) {
-                        // Managed by Page system and visible, don't duplicate
-                        return;
-                    }
-                     if ($p->getTarget() === 'agenda' && $p->getIsHidden()) {
-                        // Managed by Page system but HIDDEN. 
-                        // If we return here, it won't be added to menu. This is what we want.
-                        return;
-                    }
-                }
-            }
-            
-            $navigationService->register('plugin.agenda.main', [
-                'label' => 'Agenda',
-                'target' => $agendaUrl,
-                'position' => 40,
-                'source' => 'plugin:agenda',
-                'visibility' => [
-                    'public' => true,
-                    'admin' => false,
-                    'logged' => false
-                ],
-                'icon' => 'fa-solid fa-calendar'
-            ]);
-        } catch (\Exception $e) {
-            if (class_exists('\Core\Core')) {
-                \Core\Core::getInstance()->getLogger()->error('agendaNavigationBuild error: ' . $e->getMessage());
-            }
+        $plugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('agenda');
+        if (!$plugin || !$plugin->getConfigVal('activate')) {
+            return $catalog;
         }
+
+        $catalog[] = [
+            'plugin'      => 'agenda',
+            'key'         => 'agenda:agenda-index',
+            'route'       => 'agenda-index',
+            'label'       => 'Agenda',
+            'icon'        => 'fa-solid fa-calendar',
+            'description' => 'Calendrier des événements locaux',
+        ];
+        return $catalog;
     }
 
     /**

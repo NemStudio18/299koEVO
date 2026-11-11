@@ -274,6 +274,7 @@ class Core
         // Note: Les styles des formulaires users sont maintenant dans le thème (theme/EVO/css/theme.css)
         $this->pages();
         $this->pages()->registerRoutes(Router::getInstance());
+        $this->menus()->registerRoutes(Router::getInstance());
         require_once COMMON . 'Core/Page/hooks.php';
         $this->addHook('endFrontHead', '\Core\Page\pageEndFrontHead');
         $this->addHook('search:get-results', '\Core\Page\pageSearchResultsHook');
@@ -399,6 +400,11 @@ class Core
         return $this->pageService;
     }
 
+    public function menus(): \Core\Navigation\MenuService
+    {
+        return \Core\Navigation\MenuService::getInstance();
+    }
+
     public function media(): MediaService
     {
         if ($this->mediaService === null) {
@@ -433,7 +439,7 @@ class Core
      */
     public function isCoreModule(string $moduleName): bool
     {
-        $coreModules = ['page', 'users', 'configmanager', 'filemanager', 'marketplace', 'pluginsmanager'];
+        $coreModules = ['page', 'menus', 'users', 'configmanager', 'filemanager', 'marketplace', 'pluginsmanager'];
     return in_array(strtolower($moduleName), $coreModules, true);
     }
 
