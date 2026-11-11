@@ -21,7 +21,7 @@
                     </button>
                 </div>
                 
-                <div class="module-grid" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                <div class="module-grid fm-stats-grid">
                     <div class="stat-card">
                         <span class="stat-value">{{stats.files}}</span>
                         <span class="stat-label">{{Lang.filemanager.stats-total-files}}</span>
@@ -47,7 +47,7 @@
                         <span class="path-root">{{Lang.filemanager.root}}</span>
                     {% else %}
                         <span class="path-breadcrumb">
-                            <i class="fa-solid fa-house" style="font-size: 0.8rem; margin: 0 5px;"></i>
+                            <i class="fa-solid fa-house fm-home-icon"></i>
                             {{stats.path}}
                         </span>
                     {% endif %}
@@ -56,14 +56,14 @@
             
             <!-- MANAGE TAB -->
             <li {% if activeTab == "manage" %}class="tab"{% endif %}>
-                <header class="fm-toolbar" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 1rem;">
-                    <input type="file" name="image_file" id="customFile" onchange="onSetFilename(this)" style="display: none;">
+                <header class="fm-toolbar">
+                    <input type="file" name="image_file" id="customFile" onchange="onSetFilename(this)" class="fm-file-input">
                     <input id='dirInput' type='hidden' value='{{dir}}'>
                     <button type="button" class="button" onclick="document.getElementById('customFile').click()">
                         <i class="fa-solid fa-file-circle-plus"></i> {{Lang.filemanager.add-file}}
                     </button>
-                    <span id="custom-file-label" style="font-size: 0.9rem; color: #666; font-style: italic;"></span>
-                    <button id="btnUpload" type="button" class="button primary" onclick="uploadFile()" style="margin-left: auto;">
+                    <span id="custom-file-label" class="fm-file-label"></span>
+                    <button id="btnUpload" type="button" class="button primary fm-upload-btn" onclick="uploadFile()">
                         <i class="fa-solid fa-cloud-arrow-up"></i> {{Lang.filemanager.send-file}}
                     </button>
                 </header>
@@ -91,12 +91,12 @@
                 <div id="fm-listview">
                     <div id="fm-view-files">
                         {% if dir != "" %}
-                            <div class='fm-thumb' onClick='refreshView("{{dir}}/..")' style="cursor: pointer;">
+                            <div class='fm-thumb fm-thumb-parent' onClick='refreshView("{{dir}}/..")'>
                                 <div class='fm-folder parent-dir'>
-                                    <i class="fa-solid fa-level-up-alt" style="transform: rotate(90deg); color: #868e96;"></i>
+                                    <i class="fa-solid fa-level-up-alt"></i>
                                 </div>
                                 <p class='fm-title'>..</p>
-                                <div class='fm-actions' style="justify-content: center; font-size: 0.7rem; color: #868e96;">
+                                <div class='fm-actions fm-actions-parent'>
                                     {{Lang.filemanager.parent-folder}}
                                 </div>
                             </div>
@@ -143,21 +143,21 @@
 </section>
 
 <!-- MODAL FOR NEW FOLDER -->
-<section id="fmAddAFolder" style="display:none; width: 400px;">
-    <header style="font-weight: 700; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
+<section id="fmAddAFolder">
+    <header class="fm-modal-header">
         <i class="fa-solid fa-folder-plus"></i> {{Lang.filemanager.add-folder}}
     </header>
-    <div class="form-group" style="margin-bottom: 20px;">
-        <label for="addFolderName" style="display: block; margin-bottom: 8px; font-weight: 500;">{{Lang.filemanager.folder-name}}</label>
-        <input id="addFolderName" name="addFolderName" type="text" class="input" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" autofocus />
+    <div class="form-group fm-modal-group">
+        <label for="addFolderName" class="fm-modal-label">{{Lang.filemanager.folder-name}}</label>
+        <input id="addFolderName" name="addFolderName" type="text" class="input fm-modal-input" autofocus />
     </div>
-    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+    <div class="fm-modal-actions">
         <button class="button secondary" onclick="Fancybox.close()">{{Lang.cancel}}</button>
         <button class="button success" id="btnConfirmCreateFolder" onClick="goCreateFolder()">{{Lang.filemanager.add-folder}}</button>
     </div>
 </section>
 
-<form id="fmRedirectFlat" method="POST" action=" {{redirectUrl}}" style="display:none">
+<form id="fmRedirectFlat" method="POST" action=" {{redirectUrl}}" class="fm-redirect-form">
     <input type="text" id="fmCurrDir" name="fmCurrDir" value="{{dir}}" />
     <input type="text" id="fmFolderToSee" name="fmFolderToSee" value="" />
 </form>
@@ -226,7 +226,7 @@
         const btn = document.getElementById("btnUpload");
         const originalHtml = btn.innerHTML;
 
-        progress.style.display = "block";
+        progress.classList.add("is-visible");
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         btn.disabled = true;
 
@@ -247,7 +247,7 @@
                 isUploading = false;
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
-                progress.style.display = "none";
+                progress.classList.remove("is-visible");
                 
                 if (xhr.status === 200) {
                     const data = JSON.parse(this.responseText);
@@ -293,7 +293,7 @@
             if (data.success) {
                 Toastify({ text: "{{Lang.core-item-deleted}} " + name, className: "success" }).showToast();
                 const item = document.getElementById('file-' + name);
-                if (item) { item.style.opacity = '0'; setTimeout(() => item.remove(), 400); }
+                if (item) { item.classList.add('is-removing'); setTimeout(() => item.remove(), 400); }
             }
         };
         xhr.send(formData);
@@ -311,7 +311,7 @@
             if (data.success) {
                 Toastify({ text: "{{Lang.core-item-deleted}} " + name, className: "success" }).showToast();
                 const item = document.getElementById('folder-' + name);
-                if (item) { item.style.opacity = '0'; setTimeout(() => item.remove(), 400); }
+                if (item) { item.classList.add('is-removing'); setTimeout(() => item.remove(), 400); }
             }
         };
         xhr.send(formData);

@@ -4,17 +4,18 @@
     bottom: 2rem;
     left: 2rem;
     right: 2rem;
-    background: var(--section-bg-color, #ffffff);
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
     padding: 1rem 1.5rem;
     border-radius: 16px;
-    box-shadow: var(--dc-shadow-md, 0 10px 25px rgba(0, 0, 0, 0.15));
+    box-shadow: var(--evo-shadow-md);
     z-index: 10000;
     display: none;
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
-    border: 1px solid var(--border-color, transparent);
-    border-left: 4px solid var(--primary-color);
+    border: 1px solid var(--evo-border);
+    border-left: 4px solid var(--evo-accent);
     animation: slideUp 0.5s ease-out;
 }
 
@@ -27,7 +28,7 @@
 
 .pwa-banner-content i {
     font-size: 2rem;
-    color: var(--primary-color);
+    color: var(--evo-accent);
 }
 
 .pwa-banner-text {
@@ -37,12 +38,12 @@
 
 .pwa-banner-text strong {
     font-size: 1.1rem;
-    color: var(--font-color, #333);
+    color: var(--evo-text);
 }
 
 .pwa-banner-text span {
     font-size: 0.9rem;
-    color: var(--font-secondary, #666);
+    color: var(--evo-text-muted);
 }
 
 .pwa-banner-actions {

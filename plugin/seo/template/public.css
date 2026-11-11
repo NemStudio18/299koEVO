@@ -33,13 +33,13 @@
 
 #seo_social_float a{
     display: block;
-    color: var(--primary-inverse-color);
+    color: var(--evo-accent-text);
     text-transform: uppercase;
     padding: 15px;
     font-size: 19px;
     float: left;
     margin-left: 1px;
-    background: var(--primary-color);
+    background: var(--evo-accent);
 }
 
 #seo_social_float a i {
@@ -62,9 +62,9 @@
 .seo-share {
     margin: 2rem 0;
     padding: 1.5rem;
-    border: 1px solid var(--border-color, #e0e0e0);
+    border: 1px solid var(--evo-border);
     border-radius: 10px;
-    background: var(--section-head-bg-color, #fafafa);
+    background: var(--evo-surface);
 }
 
 .seo-share h3 {

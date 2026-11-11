@@ -246,4 +246,40 @@
     border-color: var(--evo-warning-border);
     color: var(--evo-warning);
 }
+.annonce-back-row {
+    margin-bottom: 1rem;
+}
+.annonce-back-link {
+    text-decoration: none;
+    font-weight: 600;
+}
+.annonce-detail-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.annonce-detail-price {
+    font-size: 1.35rem;
+    margin-bottom: 14px;
+}
+.annonce-description {
+    line-height: 1.65;
+}
+.annonce-reserve-box h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+.annonce-hp-field {
+    display: none !important;
+}
+.annonce-antispam-wrap {
+    margin-bottom: 1rem;
+}
+.annonce-submit-btn {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+}
 

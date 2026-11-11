@@ -263,3 +263,36 @@
 .antispam-logs-head form {
     margin: 0;
 }
+
+.antispam-icon-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+.antispam-icon input[type="radio"] {
+    display: none;
+}
+.antispam-icon label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border: 2px solid var(--evo-border-strong);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--evo-surface);
+    font-size: 24px;
+    color: var(--evo-text);
+}
+.antispam-icon label:hover {
+    background: var(--evo-accent-soft);
+    border-color: var(--evo-accent);
+}
+.antispam-icon input[type="radio"]:checked + label {
+    background: var(--evo-accent);
+    border-color: var(--evo-accent);
+    color: var(--evo-accent-text);
+}

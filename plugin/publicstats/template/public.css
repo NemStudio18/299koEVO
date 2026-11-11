@@ -376,3 +376,33 @@
 .chart-container-md {
     height: 400px;
 }
+
+/* Styles complémentaires dashboard statistiques publiques */
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+    margin: auto;
+}
+.chart-container-sm {
+    position: relative;
+    height: 200px;
+    width: 100%;
+    margin: auto;
+    max-width: 400px;
+}
+.stat-card-icon {
+    font-size: 1.5rem;
+    opacity: 0.8;
+}
+.public-stats-section .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.public-stats-section .stat-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--evo-text-muted);
+}

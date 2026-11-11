@@ -64,7 +64,7 @@
 .galerie-intro {
     font-size: 1.1rem;
     line-height: 1.6;
-    color: var(--font-secondary, #444);
+    color: var(--evo-text-muted);
     max-width: 800px;
     margin: 0 auto 2rem;
 }
@@ -79,9 +79,9 @@
 }
 
 .categories-nav li button {
-    background: var(--section-head-bg-color, #f0f0f0);
-    color: var(--font-color, #333);
-    border: 1px solid var(--form-border-color, #ddd);
+    background: var(--evo-surface);
+    color: var(--evo-text);
+    border: 1px solid var(--evo-border-strong);
     padding: 0.5rem 1.5rem;
     border-radius: 20px;
     cursor: pointer;
@@ -90,13 +90,13 @@
 }
 
 .categories-nav li button:hover {
-    background: var(--dc-accent-soft, #e0e0e0);
-    color: var(--primary-color, #1d4ed8);
-    border-color: var(--primary-color, #1d4ed8);
+    background: var(--evo-accent-soft);
+    color: var(--evo-accent);
+    border-color: var(--evo-accent);
 }
 
 .categories-nav li button.active {
-    background: var(--primary-color, #333);
-    color: var(--primary-inverse-color, #fff);
-    border-color: var(--primary-color, #333);
+    background: var(--evo-accent);
+    color: var(--evo-accent-text);
+    border-color: var(--evo-accent);
 }

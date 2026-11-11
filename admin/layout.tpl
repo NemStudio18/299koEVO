@@ -13,7 +13,7 @@
 		<script type="text/javascript" src="{{ADMIN_URL}}scripts.js"></script>
 		{% HOOK.endAdminHead %}
 	</head>
-	<body>
+	<body class="theme-light">
 		<div id="container">
 			<header id="header" class="adm-topbar">
 				<nav id="adminNav" class="adm-nav" role="navigation" aria-label="{{Lang.core-nav-admin}}">

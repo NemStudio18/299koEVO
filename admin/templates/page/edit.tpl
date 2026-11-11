@@ -4,14 +4,14 @@
     <input type="hidden" name="id" value="{{pageItem.getId()}}" />
     {{extraHiddenFields}}
 
-    <div class="adm-dash-head" style="margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+    <div class="adm-dash-head page-edit-head">
         <div>
-            <h2 style="margin: 0;">
+            <h2>
                 <i class="fa-solid fa-file-pen"></i>
                 {% if pageItem.getId() %}{{pageItem.getName()}}{% else %}{{Lang.page.add-page}}{% endif %}
             </h2>
         </div>
-        <div class="admin-actions-bar" style="display: flex; align-items: center; gap: 10px; margin: 0;">
+        <div class="admin-actions-bar page-edit-actions">
             <a class="button" href="{ ROUTER.generate("page-admin-home") }">
                 <i class="fa-solid fa-arrow-left"></i> Retour aux pages
             </a>
@@ -83,10 +83,10 @@
                         <label for="isHomepage">{{Lang.page.homepage}}</label>
                     </p>
                     {% if not pageItem.getId() %}
-                    <p style="background: #eff6ff; padding: 10px 12px; border-radius: 6px; border: 1px solid #bfdbfe;">
+                    <p class="page-edit-auto-menu">
                         <input type="checkbox" name="addToMainMenu" id="addToMainMenu" value="1" checked />
                         <label for="addToMainMenu"><strong>Ajouter automatiquement un lien dans le menu principal</strong></label><br>
-                        <small style="color: #475569;">Vous pourrez ensuite le déplacer ou le retirer depuis <a href="/admin/menus">Menus</a>.</small>
+                        <small>Vous pourrez ensuite le déplacer ou le retirer depuis <a href="/admin/menus">Menus</a>.</small>
                     </p>
                     {% endif %}
 
@@ -98,7 +98,7 @@
                             <option value="cgv" {% if pageItem.getLegalType() == 'cgv' %}selected{% endif %}>CGV (Conditions Générales de Vente)</option>
                             <option value="privacy" {% if pageItem.getLegalType() == 'privacy' %}selected{% endif %}>Politique de Confidentialité</option>
                         </select>
-                        <button type="button" id="applyPreset" class="button small" style="margin-top: 6px;">Appliquer le préréglage</button>
+                        <button type="button" id="applyPreset" class="button small page-edit-preset-btn">Appliquer le préréglage</button>
                     </p>
 
                     <p>
@@ -146,25 +146,25 @@
                             <span class="adm-badge-exp">Fonctionnalité expérimentale</span>
                         </h3>
                     </header>
-                    <p style="background: #fffbeb; color: #92400e; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem;">
+                    <p class="page-edit-exp-note">
                         <i class="fa-solid fa-flask" aria-hidden="true"></i>
                         <strong>Fonctionnalité expérimentale :</strong> l'éditeur de conditions et la politique d'accès dynamique sont en cours de test. Vérifiez bien l'accès avec le bouton <em>Test Policy</em> ; en cas de doute, utilisez plutôt le statut brouillon ou le mot de passe dans l'onglet <em>Paramètres</em>.
                     </p>
                     <div id="conditions-container">
                         <input type="hidden" name="conditions" id="conditions" value="{{pageItem.getConditions()|json_encode}}" />
-                        <div id="conditions-list" style="margin-bottom: 12px;"></div>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div id="conditions-list" class="page-conditions-list"></div>
+                        <div class="page-conditions-actions">
                             <button type="button" class="button small secondary" id="add-condition-btn">+ Ajouter une condition</button>
                             <button type="button" class="button small warning" id="test-conditions-btn">Test Policy (Dry-run)</button>
                         </div>
-                        <div id="test-result" style="margin-top: 12px; padding: 10px; border-radius: 6px; display: none;"></div>
+                        <div id="test-result" class="page-test-result"></div>
                     </div>
                 </section>
             </li>
         </ul>
     </div>
 
-    <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px;">
+    <div class="page-edit-footer">
         <a class="button" href="{ ROUTER.generate("page-admin-home") }">
             <i class="fa-solid fa-arrow-left"></i> Retour
         </a>
@@ -265,18 +265,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function render() {
         listContainer.innerHTML = '';
         if (conditions.length === 0) {
-            listContainer.innerHTML = '<div style="font-style:italic; color:#999; padding:5px;">Aucune condition (Page accessible publiquement)</div>';
+            listContainer.innerHTML = '<div class="page-conditions-empty">Aucune condition (Page accessible publiquement)</div>';
         }
 
         conditions.forEach((cond, index) => {
             const provider = providers[cond.type] || { label: cond.type, fields: {} };
             const row = document.createElement('div');
-            row.style.cssText = 'display: flex; gap: 10px; align-items: start; background: #fff; padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; border-radius: 4px;';
+            row.className = 'page-cond-row';
 
             const leftCol = document.createElement('div');
-            leftCol.style.width = '150px';
+            leftCol.className = 'page-cond-type-col';
             const typeSelect = document.createElement('select');
-            typeSelect.style.cssText = 'margin:0; width: 100%;';
             Object.keys(providers).forEach(pid => {
                 const opt = document.createElement('option');
                 opt.value = pid;
@@ -291,23 +290,21 @@ document.addEventListener('DOMContentLoaded', function() {
             leftCol.appendChild(typeSelect);
 
             const midCol = document.createElement('div');
-            midCol.style.cssText = 'flex:1; display:flex; flex-wrap:wrap; gap:10px;';
+            midCol.className = 'page-cond-fields-col';
 
             if (provider.fields) {
                 Object.keys(provider.fields).forEach(fname => {
                     const field = provider.fields[fname];
                     const fieldWrapper = document.createElement('div');
-                    fieldWrapper.style.minWidth = '120px';
+                    fieldWrapper.className = 'page-cond-field';
 
                     const label = document.createElement('label');
                     label.textContent = field.label;
-                    label.style.cssText = 'font-size:11px; display:block; color:#777; margin-bottom:2px;';
                     fieldWrapper.appendChild(label);
 
                     let input;
                     if (field.type === 'select') {
                         input = document.createElement('select');
-                        input.style.margin = '0';
                         const fillOptions = (opts) => {
                             const currentVal = cond[fname];
                             input.innerHTML = '<option value="">-- Sélectionner --</option>';
@@ -334,7 +331,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     } else if (field.type === 'boolean') {
                         input = document.createElement('select');
-                        input.style.margin = '0';
                         input.innerHTML = '<option value="1">Oui</option><option value="0">Non</option>';
                         input.value = (cond[fname] === true || cond[fname] === "1") ? "1" : "0";
                     } else {
@@ -342,7 +338,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         input.type = 'text';
                         input.value = cond[fname] || '';
                         input.placeholder = field.placeholder || '';
-                        input.style.margin = '0';
                     }
 
                     input.onchange = (e) => {
@@ -359,8 +354,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const rightCol = document.createElement('div');
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
+            removeBtn.className = 'page-cond-remove';
             removeBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-            removeBtn.style.cssText = 'background:#fde8e8; color:#e02424; border:1px solid #f8b4b4; border-radius:3px; padding: 5px 10px; cursor:pointer; margin-top:15px;';
             removeBtn.onclick = () => removeCondition(index);
             rightCol.appendChild(removeBtn);
 
@@ -390,8 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     testBtn.onclick = async () => {
-        testResult.style.display = 'block';
-        testResult.style.background = '#f3f4f6';
+        testResult.className = 'page-test-result is-visible';
         testResult.textContent = 'Évaluation en cours...';
         try {
             const formData = new FormData();
@@ -403,16 +397,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             const data = await response.json();
             if (data.allowed) {
-                testResult.style.background = '#def7ec';
-                testResult.style.color = '#03543f';
+                testResult.className = 'page-test-result is-visible is-allowed';
                 testResult.innerHTML = `<strong>Accès Autorisé</strong> pour votre rôle actuel (<code>${data.user_role}</code>).`;
             } else {
-                testResult.style.background = '#fde8e8';
-                testResult.style.color = '#9b1c1c';
+                testResult.className = 'page-test-result is-visible is-denied';
                 testResult.innerHTML = `<strong>Accès Refusé</strong> pour votre rôle actuel (<code>${data.user_role}</code>).`;
             }
         } catch (e) {
-            testResult.style.background = '#FEF3C7';
+            testResult.className = 'page-test-result is-visible is-error';
             testResult.textContent = "Erreur lors du test.";
         }
     };

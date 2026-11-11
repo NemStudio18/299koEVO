@@ -22,12 +22,13 @@ input[name="_hp_website"][class*="hp"] {
 
 /* Conteneur principal des formulaires */
 .user-auth-form {
-    max-width: 100%px;
+    max-width: 100%;
     margin: 2rem auto;
     padding: 2rem;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
+    border-radius: var(--evo-radius-sm);
+    box-shadow: var(--evo-shadow-sm);
 }
 
 .auth-desc {
@@ -38,7 +39,7 @@ input[name="_hp_website"][class*="hp"] {
 }
 
 .auth-card {
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--evo-border);
 }
 
 /* Champs du formulaire */
@@ -50,7 +51,7 @@ input[name="_hp_website"][class*="hp"] {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #374151;
+    color: var(--evo-text);
     font-size: 14px;
 }
 
@@ -59,8 +60,10 @@ input[name="_hp_website"][class*="hp"] {
 .user-auth-form input[type="password"] {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--evo-input-border);
     border-radius: 6px;
+    background: var(--evo-input-bg);
+    color: var(--evo-text);
     font-size: 14px;
     font-family: inherit;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -71,8 +74,8 @@ input[name="_hp_website"][class*="hp"] {
 .user-auth-form input[type="email"]:focus,
 .user-auth-form input[type="password"]:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--evo-accent);
+    box-shadow: 0 0 0 3px var(--evo-accent-soft);
 }
 
 .user-auth-form input[type="checkbox"] {
@@ -116,21 +119,21 @@ input[name="_hp_website"][class*="hp"] {
 }
 
 .user-auth-form .button.success {
-    background-color: #10b981;
-    color: white;
+    background-color: var(--evo-success);
+    color: var(--evo-accent-text);
 }
 
 .user-auth-form .button.success:hover {
-    background-color: #059669;
+    filter: brightness(0.92);
 }
 
 .user-auth-form .button.alert {
-    background-color: #ef4444;
-    color: white;
+    background-color: var(--evo-danger);
+    color: var(--evo-accent-text);
 }
 
 .user-auth-form .button.alert:hover {
-    background-color: #dc2626;
+    filter: brightness(0.92);
 }
 
 /* Liens */
@@ -140,7 +143,7 @@ input[name="_hp_website"][class*="hp"] {
 }
 
 .user-auth-form .links a {
-    color: #3b82f6;
+    color: var(--evo-accent);
     text-decoration: none;
     font-size: 14px;
 }
@@ -157,15 +160,15 @@ input[name="_hp_website"][class*="hp"] {
 }
 
 .user-auth-form .msg.error {
-    background-color: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fca5a5;
+    background-color: var(--evo-danger-bg);
+    color: var(--evo-danger);
+    border: 1px solid var(--evo-danger-border);
 }
 
 .user-auth-form .msg.success {
-    background-color: #dcfce7;
-    color: #166534;
-    border: 1px solid #86efac;
+    background-color: var(--evo-success-bg);
+    color: var(--evo-success);
+    border: 1px solid var(--evo-success-border);
 }
 
 /* Page lost password */
@@ -174,7 +177,8 @@ body.login {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: #f9fafb;
+    background: var(--evo-bg);
+    color: var(--evo-text);
     margin: 0;
     padding: 1rem;
 }
@@ -182,11 +186,12 @@ body.login {
 body.login #login.card {
     max-width: 500px;
     width: 100%;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
+    border-radius: var(--evo-radius-sm);
+    box-shadow: var(--evo-shadow-sm);
     padding: 2rem;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--evo-border);
 }
 
 body.login #login header {
@@ -197,7 +202,7 @@ body.login #login header {
 body.login #login header h2 {
     margin: 0;
     font-size: 1.5rem;
-    color: #1f2937;
+    color: var(--evo-text);
 }
 
 body.login #login form p {
@@ -208,15 +213,17 @@ body.login #login form label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #374151;
+    color: var(--evo-text);
     font-size: 14px;
 }
 
 body.login #login form input[type="email"] {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--evo-input-border);
     border-radius: 6px;
+    background: var(--evo-input-bg);
+    color: var(--evo-text);
     font-size: 14px;
     font-family: inherit;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -225,8 +232,8 @@ body.login #login form input[type="email"] {
 
 body.login #login form input[type="email"]:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--evo-accent);
+    box-shadow: 0 0 0 3px var(--evo-accent-soft);
 }
 
 body.login #login form .button {
@@ -248,32 +255,32 @@ body.login #login form .button:hover {
 }
 
 body.login #login form .button.alert {
-    background-color: #ef4444;
-    color: white;
+    background-color: var(--evo-danger);
+    color: var(--evo-accent-text);
 }
 
 body.login #login form .button.alert:hover {
-    background-color: #dc2626;
+    filter: brightness(0.92);
 }
 
 body.login #login form .button:not(.alert) {
-    background-color: #3b82f6;
-    color: white;
+    background-color: var(--evo-accent);
+    color: var(--evo-accent-text);
 }
 
 body.login #login form .button:not(.alert):hover {
-    background-color: #2563eb;
+    background-color: var(--evo-accent-hover);
 }
 
 body.login #login .just_using {
     margin-top: 2rem;
     text-align: center;
     font-size: 12px;
-    color: #6b7280;
+    color: var(--evo-text-muted);
 }
 
 body.login #login .just_using a {
-    color: #6b7280;
+    color: var(--evo-text-muted);
     text-decoration: none;
 }
 

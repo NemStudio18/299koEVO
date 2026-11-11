@@ -1,6 +1,6 @@
 <section class="annonces-wrap">
-    <p style="margin-bottom: 1rem;">
-        <a href="{{backUrl}}" style="text-decoration: none; font-weight: 600;">
+    <p class="annonce-back-row">
+        <a href="{{backUrl}}" class="annonce-back-link">
             <i class="fa-solid fa-arrow-left"></i> Retour aux petites annonces
         </a>
     </p>
@@ -11,7 +11,7 @@
                 <img src="{{annonce.image}}" alt="{{annonce.title}}" class="annonce-detail-img" />
             {% endif %}
 
-            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <div class="annonce-detail-badges">
                 <span class="annonce-badge annonce-badge-{{annonce.status}}">{{annonce.status_label}}</span>
                 {% if annonce.category %}
                     <span class="annonce-detail-meta"><i class="fa-solid fa-folder"></i> {{annonce.category}}</span>
@@ -24,9 +24,9 @@
                 {% endif %}
             </div>
 
-            <div class="annonce-card-price" style="font-size: 1.35rem; margin-bottom: 14px;">{{annonce.price_label}}</div>
+            <div class="annonce-card-price annonce-detail-price">{{annonce.price_label}}</div>
 
-            <div class="annonce-description" style="line-height: 1.65;">
+            <div class="annonce-description">
                 {{annonce.description}}
             </div>
 
@@ -38,7 +38,7 @@
         </div>
 
         <aside class="annonce-reserve-box">
-            <h3 style="margin-top: 0; margin-bottom: 10px;"><i class="fa-solid fa-bookmark"></i> {{Lang.annonces.reserve-btn}}</h3>
+            <h3><i class="fa-solid fa-bookmark"></i> {{Lang.annonces.reserve-btn}}</h3>
 
             {% if annonce.is_available %}
                 {% if reservationNotice %}
@@ -49,7 +49,7 @@
 
                 <form method="post" action="{{reserveUrl}}">
                     <input type="hidden" name="_csrf" value="{{_csrfToken}}" />
-                    <input type="text" name="_hp_website" value="" style="display:none !important;" tabindex="-1" autocomplete="off" />
+                    <input type="text" name="_hp_website" value="" class="annonce-hp-field" tabindex="-1" autocomplete="off" />
 
                     <p>
                         <label for="res_name">Nom ou pseudo *</label>
@@ -69,12 +69,12 @@
                     </p>
 
                     {% if antispam %}
-                        <div style="margin-bottom: 1rem;">
+                        <div class="annonce-antispam-wrap">
                             {{antispamField}}
                         </div>
                     {% endif %}
 
-                    <button type="submit" class="annonce-card-btn" style="width: 100%; border: none; cursor: pointer;">
+                    <button type="submit" class="annonce-card-btn annonce-submit-btn">
                         <i class="fa-solid fa-paper-plane"></i> Envoyer ma demande de réservation
                     </button>
                 </form>

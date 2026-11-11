@@ -7,15 +7,16 @@
 }
 
 .sondage-item {
-    background: var(--section-bg-color);
-    border: 1px solid var(--form-border-color);
-    border-radius: var(--section-radius);
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
+    border: 1px solid var(--evo-border);
+    border-radius: var(--evo-radius-md);
     padding: 1.5rem;
     transition: all 0.3s ease;
 }
 
 .sondage-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--evo-shadow-md);
     transform: translateY(-2px);
 }
 
@@ -24,19 +25,19 @@
 }
 
 .sondage-item h3 a {
-    color: var(--primary-color);
+    color: var(--evo-accent);
     text-decoration: none;
 }
 
 .sondage-item h3 a:hover {
-    color: var(--primary-hover-color);
+    color: var(--evo-accent-hover);
 }
 
 .already-voted {
     display: inline-block;
     padding: 0.25rem 0.75rem;
-    background: var(--warning-color);
-    color: var(--primary-inverse-color);
+    background: var(--evo-warning-bg);
+    color: var(--evo-warning);
     border-radius: 4px;
     font-size: 0.9rem;
     margin-top: 0.5rem;
@@ -52,8 +53,8 @@
 .already-voted-badge {
     display: inline-block;
     padding: 0.35rem 0.85rem;
-    background: var(--primary-color);
-    color: var(--primary-inverse-color);
+    background: var(--evo-accent);
+    color: var(--evo-accent-text);
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
@@ -67,7 +68,7 @@
 .sondage-stats-preview strong {
     display: block;
     margin-bottom: 1rem;
-    color: var(--primary-color);
+    color: var(--evo-accent);
     font-size: 0.95rem;
 }
 
@@ -86,14 +87,14 @@
 .stat-bar-label {
     min-width: 120px;
     font-size: 0.9rem;
-    color: var(--font-secondary);
+    color: var(--evo-text-muted);
     font-weight: 500;
 }
 
 .stat-bar-container {
     flex: 1;
     height: 28px;
-    background: var(--section-head-bg-color);
+    background: var(--evo-surface);
     border-radius: 14px;
     overflow: hidden;
     position: relative;
@@ -102,7 +103,7 @@
 
 .stat-bar-fill {
     height: 100%;
-    background: var(--primary-color);
+    background: var(--evo-accent);
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -114,7 +115,7 @@
 }
 
 .stat-bar-value {
-    color: var(--primary-inverse-color);
+    color: var(--evo-accent-text);
     font-size: 0.85rem;
     font-weight: 600;
     white-space: nowrap;
@@ -138,7 +139,7 @@
 .stat-bar-fill[style*="width: 5%"] .stat-bar-value {
     position: absolute;
     left: calc(100% + 0.5rem);
-    color: var(--primary-color);
+    color: var(--evo-accent);
     text-shadow: none;
 }
 
@@ -150,7 +151,7 @@
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
-    color: var(--primary-color);
+    color: var(--evo-accent);
 }
 
 .sondage-option-result {
@@ -169,12 +170,12 @@
 }
 
 .option-stats {
-    color: var(--font-secondary);
+    color: var(--evo-text-muted);
 }
 
 .option-bar {
     height: 30px;
-    background: var(--section-head-bg-color);
+    background: var(--evo-surface);
     border-radius: 15px;
     overflow: hidden;
     position: relative;
@@ -182,7 +183,7 @@
 
 .option-progress {
     height: 100%;
-    background: var(--primary-color);
+    background: var(--evo-accent);
     border-radius: 15px;
     transition: width 0.6s ease;
 }
@@ -195,16 +196,17 @@
     display: block;
     padding: 1rem;
     margin-bottom: 0.75rem;
-    background: var(--section-head-bg-color);
-    border: 2px solid var(--form-border-color);
-    border-radius: var(--section-radius);
+    background: var(--evo-surface);
+    color: var(--evo-text);
+    border: 2px solid var(--evo-border);
+    border-radius: var(--evo-radius-sm);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .sondage-option:hover {
-    background: var(--form-bg-color);
-    border-color: var(--primary-color);
+    background: var(--evo-card-bg);
+    border-color: var(--evo-accent);
 }
 
 .sondage-option input[type="radio"] {
@@ -213,29 +215,29 @@
 
 .sondage-option input[type="radio"]:checked+span {
     font-weight: 600;
-    color: var(--primary-color);
+    color: var(--evo-accent);
 }
 
 .sondage-options-label {
     display: block;
     font-weight: 500;
     margin-bottom: 0.75rem;
-    color: var(--primary-color);
+    color: var(--evo-accent);
 }
 
 form label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
-    color: var(--primary-color);
+    color: var(--evo-accent);
 }
 
 form input[type="email"] {
     width: 100%;
     padding: 0.75rem;
-    background: var(--form-bg-color);
-    color: var(--font-color);
-    border: 1px solid var(--form-border-color);
+    background: var(--evo-input-bg);
+    color: var(--evo-text);
+    border: 1px solid var(--evo-input-border);
     border-radius: 4px;
     font-size: 1rem;
     margin-bottom: 0.5rem;
@@ -243,21 +245,21 @@ form input[type="email"] {
 
 form small {
     display: block;
-    color: var(--font-secondary);
+    color: var(--evo-text-muted);
     font-size: 0.875rem;
     margin-top: -0.25rem;
     margin-bottom: 1rem;
 }
 
 .required {
-    color: var(--alert-color);
+    color: var(--evo-danger);
 }
 
 .rgpd-checkbox {
     margin: 1.5rem 0;
     padding: 1rem;
-    background: var(--section-head-bg-color);
-    border: 1px solid var(--form-border-color);
+    background: var(--evo-surface);
+    border: 1px solid var(--evo-border);
     border-radius: 4px;
 }
 
@@ -267,7 +269,7 @@ form small {
     gap: 0.5rem;
     cursor: pointer;
     font-weight: normal;
-    color: var(--font-color);
+    color: var(--evo-text);
 }
 
 .rgpd-checkbox input[type="checkbox"] {
@@ -281,13 +283,13 @@ form small {
     margin-left: 1.75rem;
     font-size: 0.85rem;
     line-height: 1.5;
-    color: var(--font-secondary);
+    color: var(--evo-text-muted);
 }
 
 /* Bouton retour à la liste */
 a.button {
-    color: var(--primary-inverse-color) !important;
-    background-color: var(--primary-color) !important;
+    color: var(--evo-accent-text) !important;
+    background-color: var(--evo-accent) !important;
     text-decoration: none;
     display: inline-flex !important;
     align-items: center;
@@ -299,18 +301,18 @@ a.button {
 }
 
 a.button:hover {
-    background-color: var(--primary-hover-color) !important;
-    color: var(--primary-inverse-color) !important;
+    background-color: var(--evo-accent-hover) !important;
+    color: var(--evo-accent-text) !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--evo-shadow-sm);
 }
 
 a.button span {
-    color: var(--primary-inverse-color) !important;
+    color: var(--evo-accent-text) !important;
 }
 
 a.button i {
-    color: var(--primary-inverse-color) !important;
+    color: var(--evo-accent-text) !important;
 }
 /* === Utility Classes for Inline Styles Cleanup === */
 
@@ -318,29 +320,29 @@ a.button i {
 .sondage-results-wrapper { max-width: 400px; margin: 2rem auto; }
 .sondage-results-list { margin-top: 2rem; }
 .sondage-option-result { margin-bottom: 1rem; }
-.sondage-other-results { margin-top: 2rem; padding: 1rem; background: var(--section-head-bg-color); border-radius: 8px; }
+.sondage-other-results { margin-top: 2rem; padding: 1rem; background: var(--evo-surface); border-radius: 8px; }
 .sondage-other-results h4 { margin-top: 0; margin-bottom: 1rem; }
 .sondage-other-results ul { list-style: disc; margin-left: 1.5rem; }
 .sondage-other-results li { margin-bottom: 0.25rem; }
-.sondage-results-demographics { margin-top: 3rem; border-top: 1px solid var(--form-border-color); padding-top: 2rem; }
+.sondage-results-demographics { margin-top: 3rem; border-top: 1px solid var(--evo-border); padding-top: 2rem; }
 .sondage-results-demographics h3 { text-align: center; margin-bottom: 2rem; }
 .demographics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-.demographics-card { background: var(--section-bg-color); padding: 1rem; border-radius: 8px; border: 1px solid var(--form-border-color); }
+.demographics-card { background: var(--evo-card-bg); padding: 1rem; border-radius: 8px; border: 1px solid var(--evo-border); }
 .demographics-card h4 { text-align: center; font-size: 1rem; opacity: 0.7; }
 .chart-container { height: 250px; position: relative; }
 .chart-container-tall { height: 300px; position: relative; }
-.sondage-voted-message { text-align: center; padding: 2rem; background: var(--section-head-bg-color); border-radius: 8px; border: 1px solid var(--form-border-color); }
-.sondage-voted-message i { font-size: 3rem; color: var(--success-color); margin-bottom: 1rem; display: block; }
+.sondage-voted-message { text-align: center; padding: 2rem; background: var(--evo-surface); border-radius: 8px; border: 1px solid var(--evo-border); }
+.sondage-voted-message i { font-size: 3rem; color: var(--evo-success); margin-bottom: 1rem; display: block; }
 .sondage-option-other { margin-top: 1rem; }
 .sondage-option-other label { display: block; margin-bottom: 0.5rem; }
 .sondage-option-other input { width: 100%; }
 .sondage-vote-button { margin-top: 1.5rem; }
-.sondage-login-required { text-align: center; padding: 2rem; background: var(--section-head-bg-color); border-radius: 8px; border: 1px solid var(--form-border-color); }
+.sondage-login-required { text-align: center; padding: 2rem; background: var(--evo-surface); border-radius: 8px; border: 1px solid var(--evo-border); }
 .sondage-preview-options { margin-top: 2rem; text-align: left; }
 .sondage-preview-options ul { list-style: none; padding: 0; }
-.sondage-preview-options li { padding: 0.5rem; background: var(--section-bg-color); border-bottom: 1px solid var(--form-border-color); }
-.sondage-stats { margin-bottom: 2rem; padding: 1.5rem; background: var(--section-head-bg-color); border-radius: 8px; }
-.stats-summary { display: flex; gap: 2rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--form-border-color); align-items: center; }
+.sondage-preview-options li { padding: 0.5rem; background: var(--evo-card-bg); border-bottom: 1px solid var(--evo-border); }
+.sondage-stats { margin-bottom: 2rem; padding: 1.5rem; background: var(--evo-surface); border-radius: 8px; }
+.stats-summary { display: flex; gap: 2rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--evo-border); align-items: center; }
 .admin-chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
 .admin-chart-grid h4 { text-align: center; margin-bottom: 1rem; }
 .options-stats { overflow-y: auto; max-height: 300px; }

@@ -518,3 +518,180 @@ body.theme-dark {
     }
 }
 
+.profile-danger-header,
+.profile-edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--evo-border);
+}
+.profile-danger-header h1,
+.profile-edit-header h1 {
+    margin: 0;
+    color: var(--evo-text);
+}
+.user-delete-account {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: var(--evo-warning-bg);
+    border: 2px solid var(--evo-warning-border);
+    border-radius: var(--evo-radius-sm);
+    color: var(--evo-warning);
+}
+.user-delete-account h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--evo-warning);
+}
+.user-delete-lead {
+    margin-bottom: 1rem;
+    font-size: 1.05rem;
+}
+.user-delete-list {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+}
+.user-delete-warn,
+.user-delete-label {
+    margin-bottom: 1.25rem;
+    font-weight: 700;
+    display: block;
+}
+.user-delete-confirm-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    border: 2px solid var(--evo-danger);
+    border-radius: 4px;
+    font-size: 1rem;
+    background: var(--evo-input-bg);
+    color: var(--evo-text);
+}
+.user-delete-actions {
+    margin-top: 1.5rem;
+}
+.user-delete-submit-btn {
+    background: var(--evo-danger);
+    color: var(--evo-accent-text);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+.user-delete-cancel-btn {
+    margin-left: 0.5rem;
+}
+@media (max-width: 768px) {
+    .profile-danger-header,
+    .profile-edit-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
+.evo-is-hidden {
+    display: none;
+}
+
+.dc-error-wrap {
+    max-width: 640px;
+    margin: 36px auto 56px;
+    padding: 16px;
+    text-align: center;
+}
+.dc-error-card {
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
+    border: 1px solid var(--evo-border);
+    border-radius: 18px;
+    padding: 44px 28px;
+    box-shadow: var(--evo-shadow-md);
+}
+.dc-error-icon {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.1rem;
+    background: var(--evo-accent-soft);
+    color: var(--evo-accent);
+    animation: dcIconPulse 3.2s ease-in-out infinite;
+}
+.dc-error-icon.tone-warning {
+    background: var(--evo-warning-bg);
+    color: var(--evo-warning);
+}
+.dc-error-icon.tone-danger {
+    background: var(--evo-danger-bg);
+    color: var(--evo-danger);
+}
+.dc-error-badge {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 4px 14px;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+    background: var(--evo-danger-bg);
+    color: var(--evo-danger);
+}
+.dc-error-badge.tone-warning {
+    background: var(--evo-warning-bg);
+    color: var(--evo-warning);
+}
+.dc-error-title {
+    margin: 0 0 12px;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    color: var(--evo-text);
+    line-height: 1.25;
+}
+.dc-error-msg {
+    margin: 0 auto 26px;
+    max-width: 480px;
+    color: var(--evo-text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+.dc-error-actions {
+    display: flex;
+    justify-content: center;
+}
+.dc-error-btn {
+    background: var(--evo-accent);
+    color: var(--evo-accent-text) !important;
+    font-weight: 700;
+    padding: 12px 26px;
+    border-radius: 10px;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--evo-shadow-sm);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.dc-error-btn:hover {
+    background: var(--evo-accent-hover);
+    transform: translateY(-1px);
+}
+.dc-error-redirect {
+    margin: 18px 0 0;
+    font-size: 0.85rem;
+    color: var(--evo-text-muted);
+}
+@keyframes dcIconPulse {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .dc-error-icon { animation: none; }
+}
+

@@ -47,7 +47,7 @@
                     <th>Adresse (URL)</th>
                     <th>Statut</th>
                     <th>Présence dans les menus</th>
-                    <th style="width: 150px; text-align: right;">Actions</th>
+                    <th class="pages-col-actions">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,7 +89,7 @@
                             <span class="page-muted">Non placée</span>
                         {% endif %}
                     </td>
-                    <td style="text-align: right; white-space: nowrap;">
+                    <td class="pages-cell-actions">
                         <a class="button tiny" href="{{ROUTER.generate("page-admin-edit", ["id" => p.id])}}" title="Modifier le contenu">
                             <i class="fa-solid fa-pen"></i>
                         </a>
@@ -119,119 +119,3 @@
         {% endif %}
     </div>
 </section>
-
-<style>
-.pages-editorial-wrap {
-    max-width: 1280px;
-    margin: 0 auto;
-}
-.pages-editorial-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 14px;
-}
-.pages-editorial-title {
-    margin: 0;
-    font-size: 1.45rem;
-    font-weight: 800;
-    color: #0f172a;
-}
-.pages-editorial-sub {
-    margin: 4px 0 0;
-    color: #64748b;
-    font-size: 0.9rem;
-}
-.pages-editorial-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-.pages-info-banner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    color: #1e3a8a;
-    padding: 10px 14px;
-    border-radius: 10px;
-    margin-bottom: 18px;
-    font-size: 0.9rem;
-}
-.pages-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
-}
-.pages-stat-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-left: 4px solid #1f62a9;
-    border-radius: 10px;
-    padding: 14px 16px;
-}
-.pages-stat-card.stat-published { border-left-color: #16a34a; }
-.pages-stat-card.stat-draft { border-left-color: #d97706; }
-.pages-stat-card.stat-protected { border-left-color: #7c3aed; }
-.pages-stat-card .stat-val {
-    display: block;
-    font-size: 1.7rem;
-    font-weight: 800;
-    color: #0f172a;
-}
-.pages-stat-card .stat-lbl {
-    font-size: 0.85rem;
-    color: #64748b;
-    font-weight: 600;
-}
-.pages-editorial-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-}
-.pages-editorial-table th,
-.pages-editorial-table td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #e2e8f0;
-    vertical-align: middle;
-}
-.page-row-title {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-.page-row-sub {
-    display: block;
-    color: #64748b;
-    font-size: 0.8rem;
-}
-.page-url-code {
-    font-size: 0.82rem;
-    color: #334155;
-    background: #f8fafc;
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-.page-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 999px;
-}
-.pill-pub { background: #dcfce7; color: #166534; }
-.pill-draft { background: #fef3c7; color: #92400e; }
-.pill-home { background: #dbeafe; color: #1e40af; }
-.pill-lock { background: #f3e8ff; color: #6b21a8; }
-.pill-noindex { background: #f1f5f9; color: #475569; }
-.pill-menu { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-.page-muted { color: #94a3b8; font-size: 0.82rem; }
-.pages-empty { text-align: center; padding: 30px; color: #64748b; }
-</style>
