@@ -51,6 +51,9 @@ class MenuService
      */
     public function ensureMigrated(): void
     {
+        if (!file_exists(DATA . 'config.json')) {
+            return;
+        }
         $flagFile = DATA_CORE . 'menus_migrated.flag';
         if (file_exists($flagFile)) {
             return;

@@ -212,13 +212,8 @@ if (count($_POST) > 0) {
         } else {
             \Core\Database::getInstance()->reloadConfig();
         }
-        $pagesDirPre = DATA_CORE_PAGE;
-        if (!is_dir($pagesDirPre)) {
-            @mkdir($pagesDirPre, 0755, true);
-        }
-        $pagesFilePre = $pagesDirPre . 'pages.json';
-        if (!file_exists($pagesFilePre) || count(json_decode((string) file_get_contents($pagesFilePre), true) ?: []) === 0) {
-            $homepageSeedPre = [[
+        $defaultPagesSeed = [
+            [
                 'id' => 1,
                 'name' => 'Accueil',
                 'position' => 1,
@@ -236,8 +231,42 @@ if (count($_POST) > 0) {
                 'cssClass' => null,
                 'password' => null,
                 'img' => null,
-            ]];
-            file_put_contents($pagesFilePre, json_encode($homepageSeedPre, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                'navPosition' => 'menu',
+                'navContext' => 'main',
+                'showIcon' => 1,
+                'icon' => 'fa-solid fa-house',
+            ],
+            [
+                'id' => 2,
+                'name' => 'À propos',
+                'position' => 2,
+                'isHomepage' => '0',
+                'content' => "<p>Voici une page d'exemple créée lors de l'installation.</p><p>Vous pouvez la modifier, la renommer ou en créer d'autres depuis <strong>Administration &rarr; Pages</strong>.</p>",
+                'isHidden' => 0,
+                'file' => null,
+                'mainTitle' => null,
+                'metaDescriptionTag' => null,
+                'metaTitleTag' => null,
+                'targetAttr' => null,
+                'target' => null,
+                'noIndex' => null,
+                'parent' => null,
+                'cssClass' => null,
+                'password' => null,
+                'img' => null,
+                'navPosition' => 'menu',
+                'navContext' => 'main',
+                'showIcon' => 1,
+                'icon' => 'fa-solid fa-circle-info',
+            ],
+        ];
+        $pagesDirPre = DATA_CORE_PAGE;
+        if (!is_dir($pagesDirPre)) {
+            @mkdir($pagesDirPre, 0755, true);
+        }
+        $pagesFilePre = $pagesDirPre . 'pages.json';
+        if (!file_exists($pagesFilePre) || count(json_decode((string) file_get_contents($pagesFilePre), true) ?: []) === 0) {
+            file_put_contents($pagesFilePre, json_encode($defaultPagesSeed, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
             if ($storageMode === 'sqlite' || $storageMode === 'mysql') {
                 \Core\Storage\StorageMigrationService::migrate('PageItem', 'sql', 'json');
             }
@@ -270,6 +299,8 @@ if (count($_POST) > 0) {
         'siteUrl' => $core->makeSiteUrl(),
         'theme' => $selectedTheme,
         'hideTitles' => false,
+        'showBanner' => true,
+        'hideBannerTitle' => false,
         'defaultPlugin' => 'page',
         'debug' => false,
         'defaultAdminPlugin' => 'configmanager',
@@ -284,27 +315,7 @@ if (count($_POST) > 0) {
         'registrationDefaultGroup' => 'member',
         'registrationValidationMode' => 'email',
     ];
-    $pagesSeed = [
-        [
-            'id' => 1,
-            'name' => 'Accueil',
-            'position' => 1,
-            'isHomepage' => '1',
-            'content' => "<p>Félicitations, l'installation de 299koEVO s'est déroulée avec succès !<br>Par mesure de sécurité, vous devez maintenant supprimer le fichier install.php du répertoire d'installation.</p>",
-            'isHidden' => 0,
-            'file' => null,
-            'mainTitle' => null,
-            'metaDescriptionTag' => null,
-            'metaTitleTag' => null,
-            'targetAttr' => null,
-            'target' => null,
-            'noIndex' => null,
-            'parent' => null,
-            'cssClass' => null,
-            'password' => null,
-            'img' => null,
-        ],
-    ];
+    $pagesSeed = $defaultPagesSeed;
 
     $pagesDir = DATA_CORE_PAGE;
     if (!is_dir($pagesDir) && !mkdir($pagesDir, 0755, true)) {
@@ -425,6 +436,37 @@ if (count($_POST) > 0) {
             header('location:' . $url);
             die();
         }
+    }
+
+    // Créer les entrées de navigation par défaut (Accueil + À propos) dans MenuItem
+    try {
+        if (file_exists(DATA_CORE . 'menus_migrated.flag')) {
+            @unlink(DATA_CORE . 'menus_migrated.flag');
+        }
+        foreach (glob(\CACHE . 'nav_tree_*.json') ?: [] as $navCacheFile) {
+            @unlink($navCacheFile);
+        }
+        if (\Core\Navigation\MenuItem::queryBuilder()->count() === 0) {
+            $pos = 1;
+            foreach ($defaultPagesSeed as $seedPage) {
+                $menuItem = new \Core\Navigation\MenuItem();
+                $menuItem->setLocation('main');
+                $menuItem->setParentId(0);
+                $menuItem->setPosition($pos++);
+                $menuItem->setType('page');
+                $menuItem->setTargetRef((string) $seedPage['id']);
+                $menuItem->setLabel((string) $seedPage['name']);
+                $menuItem->setIcon((string) ($seedPage['icon'] ?? ''));
+                $menuItem->setCssClass('');
+                $menuItem->setTargetAttr('_self');
+                $menuItem->setVisibility(['mode' => 'public', 'roles' => []]);
+                $menuItem->setIsEnabled(1);
+                $menuItem->save();
+            }
+        }
+        @file_put_contents(DATA_CORE . 'menus_migrated.flag', date('c'));
+    } catch (\Throwable $e) {
+        $core->log('Menu seed warning during install: ' . $e->getMessage(), 'WARNING');
     }
 
     $configEncoded = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
