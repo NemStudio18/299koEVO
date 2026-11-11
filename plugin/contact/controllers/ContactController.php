@@ -45,9 +45,14 @@ class ContactController extends PublicController
 
         
 
-        $tpl->set('name', $_POST['name'] ?? ($isLogged ? UsersManager::getCurrentUser()->name : ''));
-        $tpl->set('firstname', $_POST['firstname'] ?? ($isLogged ? UsersManager::getCurrentUser()->firstname : ''));
-        $tpl->set('email', $_POST['email'] ?? ($isLogged ? UsersManager::getCurrentUser()->email : ''));
+        $current = $isLogged ? UsersManager::getCurrentUser() : null;
+        $defaultName = $current ? (trim((string) ($current->name ?? '')) ?: $current->username()) : '';
+        $defaultFirstName = $current ? trim((string) ($current->firstname ?? '')) : '';
+        $defaultEmail = $current ? (string) ($current->email ?? '') : '';
+
+        $tpl->set('name', $_POST['name'] ?? $defaultName);
+        $tpl->set('firstname', $_POST['firstname'] ?? $defaultFirstName);
+        $tpl->set('email', $_POST['email'] ?? $defaultEmail);
         $incomingMessage = $_POST['message'] ?? ($_GET['message'] ?? '');
         $incomingTopic = $_POST['topic'] ?? ($_GET['topic'] ?? ($_GET['subject'] ?? ''));
         if ($incomingTopic !== '' && !empty($incomingMessage) && strpos($incomingMessage, $incomingTopic) === false) {
@@ -100,15 +105,17 @@ class ContactController extends PublicController
                 // Si l'utilisateur est connecté, on injecte ses infos manuellement pour contactSend()
                 if ($isLogged) {
                     $currentUser = UsersManager::getCurrentUser();
-                    $_POST['name'] = $currentUser->name;
-                    $_POST['firstname'] = $currentUser->firstname;
-                    $_POST['email'] = $currentUser->email;
+                    $_POST['name'] = trim((string) ($currentUser->name ?? '')) ?: $currentUser->username();
+                    $_POST['firstname'] = trim((string) ($currentUser->firstname ?? ''));
+                    $_POST['email'] = (string) ($currentUser->email ?? '');
                 }
-                
+
                 if (contactSend()) {
                     Show::msg(Lang::get('contact.msg-sent'), 'success');
+                    $this->core->redirect($this->router->generate('contact-home'));
+                    return null;
                 } else {
-                    Show::msg(Lang::get('something-wrong'), 'error');
+                    Show::msg(Lang::get('contact.fiels-error'), 'error');
                     $sendError = true;
                 }
             } else {

@@ -1,42 +1,5 @@
-<style>
-.contact-page-container {
-    max-width: 680px;
-    margin: 12px auto 24px auto;
-    padding: 0;
-    box-sizing: border-box;
-}
-.contact-header-badge {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    background: var(--dc-accent-soft, rgba(29, 78, 216, 0.1));
-    color: var(--primary-color, #1d4ed8);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin-bottom: 12px;
-}
-.contact-title {
-    font-size: 1.6rem;
-    color: var(--font-color, #1e293b);
-    margin: 0 0 8px 0;
-    font-weight: 700;
-}
-.contact-subtitle {
-    color: var(--font-secondary, #64748b);
-    font-size: 0.95rem;
-    margin: 0;
-}
-@media (max-width: 600px) {
-    .contact-page-container textarea {
-        min-height: 140px !important;
-        font-size: 16px !important;
-    }
-}
-</style>
 <section class="contact-page-container">
-    <header class="contact-header" style="margin-bottom: 24px; text-align: center;">
+    <header class="contact-header">
         <div class="contact-header-badge">
             <i class="fa-solid fa-envelope"></i>
         </div>
@@ -49,10 +12,10 @@
     <form method="post" action="{{sendUrl}}" class="contact-form">
             {{SHOW.tokenField}}
             {% if !isLogged %}
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+            <div class="contact-form-row">
                 <div class="form-group">
                     <label for="name">{{Lang.contact.form_name}} <span class="required">*</span></label>
-                    <input class="honeypot" type="text" name="_name" value="" style="display:none;" />
+                    <input class="honeypot" type="text" name="_name" value="" />
                     <input required="required" type="text" name="name" id="name" value="{{name}}" placeholder="Votre nom" />
                 </div>	
                 <div class="form-group">
@@ -93,8 +56,8 @@
                     {{antispamField}}
                 </div>
             {% endif %}
-            <div style="margin-top: 24px;">
-                <button type="submit" class="btn-primary" style="width: 100%; font-size: 1rem; padding: 13px;">
+            <div class="contact-submit-wrap">
+                <button type="submit" class="btn-primary contact-submit-btn">
                     <i class="fa-solid fa-paper-plane"></i> {{Lang.contact.form_send}}
                 </button>
             </div>
