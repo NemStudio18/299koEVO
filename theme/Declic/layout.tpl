@@ -87,7 +87,8 @@
                         <path d="M0,150 C240,85 480,215 720,150 C960,85 1200,215 1440,150 C1680,85 1920,215 2160,150 C2400,85 2640,215 2880,150 L2880,260 L0,260 Z" fill="url(#declicWaveGrad)" />
                     </svg>
                     <svg class="declic-banner-wave declic-wave-2" viewBox="0 0 2880 240" preserveAspectRatio="none" focusable="false">
-                        <path d="M0,180 C240,225 480,135 720,180 C960,225 1200,135 1440,180 C1680,225 1920,135 2160,180 C2400,225 2640,135 2880,180 L2880,260 L0,260 Z" fill="var(--dc-accent)" fill-opacity="0.06" stroke="var(--dc-accent)" stroke-width="1.5" stroke-opacity="0.22" />
+                        <path d="M0,180 C240,225 480,135 720,180 C960,225 1200,135 1440,180 C1680,225 1920,135 2160,180 C2400,225 2640,135 2880,180 L2880,260 L0,260 Z" fill="var(--dc-accent)" fill-opacity="0.06" />
+                        <path d="M0,180 C240,225 480,135 720,180 C960,225 1200,135 1440,180 C1680,225 1920,135 2160,180 C2400,225 2640,135 2880,180" fill="none" stroke="var(--dc-accent)" stroke-width="1.5" stroke-opacity="0.22" />
                     </svg>
                     <svg class="declic-banner-ring" viewBox="0 0 200 200" focusable="false">
                         <circle cx="100" cy="100" r="88" fill="none" stroke="var(--dc-accent)" stroke-width="1.2" stroke-opacity="0.22" stroke-dasharray="10 10" />
