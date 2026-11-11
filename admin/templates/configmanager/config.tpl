@@ -137,11 +137,17 @@
 				</p>
 				<p>
 					<label id="label_theme" for="theme">{{Lang.configmanager-theme}}</label>
-					<select name="theme">
-						{% for k, v in CORE.getThemes %}
-							<option {% if CORE.getConfigVal("theme") == k %} selected {% endif %} value="{{k}}">{{v.name}}</option>
-						{% endfor %}
-					</select>
+					<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+						<select name="theme" id="theme" style="flex: 1 1 240px; margin: 0;">
+							{% for th in themesList %}
+								<option {% if CORE.getConfigVal("theme") == th.slug %} selected {% endif %} value="{{th.slug}}">{{th.name}}</option>
+							{% endfor %}
+						</select>
+						<button type="button" id="themePreviewBtn" class="button">
+							<i class="fa-solid fa-eye"></i> {{Lang.configmanager-theme-preview}}
+						</button>
+					</div>
+					<small id="themeMetaLine" style="display: block; margin-top: 6px; color: #64748b;"></small>
 				</p>
 			</li>
 			<li class="tab">
@@ -307,4 +313,109 @@
 		<button type="submit" class="button success">{{Lang.submit}}</button>
 	</p>
 </form>
+
+<div id="themePreviewModal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.72); align-items: center; justify-content: center; padding: 20px;">
+	<div style="width: min(1160px, 100%); height: min(86vh, 840px); background: #ffffff; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0,0,0,0.35);">
+		<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap;">
+			<div style="display: flex; align-items: center; gap: 10px;">
+				<i class="fa-solid fa-palette" style="color: #1f62a9;"></i>
+				<strong id="themePreviewTitle" style="color: #0f172a;">{{Lang.configmanager-theme-preview-title}}</strong>
+			</div>
+			<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+				<button type="button" id="themePreviewDesktopBtn" class="button small primary"><i class="fa-solid fa-desktop"></i> Bureau</button>
+				<button type="button" id="themePreviewMobileBtn" class="button small"><i class="fa-solid fa-mobile-screen-button"></i> Mobile</button>
+				<a id="themePreviewNewTab" href="#" target="_blank" class="button small"><i class="fa-solid fa-arrow-up-right-from-square"></i> Nouvel onglet</a>
+				<button type="button" id="themePreviewCloseBtn" class="button small alert"><i class="fa-solid fa-xmark"></i> Fermer</button>
+			</div>
+		</div>
+		<div style="flex: 1; background: #e2e8f0; display: flex; justify-content: center; align-items: stretch; padding: 12px; overflow: auto;">
+			<iframe id="themePreviewIframe" src="about:blank" title="{{Lang.configmanager-theme-preview-title}}" style="width: 100%; height: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #ffffff; transition: width 0.2s ease;"></iframe>
+		</div>
+	</div>
+</div>
+
+<script>
+(function() {
+	const themesMeta = {{themesMetaJson}};
+	const metaMap = {};
+	(themesMeta || []).forEach(function(item) { metaMap[item.slug] = item; });
+
+	const selectEl = document.getElementById('theme');
+	const metaLine = document.getElementById('themeMetaLine');
+	const previewBtn = document.getElementById('themePreviewBtn');
+	const modal = document.getElementById('themePreviewModal');
+	const iframe = document.getElementById('themePreviewIframe');
+	const titleEl = document.getElementById('themePreviewTitle');
+	const newTabEl = document.getElementById('themePreviewNewTab');
+	const closeBtn = document.getElementById('themePreviewCloseBtn');
+	const desktopBtn = document.getElementById('themePreviewDesktopBtn');
+	const mobileBtn = document.getElementById('themePreviewMobileBtn');
+	const siteUrl = window.location.origin;
+
+	function refreshMeta() {
+		if (!selectEl || !metaLine) return;
+		const info = metaMap[selectEl.value];
+		if (!info) {
+			metaLine.textContent = '';
+			return;
+		}
+		const parts = ['Dossier : theme/' + info.slug];
+		if (info.version) parts.push('v' + info.version);
+		if (info.author) parts.push(info.author);
+		metaLine.textContent = parts.join(' • ');
+	}
+
+	function buildPreviewUrl(slug) {
+		const base = (siteUrl || window.location.origin).replace(/\/$/, '');
+		return base + '/?_theme_preview=' + encodeURIComponent(slug);
+	}
+
+	function openPreview() {
+		if (!selectEl || !modal || !iframe) return;
+		const slug = selectEl.value;
+		const info = metaMap[slug];
+		const url = buildPreviewUrl(slug);
+		if (titleEl) titleEl.textContent = 'Aperçu en direct : ' + (info ? info.name : slug);
+		if (newTabEl) newTabEl.href = url;
+		iframe.src = url;
+		iframe.style.width = '100%';
+		modal.style.display = 'flex';
+	}
+
+	function closePreview() {
+		if (!modal || !iframe) return;
+		modal.style.display = 'none';
+		iframe.src = 'about:blank';
+	}
+
+	if (selectEl) {
+		selectEl.addEventListener('change', refreshMeta);
+		refreshMeta();
+	}
+	if (previewBtn) previewBtn.addEventListener('click', openPreview);
+	if (closeBtn) closeBtn.addEventListener('click', closePreview);
+	if (modal) {
+		modal.addEventListener('click', function(e) {
+			if (e.target === modal) closePreview();
+		});
+	}
+	document.addEventListener('keydown', function(e) {
+		if (e.key === 'Escape' && modal && modal.style.display === 'flex') closePreview();
+	});
+	if (desktopBtn && iframe) {
+		desktopBtn.addEventListener('click', function() {
+			iframe.style.width = '100%';
+			desktopBtn.classList.add('primary');
+			if (mobileBtn) mobileBtn.classList.remove('primary');
+		});
+	}
+	if (mobileBtn && iframe) {
+		mobileBtn.addEventListener('click', function() {
+			iframe.style.width = '390px';
+			mobileBtn.classList.add('primary');
+			if (desktopBtn) desktopBtn.classList.remove('primary');
+		});
+	}
+})();
+</script>
 </section>
