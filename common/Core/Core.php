@@ -48,6 +48,7 @@ class Core
     private ?MediaService $mediaService = null;
     private ?SettingsService $settingsService = null;
     private ?ExtensionsService $extensionsService = null;
+    private bool $forcePublicRender = false;
 
     private ?Env $env;
 
@@ -70,17 +71,18 @@ class Core
 
     /**
      * Logger instance
-     * @var \Logger
+     * @var Logger
      */
     private $logger;
 
 
-    private float $startTime;
+    public float $startTime;
 
     private int $queryCount = 0;
     ## Constructeur
 
-    public function __construct() {
+    public function __construct()
+    {
         if (!is_dir(DATA)) {
             @mkdir(DATA);
         }
@@ -107,14 +109,44 @@ class Core
         }
     }
 
-    public function init() {
+    public function init()
+    {
+        if (!defined('REQUEST_ID')) {
+            define('REQUEST_ID', bin2hex(random_bytes(8)));
+        }
+
         $this->config = Util::readJsonFile(DATA . 'config.json', true);
         $this->env = new Env(ROOT . '.env');
         $this->loadEnv();
         $this->createLogger();
 
+        // Sécurité : En-têtes HTTP globaux
+        // Protection contre le clickjacking
+        header('X-Frame-Options: SAMEORIGIN');
+        // Protection contre le sniffing de MIME type
+        header('X-Content-Type-Options: nosniff');
+        // Protection XSS pour les navigateurs anciens
+        header('X-XSS-Protection: 1; mode=block');
+        // Politique de referrer
+        header('Referrer-Policy: strict-origin-when-cross-origin');
+        // Politique de permissions (désactivation fonctionnalités sensibles par défaut)
+        // Correction : Autoriser geolocation pour 'self' pour la carte interactive
+        header('Permissions-Policy: geolocation=(self), microphone=(), camera=()');
+
+        // Content Security Policy (CSP) Permissive pour commencer
+        // Autorise 'self', les scripts inline (nécessaire pour legacy), et les images data/https
+        // À durcir progressivement
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tiny.cloud https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data: https: https://fonts.gstatic.com; connect-src 'self' https:; frame-src 'self' https:;");
+
         // Timezone
-        date_default_timezone_set(date_default_timezone_get());
+        date_default_timezone_set('Europe/Paris');
+        
+        // Globals pour les templates
+        if (class_exists('\Template\Template')) {
+            \Template\Template::addGlobal('VERSION', VERSION);
+            \Template\Template::addGlobal('ROOT', ROOT);
+        }
+
         // Réglage de l'error reporting suivant le paramètre debug
         if ($this->config && $this->config['debug']) {
             ini_set('display_errors', 1);
@@ -151,13 +183,7 @@ class Core
                     $this->pluginToCall = $parts[1];
                     define('ISHOMEPAGE', false);
                 } else {
-                    $defaultAdminPlugin = $this->getConfigVal('defaultAdminPlugin');
-                    // Si defaultAdminPlugin est null, false ou vide, utiliser 'configmanager' comme module admin par défaut
-                    if ($defaultAdminPlugin === null || $defaultAdminPlugin === false || $defaultAdminPlugin === '') {
-                        $this->pluginToCall = 'configmanager';
-                    } else {
-                        $this->pluginToCall = $defaultAdminPlugin;
-                    }
+                    $this->pluginToCall = 'dashboard';
                     define('ISHOMEPAGE', true);
                 }
             } else {
@@ -180,16 +206,93 @@ class Core
         $this->js[] = FANCYJS;
         $this->auth();
         $this->auth()->registerRoutes(Router::getInstance());
+        
+        // MAINTENANCE MODE CHECK
+        if ($this->getConfigVal('maintenance_mode')) {
+            $user = $this->auth()->getCurrentUser();
+            $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+            $isAdmin = $evaluator->isAdmin(new \Core\Navigation\ConditionContext($user));
+            
+            $uri = Router::getInstance()->getCleanURI();
+            
+            // Allow login and admin pages
+            $allowedRoutes = ['/users/login', '/admin', '/users/auth']; 
+            
+            $isAllowed = $isAdmin;
+            if (!$isAllowed) {
+                foreach ($allowedRoutes as $route) {
+                     if (strpos($uri, $route) === 0) {
+                         $isAllowed = true;
+                         break;
+                     }
+                }
+            }
+            
+            // Allow resources if they pass through router (unlikely for static files but possible)
+            if (!$isAllowed && (strpos($uri, '/theme/') === 0 || strpos($uri, '/common/') === 0 || strpos($uri, '/upload/') === 0)) {
+                 $isAllowed = true;
+            }
+            
+            if (!$isAllowed) {
+                http_response_code(503);
+                $maintenanceMessage = $this->getConfigVal('maintenance_message');
+                $maintenanceTemplate = $this->getConfigVal('maintenance_template');
+                
+                $templatePath = '';
+                
+                // 1. Try selected theme template
+                if (!empty($maintenanceTemplate)) {
+                     $themeFile = THEMES . $this->getConfigVal('theme') . '/' . $maintenanceTemplate;
+                     if (file_exists($themeFile)) {
+                         $templatePath = $themeFile;
+                     }
+                }
+                
+                // 2. Fallback to common/template/maintenance.tpl
+                if (empty($templatePath) && file_exists(COMMON . 'template/maintenance.tpl')) {
+                    $templatePath = COMMON . 'template/maintenance.tpl';
+                }
+                
+                if (!empty($templatePath)) {
+                    $tpl = new \Template\Template($templatePath);
+                    $tpl->set('maintenanceMessage', $maintenanceMessage);
+                    // Add global CORE variable
+                    \Template\Template::addGlobal('CORE', $this);
+                    echo $tpl->output();
+                } else {
+                    echo "<h1>Maintenance</h1><p>" . ($maintenanceMessage ?: "Site under maintenance.") . "</p>";
+                }
+                exit;
+            }
+        }
+
+        // Note: Les styles des formulaires users sont maintenant dans le thème (theme/EVO/css/theme.css)
         $this->pages();
         $this->pages()->registerRoutes(Router::getInstance());
+        $this->menus()->registerRoutes(Router::getInstance());
         require_once COMMON . 'Core/Page/hooks.php';
         $this->addHook('endFrontHead', '\Core\Page\pageEndFrontHead');
-        \Core\Page\Page::addToNavigation();
+        $this->addHook('search:get-results', '\Core\Page\pageSearchResultsHook');
+
+        // Hooks d'URL d'authentification gérés par le core (login, register, logout, profil, admin)
+        require_once COMMON . 'Core/Auth/hooks.php';
+        $this->addHook('user:login-url', '\Core\Auth\authCoreLoginUrl');
+        $this->addHook('user:register-url', '\Core\Auth\authCoreRegisterUrl');
+        $this->addHook('user:logout-url', '\Core\Auth\authCoreLogoutUrl');
+        $this->addHook('user:profile-url', '\Core\Auth\authCoreProfileUrl');
+        $this->addHook('admin:url', '\Core\Auth\authCoreAdminUrl');
+
+        // Télémétrie : vérifier la synchronisation avant chaque exécution
+        require_once COMMON . 'Core/Telemetry/hooks.php';
+        $this->addHook('beforeRunPlugin', '\Core\Telemetry\telemetryCheckSync');
         $this->media();
         $this->media()->registerRoutes(Router::getInstance());
         $this->settings();
         $this->settings()->registerRoutes(Router::getInstance());
         $this->extensions()->registerRoutes(Router::getInstance());
+        
+        // Exposer l'URI courante nettoyée dans le template globalement
+        \Template\Template::addGlobal('CURRENT_URI', Router::getInstance()->getCleanURI());
     }
 
     /**
@@ -197,7 +300,8 @@ class Core
      * 
      * @return \self
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (is_null(self::$instance))
             self::$instance = new Core();
         return self::$instance;
@@ -205,23 +309,29 @@ class Core
 
     ## Retourne la liste des thèmes
 
-    public function getThemes() {
+    public function getThemes()
+    {
         return $this->themes;
     }
 
     ## Retourne la configuration complète
 
-    public function getconfig() {
+    public function getconfig()
+    {
         return $this->config;
     }
 
     ## Retourne une valeur de configuration
-
-    public function getConfigVal($k) {
-        if (isset($this->config[$k]))
-            return $this->config[$k];
-        else
+    public function getConfigVal($k = null)
+    {
+        if ($k === null) {
             return false;
+        }
+        if (isset($this->config[$k])) {
+            return $this->config[$k];
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -231,13 +341,15 @@ class Core
      * @param string $key
      * @param string $value
      */
-    public function setConfigVal($key, $value) {
+    public function setConfigVal($key, $value)
+    {
         $this->config[$key] = $value;
     }
 
     ## Retourne les infos du thème ciblé
 
-    public function getThemeInfo($k) {
+    public function getThemeInfo($k)
+    {
         if (isset($this->themes[$this->getConfigVal('theme')]))
             return $this->themes[$this->getConfigVal('theme')][$k];
         else
@@ -246,19 +358,22 @@ class Core
 
     ## Retourne l'identifiant du plugin solicité
 
-    public function getPluginToCall(): string {
+    public function getPluginToCall(): string
+    {
         return $this->pluginToCall;
     }
 
     ## Retourne le tableau de ressources JS de base
 
-    public function getJs() {
+    public function getJs()
+    {
         return $this->js;
     }
 
     ## Retourne le tableau de ressources CSS de base
 
-    public function getCss() {
+    public function getCss()
+    {
         return $this->css;
     }
 
@@ -278,6 +393,11 @@ class Core
         }
 
         return $this->pageService;
+    }
+
+    public function menus(): \Core\Navigation\MenuService
+    {
+        return \Core\Navigation\MenuService::getInstance();
     }
 
     public function media(): MediaService
@@ -312,9 +432,10 @@ class Core
      * @param string $moduleName
      * @return bool
      */
-    public function isCoreModule(string $moduleName): bool {
-        $coreModules = ['page', 'users', 'configmanager', 'filemanager', 'marketplace', 'pluginsmanager'];
-        return in_array($moduleName, $coreModules, true);
+    public function isCoreModule(string $moduleName): bool
+    {
+        $coreModules = ['dashboard', 'page', 'menus', 'users', 'configmanager', 'filemanager', 'marketplace', 'pluginsmanager'];
+    return in_array(strtolower($moduleName), $coreModules, true);
     }
 
     protected function determineLocale(): string
@@ -336,11 +457,13 @@ class Core
         return (string) $locale;
     }
 
-    public function addMeta(string $meta) {
+    public function addMeta(string $meta)
+    {
         $this->metas[] = $meta;
     }
 
-    public function getMetas() {
+    public function getMetas()
+    {
         return $this->metas;
     }
 
@@ -348,7 +471,8 @@ class Core
      * Set page title tag (for <title>)
      * @param string $title
      */
-    public function setTitleTag(string $title): void {
+    public function setTitleTag(string $title): void
+    {
         $this->titleTag = $title;
     }
 
@@ -356,7 +480,8 @@ class Core
      * Get page title tag
      * @return string|null
      */
-    public function getTitleTag(): ?string {
+    public function getTitleTag(): ?string
+    {
         return $this->titleTag;
     }
 
@@ -364,7 +489,8 @@ class Core
      * Set main title (for <h1>)
      * @param string $title
      */
-    public function setMainTitle(string $title): void {
+    public function setMainTitle(string $title): void
+    {
         $this->mainTitle = $title;
     }
 
@@ -372,7 +498,8 @@ class Core
      * Get main title
      * @return string|null
      */
-    public function getMainTitle(): ?string {
+    public function getMainTitle(): ?string
+    {
         return $this->mainTitle;
     }
 
@@ -380,7 +507,8 @@ class Core
      * Set meta description
      * @param string $description
      */
-    public function setMetaDescription(string $description): void {
+    public function setMetaDescription(string $description): void
+    {
         $this->metaDescription = $description;
     }
 
@@ -388,41 +516,58 @@ class Core
      * Get meta description
      * @return string|null
      */
-    public function getMetaDescription(): ?string {
+    public function getMetaDescription(): ?string
+    {
         return $this->metaDescription;
     }
 
     /**
      * Add item to core navigation (for core modules like page)
+     * 
+     * @deprecated Utiliser NavigationService::register() à la place
+     * Conservé pour compatibilité legacy
+     * 
      * @param string $label
      * @param string $target
      * @param string $targetAttribut
      * @param int $id
      * @param int $parent
      * @param string $cssClass
+     * @param string|null $icon
      */
-    public function addToCoreNavigation(string $label, string $target, string $targetAttribut = '_self', int $id = 0, int $parent = 0, string $cssClass = ''): void {
+    public function addToCoreNavigation(string $label, string $target, string $targetAttribut = '_self', $id = 0, $parent = 0, string $cssClass = '', ?string $icon = null, string $navContext = 'main'): void
+    {
+        // Pour compatibilité, on garde l'ancien tableau
+        // NavigationService::loadFromPage() chargera depuis ce tableau pour éviter les doublons
         $this->coreNavigation[] = [
             'label' => $label,
             'target' => $target,
             'targetAttribut' => $targetAttribut,
             'id' => $id,
             'parent' => $parent,
-            'cssClass' => $cssClass
+            'cssClass' => $cssClass,
+            'icon' => $icon,
+            'navContext' => $navContext
         ];
     }
 
     /**
      * Get core navigation items
+     * 
+     * @deprecated Utiliser NavigationService::getTree() à la place
+     * Conservé pour compatibilité legacy
+     * 
      * @return array
      */
-    public function getCoreNavigation(): array {
+    public function getCoreNavigation(): array
+    {
         return $this->coreNavigation;
     }
 
     ## Détermine si 299ko est installé
 
-    public function isInstalled() {
+    public function isInstalled()
+    {
         if (!file_exists(DATA . 'config.json'))
             return false;
         else
@@ -431,7 +576,8 @@ class Core
 
     ## Génère l'URL du site
 
-    public function makeSiteUrl() {
+    public function makeSiteUrl()
+    {
         $siteUrl = str_replace(array('install.php', '/admin', '/index.php'), array('', '', ''), $_SERVER['SCRIPT_NAME']);
         $isSecure = false;
         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
@@ -448,7 +594,16 @@ class Core
 
     ## Alimente le tableau des hooks
 
-    public function addHook($name, $function) {
+    public function addHook($name, $function)
+    {
+        if (isset($this->hooks[$name])) {
+            foreach ($this->hooks[$name] as $existingFunction) {
+                if ($existingFunction === $function) {
+                    // Hook déjà enregistré, ignorer
+                    return;
+                }
+            }
+        }
         $this->hooks[$name][] = $function;
     }
 
@@ -461,11 +616,116 @@ class Core
      * @param   mixed   Paramètres
      * @return  mixed
      */
-    public function callHook($name, $params = null) {
+    public function callHook($name, $params = null)
+    {
+        // Logger pour before404 et endFrontBody
+        // DEBUG: Force logging for adminAfterHeader
+        if ($name === 'adminAfterHeader') {
+            $this->getLogger()->log(\Core\Logger::LEVEL_INFO, "Core::callHook('{$name}') - Called! Hooks registered: " . (isset($this->hooks[$name]) ? count($this->hooks[$name]) : 0));
+        }
+
+        if ($name === 'before404' || $name === 'endFrontBody') {
+            $logger = $this->getLogger();
+            $hookCount = isset($this->hooks[$name]) ? count($this->hooks[$name]) : 0;
+            // $logger->log(\Core\Logger::LEVEL_DEBUG, "Core::callHook('{$name}') - Hooks enregistrés: {$hookCount}");
+            if ($hookCount > 0 && isset($this->hooks[$name])) {
+                foreach ($this->hooks[$name] as $idx => $function) {
+                    // $logger->log(\Core\Logger::LEVEL_DEBUG, "Core::callHook('{$name}') - Hook #{$idx}: " . (is_string($function) ? $function : gettype($function)));
+                }
+            }
+        }
+
+        if ($name === 'navigation:build') {
+            $logger = $this->getLogger();
+            $hookCount = isset($this->hooks[$name]) ? count($this->hooks[$name]) : 0;
+            // $logger->debug("Core::callHook('{$name}') - Called with {$hookCount} registered hooks");
+        }
+
         if ($params === null) {
             // Action
             $return = '';
             if (isset($this->hooks[$name])) {
+                foreach ($this->hooks[$name] as $idx => $function) {
+                    if ($name === 'navigation:build') {
+                        $logger = $this->getLogger();
+                        // $logger->debug("Core::callHook('{$name}') - Executing hook #{$idx}: " . (is_string($function) ? $function : gettype($function)));
+                    }
+                    // Handle FQCN function names (with namespace)
+                    if (is_string($function) && strpos($function, '\\') !== false && strpos($function, '::') === false) {
+                        // Ensure FQCN starts with backslash for global namespace
+                        $function = '\\' . ltrim($function, '\\');
+                    }
+                    // Vérifier si c'est callable (fonction globale ou méthode de classe)
+                    // Ne pas utiliser function_exists() car ça ne fonctionne pas pour les méthodes de classe statiques
+                    if (!is_callable($function)) {
+                        if ($name === 'before404' || $name === 'endFrontBody' || $name === 'adminHead' || $name === 'endFrontHead') {
+                            $logger = $this->getLogger();
+                            if (is_string($function) && strpos($function, '::') !== false) {
+                                list($className, $methodName) = explode('::', $function, 2);
+                                $logger->log(\Core\Logger::LEVEL_ERROR, "Core::callHook('{$name}') - Hook #{$idx} méthode non callable: {$function} (classe existe: " . (class_exists($className) ? 'OUI' : 'NON') . ", méthode existe: " . (class_exists($className) && method_exists($className, $methodName) ? 'OUI' : 'NON') . ")");
+                            } else {
+                                $logger->log(\Core\Logger::LEVEL_ERROR, "Core::callHook('{$name}') - Hook #{$idx} fonction non callable: " . (is_string($function) ? $function : gettype($function)));
+                            }
+                        }
+                        continue;
+                    }
+
+                    // La fonction/méthode est callable, on peut l'appeler
+                    if (is_callable($function)) {
+                        if ($name === 'before404' || $name === 'endFrontBody') {
+                            $logger = $this->getLogger();
+                            // $logger->log(\Core\Logger::LEVEL_DEBUG, "Core::callHook('{$name}') - Exécution du hook #{$idx}: " . (is_string($function) ? $function : gettype($function)));
+                        }
+                        $return .= call_user_func($function);
+                    } else {
+                        if ($name === 'before404' || $name === 'endFrontBody') {
+                            $logger = $this->getLogger();
+                            $logger->log(\Core\Logger::LEVEL_ERROR, "Core::callHook('{$name}') - Hook #{$idx} non callable: " . (is_string($function) ? $function : gettype($function)) . " - function_exists: " . (is_string($function) && function_exists($function) ? 'OUI' : 'NON'));
+                        }
+                    }
+                }
+            }
+            return $return;
+        }
+        // Filter
+        $isHtmlHook = (
+            str_ends_with($name, ':render') ||
+            str_ends_with($name, ':actions') ||
+            str_ends_with($name, ':settings') ||
+            str_ends_with($name, ':preferences') ||
+            str_ends_with($name, '-actions') ||
+            str_ends_with($name, '-settings') ||
+            str_ends_with($name, '-preferences') ||
+            $name === 'searchEVO:poi-actions' ||
+            $name === 'header-actions' ||
+            $name === 'item-actions' ||
+            str_ends_with($name, ':profile-tabs') ||
+            str_ends_with($name, ':profile-tabs-content') ||
+            $name === 'endMainNavigation' ||
+            $name === 'afterHeader' ||
+            $name === 'footer' ||
+            $name === 'endFrontBody' ||
+            $name === 'endFrontHead' ||
+            $name === 'frontHead'
+        );
+
+        // Exclure spécifiquement les hooks de filtrage de données qui finissent par -settings
+        if ($name === 'user:profile-allowed-settings') {
+            $isHtmlHook = false;
+        }
+
+        if (!isset($this->hooks[$name])) {
+            return $isHtmlHook ? '' : $params;
+        }
+
+        // Si on a des hooks, on les exécute
+        // Pour navigation:build, on veut passer l'arbre à chaque hook sans le modifier
+        // On garde une copie de l'arbre original pour les hooks suivants
+        $originalParams = $params;
+
+        if ($isHtmlHook) {
+                // Concaténer les résultats comme un action hook
+                $return = '';
                 foreach ($this->hooks[$name] as $function) {
                     // Handle FQCN function names (with namespace)
                     if (is_string($function) && strpos($function, '\\') !== false && strpos($function, '::') === false) {
@@ -473,14 +733,20 @@ class Core
                         $function = '\\' . ltrim($function, '\\');
                     }
                     if (is_callable($function)) {
-                        $return .= call_user_func($function);
+                        if (is_array($params) && count($params) === 1 && isset($params[0])) {
+                            $result = call_user_func($function, $params[0]);
+                        } else {
+                            $result = call_user_func($function, $params);
+                        }
+                        if (is_string($result)) {
+                            $return .= $result;
+                        }
                     }
                 }
+                return $return;
             }
-            return $return;
-        }
-        // Filter
-        if (isset($this->hooks[$name])) {
+
+            // Comportement normal pour les autres filter hooks
             foreach ($this->hooks[$name] as $function) {
                 // Handle FQCN function names (with namespace)
                 if (is_string($function) && strpos($function, '\\') !== false && strpos($function, '::') === false) {
@@ -488,16 +754,24 @@ class Core
                     $function = '\\' . ltrim($function, '\\');
                 }
                 if (is_callable($function)) {
-                    $params = call_user_func($function, $params);
+                    // Pour navigation:build, on passe toujours l'arbre original à chaque hook
+                    // Les hooks de navigation ne retournent rien (void), donc on ne modifie pas $params
+                    if ($name === 'navigation:build' && is_array($originalParams) && count($originalParams) === 1) {
+                        call_user_func($function, $originalParams[0]);
+                    } else if (is_array($params) && count($params) === 1 && isset($params[0]) && $name !== 'user:profile-stats') {
+                        $params = call_user_func($function, $params[0]);
+                    } else {
+                        $params = call_user_func($function, $params);
+                    }
                 }
-            }
         }
         return $params;
     }
 
     ## Detecte le mode de l'administration
 
-    public function detectAdminMode() {
+    public function detectAdminMode()
+    {
         $mode = '';
         if (isset($_GET['action']) && $_GET['action'] == 'login')
             return 'login';
@@ -511,7 +785,8 @@ class Core
             return 'plugin';
     }
 
-    public function detectAjaxRequest() {
+    public function detectAjaxRequest()
+    {
         $ajaxGet = $_GET['request'] ?? false;
         $ajaxPost = $_POST['request'] ?? false;
         return ($ajaxGet === 'ajax' || $ajaxPost === 'ajax');
@@ -522,25 +797,122 @@ class Core
      * 
      * @param string $url
      */
-    public function redirect(string $url): void {
-        header_remove();
-        header('location:' . $url);
+    public function redirect(string $url): void
+    {
+        // Ne pas utiliser header_remove() car cela supprime les en-têtes Set-Cookie (session)
+        header('Location: ' . $url, true, 302);
+        die();
+    }
+
+    public function setForcePublicRender(bool $force): void
+    {
+        $this->forcePublicRender = $force;
+    }
+
+    public function isForcePublicRender(): bool
+    {
+        return $this->forcePublicRender;
+    }
+
+    /**
+     * Affiche une page d'erreur HTTP unifiée sans jamais exposer le layout admin aux non-admins.
+     */
+    private function renderErrorPage(
+        string $templateName,
+        string $httpStatus,
+        string $badge,
+        string $title,
+        string $message,
+        string $icon,
+        string $tone = 'danger'
+    ): void {
+        header("HTTP/1.1 {$httpStatus}");
+        header("Status: {$httpStatus}");
+
+        $canUseAdminLayout = false;
+        if (defined('ADMIN_MODE') && ADMIN_MODE) {
+            $currentUser = $this->auth()->getCurrentUser();
+            if ($currentUser !== null) {
+                $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+                $canUseAdminLayout = $evaluator->isAdmin(new \Core\Navigation\ConditionContext($currentUser));
+            }
+        }
+
+        $this->setForcePublicRender(!$canUseAdminLayout);
+
+        $response = $canUseAdminLayout
+            ? new \Core\Responses\AdminResponse()
+            : new \Core\Responses\PublicResponse();
+
+        $tpl = $response->createCoreTemplate($templateName);
+        $tpl->set('errorPartial', COMMON . 'template/error.tpl');
+        $tpl->set('errBadge', $badge);
+        $tpl->set('errTitle', $title);
+        $tpl->set('errMessage', $message);
+        $tpl->set('errIcon', $icon);
+        $tpl->set('errTone', $tone);
+        $tpl->set('homeUrl', rtrim((string)$this->getConfigVal('siteUrl'), '/') . '/');
+        $response->addTemplate($tpl);
+        echo $response->output();
         die();
     }
 
     ## Renvoi une page 404
 
-    public function error404() {
-        if (!defined('ADMIN_MODE')) {
-            define('ADMIN_MODE', false);
+    public function error404()
+    {
+        $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+        $caller = isset($bt[1]) ? " (called from " . ($bt[1]['class'] ?? 'unknown') . "::" . ($bt[1]['function'] ?? 'unknown') . " at " . ($bt[0]['file'] ?? 'unknown') . ":" . ($bt[0]['line'] ?? 'unknown') . ")" : "";
+        $this->getLogger()->log(\Core\Logger::LEVEL_DEBUG, "Core::error404() appelé - REQUEST_URI: '{$_SERVER['REQUEST_URI']}' - Match: " . json_encode(\Core\Router\Router::getInstance()->match()) . $caller);
+        $hookCount = isset($this->hooks['before404']) ? count($this->hooks['before404']) : 0;
+        if ($hookCount > 0) {
+            $this->callHook('before404');
         }
-        header("HTTP/1.1 404 Not Found");
-        header("Status: 404 Not Found");
-        $response = new \Core\Responses\PublicResponse();
-        $tpl = $response->createCoreTemplate('404');
-        $response->addTemplate($tpl);
-        echo $response->output();
-        die();
+
+        if (!defined('ADMIN_MODE')) {
+            $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+            define('ADMIN_MODE', (strpos($requestUri, '/admin/') !== false || $requestUri === '/admin'));
+        }
+
+        $this->renderErrorPage(
+            '404',
+            '404 Not Found',
+            'ERREUR 404 • PAGE INTROUVABLE',
+            'Cette page est introuvable',
+            'Le contenu demandé n\'existe pas ou l\'adresse a été modifiée.',
+            'fa-solid fa-compass',
+            'danger'
+        );
+    }
+
+    ## Renvoi une page 403 Forbidden
+
+    public function error403()
+    {
+        $this->renderErrorPage(
+            '403',
+            '403 Forbidden',
+            'ACCÈS REFUSÉ • ERREUR 403',
+            'Accès non autorisé',
+            'Vous ne disposez pas des droits nécessaires pour consulter cette ressource.',
+            'fa-solid fa-lock',
+            'warning'
+        );
+    }
+
+    ## Renvoi une page 500 Internal Server Error
+
+    public function error500()
+    {
+        $this->renderErrorPage(
+            '500',
+            '500 Internal Server Error',
+            'ERREUR TECHNIQUE • CODE 500',
+            'Une erreur technique est survenue',
+            'Le service rencontre un incident momentané. Vous allez être redirigé vers l\'accueil.',
+            'fa-solid fa-screwdriver-wrench',
+            'danger'
+        );
     }
 
     /**
@@ -550,13 +922,13 @@ class Core
      * @param array $append Additional configuration values to append.
      * @return bool True if the save was successful, false otherwise.
      */
-    public function saveConfig($val, array $append = []): bool {
+    public function saveConfig($val, array $append = []): bool
+    {
         $config = Util::readJsonFile(DATA . 'config.json', true);
         $config = array_merge($config, $append);
-        foreach ($config as $k => $v)
-            if (isset($val[$k])) {
-                $config[$k] = $val[$k];
-            }
+        foreach ($val as $k => $v) {
+            $config[$k] = $v;
+        }
         if (Util::writeJsonFile(DATA . 'config.json', $config)) {
             $this->config = Util::readJsonFile(DATA . 'config.json', true);
             return true;
@@ -567,9 +939,12 @@ class Core
     /**
      * 299ko installation
      */
-    public function install() {
+    public function install()
+    {
         $install = true;
-        @chmod(ROOT . '.htaccess', 0604);
+        if (file_exists(ROOT . '.htaccess')) {
+            @chmod(ROOT . '.htaccess', 0604);
+        }
         if (!is_dir(DATA) && (!@mkdir(DATA) || !@chmod(DATA, 0755)))
             $install = false;
         if ($install) {
@@ -630,23 +1005,35 @@ class Core
     /**
      * Get .htaccess file content
      */
-    public function getHtaccess() {
-        return @file_get_contents(ROOT . '.htaccess');
+    public function getHtaccess()
+    {
+        if (file_exists(ROOT . '.htaccess')) {
+            return @file_get_contents(ROOT . '.htaccess');
+        }
+        return '';
     }
 
     /**
      * Update .htaccess file content
      */
-    public function saveHtaccess($content) {
+    public function saveHtaccess($content)
+    {
         $content = str_replace("&amp;", "&", $content);
         @file_put_contents(ROOT . '.htaccess', $content);
     }
 
-    protected function createLogger() {
+    protected function createLogger()
+    {
         $this->logger = Logger::getInstance($this->config['debug'] ?? false);
+        
+        // Propagate debug_session_id to logger if it exists in session
+        if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['debug_session_id'])) {
+            $this->logger->setDebugSessionId($_SESSION['debug_session_id']);
+        }
     }
 
-    protected function loadEnv() {
+    protected function loadEnv()
+    {
         if ($this->config === false)
             return;
         if ($this->env->get('siteUrl') !== null) {
@@ -657,11 +1044,13 @@ class Core
         }
     }
 
-    public function getEnv($key, $default = null) {
+    public function getEnv($key, $default = null)
+    {
         return $this->env->get($key, $default);
     }
 
-    public function getLogger() {
+    public function getLogger()
+    {
         return $this->logger;
     }
 
@@ -672,12 +1061,49 @@ class Core
      * @param string Severity
      * Can be 'INFO', 'DEBUG', 'WARNING', 'ERROR'
      */
-    public function log($message, $severity = 'INFO') {
+    public function log($message, $severity = 'INFO')
+    {
         $this->logger->log($severity, $message);
     }
 
-    public function executeCallback(Router $router, ?Plugin $runPlugin) {
+    public function executeCallback(Router $router, ?Plugin $runPlugin)
+    {
+        // $this->logger->log(Logger::LEVEL_DEBUG, "Core::executeCallback - Start. Request URI: " . $_SERVER['REQUEST_URI']);
         $match = $router->match();
+        
+        // Centralized ADMIN_MODE detection
+        if (!defined('ADMIN_MODE')) {
+            $isAdmin = false;
+            $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+            $basePath = Router::getInstance()->getBasePath();
+            $cleanUri = $requestUri;
+            if ($basePath && $basePath !== '/' && str_starts_with($requestUri, $basePath)) {
+                $cleanUri = substr($requestUri, strlen($basePath));
+            }
+            $cleanUri = '/' . ltrim($cleanUri, '/');
+
+            if (is_array($match)) {
+                $routeName = $match['name'] ?? '';
+                $target = $match['target'] ?? '';
+                // Check by route name OR target controller namespace/name OR URL prefix
+                if (str_starts_with($routeName, 'admin') || 
+                    str_contains($target, 'AdminController') || 
+                    str_starts_with($cleanUri, '/admin/') || 
+                    $cleanUri === '/admin'
+                ) {
+                    $isAdmin = true;
+                }
+            } else {
+                // For 404s, still detect if we are in admin context via URL
+                if (str_starts_with($cleanUri, '/admin/') || $cleanUri === '/admin') {
+                    $isAdmin = true;
+                }
+            }
+            define('ADMIN_MODE', $isAdmin);
+        }
+
+        $this->logger->log(\Core\Logger::LEVEL_INFO, "Core::executeCallback - URI: " . $_SERVER['REQUEST_URI'] . " - Match: " . ($match ? "{$match['name']} ({$match['target']})" : "No Match") . " - ADMIN_MODE: " . (ADMIN_MODE ? 'YES' : 'NO'));
+
         if (is_array($match)) {
             // Charger les contrôleurs du plugin si nécessaire
             if ($runPlugin) {
@@ -686,8 +1112,15 @@ class Core
                 // Si pas de runPlugin mais qu'on appelle un contrôleur de plugin, le charger
                 list($controller, $action) = explode('#', $match['target']);
                 if (strpos($controller, 'Controller') !== false && !class_exists($controller)) {
-                    // Si c'est un contrôleur core Auth, charger le fichier directement
-                    if (strpos($controller, 'Core\\Auth\\Controllers\\') === 0 || strpos($controller, 'Core\\Page\\Controllers\\') === 0 || strpos($controller, 'Core\\Settings\\Controllers\\') === 0 || strpos($controller, 'Core\\Media\\Controllers\\') === 0) {
+                    // Si c'est un contrôleur core, charger le fichier directement
+                    // Ajout de Core\Storage\Controllers\ et Core\Controllers\ qui manquaient
+                    if (strpos($controller, 'Core\\Auth\\Controllers\\') === 0 || 
+                        strpos($controller, 'Core\\Page\\Controllers\\') === 0 || 
+                        strpos($controller, 'Core\\Settings\\Controllers\\') === 0 || 
+                        strpos($controller, 'Core\\Media\\Controllers\\') === 0 ||
+                        strpos($controller, 'Core\\Storage\\Controllers\\') === 0 ||
+                        strpos($controller, 'Core\\Extensions\\Controllers\\') === 0 ||
+                        strpos($controller, 'Core\\Controllers\\') === 0) {
                         $controllerFile = str_replace('\\', DIRECTORY_SEPARATOR, $controller);
                         $controllerFile = COMMON . $controllerFile . '.php';
                         if (file_exists($controllerFile)) {
@@ -712,12 +1145,20 @@ class Core
             if (strpos($controller, '\\') === false) {
                 $controller = '\\' . $controller;
             }
+
+            if (!class_exists($controller)) {
+                $this->logger->log(Logger::LEVEL_ERROR, "Core::executeCallback - Classe contrôleur non trouvée: {$controller}");
+            }
+
             if (method_exists($controller, $action)) {
-                $cacheKey = $this->getCacheKey($match);
+                // allow plugins to disable core cache for specific routes
+                $shouldCache = $this->callHook('core:should-cache-route', ['shouldCache' => true, 'match' => $match]);
+                $cacheKey = (isset($shouldCache['shouldCache']) && $shouldCache['shouldCache']) ? $this->getCacheKey($match) : false;
                 if ($this->getConfigVal('cache_enabled') && $cacheKey) {
                     $cache = new \Core\Storage\Cache();
                     $content = $cache->get($cacheKey);
                     if ($content !== false) {
+                        $this->callHook('core:page-hit', ['cached' => true, 'match' => $match]);
                         echo $content;
                         ob_end_flush();
                         $this->logGenerationTime();
@@ -731,12 +1172,15 @@ class Core
                 }
                 $obj = new $controller();
                 $this->callHook('beforeRunPlugin');
-                
+
                 // Capturer la sortie pour détecter si die() a été appelé
                 ob_start();
-                $response = call_user_func_array([$obj, $action], $match['params']);
+                // Convertir les paramètres associatifs en paramètres indexés pour call_user_func_array
+                // PHP 8.0+ ne supporte pas les paramètres nommés avec call_user_func_array
+                $params = is_array($match['params']) ? array_values($match['params']) : [];
+                $response = call_user_func_array([$obj, $action], $params);
                 $output = ob_get_clean();
-                
+
                 // Si die() a été appelé, la sortie a déjà été envoyée
                 if (!empty($output)) {
                     echo $output;
@@ -744,24 +1188,29 @@ class Core
                     $this->logGenerationTime();
                     die();
                 }
-                
+
                 // Sinon, traiter la réponse normalement
+                // DEBUG: Log type of response to debug HTMX 404
+                // $this->logger->log(Logger::LEVEL_DEBUG, "Core::executeCallback - Action: {$action}, Response type: " . (is_object($response) ? get_class($response) : gettype($response)));
+
                 if ($response instanceof \Core\Responses\Response) {
-                    $content = $response->output();
+                    // Ne pas appeler output() ici car processResponseContent() l'appelle déjà
                     $optimizedContent = $this->processResponseContent($response);
-                    if ($this->getConfigVal('cache_enabled') && $cacheKey) {
-                        
-                        $this->setResponseCache($optimizedContent, $cacheKey);
+
+                    // Pour les ApiResponse, ne pas ajouter de logs après le JSON
+                    if ($response instanceof \Core\Responses\ApiResponse) {
                         echo $optimizedContent;
-                        ob_end_flush();
-                        $this->logGenerationTime();
-                        die();
-                    } else {
-                        echo $optimizedContent;
-                        ob_end_flush();
-                        $this->logGenerationTime();
                         die();
                     }
+
+                    $this->callHook('core:page-hit', ['cached' => false, 'match' => $match]);
+                    if ($this->getConfigVal('cache_enabled') && $cacheKey) {
+                        $this->setResponseCache($optimizedContent, $cacheKey);
+                    }
+                    echo $optimizedContent;
+                    ob_end_flush();
+                    $this->logGenerationTime();
+                    die();
                 } else {
                     // Si la méthode ne retourne pas une Response, c'est une erreur
                     $this->error404();
@@ -776,14 +1225,20 @@ class Core
     }
 
 
-    protected function processResponseContent(Response $response): string {
+    protected function processResponseContent(Response $response): string
+    {
         $content = $response->output();
+        // Ne pas minifier les réponses API (JSON)
+        if ($response instanceof \Core\Responses\ApiResponse) {
+            return $content;
+        }
         $minifyer = new \Content\Minifyer();
         $content = $minifyer->minify($content);
         return $content;
     }
 
-    protected function setResponseCache(string $content, string $cacheKey = ''): void {
+    protected function setResponseCache(string $content, string $cacheKey = ''): void
+    {
         if (defined('ADMIN_MODE') && ADMIN_MODE) {
             return;
         }
@@ -796,7 +1251,8 @@ class Core
         $cache->set($cacheKey, $content, $this->getConfigVal('cache_duration') ?: 3600, $this->generateCacheTags());
     }
 
-    protected function getCacheKey(array $match) {
+    protected function getCacheKey(array $match)
+    {
         // Only process in public mode
         if (defined('ADMIN_MODE') && ADMIN_MODE) {
             return false;
@@ -807,7 +1263,94 @@ class Core
             return false;
         }
 
+        // Ne JAMAIS cacher ni servir de cache si l'utilisateur est connecté !
+        // Les utilisateurs connectés ont des éléments personnalisés (avatar, notifications, mur social, etc.)
+        if (defined('IS_LOGGED') && IS_LOGGED) {
+            return false;
+        }
+
+        // Ne JAMAIS cacher les pages d'authentification, de profils ou de formulaires avec CSRF (login, register, contact...)
+        $reqUri = $_SERVER['REQUEST_URI'] ?? '';
+        if (preg_match('#^/(users/|admin|contact|claim|auth/|search/suggest|api/)#i', $reqUri)) {
+            return false;
+        }
+        $routeName = $match['name'] ?? '';
+        if (in_array($routeName, ['login', 'login-send', 'register', 'register-send', 'lost-password', 'lost-password-send', 'reset-password', 'contact', 'claim'])) {
+            return false;
+        }
+
+        // Ne JAMAIS cacher ni servir de cache si un message flash (erreur, succès, etc.) est en attente
+        if (\Utils\Show::hasMsg()) {
+            return false;
+        }
+
         $cacheKey = $match['target'] . serialize($match['params']);
+
+        // CRITIQUE : Inclure tous les paramètres de requête GET (recherche, filtres, catégories, pagination...)
+        // Sans cela, toutes les recherches et filtres partagent la même clé de cache !
+        if (!empty($_GET)) {
+            $queryParams = $_GET;
+            ksort($queryParams);
+            $cacheKey .= '_get_' . http_build_query($queryParams);
+        }
+
+        // Inclure la géolocalisation cookie UNIQUEMENT si la route active dépend du tri / filtrage par distance
+        // (ex: Recherche, Cartographie, POI à proximité). Pour les pages statiques (home, contact, blog, mentions...),
+        // cela évite de fragmenter inutilement le cache en variantes étanches.
+        if (!empty($_COOKIE['user_geoloc'])) {
+            $target = $match['target'] ?? '';
+            $routeName = $match['name'] ?? '';
+            $reqUri = $_SERVER['REQUEST_URI'] ?? '';
+            $isGeolocRoute = (
+                stripos($target, 'Search') !== false ||
+                stripos($routeName, 'search') !== false ||
+                stripos($reqUri, '/recherche') !== false ||
+                stripos($reqUri, '/carte') !== false ||
+                !empty($_GET['around_me']) ||
+                !empty($_GET['user_lat'])
+            );
+            if ($isGeolocRoute) {
+                $cacheKey .= '_geoloc_' . $_COOKIE['user_geoloc'];
+            }
+        }
+
+        // Jeton d'invalidation globale de contenu (MAJ BDD, crawler, imports, etc.)
+        $contentVersionFile = (defined('CACHE') ? CACHE : (DATA . 'cache' . DIRECTORY_SEPARATOR)) . 'content_version.txt';
+        $contentVersion = file_exists($contentVersionFile) ? filemtime($contentVersionFile) : 0;
+        $cacheKey .= '_cv_' . $contentVersion;
+
+        // Invalidation automatique si le design ou les templates ont été modifiés
+        $theme = $this->getConfigVal('theme');
+        if ($theme && defined('THEMES')) {
+            $themeDir = THEMES . $theme . DIRECTORY_SEPARATOR;
+            $themeVersion = 0;
+            $watchFiles = [
+                'styles.css', 'styles.min.css', 'layout.tpl', 'landing.tpl', 'landing.php',
+                'header.php', 'functions.php', 'header.webp', 'logo.webp', 'logo.png'
+            ];
+            foreach ($watchFiles as $wf) {
+                if (file_exists($themeDir . $wf)) {
+                    $themeVersion = max($themeVersion, filemtime($themeDir . $wf));
+                }
+            }
+            // Surveiller récursivement le sous-dossier template/ du thème si présent
+            $tplSubDir = $themeDir . 'template' . DIRECTORY_SEPARATOR;
+            if (is_dir($tplSubDir)) {
+                $subFiles = glob($tplSubDir . '*.tpl');
+                if (is_array($subFiles)) {
+                    foreach ($subFiles as $sf) {
+                        $themeVersion = max($themeVersion, filemtime($sf));
+                    }
+                }
+            }
+            $cacheKey .= '_thm_' . $theme . '_v' . $themeVersion;
+        }
+
+        // Surveiller les fichiers de données dynamiques (agenda events.json)
+        $agendaEventsFile = DATA . 'plugin' . DIRECTORY_SEPARATOR . 'agenda' . DIRECTORY_SEPARATOR . 'events.json';
+        if (file_exists($agendaEventsFile)) {
+            $cacheKey .= '_evts_' . filemtime($agendaEventsFile);
+        }
 
         // Ajout sécurité : inclure l'état de protection dans la clé
         // 1. Protection par mot de passe de page
@@ -830,7 +1373,8 @@ class Core
      * 
      * @return array
      */
-    protected function generateCacheTags(): array {
+    protected function generateCacheTags(): array
+    {
         $tags = ['page'];
 
         // Tag pour le thème actuel
@@ -868,9 +1412,22 @@ class Core
      * @param string $tag
      * @return void
      */
-    public function invalidateCacheByTag(string $tag): void {
+    public function invalidateCacheByTag(string $tag): void
+    {
         $cache = new \Core\Storage\Cache();
         $cache->deleteByTag($tag);
+    }
+
+    /**
+     * Actualise le jeton de version de contenu pour invalider instantanément le cache HTML
+     */
+    public static function bumpContentVersion(): void
+    {
+        $cacheDir = defined('CACHE') ? CACHE : (DATA . 'cache' . DIRECTORY_SEPARATOR);
+        if (!is_dir($cacheDir)) {
+            @mkdir($cacheDir, 0775, true);
+        }
+        @touch($cacheDir . 'content_version.txt');
     }
 
     /**
@@ -878,16 +1435,20 @@ class Core
      * 
      * @return void
      */
-    public function invalidateAllCache(): void {
+    public function invalidateAllCache(): void
+    {
+        self::bumpContentVersion();
         $cacheManager = new \Core\Storage\CacheManager();
         $cacheManager->clearCache();
     }
 
-    public function addQueryCounter() {
+    public function addQueryCounter()
+    {
         $this->queryCount++;
     }
 
-    public function logGenerationTime() {
+    public function logGenerationTime()
+    {
         if ($this->config && !$this->config['debug']) {
             return;
         }
@@ -905,7 +1466,8 @@ class Core
  * @param string Severity
  * Can be 'INFO', 'DEBUG', 'WARNING', 'ERROR'
  */
-function logg($message, $severity = 'INFO') {
+function logg($message, $severity = 'INFO')
+{
     \Core\Core::getInstance()->log($message, $severity);
 }
 
@@ -914,7 +1476,8 @@ function logg($message, $severity = 'INFO') {
  * @param mixed $message Message or var to display
  * @return void
  */
-function debug($message): void {
+function debug($message): void
+{
     echo '<pre>';
     var_dump($message);
     echo '</pre>';

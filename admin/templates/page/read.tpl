@@ -1,11 +1,7 @@
 <section>
 	{% if page.isUnlocked(pageItem) %}
-		{% if pluginsManager.isActivePlugin("galerie") && galerie.searchByFileName(pageItem.getImg) %}
-			<header>
-				<img class="featured" src="{{ pageItem.getImgUrl }}" alt="{{ pageItem.getName }}"/>
-			</header>
-		{% endif %}
-		{{ htmlspecialchars_decode(pageItem.getContent) }}
+		{% HOOK.page:content-header(pageItem) %}
+		{{pageItem.getParsedContent}}
 	{% else %}
 		<header>
 			<div class="item-head">
@@ -13,7 +9,7 @@
 			</div>
 		</header>
 		<form method="post" action="">
-			<input type="hidden" name="unlock" value="{{ sendUrl }}"/>
+			<input type="hidden" name="unlock" value="{{sendUrl}}"/>
 			<p>
 				<label>Mot de passe</label><br>
 				<input style="display:none;" type="text" name="_password" value=""/>

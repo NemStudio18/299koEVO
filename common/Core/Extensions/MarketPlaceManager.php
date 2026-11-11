@@ -115,22 +115,95 @@ class MarketPlaceManager
             $this->logger->info('installing ressource ' . $ressource->slug);
         }
 
+        // Vérifier que l'extension ZipArchive est disponible
+        if (!class_exists('ZipArchive') || !extension_loaded('zip')) {
+            $this->logger->error('ZipArchive extension is not available. Please install php-zip extension.');
+            return false;
+        }
+
+        // Vérifier que le dossier CACHE est accessible en écriture
+        if (!is_writable(CACHE)) {
+            $this->logger->error('Cache directory is not writable: ' . CACHE);
+            return false;
+        }
+
         $curl = $this->makeCurl('repository/api/install-' . $ressource->type);
         $curl->post();
         $curl->sendAsJson = true;
+        // Ajouter un timeout plus long pour les téléchargements de ZIP
+        $curl->addOption(CURLOPT_TIMEOUT, 300); // 5 minutes
+        $curl->addOption(CURLOPT_CONNECTTIMEOUT, 30); // 30 secondes pour la connexion
         $curl->setDatas([
             'type' => $ressource->type,
             'slug' => $ressource->slug,
             'version' => $ressource->getNextVersion()
         ]);
-        $resp = $curl->execute()->getResponse();
-        if ($resp['code'] !== 200 || empty($resp['body'])) {
-            $this->logger->error('Unable to install ressource ' . $ressource->slug . PHP_EOL . ($resp['body'] ?? ''));
+        
+        $this->logger->info('Downloading ZIP from API for ' . $ressource->slug . ' (version: ' . $ressource->getNextVersion() . ')');
+        $curl->execute();
+        
+        // Vérifier les erreurs cURL avant de récupérer la réponse
+        $curlError = $curl->getError();
+        if ($curlError) {
+            $this->logger->error('cURL error during download: ' . $curlError);
             return false;
         }
-        file_put_contents(CACHE . 'tmp.zip', $resp['body']);
-        if (filesize(CACHE . 'tmp.zip') === 0) {
+        
+        $resp = $curl->getResponse();
+        
+        $this->logger->info('API response code: ' . ($resp['code'] ?? 'unknown'));
+        $this->logger->info('API response body size: ' . (isset($resp['body']) ? strlen($resp['body']) : 0) . ' bytes');
+        
+        if ($resp['code'] !== 200) {
+            $errorMsg = 'Unable to install ressource ' . $ressource->slug . ' - HTTP code: ' . ($resp['code'] ?? 'unknown');
+            if (!empty($resp['body'])) {
+                // Si la réponse est du JSON (erreur), essayer de le parser
+                $errorBody = $resp['body'];
+                if (substr($errorBody, 0, 1) === '{') {
+                    $errorJson = json_decode($errorBody, true);
+                    if (isset($errorJson['error'])) {
+                        $errorMsg .= ' - Error: ' . $errorJson['error'];
+                    } else {
+                        $errorMsg .= PHP_EOL . $errorBody;
+                    }
+                } else {
+                    $errorMsg .= PHP_EOL . substr($errorBody, 0, 500);
+                }
+            }
+            $this->logger->error($errorMsg);
+            return false;
+        }
+        
+        if (empty($resp['body'])) {
+            $this->logger->error('Unable to install ressource ' . $ressource->slug . ' - Empty response body');
+            return false;
+        }
+        
+        // Vérifier que la réponse est bien un ZIP (commence par PK)
+        if (substr($resp['body'], 0, 2) !== 'PK') {
+            $this->logger->error('Unable to install ressource ' . $ressource->slug . ' - Response is not a ZIP file. First bytes: ' . bin2hex(substr($resp['body'], 0, 10)));
+            // Si c'est du JSON, essayer de le parser pour voir l'erreur
+            if (substr($resp['body'], 0, 1) === '{') {
+                $errorJson = json_decode($resp['body'], true);
+                if (isset($errorJson['error'])) {
+                    $this->logger->error('API error: ' . $errorJson['error']);
+                }
+            }
+            return false;
+        }
+        
+        $zipPath = CACHE . 'tmp.zip';
+        $written = file_put_contents($zipPath, $resp['body']);
+        if ($written === false) {
+            $this->logger->error('Unable to write ZIP file to: ' . $zipPath);
+            return false;
+        }
+        
+        $this->logger->info('ZIP file written: ' . $zipPath . ' (' . $written . ' bytes)');
+        
+        if (filesize($zipPath) === 0) {
             $this->logger->error('Unable to install ressource ' . $ressource->slug . ' (empty zip file)');
+            @unlink($zipPath);
             return false;
         }
 

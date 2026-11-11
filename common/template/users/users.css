@@ -1,0 +1,311 @@
+/* Styles pour les formulaires d'authentification (login, register, profile) */
+
+/* Champ honeypot - doit être invisible */
+.hp-field,
+input[name="_hp_website"].hp-field,
+input.hp-field[name="_hp_website"],
+input[type="text"][name="_hp_website"],
+input[name="_hp_website"][class*="hp"] {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    display: none !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Conteneur principal des formulaires */
+.user-auth-form {
+    max-width: 100%;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
+    border-radius: var(--evo-radius-sm);
+    box-shadow: var(--evo-shadow-sm);
+}
+
+.auth-desc {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+    padding: 10px 25px;
+}
+
+.auth-card {
+    border: 1px solid var(--evo-border);
+}
+
+/* Champs du formulaire */
+.user-auth-form .field {
+    margin-bottom: 1.5rem;
+}
+
+.user-auth-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--evo-text);
+    font-size: 14px;
+}
+
+.user-auth-form input[type="text"],
+.user-auth-form input[type="email"],
+.user-auth-form input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--evo-input-border);
+    border-radius: 6px;
+    background: var(--evo-input-bg);
+    color: var(--evo-text);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.user-auth-form input[type="text"]:focus,
+.user-auth-form input[type="email"]:focus,
+.user-auth-form input[type="password"]:focus {
+    outline: none;
+    border-color: var(--evo-accent);
+    box-shadow: 0 0 0 3px var(--evo-accent-soft);
+}
+
+.user-auth-form input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+.user-auth-form .field.checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.user-auth-form .field.checkbox label {
+    margin-bottom: 0;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+/* Boutons */
+.user-auth-form .actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.user-auth-form .button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.user-auth-form .button:hover {
+    transform: translateY(-1px);
+}
+
+.user-auth-form .button.success {
+    background-color: var(--evo-success);
+    color: var(--evo-accent-text);
+}
+
+.user-auth-form .button.success:hover {
+    filter: brightness(0.92);
+}
+
+.user-auth-form .button.alert {
+    background-color: var(--evo-danger);
+    color: var(--evo-accent-text);
+}
+
+.user-auth-form .button.alert:hover {
+    filter: brightness(0.92);
+}
+
+/* Liens */
+.user-auth-form .links {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.user-auth-form .links a {
+    color: var(--evo-accent);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.user-auth-form .links a:hover {
+    text-decoration: underline;
+}
+
+/* Messages d'erreur/succès */
+.user-auth-form .msg {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.user-auth-form .msg.error {
+    background-color: var(--evo-danger-bg);
+    color: var(--evo-danger);
+    border: 1px solid var(--evo-danger-border);
+}
+
+.user-auth-form .msg.success {
+    background-color: var(--evo-success-bg);
+    color: var(--evo-success);
+    border: 1px solid var(--evo-success-border);
+}
+
+/* Page lost password */
+body.login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: var(--evo-bg);
+    color: var(--evo-text);
+    margin: 0;
+    padding: 1rem;
+}
+
+body.login #login.card {
+    max-width: 500px;
+    width: 100%;
+    background: var(--evo-card-bg);
+    color: var(--evo-text);
+    border-radius: var(--evo-radius-sm);
+    box-shadow: var(--evo-shadow-sm);
+    padding: 2rem;
+    border: 1px solid var(--evo-border);
+}
+
+body.login #login header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+body.login #login header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--evo-text);
+}
+
+body.login #login form p {
+    margin-bottom: 1.5rem;
+}
+
+body.login #login form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--evo-text);
+    font-size: 14px;
+}
+
+body.login #login form input[type="email"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--evo-input-border);
+    border-radius: 6px;
+    background: var(--evo-input-bg);
+    color: var(--evo-text);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+body.login #login form input[type="email"]:focus {
+    outline: none;
+    border-color: var(--evo-accent);
+    box-shadow: 0 0 0 3px var(--evo-accent-soft);
+}
+
+body.login #login form .button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    margin-right: 0.5rem;
+}
+
+body.login #login form .button:hover {
+    transform: translateY(-1px);
+}
+
+body.login #login form .button.alert {
+    background-color: var(--evo-danger);
+    color: var(--evo-accent-text);
+}
+
+body.login #login form .button.alert:hover {
+    filter: brightness(0.92);
+}
+
+body.login #login form .button:not(.alert) {
+    background-color: var(--evo-accent);
+    color: var(--evo-accent-text);
+}
+
+body.login #login form .button:not(.alert):hover {
+    background-color: var(--evo-accent-hover);
+}
+
+body.login #login .just_using {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 12px;
+    color: var(--evo-text-muted);
+}
+
+body.login #login .just_using a {
+    color: var(--evo-text-muted);
+    text-decoration: none;
+}
+
+body.login #login .just_using a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .user-auth-form {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .user-auth-form .actions {
+        flex-direction: column;
+    }
+    
+    .user-auth-form .button {
+        width: 100%;
+    }
+    
+    body.login #login.card {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+}
+

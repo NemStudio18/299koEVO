@@ -1,22 +1,22 @@
-<section class="overflow-auto">
-	<header>{{ Lang.configmanager-backup-list }}</header>
-    <a class="button" href="{{ ROUTER.generate("configmanager-create-backup", ["token" => token]) }}">{{ Lang.configmanager-backup-create }}</a>
+﻿<section class="overflow-auto">
+	<header>{{Lang.configmanager-backup-list}}</header>
+    <a class="button" href="{ ROUTER.generate("configmanager-create-backup", ["token" => token]) }">{{Lang.configmanager-backup-create}}</a>
     <table>
         <tr>
-            <th>{{ Lang.configmanager-backup-date }}</th>
-            <th>{{ Lang.configmanager-backup-size }}</th>
-            <th>{{ Lang.configmanager-backup-download }}</th>
-            <th>{{ Lang.configmanager-backup-delete }}</th>
+            <th>{{Lang.configmanager-backup-date}}</th>
+            <th>{{Lang.configmanager-backup-size}}</th>
+            <th>{{Lang.configmanager-backup-download}}</th>
+            <th>{{Lang.configmanager-backup-delete}}</th>
         </tr>
         {% FOR backup IN backups %}
-        <tr id="post{{ backup.timestamp }}">
-            <td>{{ Util.getDateHour(backup.date) }}</td>
-            <td>{{ backup.filesize }}</td>
+        <tr id="post{{backup.timestamp}}">
+            <td>{{Util.getDateHour(backup.date)}}</td>
+            <td>{{backup.filesize}}</td>
             <td>
-                <a title="{{ Lang.configmanager-backup-download }}" class="button" href="{{ backup.url }}"><i class="fa-solid fa-download"></i></a>
+                <a title="{{Lang.configmanager-backup-download}}" class="button" href="{{backup.url}}"><i class="fa-solid fa-download"></i></a>
             </td>
             <td style="text-align: center">
-                <a title="{{ Lang.configmanager-backup-delete }}" onclick="ConfigManagerDeleteBackup('{{ backup.timestamp }}')" class="button alert">
+                <a title="{{Lang.configmanager-backup-delete}}" onclick="ConfigManagerDeleteBackup('{{backup.timestamp}}')" class="button alert">
                     <i class="fa-regular fa-trash-can"></i>
                 </a>
             </td>
@@ -24,7 +24,7 @@
         {% ENDFOR %}
 		{% IF emptyBackups %}
 		<tr>
-			<td colspan="4">{{ Lang.configmanager-backup-no-backup }}</td>
+			<td colspan="4">{{Lang.configmanager-backup-no-backup}}</td>
 		</tr>
 		{% ENDIF %}
     </table>
@@ -32,11 +32,11 @@
 
 <script>
 async function ConfigManagerDeleteBackup(timestamp) {
-	if (confirm('{{ Lang.confirm.deleteItem }}') === true) {
-		let url = '{{ ROUTER.generate("configmanager-delete-backup") }}';
+	if (confirm('{{Lang.confirm.deleteItem}}') === true) {
+		let url = '{ ROUTER.generate("configmanager-delete-backup") }';
 		let data = {
 			timestamp: timestamp,
-			token: '{{ token }}'
+			token: '{{token}}'
 		};
 		let response = await fetch(url, {
 			method: 'POST',
@@ -50,12 +50,12 @@ async function ConfigManagerDeleteBackup(timestamp) {
 		if (result.status === 204) {
 			fadeOut(document.querySelector('#post' + timestamp));
 			Toastify({
-				text: "{{ Lang.core-item-deleted}}",
+				text: "{{Lang.core-item-deleted}}",
 				className: "success"		
 			}).showToast();
 		} else {
 			Toastify({
-				text: "{{ Lang.core-item-not-deleted}}",
+				text: "{{Lang.core-item-not-deleted}}",
 				className: "error"		
 			}).showToast();
 		}				

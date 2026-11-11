@@ -3,9 +3,9 @@
 namespace Core\Auth;
 
 use Core\Auth\AuthService;
-use Core\Core;
 use Core\Auth\User;
 use Core\Auth\PasswordRecovery;
+use Core\Core;
 
 /**
  * Façade statique conservée pour compatibilité.
@@ -25,6 +25,9 @@ class UsersManager
         return self::service()->login($mail, $password, $useCookies);
     }
 
+    /**
+     * @deprecated Use UsersManager::getCurrentUser() !== null instead.
+     */
     public static function isLogged(): bool
     {
         return self::service()->isLogged();
@@ -40,6 +43,11 @@ class UsersManager
         return self::service()->encrypt($data);
     }
 
+    public static function verify(string $password, string $hash, ?User $user = null): bool
+    {
+        return self::service()->verifyPassword($password, $hash, $user);
+    }
+
     public static function generateToken(): string
     {
         return self::service()->generateToken();
@@ -48,6 +56,10 @@ class UsersManager
     public static function passwordRecovery(): PasswordRecovery
     {
         return self::service()->getPasswordRecovery();
+    }
+    public static function logout(): bool
+    {
+        return self::service()->logout();
     }
 }
 

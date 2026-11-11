@@ -71,12 +71,24 @@ class Plugin {
         $this->isDefaultPlugin = ($name == $core->getConfigVal('defaultPlugin')) ? true : false;
         // On détermine si il s'agit du plugin par défaut en mode admin
         $this->isDefaultAdminPlugin = ($name == $core->getConfigVal('defaultAdminPlugin')) ? true : false;
-        // Meta title
-        $this->setTitleTag($infos['name']);
+        // Meta title - Vérifier que infos est un tableau et contient 'name'
+        $pluginName = (is_array($infos) && isset($infos['name'])) ? $infos['name'] : $name;
+        $this->setTitleTag($pluginName);
         // Titre de page
-        $this->setMainTitle($infos['name']);
+        $this->setMainTitle($pluginName);
+        
+        // Logger les plugins avec des fichiers invalides
+        if (!is_array($infos) || empty($infos)) {
+            $logger = $core->getLogger();
+            $logger->warning("Plugin '{$name}': infos.json est invalide ou manquant");
+        }
         // Fichier php principal
-        $this->libFile = (file_exists(PLUGINS . $this->name . '/' . $this->name . '.php')) ? PLUGINS . $this->name . '/' . $this->name . '.php' : false;
+        // Pour searchEVO, le fichier s'appelle search.php et non searchEVO.php
+        if ($this->name === 'searchEVO') {
+            $this->libFile = (file_exists(PLUGINS . $this->name . '/search.php')) ? PLUGINS . $this->name . '/search.php' : false;
+        } else {
+            $this->libFile = (file_exists(PLUGINS . $this->name . '/' . $this->name . '.php')) ? PLUGINS . $this->name . '/' . $this->name . '.php' : false;
+        }
 
         $this->setCallables();
         
@@ -121,14 +133,14 @@ class Plugin {
        
 
         // Template parametres
-        if (file_exists(PLUGINS . $this->name . '/template/param.tpl'))
-            $this->paramTemplate = PLUGINS . $this->name . '/template/param.tpl';
+        if (file_exists(PLUGINS . $this->name . DS . 'template' . DS . 'param.tpl'))
+            $this->paramTemplate = PLUGINS . $this->name . DS . 'template' . DS . 'param.tpl';
         else
             $this->paramTemplate = false;
 
         // Template d'aide
-        if (file_exists(PLUGINS . $this->name . '/template/help.tpl'))
-            $this->helpTemplate = PLUGINS . $this->name . '/template/help.tpl';
+        if (file_exists(PLUGINS . $this->name . DS . 'template' . DS . 'help.tpl'))
+            $this->helpTemplate = PLUGINS . $this->name . DS . 'template' . DS . 'help.tpl';
         else
             $this->helpTemplate = false;
     }
@@ -252,19 +264,19 @@ class Plugin {
     ## Permet de forcer la meta title
 
     public function setTitleTag($val) {
-        $this->titleTag = trim($val);
+        $this->titleTag = trim($val ?? '');
     }
 
     ## Permet de forcer la meta description
 
     public function setMetaDescriptionTag($val) {
-        $this->metaDescriptionTag = trim($val);
+        $this->metaDescriptionTag = trim($val ?? '');
     }
 
     ## Permet de forcer le titre de page
 
     public function setMainTitle($val) {
-        $this->mainTitle = trim($val);
+        $this->mainTitle = trim($val ?? '');
     }
 
     ## Ajoute un item dans la navigation
@@ -288,12 +300,19 @@ class Plugin {
     ## Détermine si le plugin est installé
 
     public function isInstalled() {
-        $temp = $this->config;
-        unset($temp['activate']);
-        $currentConfig = implode(',', array_keys($temp));
-        $initConfig = @implode(',', array_keys($this->initConfig));
-        if (count($this->config) < 1 || $currentConfig != $initConfig)
+        if (!file_exists(DATA_PLUGIN . $this->name . '/config.json')) {
             return false;
+        }
+        if (count($this->config) < 1) {
+            return false;
+        }
+        if (is_array($this->initConfig)) {
+            foreach (array_keys($this->initConfig) as $key) {
+                if (!array_key_exists($key, $this->config)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
@@ -319,6 +338,9 @@ class Plugin {
     
     public function loadControllers() {
         foreach (glob(PLUGINS . $this->name . '/controllers/' . "*.php") as $file) {
+            include_once $file;
+        }
+        foreach (glob(PLUGINS . $this->name . '/src/Controllers/' . "*.php") as $file) {
             include_once $file;
         }
     }

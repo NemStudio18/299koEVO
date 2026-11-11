@@ -45,7 +45,36 @@ class ConfigManagerAdminController extends AdminController {
             ];
         }, $this->core->auth()->getGroups());
         $tpl->set('registrationGroups', $registrationGroups);
+        // Configuration Database
+        $db = \Core\Database::getInstance();
+        $fullConfig = $db->getFullConfig();
+        $tpl->set('dbConfig', $fullConfig['database'] ?? []);
+        
+        $dbError = null;
+        try {
+            $db->getPdo();
+        } catch (\Exception $e) {
+            $dbError = $e->getMessage();
+        }
+        $tpl->set('dbError', $dbError);
+
         $tpl->set('registrationDefaultGroup', $this->core->getConfigVal('registrationDefaultGroup') ?? 'member');
+        $tpl->set('antispamPluginActive', PluginsManager::isActivePlugin('antispam'));
+
+        $themesList = [];
+        foreach ((array) $this->core->getThemes() as $slug => $info) {
+            if (!is_file(THEMES . $slug . DS . 'layout.tpl')) {
+                continue;
+            }
+            $themesList[] = [
+                'slug'    => $slug,
+                'name'    => (is_array($info) && !empty($info['name'])) ? (string) $info['name'] : $slug,
+                'version' => (is_array($info) && !empty($info['version'])) ? (string) $info['version'] : '',
+                'author'  => (is_array($info) && !empty($info['authorEmail'])) ? (string) $info['authorEmail'] : '',
+            ];
+        }
+        $tpl->set('themesList', $themesList);
+        $tpl->set('themesMetaJson', json_encode($themesList, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT));
         
         // Pass available locales and current locale to template
         $availablesLocales = Lang::getAvailablesLocales();
@@ -66,13 +95,72 @@ class ConfigManagerAdminController extends AdminController {
         $tpl->set('defaultPlugin', $defaultPlugin === null || $defaultPlugin === false || $defaultPlugin === '' ? 'page' : $defaultPlugin);
         $defaultAdminPlugin = $this->core->getConfigVal('defaultAdminPlugin');
         $tpl->set('defaultAdminPlugin', $defaultAdminPlugin === null || $defaultAdminPlugin === false || $defaultAdminPlugin === '' ? 'configmanager' : $defaultAdminPlugin);
+        
+        // Télémétrie
+        $telemetryService = new \Core\Telemetry\TelemetryService();
+        $tpl->set('telemetryLevel', (int) ($this->core->getConfigVal('telemetry_level') ?? 0));
+        $tpl->set('installationId', $telemetryService->getInstallationId());
+        
+        // Vérifier si jamais synchronisé
+        $hasSynced = $telemetryService->hasSynced();
+        $lastSync = null;
+        if ($hasSynced) {
+            $lastSyncTimestamp = $telemetryService->getLastSync();
+            if ($lastSyncTimestamp !== null) {
+                $lastSync = date('Y-m-d H:i:s', $lastSyncTimestamp);
+            }
+        }
+        $tpl->set('lastSync', $lastSync);
+        $tpl->set('hasSynced', $hasSynced);
+        $tpl->set('forceSyncUrl', $this->router->generate('configmanager-telemetry-force-sync', ['token' => $this->user->token]));
+
+        // Maintenance Mode
+        $tpl->set('maintenanceMode', $this->core->getConfigVal('maintenance_mode'));
+        $tpl->set('maintenanceMessage', $this->core->getConfigVal('maintenance_message'));
+        $page = new \Core\Page\Page();
+        $tpl->set('availableTemplates', $page->listTemplates());
+        $tpl->set('maintenanceTemplate', $this->core->getConfigVal('maintenance_template'));
 
         $response->addTemplate($tpl);
         return $response;
     }
 
+    /**
+     * Force la synchronisation de la télémétrie
+     */
+    public function forceTelemetrySync(string $token)
+    {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx) || $this->user->token !== $token) {
+            Show::msg(Lang::get('core-not-authorized'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-admin'));
+            return;
+        }
+
+        try {
+            $telemetryService = new \Core\Telemetry\TelemetryService();
+            $success = $telemetryService->forceSend();
+            
+            if ($success) {
+                $this->logger->info('Telemetry: forced sync succeeded for ' . ($this->user->email ?? 'unknown'));
+                Show::msg(Lang::get('configmanager-telemetry-sync-success'), 'success');
+            } else {
+                $this->logger->warning('Telemetry: forced sync failed for ' . ($this->user->email ?? 'unknown'));
+                Show::msg(Lang::get('configmanager-telemetry-sync-error'), 'error');
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Telemetry: forced sync exception for ' . ($this->user->email ?? 'unknown') . ' - ' . $e->getMessage());
+            Show::msg(Lang::get('configmanager-telemetry-sync-error') . ': ' . $e->getMessage(), 'error');
+        }
+
+        $this->core->redirect($this->router->generate('configmanager-admin'));
+    }
+
     public function save() {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             return $this->home();
         }
         if (array_key_exists($_POST['siteLang'], Lang::$availablesLocales)) {
@@ -80,6 +168,13 @@ class ConfigManagerAdminController extends AdminController {
         } else {
             $lang = Lang::getLocale();
         }
+        $siteLogo = trim($_POST['siteLogo'] ?? '');
+        $logoPlacement = $_POST['siteLogoPlacement'] ?? 'none';
+        $allowedLogoPlacements = ['none', 'siteName', 'header'];
+        if (!in_array($logoPlacement, $allowedLogoPlacements, true)) {
+            $logoPlacement = 'none';
+        }
+
         $config = [
             'siteName' => (trim($_POST['siteName']) != '') ? trim($_POST['siteName']) : 'Demo',
             'siteDesc' => (trim($_POST['siteDesc']) != '') ? trim($_POST['siteDesc']) : '',
@@ -88,14 +183,25 @@ class ConfigManagerAdminController extends AdminController {
             'theme' => $_POST['theme'],
             'defaultPlugin' => $_POST['defaultPlugin'],
             'hideTitles' => (isset($_POST['hideTitles'])) ? true : false,
+            'showBanner' => (isset($_POST['showBanner'])) ? true : false,
+            'hideBannerTitle' => !isset($_POST['showBannerTitle']),
             'debug' => (isset($_POST['debug'])) ? true : false,
-            'defaultAdminPlugin' => $_POST['defaultAdminPlugin'],
+            'defaultAdminPlugin' => 'dashboard',
             'cache_enabled' => (isset($_POST['cache_enabled'])) ? true : false,
             'cache_duration' => (int)$_POST['cache_duration'],
             'cache_minify' => (isset($_POST['cache_minify'])) ? true : false,
             'cache_lazy_loading' => (isset($_POST['cache_lazy_loading'])) ? true : false,
+            'siteLogo' => $siteLogo,
+            'siteLogoPlacement' => $logoPlacement,
+            'sessionLifetime' => (int)($_POST['sessionLifetime'] ?? 604800), // Par défaut 7 jours
+            'maintenance_mode' => (isset($_POST['maintenance_mode'])) ? true : false,
+            'maintenance_message' => trim($_POST['maintenance_message'] ?? ''),
+            'maintenance_template' => trim($_POST['maintenance_template'] ?? ''),
+            'enable_theme_toggle' => (isset($_POST['enable_theme_toggle'])) ? true : false,
         ];
         $config['allowRegistrations'] = isset($_POST['allowRegistrations']);
+        $config['antispamLogin'] = isset($_POST['antispamLogin']);
+        $config['antispamRegister'] = isset($_POST['antispamRegister']);
         $defaultGroupSlug = $_POST['registrationDefaultGroup'] ?? 'member';
         if ($this->core->auth()->getGroupBySlug($defaultGroupSlug) === null) {
             $defaultGroupSlug = 'member';
@@ -106,39 +212,151 @@ class ConfigManagerAdminController extends AdminController {
             $validationMode = 'email';
         }
         $config['registrationValidationMode'] = $validationMode;
+        
+        
+        // Télémétrie
+        $telemetryLevel = (int) ($_POST['telemetry_level'] ?? 0);
+        if ($telemetryLevel < 0 || $telemetryLevel > 2) {
+            $telemetryLevel = 0;
+        }
+        $config['telemetry_level'] = $telemetryLevel;
 
         // Invalidate cache if needed (AVANT la sauvegarde pour avoir l'ancienne config)
         $this->invalidateCacheIfNeeded($config);
         
-        if (!$this->core->saveConfig($config, $config)) {
+        $actor = $this->user->email ?? 'unknown';
+        if (!$this->core->saveConfig($config)) {
+            $this->logger->error('Config: save failed for ' . $actor);
             Show::msg(Lang::get("core-changes-not-saved"), 'error');
         } else {
+            $this->logger->info('Config: settings saved by ' . $actor);
+            // Purger automatiquement le cache à chaque sauvegarde de configuration
+            $cacheManager = new CacheManager();
+            $cacheManager->clearCache();
             Show::msg(Lang::get("core-changes-saved"), 'success');
         }
         //$this->core->saveHtaccess($_POST['htaccess']);
         $this->core->redirect($this->router->generate('configmanager-admin'));
     }
 
+    public function report() {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
+            return $this->home();
+        }
+
+        $response = new AdminResponse();
+        $tpl = $response->createPluginTemplate('configmanager', 'report');
+        $response->setTitle(Lang::get('configmanager-report-title'));
+
+        // Récupérer la liste des plugins pour le select
+        $pluginsManager = PluginsManager::getInstance();
+        $plugins = [];
+        foreach ($pluginsManager->getPlugins() as $plugin) {
+            $plugins[] = [
+                'slug' => $plugin->getName(),
+                'name' => $plugin->getInfoVal('name') ?? $plugin->getName()
+            ];
+        }
+        $tpl->set('plugins', $plugins);
+        $tpl->set('sendUrl', $this->router->generate('configmanager-report-send'));
+
+        $response->addTemplate($tpl);
+        return $response;
+    }
+
+    public function sendReport() {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
+            return $this->home();
+        }
+
+        $type = $_POST['type'] ?? '';
+        $title = trim($_POST['title'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $plugin = trim($_POST['plugin'] ?? '');
+        $screenshot = $_POST['screenshot'] ?? null;
+
+        // Validation
+        if (!in_array($type, ['bug', 'feature', 'question', 'other'], true)) {
+            Show::msg(Lang::get('configmanager-report-invalid-type'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-report'));
+            return;
+        }
+
+        if (empty($title) || strlen($title) < 3) {
+            Show::msg(Lang::get('configmanager-report-title-required'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-report'));
+            return;
+        }
+
+        if (empty($description) || strlen($description) < 10) {
+            Show::msg(Lang::get('configmanager-report-description-required'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-report'));
+            return;
+        }
+
+        // Validation email si fourni
+        if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Show::msg(Lang::get('configmanager-report-invalid-email'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-report'));
+            return;
+        }
+
+        // Envoyer le rapport
+        $reportService = new \Core\Telemetry\ReportService();
+        $result = $reportService->sendReport(
+            $type,
+            $title,
+            $description,
+            !empty($email) ? $email : null,
+            !empty($plugin) ? $plugin : null,
+            $screenshot
+        );
+
+        if ($result['success']) {
+            Show::msg(Lang::get('configmanager-report-sent-success'), 'success');
+            $this->logger->info('Config report sent by ' . ($this->user->email ?? 'unknown') . ' type ' . $type);
+        } else {
+            Show::msg(Lang::get('configmanager-report-sent-error') . ': ' . $result['message'], 'error');
+            $this->logger->warning('Config report failed for ' . ($this->user->email ?? 'unknown') . ' - ' . ($result['message'] ?? 'unknown'));
+        }
+
+        $this->core->redirect($this->router->generate('configmanager-report'));
+    }
+
     public function deleteInstall($token) {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             return $this->home();
         }
         if ($this->core->settings()->deleteInstallFile()) {
+            unset($_SESSION['installOk']);
+            $this->logger->info('Config: install files removed by ' . ($this->user->email ?? 'unknown'));
             Show::msg(Lang::get('configmanager-deleted-install'), 'success');
         } else {
-            Show::msg(Lang::get('configmanager-error-deleting-install'), 'error');
+            $this->logger->warning('Config: install file removal failed for ' . ($this->user->email ?? 'unknown'));
+            Show::msg(Lang::get('configmanager-delete-install-error'), 'error');
         }
         return $this->home();
     }
 
     public function clearCache($token) {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             return $this->home();
         }
         $cacheManager = new CacheManager();
         if ($cacheManager->clearCache()) {
+            $this->logger->info('Config: cache cleared by ' . ($this->user->email ?? 'unknown'));
             Show::msg(Lang::get('configmanager-cache-clear-success'), 'success');
         } else {
+            $this->logger->warning('Config: cache clear failed for ' . ($this->user->email ?? 'unknown'));
             Show::msg(Lang::get('configmanager-cache-clear-error'), 'error');
         }
         return $this->home();
@@ -288,28 +506,13 @@ class ConfigManagerAdminController extends AdminController {
     {
         $pluginName = $plugin->getName();
         
-        // Blog plugin specific checks
-        if ($pluginName === 'blog') {
-            // Check if blog settings that affect content have changed
-            if (isset($newConfig['blog_itemsByPage']) && $newConfig['blog_itemsByPage'] !== ($oldConfig['blog_itemsByPage'] ?? 5)) {
-                $plugin->invalidateCache();
-            }
-            if (isset($newConfig['blog_displayTOC']) && $newConfig['blog_displayTLS'] !== ($oldConfig['blog_displayTOC'] ?? 'no')) {
-                $plugin->invalidateCache();
-            }
-        }
-        
-        // Galerie plugin specific checks
-        if ($pluginName === 'galerie') {
-            if (isset($newConfig['galerie_order']) && $newConfig['galerie_order'] !== ($oldConfig['galerie_order'] ?? 'byDate')) {
-                $plugin->invalidateCache();
-            }
-            if (isset($newConfig['galerie_showTitles']) && $newConfig['galerie_showTitles'] !== ($oldConfig['galerie_showTitles'] ?? '1')) {
-                $plugin->invalidateCache();
-            }
-        }
-        
-
+        // Notify the plugin that the configuration has changed
+        // This allows plugins to invalidate their own cache if needed
+        $this->core->callHook('plugin:on-config-change', [
+            'plugin' => $plugin,
+            'oldConfig' => $oldConfig,
+            'newConfig' => $newConfig
+        ]);
         
         // Default plugin change - invalidate all plugin caches
         if (isset($newConfig['defaultPlugin']) && $newConfig['defaultPlugin'] !== ($oldConfig['defaultPlugin'] ?? '')) {

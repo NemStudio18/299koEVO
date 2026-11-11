@@ -28,6 +28,8 @@ class Logger
     protected string $logDir;
     protected int $maxFileSize;
 
+    protected ?string $debugSessionId = null;
+
     protected function __construct(bool $debugMode, string $logDir, int $maxFileSize)
     {
         $this->debugMode = $debugMode;
@@ -37,6 +39,14 @@ class Logger
         if (!is_dir($this->logDir)) {
             mkdir($this->logDir, 0755, true);
         }
+    }
+
+    /**
+     * Sets the debug session identifier.
+     */
+    public function setDebugSessionId(?string $id): void
+    {
+        $this->debugSessionId = $id;
     }
 
     /**
@@ -54,9 +64,48 @@ class Logger
     {
         if (self::$instance === null) {
             self::$instance = new self($debugMode, $logDir, $maxFileSize);
+            self::$instance->register();
         }
         return self::$instance;
     }
+
+    /**
+     * Enregistre les gestionnaires d'erreurs et d'exceptions globaux.
+     */
+    protected function register(): void
+    {
+        set_error_handler([$this, 'handleError']);
+        set_exception_handler([$this, 'handleException']);
+        register_shutdown_function([$this, 'handleShutdown']);
+    }
+
+    public function handleError(int $errno, string $errstr, string $errfile, int $errline): bool
+    {
+        $level = self::LEVEL_ERROR;
+        if ($errno === E_NOTICE || $errno === E_USER_NOTICE || $errno === E_DEPRECATED || $errno === E_USER_DEPRECATED) {
+            $level = self::LEVEL_INFO;
+        } elseif ($errno === E_WARNING || $errno === E_USER_WARNING) {
+            $level = self::LEVEL_WARNING;
+        }
+
+        $this->log($level, "PHP Error ($errno): $errstr (at $errfile:$errline)");
+        return false; // Continuer le traitement normal de PHP
+    }
+
+    public function handleException(\Throwable $e): void
+    {
+        $this->log(self::LEVEL_ERROR, "Uncaught Exception: " . $e->getMessage() . PHP_EOL . "Trace: " . $e->getTraceAsString());
+    }
+
+    public function handleShutdown(): void
+    {
+        $error = error_get_last();
+        if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+            $this->log(self::LEVEL_ERROR, "Fatal Shutdown Error: " . $error['message'] . " (at " . $error['file'] . ":" . $error['line'] . ")");
+        }
+    }
+
+    protected static bool $isLogging = false;
 
     /**
      * Logs a message with a specific level.
@@ -73,31 +122,50 @@ class Logger
      */
     public function log(string $level, $message): void
     {
-        if (is_array($message)) {
-            $message = print_r($message, true);
+        if (self::$isLogging) {
+            return; // Prevent infinite recursion
         }
 
-        if (!$this->debugMode && $level === self::LEVEL_DEBUG) {
-            return;
-        }
+        self::$isLogging = true;
 
-        $timestamp = date('Y-m-d H:i:s');
-
-        if ($this->debugMode) {
-            $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-            if (isset($trace[1])) {
-                $caller = $trace[1];
-                $file = $caller['file'] ?? 'unknown file';
-                $line = $caller['line'] ?? 'unknown line';
-                $message .= " (at $file:$line)";
+        try {
+            if (is_array($message)) {
+                $message = print_r($message, true);
             }
+
+            if (!$this->debugMode && $level === self::LEVEL_DEBUG) {
+                return;
+            }
+
+            $timestamp = date('Y-m-d H:i:s');
+            $prefix = "[$timestamp]";
+
+            // Add correlation identifiers
+            if (defined('REQUEST_ID')) {
+                $prefix .= " [" . REQUEST_ID . "]";
+            }
+            if ($this->debugSessionId) {
+                $prefix .= " [" . $this->debugSessionId . "]";
+            }
+
+            if ($this->debugMode) {
+                $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+                if (isset($trace[1])) {
+                    $caller = $trace[1];
+                    $file = $caller['file'] ?? 'unknown file';
+                    $line = $caller['line'] ?? 'unknown line';
+                    $message .= " (at $file:$line)";
+                }
+            }
+
+            $formattedMessage = "$prefix [$level] $message" . PHP_EOL;
+
+            $logFile = $this->getLogFilePath();
+            $this->rotateLogFileIfNeeded($logFile);
+            file_put_contents($logFile, $formattedMessage, FILE_APPEND);
+        } finally {
+            self::$isLogging = false;
         }
-
-        $formattedMessage = "[$timestamp] [$level] $message" . PHP_EOL;
-
-        $logFile = $this->getLogFilePath();
-        $this->rotateLogFileIfNeeded($logFile);
-        file_put_contents($logFile, $formattedMessage, FILE_APPEND);
     }
 
     protected function getLogFilePath(): string
@@ -119,7 +187,7 @@ class Logger
         if (file_exists($filePath) && filesize($filePath) >= $this->maxFileSize) {
             $timestamp = date('Ymd_His');
             $backupFile = $filePath . '.' . $timestamp . '.bak';
-            rename($filePath, $backupFile);
+            @rename($filePath, $backupFile);
         }
     }
 

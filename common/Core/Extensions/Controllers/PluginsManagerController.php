@@ -74,7 +74,9 @@ class PluginsManagerController extends AdminController
     }
 
     public function save() {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             return $this->list();
         }
         $error = false;
@@ -98,13 +100,17 @@ class PluginsManagerController extends AdminController
         if ($error) {
             Show::msg(Lang::get('core-changes-not-saved'), 'error');
         } else {
+            \Core\Core::bumpContentVersion();
+            \Core\Navigation\NavigationService::getInstance()->reset();
             Show::msg(Lang::get('core-changes-saved'), 'success');
         }
         $this->core->redirect($this->router->generate('pluginsmanager-list'));
     }
 
     public function maintenance($plugin, $token) {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             Show::msg(Lang::get('core-not-authorized'), 'error');
             return $this->list();
         }
@@ -120,6 +126,8 @@ class PluginsManagerController extends AdminController
         
         $result = $this->pluginsManager->installPlugin($plugin, true);
         if ($result) {
+            \Core\Core::bumpContentVersion();
+            \Core\Navigation\NavigationService::getInstance()->reset();
             Show::msg(Lang::get('core-changes-saved'), 'success');
             $this->core->getLogger()->log(\Core\Logger::LEVEL_INFO, "Plugin $plugin successfully installed via maintenance");
         } else {

@@ -57,15 +57,16 @@ class MediaService
         if ($token === '') {
             return '';
         }
+        $editorTarget = is_string($textareaId) ? trim($textareaId) : '';
         $url = Router::getInstance()->generate('filemanager-view-ajax-home', [
             'token' => $token,
-            'editor' => $textareaId ?: '',
+            'editor' => $editorTarget,
         ]);
 
         return sprintf(
-            '<a class="button fmUploadButton" data-fancybox data-type="ajax" href="%s"/><i class="fa-solid fa-file-image"></i> %s</a>',
-            $url,
-            $buttonLabel
+            '<a class="button fmUploadButton" data-fancybox data-type="ajax" href="%s"><i class="fa-solid fa-file-image"></i> %s</a>',
+            htmlspecialchars($url, ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($buttonLabel, ENT_QUOTES, 'UTF-8')
         );
     }
 
@@ -127,14 +128,13 @@ class MediaService
         }
     }
 
-    public function registerRoutes(): void
+    public function registerRoutes(Router $router): void
     {
         if ($this->routesRegistered) {
             return;
         }
         $this->routesRegistered = true;
 
-        $router = Router::getInstance();
         $router->map('GET', '/admin/filemanager[/?]', 'Core\Media\Controllers\FileManagerAPIController#home', 'filemanager-home');
         $router->map('POST', '/admin/filemanager/view-ajax/upload/[a:token]', 'Core\Media\Controllers\FileManagerAPIController#upload', 'filemanager-upload');
         $router->map('POST', '/admin/filemanager/view-ajax/delete/[a:token]', 'Core\Media\Controllers\FileManagerAPIController#delete', 'filemanager-delete');

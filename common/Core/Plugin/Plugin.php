@@ -72,16 +72,25 @@ class Plugin {
         // On détermine si il s'agit du plugin par défaut en mode admin
         $this->isDefaultAdminPlugin = ($name == $core->getConfigVal('defaultAdminPlugin')) ? true : false;
         // Meta title
-        $this->setTitleTag($infos['name']);
+        $this->setTitleTag(is_array($infos) && isset($infos['name']) ? $infos['name'] : $name);
         // Titre de page
-        $this->setMainTitle($infos['name']);
+        $this->setMainTitle(is_array($infos) && isset($infos['name']) ? $infos['name'] : $name);
         // Fichier php principal
-        $this->libFile = (file_exists(PLUGINS . $this->name . '/' . $this->name . '.php')) ? PLUGINS . $this->name . '/' . $this->name . '.php' : false;
+        // Exception pour searchEVO qui utilise search.php au lieu de searchEVO.php
+        if ($this->name === 'searchEVO') {
+            $this->libFile = (file_exists(PLUGINS . $this->name . '/search.php')) ? PLUGINS . $this->name . '/search.php' : false;
+        } else {
+            $this->libFile = (file_exists(PLUGINS . $this->name . '/' . $this->name . '.php')) ? PLUGINS . $this->name . '/' . $this->name . '.php' : false;
+        }
 
         $this->setCallables();
         
         // CSS
-        $this->publicCssFile = (file_exists(PLUGINS . $this->name . '/template/public.css')) ? PLUGINS . $this->name . '/template/public.css' : false;
+        if ($core->getConfigVal('disable_plugins_css')) {
+            $this->publicCssFile = false;
+        } else {
+            $this->publicCssFile = (file_exists(PLUGINS . $this->name . '/template/public.css')) ? PLUGINS . $this->name . '/template/public.css' : false;
+        }
         $this->adminCssFile = (file_exists(PLUGINS . $this->name . '/template/admin.css')) ? Util::urlBuild(PLUGINS . $this->name . '/template/admin.css') : false;
         // JS
         $this->publicJsFile = (file_exists(PLUGINS . $this->name . '/template/public.js')) ? PLUGINS . $this->name . '/template/public.js' : false;
@@ -121,14 +130,14 @@ class Plugin {
        
 
         // Template parametres
-        if (file_exists(PLUGINS . $this->name . '/template/param.tpl'))
-            $this->paramTemplate = PLUGINS . $this->name . '/template/param.tpl';
+        if (file_exists(PLUGINS . $this->name . DS . 'template' . DS . 'param.tpl'))
+            $this->paramTemplate = PLUGINS . $this->name . DS . 'template' . DS . 'param.tpl';
         else
             $this->paramTemplate = false;
 
         // Template d'aide
-        if (file_exists(PLUGINS . $this->name . '/template/help.tpl'))
-            $this->helpTemplate = PLUGINS . $this->name . '/template/help.tpl';
+        if (file_exists(PLUGINS . $this->name . DS . 'template' . DS . 'help.tpl'))
+            $this->helpTemplate = PLUGINS . $this->name . DS . 'template' . DS . 'help.tpl';
         else
             $this->helpTemplate = false;
     }
@@ -241,6 +250,10 @@ class Plugin {
         return $this->publicUrl;
     }
 
+    public function getPath() {
+        return PLUGINS . $this->name . DS;
+    }
+
     ## Permet de modifier une valeur de configuration
 
     public function setConfigVal($k, $v) {
@@ -252,19 +265,19 @@ class Plugin {
     ## Permet de forcer la meta title
 
     public function setTitleTag($val) {
-        $this->titleTag = trim($val);
+        $this->titleTag = trim($val ?? '');
     }
 
     ## Permet de forcer la meta description
 
     public function setMetaDescriptionTag($val) {
-        $this->metaDescriptionTag = trim($val);
+        $this->metaDescriptionTag = trim($val ?? '');
     }
 
     ## Permet de forcer le titre de page
 
     public function setMainTitle($val) {
-        $this->mainTitle = trim($val);
+        $this->mainTitle = trim($val ?? '');
     }
 
     ## Ajoute un item dans la navigation
@@ -288,17 +301,20 @@ class Plugin {
     ## Détermine si le plugin est installé
 
     public function isInstalled() {
-        $temp = $this->config;
-        unset($temp['activate']);
-        // Ignorer les clés dynamiques qui peuvent être ajoutées après installation (comme publicKey/privateKey pour PWA)
-        $dynamicKeys = ['publicKey', 'privateKey'];
-        foreach ($dynamicKeys as $key) {
-            unset($temp[$key]);
-        }
-        $currentConfig = implode(',', array_keys($temp));
-        $initConfig = @implode(',', array_keys($this->initConfig));
-        if (count($this->config) < 1 || $currentConfig != $initConfig)
+        if (!file_exists(DATA_PLUGIN . $this->name . '/config.json')) {
             return false;
+        }
+        if (count($this->config) < 1) {
+            return false;
+        }
+        // Vérifier que toutes les clés requises d'origine existent dans la configuration
+        if (is_array($this->initConfig)) {
+            foreach (array_keys($this->initConfig) as $key) {
+                if (!array_key_exists($key, $this->config)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
@@ -321,9 +337,74 @@ class Plugin {
             require_once PLUGINS . $this->name . '/param/routes.php';
         }
     }
+
+    /**
+     * Get public routes defined in param/nav.json
+     * Fallback to auto-discovery if nav.json is missing or empty
+     * @return array
+     */
+    public function getPublicRoutes(): array
+    {
+        $file = PLUGINS . $this->name . '/param/nav.json';
+        if (is_file($file)) {
+            $data = Util::readJsonFile($file, true);
+            if (!empty($data) && is_array($data)) {
+                return $data;
+            }
+        }
+        return $this->discoverPublicRoutes();
+    }
+
+    /**
+     * Automatically discover public routes from param/routes.php
+     * 
+     * @return array
+     */
+    public function discoverPublicRoutes(): array
+    {
+        $file = PLUGINS . $this->name . '/param/routes.php';
+        if (!is_file($file)) {
+            return [];
+        }
+
+        $content = file_get_contents($file);
+        // Regex to capture Group 1: method, Group 2: url, Group 3: target, Group 4: name
+        $regex = '/\$router->map\s*\(\s*[\'"]([^\'"]+)[\'"]\s*,\s*[\'"]([^\'"]+)[\'"]\s*,\s*[\'"]([^\'"]+)[\'"]\s*,\s*[\'"]([^\'"]+)[\'"]\s*\)/i';
+        
+        $routes = [];
+        if (preg_match_all($regex, $content, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $method = $match[1];
+                $url = $match[2];
+                $target = $match[3];
+                $routeName = $match[4];
+
+                // Ignore POST-only routes (usually not useful for a navigation link)
+                if (strpos(strtoupper($method), 'POST') !== false && strpos(strtoupper($method), 'GET') === false) {
+                    continue;
+                }
+
+                // Ignore admin routes based on name OR url
+                if (strpos($routeName, 'admin') === 0 || strpos($url, '/admin') === 0) {
+                    continue;
+                }
+                
+                $routes[] = [
+                    'route' => $routeName,
+                    'label' => $routeName . " (" . $target . ")",
+                    'description' => 'Discovered via ' . $url
+                ];
+            }
+        }
+        
+        return $routes;
+    }
     
     public function loadControllers() {
         foreach (glob(PLUGINS . $this->name . '/controllers/' . "*.php") as $file) {
+            include_once $file;
+        }
+        foreach (glob(PLUGINS . $this->name . '/src/Controllers/' . "*.php") as $file) {
             include_once $file;
         }
     }

@@ -36,6 +36,11 @@ class SettingsService
             'label' => 'configmanager.name',
             'icon' => 'fa-solid fa-gear',
         ],
+        [
+            'name' => 'storage',
+            'label' => 'storage.name',
+            'icon' => 'fa-solid fa-database',
+        ],
     ];
 
     public function __construct()
@@ -49,20 +54,68 @@ class SettingsService
     }
 
     /**
-     * Display warning to delete install.php when present.
+     * Check whether install artifacts are still present on disk.
      */
-    public function displayInstallWarning(): void
+    public function hasInstallArtifacts(): bool
     {
         $installFile = ROOT . 'install.php';
         $installCss = ROOT . 'install' . DS . 'install.css';
-        if (file_exists($installFile) || file_exists($installCss)) {
-            echo "<div class='msg warning'>
-                <p>" . Lang::get("configmanager-delete-install-msg") . "</p>
-                <div style='text-align:center'><a class='button' href='" .
-                Router::getInstance()->generate('configmanager-delete-install', ['token' => UsersManager::getCurrentUser()->token]) .
-                "'>" . Lang::get("configmanager-delete-install") . "</a></div>
-                <a href='javascript:' class='msg-button-close'><i class='fa-solid fa-xmark'></i></a></div>";
+        return file_exists($installFile) || file_exists($installCss);
+    }
+
+    /**
+     * Render a compact persistent topbar badge when install artifacts remain.
+     */
+    public function displayInstallBadge(): void
+    {
+        if (!$this->hasInstallArtifacts()) {
+            return;
         }
+        $user = UsersManager::getCurrentUser();
+        if (!$user) {
+            return;
+        }
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        if (!$evaluator->isAdmin(new \Core\Navigation\ConditionContext($user))) {
+            return;
+        }
+
+        $deleteUrl = Router::getInstance()->generate('configmanager-delete-install', ['token' => $user->token]);
+        $label = Lang::get('configmanager-install-badge') ?: 'install.php non supprimé';
+        $title = Lang::get('configmanager-install-badge-title') ?: "Le fichier install.php n'est pas supprimé — cliquez pour le supprimer";
+
+        echo '<a class="adm-install-badge" href="' . htmlspecialchars($deleteUrl, ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '">'
+            . '<i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>'
+            . '<span>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>'
+            . '</a>';
+    }
+
+    /**
+     * Queue the install cleanup flash message once immediately after installation.
+     */
+    public function displayPostInstallWarningOnce(): void
+    {
+        if (empty($_SESSION['installOk'])) {
+            return;
+        }
+        unset($_SESSION['installOk']);
+
+        if (!$this->hasInstallArtifacts()) {
+            return;
+        }
+
+        $user = UsersManager::getCurrentUser();
+        $deleteUrl = Router::getInstance()->generate(
+            'configmanager-delete-install',
+            ['token' => $user ? $user->token : '']
+        );
+
+        Show::msg(
+            '<span>' . Lang::get('configmanager-delete-install-msg') . '</span> '
+            . '<a class="button msg-action-btn" href="' . htmlspecialchars($deleteUrl, ENT_QUOTES, 'UTF-8') . '">'
+            . Lang::get('configmanager-delete-install') . '</a>',
+            'warning'
+        );
     }
 
     /**
@@ -124,7 +177,7 @@ class SettingsService
     {
         Show::msg("<p>" . Lang::get('configmanager-update-msg', $nextVersion) . "</p>
             <div style='text-align:center'><a class='button alert' href='" .
-            Router::getInstance()->generate('configmanager-update', ['token' => UsersManager::getCurrentUser()->token]) .
+            Router::getInstance()->generate('configmanager-update', ['token' => (UsersManager::getCurrentUser() ? UsersManager::getCurrentUser()->token : '')]) .
             "'>" . Lang::get('configmanager-update') . "</a></div>");
     }
 
@@ -140,7 +193,7 @@ class SettingsService
         $cachedInfos['lastCheckUpdate'] = time();
         Util::writeJsonFile($this->cacheFile, $cachedInfos);
         if ($nextVersion) {
-            logg('Nouvelle version trouvée : ' . $nextVersion, 'INFO');
+            \Core\Core::getInstance()->getLogger()->info('Nouvelle version trouvée : ' . $nextVersion);
         }
         return $nextVersion;
     }
@@ -172,6 +225,15 @@ class SettingsService
         $router->map('GET', '/admin/configmanager/create-backup/[a:token]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#create', 'configmanager-create-backup');
         $router->map('GET', '/admin/configmanager/dl-backup/[a:token]/[i:timestamp]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#download', 'configmanager-dl-backup');
         $router->map('POST', '/admin/configmanager/delete-backup', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#delete', 'configmanager-delete-backup');
+        $router->map('GET', '/admin/configmanager/report[/?]', 'Core\Settings\Controllers\ConfigManagerAdminController#report', 'configmanager-report');
+        $router->map('POST', '/admin/configmanager/report/send', 'Core\Settings\Controllers\ConfigManagerAdminController#sendReport', 'configmanager-report-send');
+        $router->map('GET', '/admin/configmanager/telemetry/force-sync/[a:token]', 'Core\Settings\Controllers\ConfigManagerAdminController#forceTelemetrySync', 'configmanager-telemetry-force-sync');
+
+        // Storage Management
+        $router->map('GET', '/admin/storage[/?]', 'Core\Storage\Controllers\StorageAdminController#home', 'storage-admin');
+        $router->map('POST', '/admin/storage/save', 'Core\Storage\Controllers\StorageAdminController#save', 'storage-admin-save');
+        $router->map('POST', '/admin/storage/save-db', 'Core\Storage\Controllers\StorageAdminController#saveDatabase', 'storage-admin-save-db');
+        $router->map('POST', '/admin/storage/migrate', 'Core\Storage\Controllers\StorageAdminController#migrate', 'storage-admin-migrate');
     }
 
     public function registerHooks(): void
@@ -182,10 +244,11 @@ class SettingsService
         $this->hooksRegistered = true;
 
         $core = Core::getInstance();
-        $core->addHook('afterAdminTitle', function () {
-            $this->displayInstallWarning();
+        $core->addHook('adminTopbarBadges', function () {
+            $this->displayInstallBadge();
         });
         $core->addHook('adminHead', function () {
+            $this->displayPostInstallWarningOnce();
             $this->checkNewVersion();
         });
         $core->addHook('adminToolsTemplates', function () {

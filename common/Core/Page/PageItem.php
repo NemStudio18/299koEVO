@@ -4,89 +4,239 @@ namespace Core\Page;
 
 use Utils\Util;
 use Core\Plugin\PluginsManager;
+use Core\Navigation\Interfaces\ResourceInterface;
 
 /**
  * Entité représentant une page/navigation dans le core.
  */
 defined('ROOT') or exit('Access denied!');
 
-class PageItem
+class PageItem extends \Core\Storage\JsonActiveRecord implements ResourceInterface
 {
-    private $id;
-    private $name;
-    private $position;
-    private $isHomepage;
-    private $content;
-    private $isHidden;
-    private $file;
-    private $mainTitle;
-    private $metaDescriptionTag;
-    private $metaTitleTag;
-    private $target;
-    private $targetAttr;
-    private $noIndex;
-    private $parent;
-    private $cssClass;
-    private $password;
-    private $img;
+    protected static string $filePath = DATA_CORE_PAGE . 'pages.json';
+    protected static string $tableName = 'pages';
+    protected static string $primaryKey = 'id';
 
-    public function __construct($val = array())
+    /**
+     * Map object properties to SQL columns
+     * (Core property => SQL column)
+     */
+    protected static array $attributeMapping = [
+        'id' => 'id',
+        'name' => 'name',
+        'position' => 'position',
+        'isHomepage' => 'is_homepage',
+        'content' => 'content',
+        'isHidden' => 'is_hidden',
+        'file' => 'file',
+        'mainTitle' => 'main_title',
+        'metaDescriptionTag' => 'meta_description_tag',
+        'metaTitleTag' => 'meta_title_tag',
+        'target' => 'target',
+        'targetAttr' => 'target_attr',
+        'noIndex' => 'no_index',
+        'parent' => 'parent_id',
+        'cssClass' => 'css_class',
+        'password' => 'password',
+        'img' => 'img',
+        'navPosition' => 'nav_position',
+        'legalType' => 'legal_type',
+        'showIcon' => 'show_icon',
+        'icon' => 'icon',
+        'navContext' => 'nav_context',
+        'conditions' => 'conditions'
+    ];
+    protected static array $casts = [
+        'conditions' => 'array'
+    ];
+
+    protected static function getSchema(): array
     {
-        if (count($val) > 0) {
-            $this->id = $val['id'];
-            $this->name = $val['name'];
-            $this->position = $val['position'];
-            $this->isHomepage = $val['isHomepage'];
-            $this->content = $val['content'];
-            $this->isHidden = $val['isHidden'];
-            $this->file = $val['file'];
-            $this->mainTitle = $val['mainTitle'];
-            $this->metaDescriptionTag = $val['metaDescriptionTag'];
-            $this->metaTitleTag = (isset($val['metaTitleTag']) ? $val['metaTitleTag'] : '');
-            $this->target = (isset($val['target']) ? $val['target'] : '');
-            $this->targetAttr = (isset($val['targetAttr']) ? $val['targetAttr'] : '_self');
-            $this->noIndex = (isset($val['noIndex']) ? $val['noIndex'] : 0);
-            $this->parent = (isset($val['parent']) ? $val['parent'] : 0);
-            $this->cssClass = (isset($val['cssClass']) ? $val['cssClass'] : '');
-            $this->password = (isset($val['password']) ? $val['password'] : '');
-            $this->img = (isset($val['img']) ? $val['img'] : '');
+        return [
+            'name' => 'string',
+            'position' => 'int',
+            'is_homepage' => 'int',
+            'content' => 'text',
+            'is_hidden' => 'int',
+            'file' => 'string',
+            'main_title' => 'string',
+            'meta_description_tag' => 'text',
+            'meta_title_tag' => 'string',
+            'target' => 'string',
+            'target_attr' => 'string',
+            'no_index' => 'int',
+            'parent_id' => 'int',
+            'css_class' => 'string',
+            'password' => 'string',
+            'img' => 'string',
+            'nav_position' => 'string',
+            'legal_type' => 'string',
+            'show_icon' => 'int',
+            'icon' => 'string',
+            'nav_context' => 'string',
+            'conditions' => 'text',
+        ];
+    }
+
+
+
+    public function getNavContext()
+    {
+        return $this->attributes['navContext'] ?? $this->attributes['nav_context'] ?? 'main';
+    }
+
+    public function setNavContext($val)
+    {
+        if (is_array($val)) {
+            $val = implode(',', $val);
         }
+        $this->attributes['navContext'] = trim((string)$val);
+    }
+
+    /**
+     * Get value of one of the 6 visibility/context flags
+     */
+    public function getVisibilityFlag(string $flag): bool
+    {
+        $contexts = explode(',', $this->getNavContext());
+        $contexts = array_map('trim', $contexts);
+
+        switch ($flag) {
+            case 'MP': return in_array('main', $contexts);
+            case 'MA': return in_array('avatar', $contexts);
+            case 'PP': return in_array('footer', $contexts);
+            case 'AUTO': return in_array('auto', $contexts);
+            case 'PUB':
+                if ($this->getIsHidden()) return false;
+                // Public if no auth or role condition
+                foreach ($this->getConditions() as $c) {
+                    $type = $c['type'] ?? '';
+                    if ($type === 'auth' || $type === 'role') return false;
+                }
+                return true;
+            case 'MEM':
+                if ($this->getIsHidden()) return false;
+                foreach ($this->getConditions() as $c) {
+                    if (($c['type'] ?? '') === 'auth' && ($c['value'] ?? false) === true) return true;
+                }
+                return false;
+            case 'ADM':
+                if ($this->getIsHidden()) return false;
+                foreach ($this->getConditions() as $c) {
+                    if (($c['type'] ?? '') === 'role' && ($c['value'] ?? '') === 'admin') return true;
+                }
+                return false;
+            case 'V':
+                return !$this->getIsHidden();
+        }
+        return false;
+    }
+
+    /**
+     * Update internal state from the 6 visibility/context flags
+     */
+    public function updateVisibilityFlags(array $flags)
+    {
+        // 1. Navigation Contexts
+        $contexts = [];
+        if ($flags['MP'] ?? false) $contexts[] = 'main';
+        if ($flags['MA'] ?? false) $contexts[] = 'avatar';
+        if ($flags['PP'] ?? false) $contexts[] = 'footer';
+        if ($flags['AUTO'] ?? false) $contexts[] = 'auto';
+        $this->setNavContext($contexts);
+
+        // 2. Accessibility conditions
+        $conditions = $this->getConditions();
+        // Remove existing auth/role conditions
+        $newConditions = [];
+        foreach ($conditions as $c) {
+            $type = $c['type'] ?? '';
+            if ($type !== 'auth' && $type !== 'role') {
+                $newConditions[] = $c;
+            }
+        }
+
+        // Add requested conditions
+        if ($flags['MEM'] ?? false) {
+            $newConditions[] = ['type' => 'auth', 'value' => true];
+        }
+        if ($flags['ADM'] ?? false) {
+            $newConditions[] = ['type' => 'role', 'value' => 'admin'];
+        }
+        
+        $this->setConditions($newConditions);
+
+        // 3. hidden/Active logic
+        // Item is ACTIVE (isHidden=0) if at least one of PUB, MEM, or ADM is checked
+        $isActive = ($flags['PUB'] ?? false) || ($flags['MEM'] ?? false) || ($flags['ADM'] ?? false);
+        $this->setIsHidden($isActive ? 0 : 1);
+    }
+
+    public function getConditions()
+    {
+        $val = $this->attributes['conditions'] ?? $this->attributes['conditions'] ?? [];
+        return is_array($val) ? $val : (json_decode($val, true) ?: []);
+    }
+
+    public function setConditions($val)
+    {
+        $this->attributes['conditions'] = is_array($val) ? $val : [];
+    }
+
+    public function getShowIcon(): bool
+    {
+        return (bool)($this->attributes['showIcon'] ?? $this->attributes['show_icon'] ?? true);
+    }
+
+    public function setShowIcon($val)
+    {
+        $this->attributes['showIcon'] = (bool)$val;
+    }
+
+    public function getIcon()
+    {
+        return $this->attributes['icon'] ?? '';
+    }
+
+    public function setIcon($val)
+    {
+        $this->attributes['icon'] = trim((string)$val);
     }
 
     public function setName($val)
     {
         $val = trim($val);
-        $this->name = $val;
+        $this->attributes['name'] = $val;
     }
 
     public function setPosition($val)
     {
-        $this->position = trim($val);
+        $this->attributes['position'] = trim($val);
     }
 
     public function setIsHomepage($val)
     {
-        $this->isHomepage = trim($val);
+        $this->attributes['isHomepage'] = trim($val);
     }
 
     public function setContent($val)
     {
-        $this->content = trim($val);
+        $this->attributes['content'] = trim($val);
     }
 
     public function setIsHidden($val)
     {
-        $this->isHidden = intval($val);
+        $this->attributes['isHidden'] = intval($val);
     }
 
     public function setFile($val)
     {
-        $this->file = trim($val);
+        $this->attributes['file'] = trim($val);
     }
 
     public function setMainTitle($val)
     {
-        $this->mainTitle = trim($val);
+        $this->attributes['mainTitle'] = trim($val);
     }
 
     public function setMetaDescriptionTag($val)
@@ -94,7 +244,7 @@ class PageItem
         $val = trim($val);
         if (mb_strlen($val) > 150)
             $val = mb_strcut($val, 0, 150) . '...';
-        $this->metaDescriptionTag = $val;
+        $this->attributes['metaDescriptionTag'] = $val;
     }
 
     public function setMetaTitleTag($val)
@@ -102,148 +252,220 @@ class PageItem
         $val = trim($val);
         if (mb_strlen($val) > 50)
             $val = mb_strcut($val, 0, 50) . '...';
-        $this->metaTitleTag = $val;
+        $this->attributes['metaTitleTag'] = $val;
     }
 
     public function setTarget($val)
     {
-        $this->target = trim($val);
+        $this->attributes['target'] = trim($val);
     }
 
     public function setTargetAttr($val)
     {
-        $this->targetAttr = trim($val);
+        $this->attributes['targetAttr'] = trim($val);
     }
 
     public function setNoIndex($val)
     {
-        $this->noIndex = trim($val);
+        $this->attributes['noIndex'] = trim($val);
     }
 
     public function setParent($val)
     {
-        $this->parent = trim($val);
+        $this->attributes['parent'] = trim($val);
     }
 
     public function setCssClass($val)
     {
-        $this->cssClass = trim($val);
+        $this->attributes['cssClass'] = trim($val);
     }
 
     public function setPassword($val)
     {
-        $this->password = ($val == '') ? $val : sha1(trim($val));
+        $this->attributes['password'] = ($val == '') ? $val : sha1(trim($val));
     }
 
     public function setImg($val)
     {
-        $this->img = trim($val);
+        $this->attributes['img'] = trim($val);
     }
 
     public function getId()
     {
-        return $this->id;
+        return $this->attributes['id'] ?? null;
     }
 
     public function setId($id)
     {
-        $this->id = $id;
+        $this->attributes['id'] = $id;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getResourceId(): string
+    {
+        return 'page:' . $this->getId();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPolicy(): array
+    {
+        return $this->getConditions();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getVisibilityFlags(): array
+    {
+        return [
+            'MP' => $this->getVisibilityFlag('MP'),
+            'MA' => $this->getVisibilityFlag('MA'),
+            'PP' => $this->getVisibilityFlag('PP'),
+            'AUTO' => $this->getVisibilityFlag('AUTO'),
+            'PUB' => $this->getVisibilityFlag('PUB'),
+            'MEM' => $this->getVisibilityFlag('MEM'),
+            'ADM' => $this->getVisibilityFlag('ADM'),
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getResourceParent(): ?ResourceInterface
+    {
+        $parentId = (int) $this->getParent();
+        if ($parentId <= 0) {
+            return null;
+        }
+
+        $page = new Page();
+        $parent = $page->create($parentId);
+        return $parent instanceof ResourceInterface ? $parent : null;
     }
 
     public function getName()
     {
-        return $this->name;
+        return $this->attributes['name'] ?? '';
     }
 
     public function getPosition()
     {
-        return $this->position;
+        return $this->attributes['position'] ?? 0;
     }
 
     public function getIsHomepage()
     {
-        return $this->isHomepage;
+        return $this->attributes['isHomepage'] ?? $this->attributes['is_homepage'] ?? 0;
     }
 
     public function getContent()
     {
-        return $this->content;
+        return $this->attributes['content'] ?? '';
+    }
+
+    /**
+     * Retourne le contenu HTML décodé et interprété via ContentParser (shortcodes).
+     */
+    public function getParsedContent(): string
+    {
+        $decoded = htmlspecialchars_decode((string) $this->getContent());
+        if (class_exists('\Content\ContentParser')) {
+            return (new \Content\ContentParser($decoded))->getParsedContent();
+        }
+        return $decoded;
     }
 
     public function getIsHidden()
     {
-        return $this->isHidden;
+        return $this->attributes['isHidden'] ?? $this->attributes['is_hidden'] ?? 0;
     }
 
     public function getFile()
     {
-        return $this->file;
+        return $this->attributes['file'] ?? '';
     }
 
     public function getMainTitle()
     {
-        return $this->mainTitle;
+        return $this->attributes['mainTitle'] ?? $this->attributes['main_title'] ?? '';
     }
 
     public function getMetaDescriptionTag()
     {
-        return $this->metaDescriptionTag;
+        return $this->attributes['metaDescriptionTag'] ?? $this->attributes['meta_description_tag'] ?? '';
     }
 
     public function getMetaTitleTag()
     {
-        return $this->metaTitleTag;
+        return $this->attributes['metaTitleTag'] ?? $this->attributes['meta_title_tag'] ?? '';
     }
 
     public function getTarget()
     {
-        if ($this->target == 'url')
+        $val = $this->attributes['target'] ?? '';
+        if ($val == 'url')
             return '';
-        return $this->target;
+        return $val;
     }
 
     public function getTargetAttr()
     {
-        return $this->targetAttr;
+        return $this->attributes['targetAttr'] ?? $this->attributes['target_attr'] ?? '_self';
     }
 
     public function getNoIndex()
     {
-        return $this->noIndex;
+        return $this->attributes['noIndex'] ?? $this->attributes['no_index'] ?? 0;
     }
 
     public function getParent()
     {
-        return $this->parent;
+        return $this->attributes['parent'] ?? $this->attributes['parent_id'] ?? 0;
     }
 
     public function getCssClass()
     {
-        return $this->cssClass;
+        return $this->attributes['cssClass'] ?? $this->attributes['css_class'] ?? '';
     }
 
     public function getPassword()
     {
-        return $this->password;
+        return $this->attributes['password'] ?? '';
     }
 
     public function getImg()
     {
-        return $this->img;
+        return $this->attributes['img'] ?? '';
     }
 
     public function getImgUrl()
     {
-        return Util::urlBuild(UPLOAD . 'galerie/' . $this->img);
+        $rawImg = trim((string)$this->getImg());
+        if ($rawImg === '') {
+            return '';
+        }
+        if (preg_match('~^https?://~i', $rawImg)) {
+            return $rawImg;
+        }
+        $normalized = ltrim(str_replace('\\', '/', $rawImg), '/');
+        if (str_starts_with($normalized, 'data/')) {
+            return Util::urlBuild($normalized);
+        }
+        return Util::urlBuild(UPLOAD . 'galerie/' . $normalized);
     }
 
     public function targetIs()
     {
-        if ($this->target == '')
+        $target = $this->getTarget();
+        if ($target == '')
             return 'page';
-        elseif ($this->target == 'javascript:')
+        elseif ($target == 'javascript:')
             return 'parent';
-        elseif (filter_var($this->target, FILTER_VALIDATE_URL) || $this->target == 'url')
+        elseif (filter_var($target, FILTER_VALIDATE_URL) || $target == 'url')
             return 'url';
         else
             return 'plugin';
@@ -252,6 +474,31 @@ class PageItem
     public function isVisibleOnList(): bool
     {
         return $this->targetIs() != "plugin" || ($this->targetIs() == "plugin" && PluginsManager::isActivePlugin($this->getTarget()));
+    }
+
+    public function getNavPosition()
+    {
+        return $this->attributes['navPosition'] ?? $this->attributes['nav_position'] ?? 'menu';
+    }
+
+    public function setNavPosition($val)
+    {
+        $this->attributes['navPosition'] = trim($val);
+    }
+
+    public function getLegalType()
+    {
+        return $this->attributes['legalType'] ?? $this->attributes['legal_type'] ?? 'none';
+    }
+
+    public function setLegalType($val)
+    {
+        $this->attributes['legalType'] = trim($val);
+    }
+
+    public function __toString()
+    {
+        return '';
     }
 }
 

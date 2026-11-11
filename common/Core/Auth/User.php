@@ -15,34 +15,92 @@ defined('ROOT') or exit('Access denied!');
 
 class User extends JsonActiveRecord
 {
-    protected static string $filePath = DATA_CORE_AUTH . 'users.json';
+    public function getId(): string|int|null
+    {
+        return $this->attributes['id'] ?? null;
+    }
 
+    public function getRole(): string
+    {
+        return $this->attributes['role'] ?? ($this->attributes['group_id'] ?? 'guest');
+    }
+
+    public function getPwd(): ?string
+    {
+        return $this->attributes['pwd'] ?? $this->attributes['password_hash'] ?? null;
+    }
+
+    protected static string $filePath = DATA_CORE_AUTH . 'users.json';
+    protected static string $tableName = 'users';
     protected static string $primaryKey = 'id';
+    protected static array $attributeMapping = [
+        'pwd' => 'password_hash'
+    ];
+    protected static array $casts = [
+        'tokens' => 'array',
+        'permissions' => 'array'
+    ];
+
+    protected static function getSchema(): array
+    {
+        return [
+            'email' => 'string',
+            'username' => 'string',
+            'password_hash' => 'string',
+            'token' => 'string',
+            'role' => 'string',
+            'group_id' => 'int',
+            'status' => 'string',
+            'permissions' => 'text',
+            'tokens' => 'text',
+            'subscription' => 'string',
+            'subscription_expiry' => 'string',
+            'created_at' => 'datetime',
+        ];
+    }
+
+    public function __toString(): string
+    {
+        return $this->attributes['email'] ?? 'User';
+    }
 
     public function save(): bool
     {
         $this->attributes['token'] = $this->attributes['token'] ?? UsersManager::generateToken();
         $this->attributes['username'] = $this->normalizeUsername($this->attributes['username'] ?? null);
-        $this->attributes['group_id'] = $this->normalizeGroupId($this->attributes['group_id'] ?? null);
+        $rawRole = $this->attributes['group_id'] ?? ($this->attributes['role'] ?? null);
+        $this->attributes['role'] = $this->normalizeRole($rawRole);
+        unset($this->attributes['group_id']);
         $this->attributes['status'] = $this->normalizeStatus($this->attributes['status'] ?? null);
         $this->attributes['permissions'] = $this->normalizePermissions($this->attributes['permissions'] ?? []);
 
-        return parent::save();
+        $result = parent::save();
+
+        if ($result) {
+            UserSynchronizer::sync($this);
+        }
+
+        return $result;
+    }
+
+    public function delete(): bool
+    {
+        $id = $this->getId();
+        $result = parent::delete();
+
+        if ($result && $id) {
+            UserSynchronizer::delete($id);
+        }
+
+        return $result;
     }
 
     /**
+     * @deprecated Use AccessPolicyEvaluator::isAdmin() instead. All callers have been migrated.
      * Vérifie qu'un token transmis dans la requête correspond à l'utilisateur.
-     * Pour les actions admin, si l'utilisateur est connecté via session, il est automatiquement autorisé.
      */
     public function isAuthorized(): bool
     {
-        // Si on est en mode admin et que l'utilisateur est dans la session, il est autorisé
-        if (defined('IS_ADMIN') && IS_ADMIN === true) {
-            if (isset($_SESSION['email']) && isset($this->attributes['email']) && $_SESSION['email'] === $this->attributes['email']) {
-                return true;
-            }
-        }
-        
         $matches = Router::getInstance()->match();
         if (isset($matches['params']['token'])) {
             return $matches['params']['token'] === $this->attributes['token'];
@@ -61,16 +119,21 @@ class User extends JsonActiveRecord
             return false;
         }
 
-        return $_REQUEST['token'] == $this->attributes['token'];
+        return $_REQUEST['token'] === $this->attributes['token'];
     }
 
     public function getGroup(): ?Group
     {
-        $groupId = $this->attributes['group_id'] ?? null;
-        if ($groupId === null) {
+        $role = $this->attributes['role'] ?? null;
+        if ($role === null) {
             return null;
         }
-        return Group::findPK((int) $groupId);
+        
+        if (is_numeric($role)) {
+            return Group::findPK((int) $role);
+        }
+        
+        return Group::find('slug', $role);
     }
 
     public function getPermissions(): array
@@ -105,9 +168,20 @@ class User extends JsonActiveRecord
         return (int) ($this->attributes['id'] ?? 0) === 1;
     }
 
+    public function isProPilote(): bool
+    {
+        $group = $this->getGroup();
+        return $group !== null && ($group->getSlug() === 'pro_pilote' || (int)($group->id ?? 0) === 4);
+    }
+
     public function canBeDeleted(): bool
     {
         return !$this->isSuperAdmin();
+    }
+
+    public function getEmail(): string
+    {
+        return $this->attributes['email'] ?? '';
     }
 
     public function username(): string
@@ -118,6 +192,11 @@ class User extends JsonActiveRecord
     public function status(): string
     {
         return $this->attributes['status'] ?? 'active';
+    }
+
+    public function isSuspicious(): bool
+    {
+        return (bool) ($this->attributes['is_suspicious'] ?? false);
     }
 
     private function normalizeUsername(?string $username): string
@@ -137,13 +216,13 @@ class User extends JsonActiveRecord
         return $candidate !== '' ? $candidate : 'user' . time();
     }
 
-    private function normalizeGroupId($groupId): int
+    private function normalizeRole($role): string
     {
-        if ($groupId !== null) {
-            return (int) $groupId;
+        if ($role !== null) {
+            return (string) $role;
         }
 
-        return Core::getInstance()->auth()->getDefaultGroupId();
+        return (string) Core::getInstance()->auth()->getDefaultGroupId();
     }
 
     private function normalizeStatus(?string $status): string

@@ -156,7 +156,9 @@ class AdminMarketplaceController extends AdminController
     }
 
     public function installRelease(string $type, string $slug, string $token) {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             $this->core->redirect($this->router->generate('admin-marketplace'));
         }
 
@@ -170,6 +172,13 @@ class AdminMarketplaceController extends AdminController
             Show::msg(Lang::get('marketplace.server_requirements_error'), 'error');
             $this->core->redirect($this->router->generate('admin-marketplace'));
         }
+        // Vérifier que ZipArchive est disponible avant d'essayer d'installer
+        if (!class_exists('ZipArchive') || !extension_loaded('zip')) {
+            Show::msg('L\'extension PHP ZipArchive n\'est pas installée. Veuillez installer l\'extension php-zip pour pouvoir installer des plugins/thèmes depuis le marketplace.', 'error');
+            $this->core->redirect($this->router->generate('admin-marketplace'));
+            return;
+        }
+
         $installed = $this->marketManager->installRessource($ressource);
         if ($installed) {
             if ($ressource->type == MarketPlaceRessource::TYPE_PLUGIN) {
@@ -192,7 +201,9 @@ class AdminMarketplaceController extends AdminController
     }
 
     public function uninstallRessource(string $type, string $slug, string $token) {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             $this->core->redirect($this->router->generate('admin-marketplace'));
         }
         if ($type === MarketPlaceRessource::TYPE_PLUGIN) {
@@ -227,7 +238,9 @@ class AdminMarketplaceController extends AdminController
     }
 
     public function migrateLegacyPlugins() {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             $this->core->redirect($this->router->generate('admin-marketplace'));
         }
         $pending = $this->core->extensions()->getPendingLegacyPlugins();
@@ -251,7 +264,9 @@ class AdminMarketplaceController extends AdminController
     }
 
     public function refreshCache(string $token) {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             $this->core->redirect($this->router->generate('admin-marketplace'));
         }
         $this->marketManager->clearCache();

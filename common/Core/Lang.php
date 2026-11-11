@@ -120,8 +120,17 @@ class Lang {
         if (is_array($args[1])) {
             return vsprintf(self::$data[$name], $args[1]);
         }
-        return vsprintf(self::$data[$name], $args);
+        return vsprintf(self::$data[$name], array_values($args));
 
+    }
+
+    /**
+     * Get all loaded translation raw data
+     * 
+     * @return array
+     */
+    public static function getRaw(): array {
+        return self::$data;
     }
 
     /**

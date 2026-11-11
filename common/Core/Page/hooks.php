@@ -53,9 +53,52 @@ function pageEndFrontHead() {
         if (isset($pageItem) && $pageItem && $pageItem->getNoIndex()) {
             echo '<meta name="robots" content="noindex"><meta name="googlebot" content="noindex">';
         }
-        $pluginsManager = PluginsManager::getInstance();
-        if (isset($pageItem) && $pageItem && $pluginsManager->isActivePlugin('galerie') && \galerie::searchByfileName($pageItem->getImg()))
-            echo '<meta property="og:image" content="' . $core->getConfigVal('siteUrl') . '/' . str_replace('./', '', UPLOAD) . 'galerie/' . $pageItem->getImg() . '" />';
+        // Hook pour permettre aux plugins d'injecter une image OG (ex: galerie)
+        $ogImageData = [
+            'pageItem' => $pageItem,
+            'url' => null
+        ];
+        $ogImageData = $core->callHook('page:og-image', $ogImageData);
+        if (!empty($ogImageData['url'])) {
+            echo '<meta property="og:image" content="' . htmlspecialchars($ogImageData['url']) . '" />';
+        }
     }
+}
+
+/**
+ * Hook pour la recherche globale : cherche dans les pages statiques
+ */
+function pageSearchResultsHook(array $data): array
+{
+    $query = $data['query'];
+    $results = [];
+    try {
+        $pageManager = new Page();
+        $items = $pageManager->getItems();
+
+        foreach ($items as $item) {
+            // Ne pas indexer les liens externes ou les plugins (déjà gérés par leurs propres hooks)
+            if ($item->targetIs() !== 'page') continue;
+            if ($item->getIsHidden()) continue;
+
+            if (stripos($item->getName(), $query) !== false || stripos($item->getContent(), $query) !== false) {
+                $results[] = [
+                    'title' => $item->getName(),
+                    'excerpt' => substr(strip_tags($item->getContent()), 0, 150) . '...',
+                    'url' => (new Page())->makeUrl($item),
+                    'icon' => 'fa-solid fa-file-lines',
+                    'source' => 'page',
+                    'source_label' => 'Page',
+                    'date' => '',
+                    'date_formatted' => '',
+                    'score' => (stripos($item->getName(), $query) !== false ? 10 : 0) + (stripos($item->getContent(), $query) !== false ? 5 : 0)
+                ];
+            }
+        }
+        $data['results'] = array_merge($data['results'], $results);
+    } catch (\Exception $e) {
+        // Ignorer
+    }
+    return $data;
 }
 

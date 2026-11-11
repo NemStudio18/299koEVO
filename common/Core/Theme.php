@@ -50,7 +50,13 @@ class Theme {
         if (file_exists($this->folderPath . 'infos.json')) {
             $infos = Util::readJsonFile($this->folderPath . 'infos.json');
             foreach ($infos as $key => $info) {
-                $this->$key = $info;
+                if ($key === 'parent') {
+                    $this->parentName = $info;
+                    continue;
+                }
+                if (property_exists($this, $key)) {
+                    $this->$key = $info;
+                }
             }
         }
         $this->parent = $this->getParent($this->parentName);
@@ -151,8 +157,12 @@ class Theme {
         if (!is_null($this->parent)) {
             $str .= $this->parent->getCSSLinks();
         }
-        if (file_exists($this->folderPath . 'styles.css')) {
-            $str .= '<link rel="stylesheet" href="' . Util::urlBuild(THEMES . $this->folderName . '/styles.css') . '" />';
+        if (file_exists($this->folderPath . 'styles.min.css')) {
+            $ver = '?v=' . filemtime($this->folderPath . 'styles.min.css');
+            $str .= '<link rel="stylesheet" href="' . Util::urlBuild(THEMES . $this->folderName . '/styles.min.css') . $ver . '" />';
+        } elseif (file_exists($this->folderPath . 'styles.css')) {
+            $ver = '?v=' . filemtime($this->folderPath . 'styles.css');
+            $str .= '<link rel="stylesheet" href="' . Util::urlBuild(THEMES . $this->folderName . '/styles.css') . $ver . '" />';
         }
         return $str;
     }
@@ -168,7 +178,8 @@ class Theme {
      */
     public function getJSLinks(): string {
         if (file_exists($this->folderPath . 'scripts.js')) {
-            return '<script type="text/javascript" src="' . Util::urlBuild(THEMES . $this->folderName . '/scripts.js') . '"></script>';
+            $ver = '?v=' . filemtime($this->folderPath . 'scripts.js');
+            return '<script type="text/javascript" src="' . Util::urlBuild(THEMES . $this->folderName . '/scripts.js') . $ver . '" defer></script>';
         }
         $js = '';
         if (!is_null($this->parent)) {

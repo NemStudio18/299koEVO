@@ -1,7 +1,7 @@
 <section class="module-card">
 	<header>{{Lang.groups-list}}</header>
 	<div class="module-actions">
-		<a class='button success' href='{{ROUTER.generate("groups-add")}}'>
+		<a class='button success' href='{ ROUTER.generate("groups-add") }'>
 			<i class="fa-solid fa-users-line"></i>
 			{{Lang.groups-add}}</a>
 	</div>
@@ -24,14 +24,14 @@
 						<td><code>{{group.slug}}</code></td>
 						<td>{{group.userCount}}</td>
 						<td>
-							{% if group.permissions %}
+							{% if group.permissionLabels %}
 								<ul class="permissions-list">
-									{% for permission in group.permissions %}
+									{% for permission in group.permissionLabels %}
 										<li>
-											{% if permission == "*" %}
-												<span class="badge success">{{Lang.permissions.all}}</span>
+											{% if permission.key == "*" %}
+												<span class="badge success">{{permission.label}}</span>
 											{% else %}
-												{{permission}}
+												{{permission.label}}
 											{% endif %}
 										</li>
 									{% endfor %}
@@ -50,11 +50,11 @@
 						<td>
 							<div role="group">
 								{% if not group.system %}
-									<a class="button small" title="{{Lang.groups-edit}}" href='{{ ROUTER.generate("groups-edit", ["id" => group.id]) }}'>
+									<a class="button small" title="{{Lang.groups-edit}}" href='{ ROUTER.generate("groups-edit", ["id" => group.id]) }'>
 										<i class="fa-solid fa-pen"></i>
 									</a>
 									{% if group.userCount == 0 %}
-										<a class="button small alert" title="{{Lang.groups-delete}}" href='{{ ROUTER.generate("groups-delete", ["id" => group.id, "token" => token]) }}' onclick="if (!confirm('{{Lang.confirm.deleteItem}}')) return false;">
+										<a class="button small alert" title="{{Lang.groups-delete}}" href='{ ROUTER.generate("groups-delete", ["id" => group.id, "token" => token]) }' onclick="if (!confirm('{{Lang.confirm.deleteItem}}')) return false;">
 											<i class="fa-solid fa-trash"></i>
 										</a>
 									{% endif %}

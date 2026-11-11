@@ -1,149 +1,22 @@
-.install,
-.install-body {
-    background: #f4f6fb;
-    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-    color: #1f2a37;
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-}
-
-#install {
-    width: 100%;
-    max-width: 600px;
-    background: #ffffff;
-    border-radius: 18px;
-    box-shadow: 0 35px 80px rgba(15, 23, 42, 0.15);
-    overflow: hidden;
-}
-
-#install header {
-    background: linear-gradient(135deg, #0083b0, #00b4db);
-    padding: 35px;
-    text-align: center;
-    color: #fff;
-}
-
-#install header h1 {
-    margin: 0;
-    font-size: 1.6rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-#install form, #install .messages-wrapper {
-    padding: 35px;
-}
-
-#install p {
-    margin: 0 0 20px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 0.95rem;
-}
-
-#install input[type="text"],
-#install input[type="email"],
-#install input[type="password"],
-#install select {
-    padding: 12px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-#install input:focus,
-#install select:focus {
-    border-color: #00a2ff;
-    box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.15);
-    outline: none;
-}
-
-#install button, #install a.button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 22px;
-    border-radius: 999px;
-    border: none;
-    background: #0083b0;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-#install button.success,
-#install a.button.success {
-    background: #00b894;
-}
-
-#install button.alert,
-#install a.button.alert {
-    background: #ff6b6b;
-}
-
-#install button:hover,
-#install a.button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 20px rgba(0, 131, 176, 0.2);
-}
-
-.msg {
-    border-radius: 12px;
-    padding: 15px 18px;
-    margin-bottom: 15px;
-    font-size: 0.95rem;
-}
-
-.msg.error {
-    background: #fdecea;
-    color: #b42318;
-}
-
-.msg.success {
-    background: #ebf8f1;
-    color: #1b7052;
-}
-
-.msg.warning {
-    background: #fff8e6;
-    color: #8a6116;
-}
-
-.text-center {
-    text-align: center;
-}
-
-#alert-msg {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    left: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 10;
-}
-
-.install-body #alert-msg .msg {
-    margin: 0 auto;
-    max-width: 600px;
-}
+/**
+ * 299KoEVO — Style unifié de l'installateur (aligné sur l'interface d'administration)
+ */
 :root {
-    --font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    --bg-color: #f5f7fb;
-    --card-bg: #ffffff;
-    --border-color: rgba(32, 44, 57, 0.08);
-    --primary: #0ea5e9;
-    --primary-dark: #0284c7;
-    --text-color: #0f172a;
+    --nav-bg-color: #16202e;
+    --font-color: #334155;
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --section-bg-color: #ffffff;
+    --section-head-bg-color: #f8fafc;
+    --section-radius: 14px;
+    --adm-border: #e2e8f0;
+    --adm-text-strong: #0f172a;
+    --adm-text-muted: #64748b;
+    --primary-color: #1f62a9;
+    --primary-hover-color: #164980;
+    --success-color: #16a34a;
+    --success-hover-color: #15803d;
+    --alert-color: #dc2626;
+    --warning-color: #d97706;
 }
 
 *,
@@ -152,154 +25,338 @@
     box-sizing: border-box;
 }
 
-body.install {
+html, body.install {
     margin: 0;
+    padding: 0;
     min-height: 100vh;
+    background: #f1f5f9;
+    color: var(--font-color);
     font-family: var(--font-family);
-    background: radial-gradient(circle at top, #e0f2fe 0%, #f5f7fb 45%, #f5f7fb 100%);
-    color: var(--text-color);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.install-topbar {
+    background: var(--nav-bg-color);
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 14px 24px;
+}
+
+.install-topbar-inner {
+    max-width: 860px;
+    margin: 0 auto;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.install-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+}
+
+.install-brand-badge {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    padding: 40px 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--primary-color);
+    color: #ffffff;
+    font-size: 0.95rem;
 }
 
-#install {
-    width: min(640px, 100%);
-    background: var(--card-bg);
-    border-radius: 24px;
-    box-shadow:
-        0 25px 65px rgba(15, 23, 42, 0.1),
-        0 10px 25px rgba(15, 23, 42, 0.05);
-    padding: 40px;
-    border: 1px solid var(--border-color);
-    animation: popIn 0.6s ease;
+.install-version-pill {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
 }
 
-#install header {
-    text-align: center;
-    margin-bottom: 30px;
+.install-main {
+    max-width: 860px;
+    margin: 28px auto 40px;
+    padding: 0 18px;
 }
 
-#install header h1 {
+#alert-msg {
+    max-width: 860px;
+    margin: 18px auto 0;
+    padding: 0 18px;
+}
+
+#install.module-card {
+    background: var(--section-bg-color);
+    border: 1px solid var(--adm-border);
+    border-radius: var(--section-radius);
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+#install > header {
+    background: var(--section-head-bg-color);
+    border-bottom: 1px solid var(--adm-border);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+#install > header h1 {
     margin: 0;
-    font-size: 1.9rem;
-    color: var(--text-color);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--adm-text-strong);
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-#install form {
+#install > header h1 i {
+    color: var(--primary-color);
+}
+
+.install-subtitle {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--adm-text-muted);
+}
+
+.install-body-inner {
+    padding: 24px;
+}
+
+.install-section-title {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--adm-text-strong);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.install-section-title i {
+    color: var(--primary-color);
+}
+
+.msg-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.msg {
+    border-radius: 10px;
+    padding: 10px 13px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.4;
+}
+
+.msg.success {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #166534;
+}
+
+.msg.warning {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.msg.error {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+.install-fatal-block {
+    grid-column: 1 / -1;
+}
+
+.install-form {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
 }
 
-#install label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 6px;
-}
-
-#install input[type="text"],
-#install input[type="email"],
-#install input[type="password"],
-#install select {
-    width: 100%;
-    border: 1px solid var(--border-color);
+.install-panel {
+    background: var(--section-head-bg-color);
+    border: 1px solid var(--adm-border);
     border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    background: #f8fafc;
+    padding: 18px 20px;
 }
 
-#install input:focus,
-#install select:focus {
+.install-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+@media (max-width: 640px) {
+    .install-grid-2 {
+        grid-template-columns: 1fr;
+    }
+    .install-body-inner {
+        padding: 18px;
+    }
+}
+
+.install-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 0;
+}
+
+.install-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--adm-text-strong);
+}
+
+.install-field input[type="text"],
+.install-field input[type="email"],
+.install-field input[type="password"],
+.install-field input[type="number"],
+.install-field select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.94rem;
+    background: #ffffff;
+    color: var(--adm-text-strong);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.install-field input:focus,
+.install-field select:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
-    background: #fff;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(31, 98, 169, 0.14);
 }
 
-#install .button {
+.install-password-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.install-password-wrap input {
+    padding-right: 44px !important;
+}
+
+.install-toggle-pwd {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--adm-text-muted);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.install-toggle-pwd:hover {
+    color: var(--primary-color);
+    background: #f1f5f9;
+}
+
+.install-storage-desc {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.84rem;
+    color: var(--adm-text-muted);
+    line-height: 1.45;
+}
+
+.install-mysql-box {
+    display: none;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--adm-border);
+}
+
+.install-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    padding: 10px 18px;
+    border-radius: 9px;
+    border: 1px solid transparent;
+    font-size: 0.92rem;
     font-weight: 600;
-    border-radius: 999px;
-    border: none;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-#install .button.success {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: #fff;
-    padding: 12px 26px;
-    box-shadow: 0 10px 20px rgba(14, 165, 233, 0.25);
+.button.primary {
+    background: var(--primary-color);
+    color: #ffffff;
 }
 
-#install .button.success:hover {
+.button.primary:hover {
+    background: var(--primary-hover-color);
     transform: translateY(-1px);
-    box-shadow: 0 15px 30px rgba(14, 165, 233, 0.35);
 }
 
-#install .button.alert {
-    background: transparent;
-    border: 1px solid rgba(14, 165, 233, 0.5);
-    color: var(--primary);
-    padding: 10px 24px;
+.button.success {
+    background: var(--success-color);
+    color: #ffffff;
 }
 
-#install .msg {
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 14px;
-    font-size: 0.95rem;
-}
-
-#install .msg.success {
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    color: #166534;
-}
-
-#install .msg.error {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #7f1d1d;
+.button.success:hover {
+    background: var(--success-hover-color);
+    transform: translateY(-1px);
 }
 
 #install footer {
-    margin-top: 24px;
+    background: var(--section-head-bg-color);
+    border-top: 1px solid var(--adm-border);
+    padding: 14px 24px;
     text-align: center;
-    font-size: 0.9rem;
-    color: #475569;
+    font-size: 0.84rem;
+    color: var(--adm-text-muted);
 }
 
 #install footer a {
-    color: var(--primary);
+    color: var(--primary-color);
     text-decoration: none;
+    font-weight: 600;
 }
 
-@keyframes popIn {
-    from {
-        opacity: 0;
-        transform: translateY(15px) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+#install footer a:hover {
+    text-decoration: underline;
 }
-
-@media (max-width: 640px) {
-    #install {
-        padding: 30px 24px;
-    }
-
-    body.install {
-        padding: 20px;
-    }
-}
-

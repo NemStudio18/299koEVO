@@ -1,26 +1,43 @@
-<section class="user-auth-form">
-    <form method="post" action="{{ loginLink }}" autocomplete="off">
-        <input type="hidden" name="_csrf" value="{{ _csrfToken }}">
-        <input type="text" name="_email" value="" class="hp-field" aria-hidden="true" tabindex="-1">
+{% INCLUDE COMMON ~ "template/users/auth-assets.tpl" %}
+<section class="user-auth-form auth-card">
+    <form method="post" action="{{loginLink}}" autocomplete="off" id="login-form">
+        <input type="hidden" name="_csrf" value="{{_csrfToken}}" class="csrf-hidden">
+        <input type="text" name="_hp_website" value="" class="hp-field" aria-hidden="true" tabindex="-1" autocomplete="off" style="display:none !important; position:absolute !important; left:-9999px !important; visibility:hidden !important; pointer-events:none !important;" rel="nofollow">
         
-        <p>
-            <label for="adminEmail">{{ Lang.email }}</label>
-            <input type="email" id="adminEmail" name="adminEmail" required>
+        <p class="field">
+            <label for="adminEmail">Adresse email ou pseudo</label>
+            <input type="text" id="adminEmail" name="adminEmail" required autocomplete="username" placeholder="ex: mon_pseudo ou email@exemple.com">
+            <span class="field-validation" id="email-validation"></span>
         </p>
-        <p>
-            <label for="adminPwd">{{ Lang.password }}</label>
-            <input type="password" id="adminPwd" name="adminPwd" required>
+        <p class="field">
+            <label for="adminPwd">{{Lang.password}}</label>
+            <div class="password-input-wrapper">
+                <input type="password" id="adminPwd" name="adminPwd" required autocomplete="current-password">
+                <button type="button" class="toggle-password" aria-label="Afficher/Masquer le mot de passe" title="Afficher/Masquer le mot de passe">
+                    <i class="fa-solid fa-eye" id="toggle-password-icon"></i>
+                </button>
+            </div>
+            <span class="field-validation" id="password-validation"></span>
         </p>
-        <p>
+        <p class="field checkbox">
             <input type="checkbox" name="remember" id="remember"/>
-            <label for="remember">{{ Lang.users.remember }}</label>
+            <label for="remember">{{Lang.users.remember}}</label>
         </p>
-        <p>
-            <button type="submit" class="button success">{{ Lang.validate }}</button>
-            <a class="button alert" href="{{ CORE.getConfigVal("siteUrl") }}">{{ Lang.quit }}</a>
+        {% if antispam %}
+            <div class="field antispam-wrapper">
+                {{antispamField}}
+            </div>
+        {% endif %}
+        <p class="actions">
+            <button type="submit" class="button success">{{Lang.validate}}</button>
+            <a class="button alert" href="{{CORE.getConfigVal("siteUrl") }}">{{ Lang.quit}}</a>
         </p>
-        <p>
-            <a href="{{ lostLink }}">{{ Lang.lost-password }}</a>
+        <p class="links">
+            <a href="{{lostLink}}">{{Lang.lost-password}}</a>
+            <span class="auth-sep">|</span>
+            <a href="{{ ROUTER.generate('register') }}">Pas encore de compte ?</a>
         </p>
     </form>
 </section>
+
+

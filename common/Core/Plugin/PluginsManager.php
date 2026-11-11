@@ -38,16 +38,11 @@ class PluginsManager {
         return $this->plugins;
     }
 
-    /**
-     * Return a plugin by its name
-     * Return false if not found
-     * 
-     * @param string $name
-     * @return Plugin|false
-     */
     public function getPlugin($name) {
+        $normalizedSearch = str_replace(['-', '_'], '', strtolower((string)$name));
         foreach ($this->plugins as $plugin) {
-            if ($plugin->getName() == $name)
+            $normalizedPlugin = str_replace(['-', '_'], '', strtolower($plugin->getName()));
+            if ($normalizedPlugin === $normalizedSearch)
                 return $plugin;
         }
         return false;
@@ -84,6 +79,10 @@ class PluginsManager {
         // Write plugin config
         Util::writeJsonFile(DATA_PLUGIN . $name . DS . 'config.json', $config);
         chmod(DATA_PLUGIN . $name . DS .'config.json', 0644);
+
+        // Register storage requirements from param/storage.json into env.json
+        $this->registerStorageRequirements($name);
+
         // Call install function if exists
         if (file_exists(PLUGINS . $name . DS . $name . '.php')) {
             require_once (PLUGINS . $name . DS . $name . '.php');
@@ -99,6 +98,60 @@ class PluginsManager {
         }
         Core::getInstance()->getLogger()->log(\Core\Logger::LEVEL_INFO, "Plugin $name successfully installed");
         return true;
+    }
+
+    /**
+     * Registers a plugin's storage requirements into env.json.
+     * 
+     * Reads param/storage.json from the plugin directory. For each declared entity,
+     * if JSON is not in the supported drivers list, registers the entity as "sql"
+     * in the global storage configuration (env.json). This ensures fresh installations
+     * work correctly without manual env.json edits.
+     * 
+     * @param string $name Plugin name
+     */
+    private function registerStorageRequirements(string $name): void
+    {
+        $storageFile = PLUGINS . $name . DS . 'param' . DS . 'storage.json';
+        if (!file_exists($storageFile)) {
+            return;
+        }
+
+        $storageConfig = Util::readJsonFile($storageFile);
+        if (empty($storageConfig) || !is_array($storageConfig)) {
+            return;
+        }
+
+        $db = \Core\Database::getInstance();
+        $newEntries = [];
+
+        foreach ($storageConfig as $entityName => $entityConfig) {
+            if (!is_array($entityConfig) || !isset($entityConfig['drivers']) || !is_array($entityConfig['drivers'])) {
+                continue;
+            }
+            // Skip if already configured in env.json
+            if ($db->getConfig($entityName) !== null) {
+                continue;
+            }
+
+            $drivers = $entityConfig['drivers'];
+
+            // If entity does NOT support JSON, it MUST be registered as "sql"
+            if (!in_array('json', $drivers)) {
+                $newEntries[$entityName] = 'sql';
+                // Also set in-memory so the current request works immediately
+                $db->setStorageConfig($entityName, 'sql');
+                Core::getInstance()->getLogger()->log(
+                    \Core\Logger::LEVEL_INFO,
+                    "Storage auto-registered: $entityName => sql (plugin: $name)"
+                );
+            }
+        }
+
+        // Persist to env.json in one write
+        if (!empty($newEntries)) {
+            $db->saveConfig(['storage' => $newEntries]);
+        }
     }
 
     /**
@@ -182,11 +235,17 @@ class PluginsManager {
      *
      * @return array An array of plugin objects.
      */
-    private function listPlugins() {
+    public function listPlugins() {
         $data = [];
         $dataNotSorted = [];
         $items = Util::scanDir(PLUGINS);
         foreach ($items['dir'] as $dir) {
+            // Vérifier que c'est bien un plugin (doit avoir param/infos.json)
+            if (!file_exists(PLUGINS . $dir . '/param/infos.json')) {
+                // Ce n'est pas un plugin, ignorer (admin, common, plugin, theme, etc.)
+                continue;
+            }
+            
             // If the plugin is installed, get its configuration
             if (file_exists(DATA_PLUGIN . $dir . '/config.json')) {
                 $dataNotSorted[$dir] = Util::readJsonFile(DATA_PLUGIN . $dir . '/config.json', true);
@@ -209,19 +268,48 @@ class PluginsManager {
     private function createPlugin($name) {
         // Instance du core
         $core = Core::getInstance();
+        $logger = $core->getLogger();
+        $problems = [];
+        
         // Infos du plugin
         $infos = Util::readJsonFile(PLUGINS . $name . '/param/infos.json');
+        // Si infos.json n'existe pas ou est invalide, utiliser un tableau vide
+        if (!is_array($infos)) {
+            $infos = [];
+            $problems[] = "infos.json invalide ou manquant";
+        } elseif (empty($infos['name'])) {
+            $problems[] = "infos.json: champ 'name' manquant";
+        }
+        
         // Configuration du plugin
         $config = Util::readJsonFile(DATA_PLUGIN . $name . '/config.json');
+        if (!is_array($config)) {
+            $config = [];
+            if (!empty($problems)) { // Ne logger que si d'autres problèmes existent
+                $problems[] = "config.json invalide ou manquant";
+            }
+        }
+        
         // Hooks du plugin
         $hooks = Util::readJsonFile(PLUGINS . $name . '/param/hooks.json');
+        if (!is_array($hooks)) {
+            $hooks = [];
+        }
+        
         // Config usine
         $initConfig = Util::readJsonFile(PLUGINS . $name . '/param/config.json');
-        // Derniers checks
-        if (!is_array($config))
-            $config = [];
-        if (!is_array($hooks))
-            $hooks = [];
+        if (!is_array($initConfig)) {
+            $initConfig = [];
+            if (!empty($problems)) { // Ne logger que si d'autres problèmes existent
+                $problems[] = "param/config.json invalide ou manquant";
+            }
+        }
+        
+        // Logger les problèmes
+        if (!empty($problems)) {
+            $logger->warning("Plugin '{$name}' a des problèmes: " . implode(', ', $problems));
+        }
+        
         // Création de l'objet
         $plugin = new Plugin($name, $config, $infos, $hooks, $initConfig);
         return $plugin;

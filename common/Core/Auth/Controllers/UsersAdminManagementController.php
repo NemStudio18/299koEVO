@@ -36,7 +36,9 @@ class UsersAdminManagementController extends AdminController {
     }
 
     public function addUserSend() {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             return $this->addUser();
         }
         $mail = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL) ?? false;
@@ -63,6 +65,7 @@ class UsersAdminManagementController extends AdminController {
         $user->username = $username;
         $user->group_id = $this->resolveGroupId($groupSlug);
         $user->status = $status;
+        $user->custom_badge = trim($_POST['custom_badge'] ?? '');
         $user->permissions = $this->sanitizePermissions($permissions);
         $user->save();
         Show::msg(Lang::get('users-added'), 'success');
@@ -70,17 +73,20 @@ class UsersAdminManagementController extends AdminController {
         $this->core->redirect($this->router->generate('users-admin-home'));
     }
 
-    public function edit(int $id) {
+    public function edit($id) {
+        $id = (string) $id;
         $user = User::findPK($id);
         if ($user === null) {
+            Show::msg('Utilisateur introuvable.', 'error');
             $this->core->redirect($this->router->generate('users-admin-home'));
+            return null;
         }
         $response = new AdminResponse();
         $tpl = $response->createPluginTemplate('users', 'usersedit');
 
         $tpl->set('link', $this->router->generate('users-edit-send'));
         $groups = $this->core->auth()->getGroups();
-        $user->group_slug = $this->groupSlugFromId($groups, $user->attributes['group_id'] ?? null);
+        $user->group_slug = $this->groupSlugFromId($groups, $user->attributes['group_id'] ?? ($user->attributes['role'] ?? null));
         $tpl->set('user', $user);
         $tpl->set('groups', $groups);
         $tpl->set('permissionsDefinitions', Permissions::translated());
@@ -90,39 +96,46 @@ class UsersAdminManagementController extends AdminController {
     }
 
     public function editUserSend() {
-        if (!$this->user->isAuthorized()) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             return $this->addUser();
         }
-        $mail = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL) ?? false;
-        $pwd = filter_input(INPUT_POST, 'pwd', FILTER_UNSAFE_RAW) ?? false;
-        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? false;
+        $mail = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
+        $pwd = $_POST['pwd'] ?? '';
+        $id = trim((string) ($_POST['id'] ?? ''));
         $user = User::findPK($id);
         $username = trim($_POST['username'] ?? '');
         $groupSlug = $_POST['group_slug'] ?? null;
         $status = $this->sanitizeStatus($_POST['status'] ?? 'active');
         $permissions = $_POST['permissions'] ?? [];
-        if (!$mail || !$id || $user === null || $username === '') {
+        if (!$mail || $id === '' || $user === null || $username === '') {
             Show::msg(Lang::get('users-credentials-issue'), 'error');
             $this->core->redirect($this->router->generate('users-admin-home'));
+            return null;
         }
         // Check if mail is already taken
         foreach (User::all() as $u) {
-            if ($u->email === $mail && $u->id !== $id) {
+            $uId = (string) ($u->id ?? $u->getId());
+            if ($u->email === $mail && $uId !== $id) {
                 Show::msg(Lang::get('users-already-exists'), 'error');
                 $this->core->redirect($this->router->generate('users-admin-home'));
+                return null;
             }
-            if ($username === ($u->username ?? '') && $u->id !== $id) {
+            if ($username === ($u->username ?? '') && $uId !== $id) {
                 Show::msg(Lang::get('users-registration-username-exists'), 'error');
                 $this->core->redirect($this->router->generate('users-admin-home'));
+                return null;
             }
         }
 
-        if ($pwd !== false && $pwd !== '') {
+        if ($pwd !== '' && $pwd !== false) {
             // Change password
             $user->pwd = UsersManager::encrypt($pwd);
         }
         $user->email = $mail;
         $user->username = $username;
+        $user->custom_badge = trim($_POST['custom_badge'] ?? '');
         if (!$user->isSuperAdmin()) {
             $user->group_id = $this->resolveGroupId($groupSlug);
             $user->status = $status;
@@ -132,29 +145,38 @@ class UsersAdminManagementController extends AdminController {
         Show::msg(Lang::get('users-edited'), 'success');
         Core::getInstance()->getLogger()->log('INFO', 'User edited: '. $mail);
         $this->core->redirect($this->router->generate('users-admin-home'));
+        return null;
     }
 
-    public function delete(int $id, $token) {
-        if (!$this->user->isAuthorized()) {
+    public function delete($id, $token) {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx)) {
             $this->core->redirect($this->router->generate('users-admin-home'));
+            return null;
         }
+        $id = (string) $id;
         $user = User::findPK($id);
         if ($user === null) {
             Show::msg(Lang::get('users-credentials-issue'), 'error');
             $this->core->redirect($this->router->generate('users-admin-home'));
+            return null;
         }
         if (!$user->canBeDeleted()) {
             Show::msg(Lang::get('users-delete-forbidden'), 'error');
             $this->core->redirect($this->router->generate('users-admin-home'));
+            return null;
         }
         $mail = $user->email;
         if ($user->delete()) {
             Show::msg(Lang::get('users-deleted'), 'success');
             Core::getInstance()->getLogger()->log('INFO', 'User deleted: '. $mail);
             $this->core->redirect($this->router->generate('users-admin-home'));
+            return null;
         }
         Show::msg(Lang::get('core-changes-not-saved'), 'error');
-            $this->core->redirect($this->router->generate('users-admin-home'));
+        $this->core->redirect($this->router->generate('users-admin-home'));
+        return null;
     }
 
     protected function resolveGroupId(?string $slug): int

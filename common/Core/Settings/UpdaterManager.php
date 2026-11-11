@@ -4,6 +4,12 @@ namespace Core\Settings;
 
 defined('ROOT') or exit('Access denied!');
 
+if (!function_exists('Core\Settings\logg')) {
+    function logg(string $message, string $level = 'INFO'): void {
+        \Core\Logger::getInstance()->log($level, $message);
+    }
+}
+
 class UpdaterManager
 {
     public $lastVersion;

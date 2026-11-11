@@ -30,3 +30,16 @@
 .market-others-previews {
     display: none;
 }
+
+@media screen and (max-width: 768px) {
+    .market-item {
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .market-list {
+        flex-direction: column;
+    }
+}

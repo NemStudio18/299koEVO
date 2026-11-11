@@ -146,7 +146,7 @@ class ExtensionsService
 
         $router->map('GET', '/admin/pluginsmanager[/?]', 'Core\Extensions\Controllers\PluginsManagerController#list', 'pluginsmanager-list');
         $router->map('POST', '/admin/pluginsmanager/save', 'Core\Extensions\Controllers\PluginsManagerController#save', 'pluginsmanager-save');
-        $router->map('GET', '/admin/pluginsmanager/[a:plugin]/[a:token]', 'Core\Extensions\Controllers\PluginsManagerController#maintenance', 'pluginsmanager-maintenance');
+        $router->map('GET', '/admin/pluginsmanager/[*:plugin]/[*:token]', 'Core\Extensions\Controllers\PluginsManagerController#maintenance', 'pluginsmanager-maintenance');
 
         $router->map('GET', '/admin/marketplace[/?]', 'Core\Extensions\Controllers\AdminMarketplaceController#index', 'admin-marketplace');
         $router->map('GET', '/admin/marketplace/plugins[/?]', 'Core\Extensions\Controllers\PluginsMarketController#index', 'marketplace-plugins');

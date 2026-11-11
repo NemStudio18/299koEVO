@@ -1,7 +1,7 @@
-<section class="module-card">
+﻿<section class="module-card">
 	<header>{{Lang.groups-edit}}</header>
 	<form method="POST" action="{{link}}">
-		<input type="hidden" name="_csrf" value="{{ _csrfToken }}" />
+		<input type="hidden" name="_csrf" value="{{_csrfToken}}" />
 		<input type="hidden" name="id" value="{{group.id}}" />
 		<fieldset>
 			<label for="name">{{Lang.groups-name}} *</label>
@@ -43,7 +43,7 @@
 		
 		<footer>
 			<button type="submit" class="button success">{{Lang.submit}}</button>
-			<a href="{{ROUTER.generate("groups-admin-home")}}" class="button">{{Lang.cancel}}</a>
+			<a href="{ ROUTER.generate("groups-admin-home") }" class="button">{{Lang.cancel}}</a>
 		</footer>
 	</form>
 </section>
