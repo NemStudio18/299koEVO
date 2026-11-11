@@ -398,6 +398,15 @@ body.theme-dark {
     font-size: 1.15rem;
     margin-bottom: 0.85rem;
 }
+.evo-feature-icon > i,
+.evo-feature-icon > span {
+    font-size: 0;
+    line-height: 1;
+}
+.evo-feature-icon > i::before,
+.evo-feature-icon > span::before {
+    font-size: 1.15rem;
+}
 .evo-feature-card h3 {
     margin: 0 0 0.45rem 0;
     font-size: 1.08rem;
