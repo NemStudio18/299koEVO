@@ -63,6 +63,19 @@ if (!is_dir(DATA)) {
 $errorDataWrite = !is_writable(DATA);
 
 $availablesLocales = Lang::$availablesLocales;
+$availableThemes = [];
+foreach ((array) $core->getThemes() as $themeSlug => $themeInfo) {
+    if (is_file(THEMES . $themeSlug . DS . 'layout.tpl')) {
+        $availableThemes[$themeSlug] = (is_array($themeInfo) && !empty($themeInfo['name']))
+            ? (string) $themeInfo['name']
+            : $themeSlug;
+    }
+}
+if (empty($availableThemes)) {
+    $availableThemes['default'] = 'default';
+}
+$defaultThemeSlug = isset($availableThemes['default']) ? 'default' : (string) array_key_first($availableThemes);
+
 $pdoDrivers = class_exists('PDO') ? PDO::getAvailableDrivers() : [];
 $hasSqlitePdo = in_array('sqlite', $pdoDrivers, true);
 $hasMysqlPdo = in_array('mysql', $pdoDrivers, true);
@@ -85,6 +98,10 @@ if (count($_POST) > 0) {
     $adminEmail = filter_var($_POST['adminEmail'] ?? '', FILTER_VALIDATE_EMAIL);
     $adminPwdPlain = $_POST['adminPwd'] ?? '';
     $adminUsername = trim($_POST['adminUsername'] ?? '');
+    $selectedTheme = trim((string) ($_POST['theme'] ?? ''));
+    if (!array_key_exists($selectedTheme, $availableThemes)) {
+        $selectedTheme = $defaultThemeSlug;
+    }
     $storageMode = $_POST['storage_mode'] ?? $defaultStorageMode;
     if (!in_array($storageMode, ['sqlite', 'json', 'mysql'], true)) {
         $storageMode = $defaultStorageMode;
@@ -251,7 +268,7 @@ if (count($_POST) > 0) {
         'siteName' => "SiteName",
         'siteDesc' => "Description",
         'siteUrl' => $core->makeSiteUrl(),
-        'theme' => 'default',
+        'theme' => $selectedTheme,
         'hideTitles' => false,
         'defaultPlugin' => 'page',
         'debug' => false,
@@ -544,6 +561,21 @@ if (count($_POST) > 0) {
                                         ?>
                                     </select>
                                 </p>
+                                <?php if (count($availableThemes) > 1) { ?>
+                                <p class="install-field">
+                                    <label for="theme-select"><?php echo Lang::get('install-theme-choice'); ?></label>
+                                    <select name="theme" id="theme-select">
+                                        <?php
+                                        foreach ($availableThemes as $slug => $label) {
+                                            $selected = ($slug === $defaultThemeSlug) ? ' selected' : '';
+                                            echo '<option value="' . htmlspecialchars($slug, ENT_QUOTES, 'UTF-8') . '"' . $selected . '>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </p>
+                                <?php } else { ?>
+                                <input type="hidden" name="theme" value="<?php echo htmlspecialchars($defaultThemeSlug, ENT_QUOTES, 'UTF-8'); ?>">
+                                <?php } ?>
                                 <p class="install-field">
                                     <label for="adminUsername"><?php echo Lang::get('users-username'); ?></label>
                                     <input type="text" name="adminUsername" id="adminUsername" required="required" minlength="3" maxlength="60" pattern="[A-Za-z0-9_.\-]+" placeholder="ex: admin">
