@@ -1,0 +1,16 @@
+{
+    "install": "forumInstall",
+    "beforeRunPlugin": "forumBeforeRunPlugin",
+    "endFrontHead": "forumEndFrontHead",
+    "endAdminHead": "forumEndAdminHead",
+    "search:get-results": "forumSearchResults",
+    "notifications:collect": "forumNotificationsCollect",
+    "user:notification-preferences": "forumUserNotificationPreferences",
+    "user:profile-allowed-settings": "forumUserProfileAllowedSettings",
+    "user:profile-stats": "forumUserProfileStats",
+    "user:profile-activity": "forumUserProfileActivity",
+    "user:avatar-menu": "forumUserAvatarMenu",
+    "forum:reply-created": "forumOnReplyCreated",
+    "forum:get-stats": "forumGetStats",
+    "core:stats-collector": "forumCollectStats"
+}

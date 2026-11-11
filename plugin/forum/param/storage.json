@@ -1,0 +1,93 @@
+{
+    "Category": {
+        "driver": "json",
+        "table": "forum_categories",
+        "file": "forum/categories.json",
+        "primaryKey": "id",
+        "schema": {
+            "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "parent_id": "INTEGER NULL",
+            "name": "VARCHAR(255) NOT NULL",
+            "slug": "VARCHAR(255) NOT NULL",
+            "description": "TEXT",
+            "icon": "VARCHAR(100)",
+            "color": "VARCHAR(50)",
+            "order_index": "INTEGER DEFAULT 0",
+            "topic_count": "INTEGER DEFAULT 0",
+            "post_count": "INTEGER DEFAULT 0",
+            "created_at": "DATETIME DEFAULT CURRENT_TIMESTAMP",
+            "updated_at": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+    },
+    "Topic": {
+        "driver": "json",
+        "table": "forum_topics",
+        "file": "forum/topics.json",
+        "primaryKey": "id",
+        "schema": {
+            "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "category_id": "INTEGER NOT NULL",
+            "title": "VARCHAR(255) NOT NULL",
+            "slug": "VARCHAR(255) NOT NULL",
+            "author_id": "INTEGER NULL",
+            "author_name": "VARCHAR(150)",
+            "author_email": "VARCHAR(255)",
+            "views": "INTEGER DEFAULT 0",
+            "post_count": "INTEGER DEFAULT 0",
+            "is_pinned": "INTEGER DEFAULT 0",
+            "is_locked": "INTEGER DEFAULT 0",
+            "last_post_id": "INTEGER NULL",
+            "last_post_at": "DATETIME NULL",
+            "created_at": "DATETIME DEFAULT CURRENT_TIMESTAMP",
+            "updated_at": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+    },
+    "Post": {
+        "driver": "json",
+        "table": "forum_posts",
+        "file": "forum/posts.json",
+        "primaryKey": "id",
+        "schema": {
+            "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "topic_id": "INTEGER NOT NULL",
+            "author_id": "INTEGER NULL",
+            "author_name": "VARCHAR(150)",
+            "author_email": "VARCHAR(255)",
+            "content": "TEXT NOT NULL",
+            "is_approved": "INTEGER DEFAULT 1",
+            "edit_count": "INTEGER DEFAULT 0",
+            "edited_at": "DATETIME NULL",
+            "like_count": "INTEGER DEFAULT 0",
+            "created_at": "DATETIME DEFAULT CURRENT_TIMESTAMP",
+            "updated_at": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+    },
+    "PostLike": {
+        "driver": "json",
+        "table": "forum_post_likes",
+        "file": "forum/post_likes.json",
+        "primaryKey": "id",
+        "schema": {
+            "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "post_id": "INTEGER NOT NULL",
+            "user_id": "INTEGER NOT NULL",
+            "created_at": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+    },
+    "ForumNotification": {
+        "driver": "json",
+        "table": "forum_notifications",
+        "file": "forum/notifications.json",
+        "primaryKey": "id",
+        "schema": {
+            "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "user_id": "INTEGER NOT NULL",
+            "topic_id": "INTEGER NOT NULL",
+            "post_id": "INTEGER NOT NULL",
+            "type": "VARCHAR(50)",
+            "message": "TEXT",
+            "is_read": "INTEGER DEFAULT 0",
+            "created_at": "DATETIME DEFAULT CURRENT_TIMESTAMP"
+        }
+    }
+}

@@ -102,9 +102,9 @@ class JsonStorage implements StorageInterface
         $filtered = array_filter($data, function ($record) use ($conditions) {
             foreach ($conditions as $key => $value) {
                 // Si c'est un bloc de condition structuré (column, operator, value)
-                if (is_array($value) && isset($value['column'], $value['operator'], $value['value'])) {
+                if (is_array($value) && isset($value['column'], $value['operator']) && array_key_exists('value', $value)) {
                     $col = $value['column'];
-                    $op = strtoupper((string) $value['operator']);
+                    $op = strtoupper(trim((string) $value['operator']));
                     $val = $value['value'];
 
                     $actual = $record[$col] ?? null;
@@ -115,7 +115,20 @@ class JsonStorage implements StorageInterface
                                 return false;
                             break;
                         case '!=':
+                        case '<>':
                             if ($actual == $val)
+                                return false;
+                            break;
+                        case 'IS NULL':
+                            if ($actual !== null && $actual !== '')
+                                return false;
+                            break;
+                        case 'IS NOT NULL':
+                            if ($actual === null || $actual === '')
+                                return false;
+                            break;
+                        case 'IN':
+                            if (!is_array($val) || !in_array($actual, $val))
                                 return false;
                             break;
                         case '>':
@@ -135,7 +148,7 @@ class JsonStorage implements StorageInterface
                                 return false;
                             break;
                         case 'LIKE':
-                            $pattern = str_replace('%', '.*', preg_quote($val, '/'));
+                            $pattern = str_replace('%', '.*', preg_quote((string) $val, '/'));
                             if (!preg_match("/^$pattern$/i", (string) $actual))
                                 return false;
                             break;

@@ -225,8 +225,9 @@ abstract class JsonActiveRecord implements \ArrayAccess
 
     protected static function getSchema(): array
     {
-        // Guess schema from casts or properties in children??
-        // For now, simple mapping from casts
+        if (property_exists(static::class, 'schema') && !empty(static::$schema)) {
+            return static::$schema;
+        }
         $schema = [];
         foreach (static::$casts as $key => $type) {
             $schema[$key] = $type;
@@ -254,7 +255,7 @@ abstract class JsonActiveRecord implements \ArrayAccess
      */
     public function where(string $key, $operator, $value = null): self
     {
-        if ($value === null) {
+        if ($value === null && func_num_args() < 3) {
             $value = $operator;
             $operator = '=';
         }
@@ -421,10 +422,22 @@ abstract class JsonActiveRecord implements \ArrayAccess
         $isSql = ($storage instanceof \Core\Storage\SqlStorage) || ($storage instanceof \Core\Storage\FallbackStorage);
 
         if (empty($id)) {
-            // Only generate a random hex id if we are NOT using SQL driver (or Fallback which implies SQL primary)
+            // Only generate an id if we are NOT using SQL driver (or Fallback which implies SQL primary)
             // For SQL, we want to let the database handle AUTO_INCREMENT
             if (!$isSql) {
-                $id = bin2hex(random_bytes(8));
+                if (property_exists(static::class, 'autoIncrementId') && static::$autoIncrementId) {
+                    $existing = $storage->findAll([]);
+                    $maxId = 0;
+                    foreach ($existing as $row) {
+                        $rowId = (int) ($row[static::$primaryKey] ?? 0);
+                        if ($rowId > $maxId) {
+                            $maxId = $rowId;
+                        }
+                    }
+                    $id = (string) ($maxId + 1);
+                } else {
+                    $id = bin2hex(random_bytes(8));
+                }
             }
         }
 

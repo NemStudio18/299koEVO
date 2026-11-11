@@ -681,7 +681,10 @@ div.warning:before {
 #content {
     flex-shrink: 3;
     flex-grow: 1;
+    width: 100%;
     max-width: 100%;
+    min-width: 0;
+    overflow-wrap: break-word;
 }
 
 #body-page {
