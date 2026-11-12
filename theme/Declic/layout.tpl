@@ -136,7 +136,7 @@
                         <p class="declic-footer-meta">
                             <span>{{SHOW.siteName}}</span>
                             <span class="declic-sep" aria-hidden="true">·</span>
-                            <a target="_blank" rel="noopener" href="https://299ko.ovh">{{Lang.site-just-using( )}}</a>
+                            <a target="_blank" rel="noopener" href="https://299ko.flexcb.fr">{{Lang.site-just-using( )}}</a>
                             <span class="declic-sep" aria-hidden="true">·</span>
                             <span>{{Lang.site-theme}} {{SHOW.theme}}</span>
                             <span class="declic-sep" aria-hidden="true">·</span>
