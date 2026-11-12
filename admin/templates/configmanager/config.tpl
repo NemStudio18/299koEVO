@@ -163,6 +163,10 @@
 					<a aria-describedby="delCacheDesc" class="button" href="{{cacheClearLink}}">{{Lang.configmanager-delete-cache}}</a>
 				</p>
 				<p>
+					<label id="checkUpdateDesc">Mises à jour du CMS{% if coreVersion %} (version actuelle : <strong>{{coreVersion}}</strong>){% endif %}</label><br>
+					<a aria-describedby="checkUpdateDesc" class="button" href="{{checkUpdateLink}}"><i class="fa-solid fa-rotate"></i> Vérifier les mises à jour</a>
+				</p>
+				<p>
 					<input {% if CORE.getConfigVal("debug") %} checked {% endif %} type="checkbox" name="debug"/>
 					<label for="debug">{{Lang.configmanager-debug}}</label>
 				</p>

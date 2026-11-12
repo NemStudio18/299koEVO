@@ -66,5 +66,28 @@ class ConfigManagerUpdateController extends AdminController {
         }
     }
 
+    /**
+     * Force an immediate core update check bypassing the 1-hour cache.
+     */
+    public function checkNow(string $token): void
+    {
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        $ctx = new \Core\Navigation\ConditionContext($this->user);
+        if (!$evaluator->isAdmin($ctx) || $this->user->token !== $token) {
+            Show::msg(Lang::get('core-not-authorized'), 'error');
+            $this->core->redirect($this->router->generate('configmanager-admin'));
+            return;
+        }
+
+        $settings = \Core\Settings\SettingsService::getInstance();
+        $nextVersion = $settings->getNewVersion();
+        if ($nextVersion) {
+            $settings->displayNewVersion((string) $nextVersion);
+        } else {
+            $current = defined('VERSION') ? VERSION : '';
+            Show::msg('Votre CMS est à jour' . ($current !== '' ? ' (version ' . htmlspecialchars($current, ENT_QUOTES, 'UTF-8') . ')' : '') . '.', 'success');
+        }
+        $this->core->redirect($this->router->generate('configmanager-admin'));
+    }
 
 }
