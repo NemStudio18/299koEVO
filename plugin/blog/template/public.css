@@ -487,3 +487,19 @@
     background: var(--evo-accent-hover);
     color: var(--evo-accent-text);
 }
+
+/* Featured images in blog list & single article (prevent full-resolution overflow) */
+.plugin-blog article > header > img.featured,
+.plugin-blog article header img.featured {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    max-height: 360px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 12px;
+    margin: 0 0 16px 0;
+}
+.plugin-blog .blog-article-single > header > img.featured {
+    max-height: 440px;
+}
