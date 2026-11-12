@@ -3,7 +3,13 @@
    Architecture Déclic • Palette 100% Végétale Fixe (Sans Dark Mode)
    ========================================================================== */
 
-:root {
+:root,
+html,
+body,
+body.theme-vegetal,
+body.theme-light {
+    color-scheme: light !important;
+
     /* Palette Végétale Dense & Lumineuse */
     --vg-bg: #eef4ec;                    /* Fond amande/sauge clair et chaleureux */
     --vg-surface: #ffffff;               /* Cartes et panneaux blancs purs */
@@ -71,21 +77,47 @@
     --vb-blue: var(--vg-accent);
     --vb-gold: var(--vg-accent-light);
 
-    /* Contrat Design System Core --evo-* */
-    --evo-bg: var(--vg-bg);
-    --evo-surface: var(--vg-surface-alt);
-    --evo-surface-alt: var(--vg-border);
-    --evo-card-bg: var(--vg-surface);
-    --evo-text: var(--vg-text);
-    --evo-text-muted: var(--vg-text-muted);
-    --evo-border: var(--vg-border);
-    --evo-border-strong: var(--vg-border-strong);
-    --evo-input-bg: var(--vg-surface);
-    --evo-input-border: var(--vg-border-strong);
-    --evo-accent: var(--vg-accent);
-    --evo-accent-hover: var(--vg-accent-hover);
-    --evo-accent-soft: var(--vg-accent-soft);
-    --evo-accent-text: #ffffff;
+    /* Contrat Design System Core --evo-* Verrouillé en clair et végétal */
+    --evo-bg: #eef4ec !important;
+    --evo-surface: #ffffff !important;
+    --evo-surface-alt: #e3ede0 !important;
+    --evo-card-bg: #ffffff !important;
+    --evo-text: #132a1b !important;
+    --evo-text-muted: #4b6653 !important;
+    --evo-border: #c8dac4 !important;
+    --evo-border-strong: #a8c4a2 !important;
+    --evo-input-bg: #ffffff !important;
+    --evo-input-border: #a8c4a2 !important;
+    --evo-accent: #205c3b !important;
+    --evo-accent-hover: #154129 !important;
+    --evo-accent-soft: rgba(32, 92, 59, 0.12) !important;
+    --evo-accent-text: #ffffff !important;
+}
+
+/* Neutralisation absolue du mode sombre quel que soit l'OS */
+@media (prefers-color-scheme: dark) {
+    :root,
+    html,
+    body,
+    body.theme-vegetal,
+    body.theme-light,
+    body:not(.theme-dark) {
+        color-scheme: light !important;
+        --evo-bg: #eef4ec !important;
+        --evo-surface: #ffffff !important;
+        --evo-surface-alt: #e3ede0 !important;
+        --evo-card-bg: #ffffff !important;
+        --evo-text: #132a1b !important;
+        --evo-text-muted: #4b6653 !important;
+        --evo-border: #c8dac4 !important;
+        --evo-border-strong: #a8c4a2 !important;
+        --evo-input-bg: #ffffff !important;
+        --evo-input-border: #a8c4a2 !important;
+        --evo-accent: #205c3b !important;
+        --evo-accent-hover: #154129 !important;
+        --evo-accent-soft: rgba(32, 92, 59, 0.12) !important;
+        --evo-accent-text: #ffffff !important;
+    }
 }
 
 /* ==========================================================================
@@ -1160,4 +1192,374 @@ section > header > .featured,
     .vegetal-content { padding: 20px 18px; }
     .vegetal-banner { padding: 2.2rem 16px 2.8rem; }
     .vegetal-botanical-branch { display: none; }
+}
+
+/* ==========================================================================
+   SURCHARGES VÉGÉTALES RICHES & COMPLÈTES (Vitrine, Blog, Forum, Pages)
+   ========================================================================== */
+
+/* Masquer le titre générique redondant sur la page d'accueil */
+body.page-home #pageTitle,
+body.is-homepage #pageTitle,
+.vegetal-main:has(.evo-hero) #pageTitle,
+body:not([class*="plugin-"]) .vegetal-content:has(.evo-hero) ~ #pageTitle,
+body:not([class*="plugin-"]) #pageTitle:has(+ .vegetal-grid .evo-hero) {
+    display: none !important;
+}
+
+/* Vitrine & Hero (.evo-hero) */
+.evo-hero {
+    background: #ffffff !important;
+    border: 1px solid var(--vg-border) !important;
+    border-top: 4px solid var(--vg-accent) !important;
+    border-radius: var(--vg-radius) !important;
+    padding: 2.25rem 2rem !important;
+    margin-bottom: 2rem !important;
+    box-shadow: 0 4px 16px rgba(32, 92, 59, 0.08) !important;
+}
+
+.evo-hero h1 {
+    color: #132a1b !important;
+    font-size: clamp(1.8rem, 3.2vw, 2.4rem) !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+    margin: 0.5rem 0 1rem 0 !important;
+    letter-spacing: -0.03em !important;
+}
+
+.evo-hero-lead {
+    color: #314d38 !important;
+    font-size: 1.08rem !important;
+    line-height: 1.65 !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Badges / Pilules (.evo-pill) */
+.evo-badge-row,
+.evo-hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
+
+.evo-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px !important;
+    border-radius: 999px !important;
+    background: #d8edd4 !important;
+    color: #154829 !important;
+    border: 1px solid #b2d7ac !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+}
+
+.evo-pill i {
+    color: var(--vg-accent) !important;
+}
+
+.evo-pill-warm {
+    background: #fdf2e4 !important;
+    color: #924d10 !important;
+    border-color: #f1cf9f !important;
+}
+
+.evo-pill-warm i {
+    color: #b5651d !important;
+}
+
+/* Boutons Vitrine */
+.evo-cta-group,
+.evo-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.evo-btn-primary {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 11px 20px !important;
+    border-radius: var(--vg-radius-sm) !important;
+    background: linear-gradient(180deg, #256e46 0%, #1d5837 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #1a4f32 !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    text-decoration: none !important;
+    box-shadow: 0 2px 8px rgba(32, 92, 59, 0.25) !important;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease !important;
+}
+
+.evo-btn-primary:hover {
+    transform: translateY(-1px) !important;
+    filter: brightness(1.08) !important;
+    box-shadow: 0 4px 14px rgba(32, 92, 59, 0.35) !important;
+    color: #ffffff !important;
+}
+
+.evo-btn-primary .evo-pill {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 2px 8px !important;
+}
+
+.evo-btn-secondary {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 18px !important;
+    border-radius: var(--vg-radius-sm) !important;
+    background: #ffffff !important;
+    color: var(--vg-accent) !important;
+    border: 2px solid var(--vg-accent) !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    text-decoration: none !important;
+    transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.15s ease !important;
+}
+
+.evo-btn-secondary:hover {
+    background: var(--vg-surface-alt) !important;
+    border-color: var(--vg-accent-hover) !important;
+    color: var(--vg-accent-hover) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Bandeau de Statistiques (.evo-stats-strip) */
+.evo-stats-strip {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 1.15rem !important;
+    margin: 0 0 2.5rem !important;
+}
+
+.evo-stat-card {
+    background: #ffffff !important;
+    border: 1px solid var(--vg-border) !important;
+    border-left: 4px solid var(--vg-accent) !important;
+    border-radius: var(--vg-radius-sm) !important;
+    padding: 1.2rem 1.35rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    box-shadow: var(--vg-shadow-sm) !important;
+}
+
+.evo-stat-val {
+    font-size: 1.35rem !important;
+    font-weight: 800 !important;
+    color: var(--vg-accent) !important;
+    line-height: 1.2 !important;
+}
+
+.evo-stat-label {
+    font-size: 0.88rem !important;
+    color: #4b6653 !important;
+    font-weight: 500 !important;
+    line-height: 1.45 !important;
+}
+
+/* En-têtes de sections */
+.evo-section-head {
+    margin-top: 2.75rem !important;
+    margin-bottom: 1.35rem !important;
+}
+
+.evo-section-head h2 {
+    margin: 0 0 0.4rem 0 !important;
+    font-size: 1.6rem !important;
+    color: #132a1b !important;
+}
+
+.evo-section-head p {
+    margin: 0 !important;
+    color: #4b6653 !important;
+    font-size: 1rem !important;
+}
+
+/* Grilles & Cartes Fonctionnalités (.evo-feature-card) */
+.evo-cards-grid,
+.evo-grid-3 {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 1.35rem !important;
+    margin: 1.25rem 0 2.5rem !important;
+}
+
+.evo-feature-card {
+    background: #ffffff !important;
+    border: 1px solid var(--vg-border) !important;
+    border-top: 3px solid var(--vg-accent) !important;
+    border-radius: var(--vg-radius-sm) !important;
+    padding: 1.5rem !important;
+    box-shadow: var(--vg-shadow-sm) !important;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+.evo-feature-card:hover {
+    transform: translateY(-3px) !important;
+    border-color: var(--vg-accent-vibrant) !important;
+    box-shadow: 0 8px 24px rgba(32, 92, 59, 0.12) !important;
+}
+
+.evo-feature-icon {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 10px !important;
+    background: #d8edd4 !important;
+    color: #154829 !important;
+    border: 1px solid #b5d6af !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.25rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.evo-feature-card h3 {
+    margin: 0 0 0.5rem 0 !important;
+    font-size: 1.15rem !important;
+    color: #132a1b !important;
+    font-weight: 700 !important;
+}
+
+.evo-feature-card p {
+    margin: 0 !important;
+    color: #3b5742 !important;
+    font-size: 0.94rem !important;
+    line-height: 1.6 !important;
+}
+
+/* Étapes d'installation (.evo-step) */
+.evo-steps,
+.evo-step-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    margin: 1.25rem 0 2rem !important;
+}
+
+.evo-step,
+.evo-step-item {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 1.15rem !important;
+    padding: 1.25rem 1.5rem !important;
+    background: #ffffff !important;
+    border: 1px solid var(--vg-border) !important;
+    border-radius: var(--vg-radius-sm) !important;
+    box-shadow: var(--vg-shadow-sm) !important;
+}
+
+.evo-step-num {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: var(--vg-accent) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 0.95rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+
+.evo-step-title {
+    margin: 0 0 0.35rem 0 !important;
+    font-size: 1.08rem !important;
+    color: #132a1b !important;
+    font-weight: 700 !important;
+}
+
+.evo-step-body p {
+    margin: 0 !important;
+    color: #3b5742 !important;
+    font-size: 0.94rem !important;
+}
+
+.evo-code-box {
+    margin-top: 0.75rem !important;
+    padding: 0.9rem 1.2rem !important;
+    background: var(--vg-surface-alt) !important;
+    border: 1px solid var(--vg-border) !important;
+    border-radius: var(--vg-radius-sm) !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    font-size: 0.88rem !important;
+    color: #132a1b !important;
+}
+
+/* Tableaux comparatifs (.evo-table-wrap) */
+.evo-table-wrap {
+    background: #ffffff !important;
+    border: 1px solid var(--vg-border) !important;
+    border-radius: var(--vg-radius-sm) !important;
+    box-shadow: var(--vg-shadow-sm) !important;
+    overflow-x: auto !important;
+}
+
+.evo-table-wrap th {
+    background: var(--vg-surface-alt) !important;
+    color: #132a1b !important;
+    font-weight: 700 !important;
+}
+
+.evo-table-wrap td {
+    color: #2e4a35 !important;
+}
+
+/* Plugin Blog & Articles */
+.blog-article,
+.blog-post,
+.card {
+    background: #ffffff !important;
+    border: 1px solid var(--vg-border) !important;
+    border-radius: var(--vg-radius-sm) !important;
+    box-shadow: var(--vg-shadow-sm) !important;
+}
+
+.blog-title a,
+.post-title a {
+    color: #132a1b !important;
+    font-weight: 700 !important;
+}
+
+.blog-title a:hover,
+.post-title a:hover {
+    color: var(--vg-accent) !important;
+}
+
+.blog-meta,
+.post-meta {
+    color: #55725d !important;
+    font-size: 0.88rem !important;
+}
+
+/* Plugin Forum */
+.forum-category,
+.forum-topic-list,
+.forum-topic-item {
+    background: #ffffff !important;
+    border-color: var(--vg-border) !important;
+}
+
+.forum-topic-title a {
+    color: #132a1b !important;
+    font-weight: 600 !important;
+}
+
+.forum-topic-title a:hover {
+    color: var(--vg-accent) !important;
+}
+
+.forum-badge {
+    background: #d8edd4 !important;
+    color: #154829 !important;
+    border: 1px solid #b5d6af !important;
 }

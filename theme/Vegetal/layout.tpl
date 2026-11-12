@@ -13,7 +13,7 @@
         {{SHOW.showMetas}}
         {% HOOK.endFrontHead("") %}
     </head>
-    <body class="theme-vegetal {% if CORE.getPluginToCall %}plugin-{{ CORE.getPluginToCall|lower }} plugin-{{ CORE.getPluginToCall }} page-{{ CORE.getPluginToCall|lower }}{% endif %}">
+    <body class="theme-vegetal theme-light {% if CORE.getPluginToCall %}plugin-{{ CORE.getPluginToCall|lower }} plugin-{{ CORE.getPluginToCall }} page-{{ CORE.getPluginToCall|lower }}{% else %}page-home is-homepage{% endif %}">
         <div id="container" class="vegetal-shell">
             <header id="header" class="vegetal-header">
                 <nav id="header_content" class="vegetal-nav" aria-label="Navigation principale">
