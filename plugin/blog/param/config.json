@@ -3,6 +3,7 @@
     "label": "Blog",
     "itemsByPage": "5",
     "displayTOC": "no",
+    "displayCategories": "content",
     "hideContent": "0",
     "comments": "1",
     "authorName": "",

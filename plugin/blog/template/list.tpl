@@ -1,4 +1,17 @@
-﻿{% IF mode === "list_empty" %}
+﻿{% IF displayCategoriesBar && count(allCategories) > 0 %}
+	<nav class="blog-categories-nav-bar" aria-label="{{Lang.blog-categories}}">
+		<div class="blog-categories-scroll">
+			<a href="{{blogHomeUrl}}" class="blog-cat-pill{% IF !currentCategory %} active{% ENDIF %}">{{Lang.blog-all-categories}}</a>
+			{% FOR cat IN allCategories %}
+				<a href="{{cat.url}}" class="blog-cat-pill{% IF currentCategory && currentCategory.id == cat.id %} active{% ENDIF %}">
+					{{cat.label}}
+					<span class="cat-pill-count">{{cat.count}}</span>
+				</a>
+			{% ENDFOR %}
+		</div>
+	</nav>
+{% ENDIF %}
+{% IF mode === "list_empty" %}
 	<p>{{Lang.galerie.no-item-found}}</p>
 {% ELSE %}
 	{% FOR k, v IN news %}
@@ -48,12 +61,18 @@
 		</article>
 	{% ENDFOR %}
 	{% IF pagination %}
-		<ul class="pagination">
-			{% FOR k, v IN pagination %}
-				<li>
-					<a href="{{v.url}}">{{v.num}}</a>
-				</li>
-			{% ENDFOR %}
-		</ul>
+		<nav class="blog-pagination" aria-label="Pagination">
+			<ul class="pagination">
+				{% FOR k, v IN pagination %}
+					{% IF v.ellipsis %}
+						<li class="pagination-ellipsis" aria-hidden="true"><span>…</span></li>
+					{% ELSE %}
+						<li class="{% IF v.active %}active{% ENDIF %}">
+							<a href="{{v.url}}"{% IF v.active %} aria-current="page"{% ENDIF %}>{{v.num}}</a>
+						</li>
+					{% ENDIF %}
+				{% ENDFOR %}
+			</ul>
+		</nav>
 	{% ENDIF %}
 {% ENDIF %}

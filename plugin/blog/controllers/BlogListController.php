@@ -29,27 +29,22 @@ class BlogListController extends PublicController
     {
         $newsManager = new NewsManager();
         $categoriesManager = new CategoriesManager();
-        // Mode d'affichage
-        $mode = ($newsManager->count() > 0) ? 'list' : 'list_empty';
-
         // Contruction de la pagination
         $nbNews = $newsManager->getNbItemsToPublic();
-        $newsByPage = $this->runPlugin->getConfigVal('items_per_page') ?: $this->runPlugin->getConfigVal('itemsByPage') ?: 10;
-        $nbPages = ceil($nbNews / $newsByPage);
+        $mode = ($nbNews > 0) ? 'list' : 'list_empty';
+        $newsByPage = max(1, (int)($this->runPlugin->getConfigVal('items_per_page') ?: $this->runPlugin->getConfigVal('itemsByPage') ?: 10));
+        $nbPages = max(1, (int)ceil($nbNews / $newsByPage));
+        $currentPage = max(1, (int)$currentPage);
+        if ($currentPage > $nbPages) {
+            $currentPage = 1;
+        }
         $start = ($currentPage - 1) * $newsByPage + 1;
         $end = $start + $newsByPage - 1;
-        if ($nbPages > 1) {
-            $pagination = [];
-            for ($i = 0; $i != $nbPages; $i++) {
-                if ($i != 0)
-                    $pagination[$i]['url'] = $this->router->generate('blog-page', ['page' => $i + 1]);
-                else
-                    $pagination[$i]['url'] = $this->runPlugin->getPublicUrl();
-                $pagination[$i]['num'] = $i + 1;
-            }
-        } else {
-            $pagination = false;
-        }
+        $pagination = $this->buildPagination($currentPage, $nbPages, function (int $page) {
+            return $page > 1
+                ? $this->router->generate('blog-page', ['page' => $page])
+                : $this->runPlugin->getPublicUrl();
+        });
         // Récupération des news
         $news = [];
         $i = 1;
@@ -101,6 +96,8 @@ class BlogListController extends PublicController
             }
         }
 
+        $displayCategoriesBar = $this->applyCategoriesDisplay($allCategories, null);
+
         // Traitements divers : métas, fil d'ariane...
         $response = new PublicResponse();
         $response->setTitle('<i class="fa-solid fa-newspaper"></i> ' . ($this->pluginsManager->getPlugin('blog')->getConfigVal('label') ?: 'Actualités'));
@@ -113,6 +110,8 @@ class BlogListController extends PublicController
         $tpl->set('mode', $mode);
         $tpl->set('allCategories', $allCategories);
         $tpl->set('currentCategory', null);
+        $tpl->set('displayCategoriesBar', $displayCategoriesBar);
+        $tpl->set('blogHomeUrl', $this->runPlugin->getPublicUrl());
         $response->addTemplate($tpl);
         return $response;
     }
@@ -127,7 +126,8 @@ class BlogListController extends PublicController
         $newsManager = new NewsManager();
         $news = [];
 
-        $newsByPage = $this->runPlugin->getConfigVal('items_per_page') ?: $this->runPlugin->getConfigVal('itemsByPage') ?: 10;
+        $newsByPage = max(1, (int)($this->runPlugin->getConfigVal('items_per_page') ?: $this->runPlugin->getConfigVal('itemsByPage') ?: 10));
+        $currentPage = max(1, (int)$currentPage);
 
         $start = ($currentPage - 1) * $newsByPage + 1;
         $end = $start + $newsByPage - 1;
@@ -167,24 +167,17 @@ class BlogListController extends PublicController
         $nbNews = $i - 1;
         $mode = ($nbNews > 0) ? 'list' : 'list_empty';
         if ($mode === 'list') {
-            $nbPages = ceil($nbNews / $newsByPage);
+            $nbPages = max(1, (int)ceil($nbNews / $newsByPage));
             if ($currentPage > $nbPages) {
                 return $this->category($name, $id, 1);
             }
             $cleanCatLabel = html_entity_decode($category->label, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $cleanCatSlug = Util::strToUrl($cleanCatLabel);
-            if ($nbPages > 1) {
-                $pagination = [];
-                for ($i = 0; $i != $nbPages; $i++) {
-                    if ($i != 0)
-                        $pagination[$i]['url'] = $this->router->generate('blog-category-page', ['name' => $cleanCatSlug, 'id' => $category->id, 'page' => $i + 1]);
-                    else
-                        $pagination[$i]['url'] = $this->router->generate('blog-category', ['name' => $cleanCatSlug, 'id' => $category->id]);
-                    $pagination[$i]['num'] = $i + 1;
-                }
-            } else {
-                $pagination = false;
-            }
+            $pagination = $this->buildPagination($currentPage, $nbPages, function (int $page) use ($cleanCatSlug, $category) {
+                return $page > 1
+                    ? $this->router->generate('blog-category-page', ['name' => $cleanCatSlug, 'id' => $category->id, 'page' => $page])
+                    : $this->router->generate('blog-category', ['name' => $cleanCatSlug, 'id' => $category->id]);
+            });
         } else {
             $pagination = false;
         }
@@ -213,6 +206,12 @@ class BlogListController extends PublicController
 
         $cleanCatTitle = html_entity_decode($category->label, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
+        $currentCategory = [
+            'id' => $category->id,
+            'label' => $cleanCatTitle,
+        ];
+        $displayCategoriesBar = $this->applyCategoriesDisplay($allCategories, $currentCategory);
+
         // Traitements divers : métas, fil d'ariane...
         $response = new PublicResponse();
         $response->setTitle('<i class="fa-solid fa-folder-open"></i> ' . $cleanCatTitle);
@@ -224,10 +223,9 @@ class BlogListController extends PublicController
         $tpl->set('pagination', $pagination);
         $tpl->set('mode', $mode);
         $tpl->set('allCategories', $allCategories);
-        $tpl->set('currentCategory', [
-            'id' => $category->id,
-            'label' => $cleanCatTitle,
-        ]);
+        $tpl->set('currentCategory', $currentCategory);
+        $tpl->set('displayCategoriesBar', $displayCategoriesBar);
+        $tpl->set('blogHomeUrl', $this->runPlugin->getPublicUrl());
         $response->addTemplate($tpl);
         return $response;
     }
@@ -242,5 +240,97 @@ class BlogListController extends PublicController
     {
         $page = $page > 1 ? $page : 1;
         return $this->category($name, $id, $page);
+    }
+
+    /**
+     * Build a sliding-window pagination list with ellipsis when there are many pages.
+     *
+     * @return array<int, array{num: int|string, url: string, active: bool, ellipsis: bool}>|false
+     */
+    private function buildPagination(int $currentPage, int $nbPages, callable $urlGenerator)
+    {
+        if ($nbPages <= 1) {
+            return false;
+        }
+
+        if ($nbPages <= 7) {
+            $pages = range(1, $nbPages);
+        } else {
+            $pages = [1];
+            $windowStart = max(2, $currentPage - 1);
+            $windowEnd = min($nbPages - 1, $currentPage + 1);
+
+            if ($currentPage <= 2) {
+                $windowStart = 2;
+                $windowEnd = 2;
+            } elseif ($currentPage >= $nbPages - 1) {
+                $windowStart = $nbPages - 1;
+                $windowEnd = $nbPages - 1;
+            }
+
+            if ($windowStart > 2) {
+                $pages[] = '...';
+            }
+            for ($p = $windowStart; $p <= $windowEnd; $p++) {
+                $pages[] = $p;
+            }
+            if ($windowEnd < $nbPages - 1) {
+                $pages[] = '...';
+            }
+            $pages[] = $nbPages;
+        }
+
+        $pagination = [];
+        foreach ($pages as $item) {
+            if ($item === '...') {
+                $pagination[] = [
+                    'num' => '…',
+                    'url' => '',
+                    'active' => false,
+                    'ellipsis' => true,
+                ];
+            } else {
+                $pagination[] = [
+                    'num' => $item,
+                    'url' => (string)$urlGenerator((int)$item),
+                    'active' => ($item === $currentPage),
+                    'ellipsis' => false,
+                ];
+            }
+        }
+        return $pagination;
+    }
+
+    /**
+     * Handle category navigation placement ('content', 'sidebar', or 'no').
+     * Returns true if the horizontal bar should render inside the list template.
+     */
+    private function applyCategoriesDisplay(array $allCategories, ?array $currentCategory): bool
+    {
+        if (empty($allCategories)) {
+            return false;
+        }
+        $placement = $this->runPlugin->getConfigVal('displayCategories') ?: 'content';
+        if ($placement === 'no') {
+            return false;
+        }
+        if ($placement === 'sidebar') {
+            $allLabel = htmlspecialchars(\Core\Lang::get('blog-all-categories') ?: 'Toutes', ENT_QUOTES, 'UTF-8');
+            $homeUrl = htmlspecialchars($this->runPlugin->getPublicUrl(), ENT_QUOTES, 'UTF-8');
+            $isAllActive = ($currentCategory === null);
+            $html = '<ul class="blog-categories-sidebar-list">';
+            $html .= '<li class="' . ($isAllActive ? 'active' : '') . '"><a href="' . $homeUrl . '">' . $allLabel . '</a></li>';
+            foreach ($allCategories as $cat) {
+                $isActive = ($currentCategory !== null && (int)$currentCategory['id'] === (int)$cat['id']);
+                $catUrl = htmlspecialchars($cat['url'], ENT_QUOTES, 'UTF-8');
+                $catLabel = htmlspecialchars($cat['label'], ENT_QUOTES, 'UTF-8');
+                $catCount = (int)$cat['count'];
+                $html .= '<li class="' . ($isActive ? 'active' : '') . '"><a href="' . $catUrl . '"><span>' . $catLabel . '</span><span class="cat-pill-count">' . $catCount . '</span></a></li>';
+            }
+            $html .= '</ul>';
+            \Utils\Show::addSidebarPublicModule(\Core\Lang::get('blog-categories') ?: 'Catégories', $html);
+            return false;
+        }
+        return true;
     }
 }

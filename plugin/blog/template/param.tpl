@@ -33,7 +33,7 @@
     </div>
     <div class='form'>
         <label for="items_per_page">{{Lang.blog-entries-per-page}}</label><br>
-        <input type="number" name="items_per_page" id="items_per_page" value="{{ runPlugin.getConfigVal("items_per_page") ?: runPlugin.getConfigVal("itemsByPage") ?: 10 }}" />
+        <input type="number" name="items_per_page" id="items_per_page" min="1" value="{% if runPlugin.getConfigVal("items_per_page") %}{{ runPlugin.getConfigVal("items_per_page") }}{% else %}{% if runPlugin.getConfigVal("itemsByPage") %}{{ runPlugin.getConfigVal("itemsByPage") }}{% else %}10{% endif %}{% endif %}" />
     </div>
     <div class='form'>
         <label for="notify_admin_email">{{Lang.blog-notify-admin-email}}</label><br>
@@ -46,6 +46,14 @@
             <option value="no" {% if runPlugin.getConfigVal("displayTOC") == "no" %}selected{% endif %}>{{Lang.blog-toc-no}}</option>
             <option value="content" {% if runPlugin.getConfigVal("displayTOC") == "content" %}selected{% endif %}>{{Lang.blog-toc-in-content}}</option>
             <option value="sidebar" {% if runPlugin.getConfigVal("displayTOC") == "sidebar" %}selected{% endif %}>{{Lang.blog-toc-in-sidebar}}</option>
+        </select>
+    </div>
+    <div class='form'>
+        <label for="displayCategories">{{Lang.blog-display-categories}}</label><br>
+        <select id="displayCategories" name="displayCategories">
+            <option value="content" {% if runPlugin.getConfigVal("displayCategories") != "no" && runPlugin.getConfigVal("displayCategories") != "sidebar" %}selected{% endif %}>{{Lang.blog-categories-in-content}}</option>
+            <option value="sidebar" {% if runPlugin.getConfigVal("displayCategories") == "sidebar" %}selected{% endif %}>{{Lang.blog-categories-in-sidebar}}</option>
+            <option value="no" {% if runPlugin.getConfigVal("displayCategories") == "no" %}selected{% endif %}>{{Lang.blog-categories-no}}</option>
         </select>
     </div>
     <div class='form'>

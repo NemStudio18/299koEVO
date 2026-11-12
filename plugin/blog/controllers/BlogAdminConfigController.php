@@ -41,6 +41,11 @@ class BlogAdminConfigController extends AdminController {
             $this->runPlugin->setConfigVal('hideContent', (isset($_POST['hideContent']) ? 1 : 0));
             $this->runPlugin->setConfigVal('comments', (isset($_POST['comments']) ? 1 : 0));
             $this->runPlugin->setConfigVal('displayTOC', filter_input(INPUT_POST, 'displayTOC', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '0');
+            $displayCategories = $_POST['displayCategories'] ?? 'content';
+            if (!in_array($displayCategories, ['no', 'content', 'sidebar'], true)) {
+                $displayCategories = 'content';
+            }
+            $this->runPlugin->setConfigVal('displayCategories', $displayCategories);
             $this->runPlugin->setConfigVal('displayAuthor', (isset($_POST['displayAuthor']) ? 1 : 0));
             $this->runPlugin->setConfigVal('authorName', trim($_POST['authorName'] ?? ''));
             $this->runPlugin->setConfigVal('authorAvatar', trim($_POST['authorAvatar'] ?? ''));

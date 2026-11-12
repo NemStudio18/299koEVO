@@ -385,3 +385,105 @@
     border-color: var(--evo-accent);
     color: var(--evo-accent);
 }
+
+/* Blog Pagination (horizontal, theme-agnostic, dark/light compatible) */
+.blog-pagination {
+    margin: 28px 0 12px 0;
+    display: flex;
+    justify-content: center;
+}
+.blog-pagination .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    float: none;
+}
+.blog-pagination .pagination li {
+    float: none;
+    margin: 0;
+    list-style: none;
+}
+.blog-pagination .pagination a,
+.blog-pagination .pagination .pagination-ellipsis span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--evo-border);
+    background: var(--evo-surface);
+    color: var(--evo-text);
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+.blog-pagination .pagination a:hover {
+    border-color: var(--evo-accent);
+    background: var(--evo-accent-soft);
+    color: var(--evo-accent);
+    text-decoration: none;
+}
+.blog-pagination .pagination li.active a {
+    background: var(--evo-accent);
+    border-color: var(--evo-accent);
+    color: var(--evo-accent-text);
+    box-shadow: var(--evo-shadow-sm);
+}
+.blog-pagination .pagination .pagination-ellipsis span {
+    border-color: transparent;
+    background: transparent;
+    color: var(--evo-text-muted);
+    min-width: 24px;
+    padding: 0 4px;
+    cursor: default;
+}
+
+/* Blog Categories in Sidebar (aside) */
+.blog-categories-sidebar-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.blog-categories-sidebar-list li a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--evo-text);
+    background: var(--evo-surface);
+    border: 1px solid var(--evo-border);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+.blog-categories-sidebar-list li a:hover {
+    background: var(--evo-accent-soft);
+    border-color: var(--evo-accent);
+    color: var(--evo-accent);
+    text-decoration: none;
+}
+.blog-categories-sidebar-list li.active a {
+    background: var(--evo-accent);
+    border-color: var(--evo-accent);
+    color: var(--evo-accent-text);
+    font-weight: 600;
+}
+.blog-categories-sidebar-list li.active .cat-pill-count {
+    background: var(--evo-accent-hover);
+    color: var(--evo-accent-text);
+}
