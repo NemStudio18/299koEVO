@@ -5,7 +5,7 @@
     "description": "Blog management",
     "authorEmail": "mx.koder@gmail.com",
     "authorWebsite": "https://299ko.ovh",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "homePublicMethod": "BlogListController#home",
     "homeAdminMethod": "BlogAdminPostsController#list"
 }

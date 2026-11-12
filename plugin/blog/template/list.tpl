@@ -1,4 +1,4 @@
-﻿{% IF displayCategoriesBar && count(allCategories) > 0 %}
+{% IF displayCategoriesBar && count(allCategories) > 0 %}
 	<nav class="blog-categories-nav-bar" aria-label="{{Lang.blog-categories}}">
 		<div class="blog-categories-scroll">
 			<a href="{{blogHomeUrl}}" class="blog-cat-pill{% IF !currentCategory %} active{% ENDIF %}">{{Lang.blog-all-categories}}</a>
@@ -14,23 +14,27 @@
 {% IF mode === "list_empty" %}
 	<p>{{Lang.galerie.no-item-found}}</p>
 {% ELSE %}
+	<div class="blog-posts-list">
 	{% FOR k, v IN news %}
-		<article>
-			{% IF runPlugin.getConfigVal("hideContent") == false %}
-				<header>
-					{% IF v.img %}
-						<img class="featured" src="{{v.imgUrl}}" alt="{{v.img}}"/>
-					{% ENDIF %}
-					<div class="item-head">
-						<h2>
-							<a href="{{v.url}}">{{v.name}}</a>
-						</h2>
-						<p class="date">{{v.date}}
-							{% IF runPlugin.getConfigVal("comments") && v.commentsOff == false %}
-								|
-								commentaire{% IF newsManager.countComments(v.id) > 1 %}s{% ENDIF %}</a>
-							{% ENDIF %}
-							 | <span class="item-categories"><i class="fa-regular fa-folder-open"></i>
+		<article class="blog-post-card{% IF v.img %} has-thumbnail{% ENDIF %}">
+			{% IF v.img %}
+				<a href="{{v.url}}" class="blog-card-media" aria-hidden="true" tabindex="-1">
+					<img class="featured blog-thumb" src="{{v.imgUrl}}" alt="{{v.img}}" loading="lazy"/>
+				</a>
+			{% ENDIF %}
+			<div class="blog-card-body">
+				<header class="blog-card-header">
+					<h2>
+						<a href="{{v.url}}">{{v.name}}</a>
+					</h2>
+					<p class="date">
+						<span><i class="fa-regular fa-calendar"></i> {{v.date}}</span>
+						{% IF runPlugin.getConfigVal("comments") && v.commentsOff == false %}
+							<span class="declic-sep" aria-hidden="true">·</span>
+							<a href="{{v.url}}#comments"><i class="fa-regular fa-comment"></i> commentaire{% IF newsManager.countComments(v.id) > 1 %}s{% ENDIF %}</a>
+						{% ENDIF %}
+						<span class="declic-sep" aria-hidden="true">·</span>
+						<span class="item-categories"><i class="fa-regular fa-folder-open"></i>
 							{% IF count(v.cats) == 0 %}
 								Non classé
 							{% ELSE %}
@@ -38,28 +42,22 @@
 									<span class="blog-label-category"><a href="{{cat.url}}">{{cat.label}}</a></span>
 								{% ENDFOR %}
 							{% ENDIF %}
-						</p>
-                    </span>
-					</div>
+						</span>
+					</p>
 				</header>
-				{% IF v.intro %}
-					{{htmlspecialchars_decode(v.intro)}}
-				{% ELSE %}
-					{{htmlspecialchars_decode(v.content)}}
+				{% IF runPlugin.getConfigVal("hideContent") == false %}
+					<div class="blog-card-excerpt">
+						{% IF v.intro %}
+							{{htmlspecialchars_decode(v.intro)}}
+						{% ELSE %}
+							{{htmlspecialchars_decode(v.content)}}
+						{% ENDIF %}
+					</div>
 				{% ENDIF %}
-			{% ELSE %}
-				<h2>
-					<a href="{{v.url}}">{{v.name}}</a>
-				</h2>
-				<p class="date">{{v.date}}
-					{% IF runPlugin.getConfigVal("comments") && v.commentsOff == false %}
-						|
-						commentaire{% IF newsManager.countComments(v.id) > 1 %}s{% ENDIF %}
-					{% ENDIF %}
-				</p>
-			{% ENDIF %}
+			</div>
 		</article>
 	{% ENDFOR %}
+	</div>
 	{% IF pagination %}
 		<nav class="blog-pagination" aria-label="Pagination">
 			<ul class="pagination">
