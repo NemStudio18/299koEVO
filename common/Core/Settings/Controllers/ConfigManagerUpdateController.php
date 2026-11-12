@@ -30,10 +30,14 @@ class ConfigManagerUpdateController extends AdminController {
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
         if ($nextVersion && $evaluator->isAdmin($ctx)) {
-            $updaterManager->update();
-            $this->logger->info('Config update applied to ' . $nextVersion . ' by ' . $actor);
-            show::msg(Lang::get('configmanager-updated', $nextVersion), 'success');
-            $updaterManager->clearCache();
+            if ($updaterManager->update()) {
+                $this->logger->info('Config update applied to ' . $nextVersion . ' by ' . $actor);
+                show::msg(Lang::get('configmanager-updated', $nextVersion), 'success');
+                $updaterManager->clearCache();
+            } else {
+                $this->logger->error('Config update failed for ' . $nextVersion . ' by ' . $actor);
+                show::msg(Lang::get('configmanager-update-error'), 'error');
+            }
             $this->core->redirect($this->router->generate('configmanager-admin'));
         }
         $this->core->redirect($this->router->generate('configmanager-admin'));

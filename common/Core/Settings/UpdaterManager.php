@@ -149,16 +149,16 @@ class UpdaterManager
         if (!$this->runBeforeChangeFiles($nextVersion)) {
             logg('Update aborted', 'ERROR');
             $this->cleanupTempDirectory();
-            return;
+            return false;
         }
         
-        foreach ($files['M'] as $fileArray) {
+        foreach ((array) ($files['M'] ?? []) as $fileArray) {
             $this->processModify($fileArray, $nextVersion);
         }
-        foreach ($files['A'] as $fileArray) {
+        foreach ((array) ($files['A'] ?? []) as $fileArray) {
             $this->processAdd($fileArray, $nextVersion);
         }
-        foreach ($files['D'] as $fileArray) {
+        foreach ((array) ($files['D'] ?? []) as $fileArray) {
             $this->processDelete($fileArray);
         }
         
@@ -170,6 +170,7 @@ class UpdaterManager
         $this->cleanupTempDirectory();
         
         logg("End update to v$nextVersion", 'INFO');
+        return true;
     }
 
     public function clearCache()
@@ -498,29 +499,26 @@ class UpdaterManager
 
     protected function runBeforeChangeFiles($nextVersion)
     {
-        $remoteFile = $this->resolveApiBaseUrl() . 'repository/api/core/hook?version=' . rawurlencode((string) $nextVersion) . '&name=before';
-        $content = $this->getRemoteFileContent($remoteFile);
-        if ($content === false) {
-            return true;
-        }
-        $tmpFile = PLUGINS . 'configmanager' . '/tmp_beforeChangeFiles.php';
-        if (@file_put_contents($tmpFile, $content, LOCK_EX)) {
-            $success = require_once $tmpFile;
-            @unlink($tmpFile);
-            return $success !== false;
-        }
-        return false;
+        return $this->runChangeHook((string) $nextVersion, 'before');
     }
 
     protected function runAfterChangeFiles($nextVersion)
     {
-        $remoteFile = $this->resolveApiBaseUrl() . 'repository/api/core/hook?version=' . rawurlencode((string) $nextVersion) . '&name=after';
+        return $this->runChangeHook((string) $nextVersion, 'after');
+    }
+
+    private function runChangeHook(string $nextVersion, string $phase): bool
+    {
+        $remoteFile = $this->resolveApiBaseUrl() . 'repository/api/core/hook?version=' . rawurlencode($nextVersion) . '&name=' . rawurlencode($phase);
         $content = $this->getRemoteFileContent($remoteFile);
         if ($content === false) {
             return true;
         }
-        $tmpFile = PLUGINS . 'configmanager' . '/tmp_afterChangeFiles.php';
-        if (@file_put_contents($tmpFile, $content, LOCK_EX)) {
+        if (!is_dir(DATA_CORE_SETTINGS)) {
+            @mkdir(DATA_CORE_SETTINGS, 0755, true);
+        }
+        $tmpFile = DATA_CORE_SETTINGS . 'tmp_' . $phase . 'ChangeFiles.php';
+        if (@file_put_contents($tmpFile, $content, LOCK_EX) !== false) {
             $success = require_once $tmpFile;
             @unlink($tmpFile);
             return $success !== false;
