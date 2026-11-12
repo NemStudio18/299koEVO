@@ -147,7 +147,7 @@ class SettingsService
     }
 
     /**
-     * Checks for new versions using cache (daily).
+     * Checks for new versions using cache (hourly).
      */
     public function checkNewVersion(): void
     {
@@ -156,7 +156,7 @@ class SettingsService
             $lastVersion = $cachedInfos['lastVersion'];
             if ($lastVersion === VERSION) {
                 $lastCheckUpdate = (int) ($cachedInfos['lastCheckUpdate'] ?? 0);
-                if ($lastCheckUpdate + 86400 < time()) {
+                if ($lastCheckUpdate + 3600 < time()) {
                     $nextVersion = $this->getNewVersion();
                 } else {
                     $nextVersion = false;
@@ -220,6 +220,7 @@ class SettingsService
         $router->map('GET', '/admin/configmanager/cacheclear/[a:token]', 'Core\Settings\Controllers\ConfigManagerAdminController#clearCache', 'configmanager-admin-cache-clear');
         $router->map('GET', '/admin/configmanager/update/[a:token]', 'Core\Settings\Controllers\ConfigManagerUpdateController#process', 'configmanager-update');
         $router->map('GET', '/admin/configmanager/update-manual/[a:token]', 'Core\Settings\Controllers\ConfigManagerUpdateController#processManual', 'configmanager-manual-update');
+        $router->map('GET', '/admin/configmanager/check-update/[a:token]', 'Core\Settings\Controllers\ConfigManagerUpdateController#checkNow', 'configmanager-check-update');
         $router->map('GET', '/admin/configmanager/delete-install/[a:token]', 'Core\Settings\Controllers\ConfigManagerAdminController#deleteInstall', 'configmanager-delete-install');
         $router->map('GET', '/admin/configmanager/backup', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#home', 'configmanager-backup');
         $router->map('GET', '/admin/configmanager/create-backup/[a:token]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#create', 'configmanager-create-backup');

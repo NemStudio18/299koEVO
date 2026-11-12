@@ -384,96 +384,108 @@ HTML;
                 return false;
             }
 
-            // Consommation atomique anti-rejeu avant la validation finale
-            unset($_SESSION['antispam_flexybot']);
-            $challengeConsumed = true;
-            if (!$this->markNonceUsed($postedNonce)) {
-                $this->lastReason = 'invalid_nonce';
-                $this->recordRateAttempt($ctx, true);
-                return false;
-            }
-
             $powNonce = trim((string) ($_POST['fb_pow_nonce'] ?? ''));
             $proofRaw = trim((string) ($_POST['fb_proof'] ?? ''));
             $answer = trim((string) ($_POST['fb_answer'] ?? ''));
 
-            // Voie sans JavaScript (<noscript>)
+            // 1. Vérifications CPU / comportementales AVANT d'ouvrir la transaction SQLite
+            $successReason = 'human_behavior';
             if ($proofRaw === '' && $powNonce === '') {
+                // Voie sans JavaScript (<noscript>)
                 if ($answer === '') {
+                    $consume();
                     $this->lastReason = 'not_clicked';
                     $this->recordRateAttempt($ctx, true);
                     return false;
                 }
                 if ($serverElapsed < 2) {
+                    $consume();
                     $this->lastReason = 'server_too_fast';
                     $this->recordRateAttempt($ctx, true);
                     return false;
                 }
                 $expectedAnswerHash = (string) ($sessionData['answer_hash'] ?? '');
-                $ok = $expectedAnswerHash !== '' && hash_equals($expectedAnswerHash, $this->hashAnswer($answer, $postedNonce));
-                $this->lastReason = $ok ? 'noscript_answer' : 'wrong_answer';
-                $this->recordRateAttempt($ctx, !$ok);
-                return $ok;
+                if ($expectedAnswerHash === '' || !hash_equals($expectedAnswerHash, $this->hashAnswer($answer, $postedNonce))) {
+                    $consume();
+                    $this->lastReason = 'wrong_answer';
+                    $this->recordRateAttempt($ctx, true);
+                    return false;
+                }
+                $successReason = 'noscript_answer';
+            } else {
+                // Voie JavaScript : PoW SHA-256 vérifié bit à bit côté serveur
+                if ($powNonce === '') {
+                    $consume();
+                    $this->lastReason = 'missing_pow';
+                    $this->recordRateAttempt($ctx, true);
+                    return false;
+                }
+                if (!$this->verifyPowBits($postedNonce, $powNonce, $difficulty)) {
+                    $consume();
+                    $this->lastReason = 'invalid_pow';
+                    $this->recordRateAttempt($ctx, true);
+                    return false;
+                }
+
+                if ($answer !== '') {
+                    $expectedAnswerHash = (string) ($sessionData['answer_hash'] ?? '');
+                    if ($expectedAnswerHash === '' || !hash_equals($expectedAnswerHash, $this->hashAnswer($answer, $postedNonce))) {
+                        $consume();
+                        $this->lastReason = 'wrong_answer';
+                        $this->recordRateAttempt($ctx, true);
+                        return false;
+                    }
+                    $successReason = 'fallback_answer';
+                } else {
+                    $proof = json_decode($proofRaw, true);
+                    if (!is_array($proof) || empty($proof['clicked'])) {
+                        $consume();
+                        $this->lastReason = 'not_clicked';
+                        $this->recordRateAttempt($ctx, true);
+                        return false;
+                    }
+                    if (($proof['nonce'] ?? '') !== $postedNonce) {
+                        $consume();
+                        $this->lastReason = 'invalid_nonce';
+                        $this->recordRateAttempt($ctx, true);
+                        return false;
+                    }
+                    if (!empty($proof['webdriver'])) {
+                        $consume();
+                        $this->lastReason = 'webdriver';
+                        $this->recordRateAttempt($ctx, true);
+                        return false;
+                    }
+
+                    $clientElapsed = (int) ($proof['elapsedMs'] ?? 0);
+                    $mouseMoves = (int) ($proof['mouseMoves'] ?? 0);
+                    $touchEvents = (int) ($proof['touchEvents'] ?? 0);
+                    $keyPresses = (int) ($proof['keyPresses'] ?? 0);
+                    $scrollEvents = (int) ($proof['scrollEvents'] ?? 0);
+
+                    $hasHumanInteraction = ($mouseMoves >= 2 || $touchEvents >= 1 || $keyPresses >= 2 || $scrollEvents >= 1);
+                    if ($clientElapsed < 800) {
+                        $consume();
+                        $this->lastReason = 'client_too_fast';
+                        $this->recordRateAttempt($ctx, true);
+                        return false;
+                    }
+                    if (!$hasHumanInteraction) {
+                        $consume();
+                        $this->lastReason = 'no_human_interaction';
+                        $this->recordRateAttempt($ctx, true);
+                        return false;
+                    }
+                }
             }
 
-            // Voie JavaScript : PoW SHA-256 vérifié bit à bit côté serveur
-            if ($powNonce === '') {
-                $this->lastReason = 'missing_pow';
-                $this->recordRateAttempt($ctx, true);
+            // 2. Section critique atomique (BEGIN IMMEDIATE) : rate-limit + consommation nonce + enregistrement
+            unset($_SESSION['antispam_flexybot']);
+            $challengeConsumed = true;
+            if (!$this->commitValidationAtomically($ctx, $postedNonce)) {
                 return false;
             }
-            if (!$this->verifyPowBits($postedNonce, $powNonce, $difficulty)) {
-                $this->lastReason = 'invalid_pow';
-                $this->recordRateAttempt($ctx, true);
-                return false;
-            }
-
-            // Calcul de secours résolu en plus du PoW
-            if ($answer !== '') {
-                $expectedAnswerHash = (string) ($sessionData['answer_hash'] ?? '');
-                $ok = $expectedAnswerHash !== '' && hash_equals($expectedAnswerHash, $this->hashAnswer($answer, $postedNonce));
-                $this->lastReason = $ok ? 'fallback_answer' : 'wrong_answer';
-                $this->recordRateAttempt($ctx, !$ok);
-                return $ok;
-            }
-
-            $proof = json_decode($proofRaw, true);
-            if (!is_array($proof) || empty($proof['clicked'])) {
-                $this->lastReason = 'not_clicked';
-                $this->recordRateAttempt($ctx, true);
-                return false;
-            }
-            if (($proof['nonce'] ?? '') !== $postedNonce) {
-                $this->lastReason = 'invalid_nonce';
-                $this->recordRateAttempt($ctx, true);
-                return false;
-            }
-            if (!empty($proof['webdriver'])) {
-                $this->lastReason = 'webdriver';
-                $this->recordRateAttempt($ctx, true);
-                return false;
-            }
-
-            $clientElapsed = (int) ($proof['elapsedMs'] ?? 0);
-            $mouseMoves = (int) ($proof['mouseMoves'] ?? 0);
-            $touchEvents = (int) ($proof['touchEvents'] ?? 0);
-            $keyPresses = (int) ($proof['keyPresses'] ?? 0);
-            $scrollEvents = (int) ($proof['scrollEvents'] ?? 0);
-
-            $hasHumanInteraction = ($mouseMoves >= 2 || $touchEvents >= 1 || $keyPresses >= 2 || $scrollEvents >= 1);
-            if ($clientElapsed < 800) {
-                $this->lastReason = 'client_too_fast';
-                $this->recordRateAttempt($ctx, true);
-                return false;
-            }
-            if (!$hasHumanInteraction) {
-                $this->lastReason = 'no_human_interaction';
-                $this->recordRateAttempt($ctx, true);
-                return false;
-            }
-
-            $this->lastReason = 'human_behavior';
-            $this->recordRateAttempt($ctx, false);
+            $this->lastReason = $successReason;
             return true;
         } finally {
             if (!$challengeConsumed) {
@@ -660,7 +672,56 @@ HTML;
         return $this->sqlitePdo;
     }
 
-    protected function markNonceUsed(string $nonce): bool
+    /**
+     * Atomically check rate limits, consume the nonce, and record the attempt
+     * under a single SQLite BEGIN IMMEDIATE transaction on the same PDO connection.
+     */
+    protected function commitValidationAtomically(array $ctx, string $nonce): bool
+    {
+        $pdo = $this->getSqlite();
+        if ($pdo !== null) {
+            try {
+                $pdo->exec('BEGIN IMMEDIATE');
+                if ($this->isRateLimited($ctx)) {
+                    $this->lastReason = 'rate_limited';
+                    $this->recordRateAttempt($ctx, true);
+                    $pdo->exec('COMMIT');
+                    return false;
+                }
+                if (!$this->markNonceUsed($nonce, true)) {
+                    $this->lastReason = 'invalid_nonce';
+                    $this->recordRateAttempt($ctx, true);
+                    $pdo->exec('COMMIT');
+                    return false;
+                }
+                $this->recordRateAttempt($ctx, false);
+                $pdo->exec('COMMIT');
+                return true;
+            } catch (\Throwable $e) {
+                try {
+                    $pdo->exec('ROLLBACK');
+                } catch (\Throwable $ignored) {
+                }
+                $this->lastReason = 'invalid_nonce';
+                return false;
+            }
+        }
+
+        if ($this->isRateLimited($ctx)) {
+            $this->lastReason = 'rate_limited';
+            $this->recordRateAttempt($ctx, true);
+            return false;
+        }
+        if (!$this->markNonceUsed($nonce, false)) {
+            $this->lastReason = 'invalid_nonce';
+            $this->recordRateAttempt($ctx, true);
+            return false;
+        }
+        $this->recordRateAttempt($ctx, false);
+        return true;
+    }
+
+    protected function markNonceUsed(string $nonce, bool $inTransaction = false): bool
     {
         $nonceHash = hash('sha256', $nonce);
         $now = time();
@@ -669,15 +730,22 @@ HTML;
         $pdo = $this->getSqlite();
         if ($pdo !== null) {
             try {
-                $pdo->beginTransaction();
+                if (!$inTransaction) {
+                    $pdo->exec('BEGIN IMMEDIATE');
+                }
                 $pdo->prepare('DELETE FROM antispam_used_nonces WHERE expires_at < :now')->execute([':now' => $now]);
                 $stmt = $pdo->prepare('INSERT INTO antispam_used_nonces (nonce_hash, expires_at) VALUES (:h, :exp)');
                 $stmt->execute([':h' => $nonceHash, ':exp' => $expiresAt]);
-                $pdo->commit();
+                if (!$inTransaction) {
+                    $pdo->exec('COMMIT');
+                }
                 return true;
             } catch (\Throwable $e) {
-                if ($pdo->inTransaction()) {
-                    $pdo->rollBack();
+                if (!$inTransaction) {
+                    try {
+                        $pdo->exec('ROLLBACK');
+                    } catch (\Throwable $ignored) {
+                    }
                 }
                 return false;
             }

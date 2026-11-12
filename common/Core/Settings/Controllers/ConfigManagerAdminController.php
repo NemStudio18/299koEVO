@@ -33,6 +33,8 @@ class ConfigManagerAdminController extends AdminController {
 
         $tpl->set('link', $this->router->generate('configmanager-admin-save'));
         $tpl->set('cacheClearLink', $this->router->generate('configmanager-admin-cache-clear', ['token' => $this->user->token]));
+        $tpl->set('checkUpdateLink', $this->router->generate('configmanager-check-update', ['token' => $this->user->token]));
+        $tpl->set('coreVersion', defined('VERSION') ? VERSION : '');
 
         // Get cache statistics
         $cacheManager = new CacheManager();
