@@ -87,6 +87,7 @@ class AnnoncesController extends PublicController
 
             $descPlain = trim(strip_tags((string) ($attrs['description'] ?? '')));
             $excerpt = mb_strlen($descPlain) > 130 ? mb_substr($descPlain, 0, 127) . '…' : $descPlain;
+            $images = $item->getImages();
 
             $items[] = [
                 'id'             => $item->getId(),
@@ -95,7 +96,8 @@ class AnnoncesController extends PublicController
                 'price_label'    => trim((string) ($attrs['price_label'] ?? '')) ?: 'Prix non précisé',
                 'location'       => (string) ($attrs['location'] ?? ''),
                 'item_condition' => (string) ($attrs['item_condition'] ?? ''),
-                'image'          => (string) ($attrs['image'] ?? ''),
+                'image'          => $item->getMainImage(),
+                'images_count'   => count($images),
                 'excerpt'        => $excerpt,
                 'status'         => (string) ($attrs['status'] ?? 'available'),
                 'status_label'   => $item->getStatusLabel(),
@@ -137,6 +139,7 @@ class AnnoncesController extends PublicController
         }
 
         $attrs = $item->attributes;
+        $images = $item->getImages();
         $annonce = [
             'id'             => $item->getId(),
             'title'          => (string) ($attrs['title'] ?? ''),
@@ -144,7 +147,9 @@ class AnnoncesController extends PublicController
             'price_label'    => trim((string) ($attrs['price_label'] ?? '')) ?: 'Prix non précisé',
             'location'       => (string) ($attrs['location'] ?? ''),
             'item_condition' => (string) ($attrs['item_condition'] ?? ''),
-            'image'          => (string) ($attrs['image'] ?? ''),
+            'image'          => $item->getMainImage(),
+            'images'         => $images,
+            'images_count'   => count($images),
             'description'    => (string) ($attrs['description'] ?? ''),
             'contact_info'   => (string) ($attrs['contact_info'] ?? ''),
             'status'         => (string) ($attrs['status'] ?? 'available'),

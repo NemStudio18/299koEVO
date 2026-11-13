@@ -48,3 +48,4 @@ class AnnonceReservation extends JsonActiveRecord
         return $map[$status] ?? $status;
     }
 }
+

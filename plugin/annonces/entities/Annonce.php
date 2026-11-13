@@ -3,6 +3,7 @@
 namespace Annonces\Entities;
 
 use Core\Storage\JsonActiveRecord;
+use Core\Storage\StorageFactory;
 use Core\Router\Router;
 
 defined('ROOT') OR exit('Access denied!');
@@ -21,7 +22,54 @@ class Annonce extends JsonActiveRecord
 
     protected static array $casts = [
         'is_featured' => 'int',
+        'images'      => 'array',
     ];
+
+    protected static function boot(): void
+    {
+        if (static::$isBooted) {
+            return;
+        }
+        parent::boot();
+
+        // Migration douce : assurer la présence de la colonne `images` si stockage SQL
+        self::ensureImagesColumn();
+    }
+
+    private static function ensureImagesColumn(): void
+    {
+        try {
+            $driver = StorageFactory::getDefaultDriver();
+            if ($driver === 'sqlite' || $driver === 'mysql') {
+                $conn = StorageFactory::getConnection();
+                if ($conn instanceof \PDO) {
+                    $hasCol = false;
+                    if ($driver === 'sqlite') {
+                        $stmt = $conn->query("PRAGMA table_info(annonces)");
+                        if ($stmt) {
+                            $cols = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                            foreach ($cols as $col) {
+                                if (($col['name'] ?? '') === 'images') {
+                                    $hasCol = true;
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        $stmt = $conn->query("SHOW COLUMNS FROM annonces LIKE 'images'");
+                        if ($stmt && $stmt->fetch()) {
+                            $hasCol = true;
+                        }
+                    }
+                    if (!$hasCol) {
+                        @$conn->exec("ALTER TABLE annonces ADD COLUMN images TEXT");
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // Ignorer silencieusement si la table n'existe pas encore
+        }
+    }
 
     protected static function getSchema(): array
     {
@@ -33,6 +81,7 @@ class Annonce extends JsonActiveRecord
             'location'       => 'string',
             'item_condition' => 'string',
             'image'          => 'string',
+            'images'         => 'text',
             'description'    => 'text',
             'contact_info'   => 'string',
             'status'         => 'string',
@@ -45,6 +94,37 @@ class Annonce extends JsonActiveRecord
     public function getId(): string|int
     {
         return $this->attributes['id'] ?? '';
+    }
+
+    /**
+     * Retourne la liste ordonnée de toutes les photos de l'annonce.
+     * Rétrocompatible avec le champ unitaire `image`.
+     *
+     * @return string[]
+     */
+    public function getImages(): array
+    {
+        $raw = $this->attributes['images'] ?? [];
+        if (is_string($raw) && $raw !== '') {
+            $decoded = json_decode($raw, true);
+            $raw = is_array($decoded) ? $decoded : array_filter(array_map('trim', explode(',', $raw)));
+        }
+        if (!is_array($raw)) {
+            $raw = [];
+        }
+        if (empty($raw) && !empty($this->attributes['image'])) {
+            $raw = [(string) $this->attributes['image']];
+        }
+        return array_values(array_filter($raw, static fn($v) => is_string($v) && trim($v) !== ''));
+    }
+
+    /**
+     * Retourne la photo principale de l'annonce.
+     */
+    public function getMainImage(): string
+    {
+        $imgs = $this->getImages();
+        return $imgs[0] ?? (string) ($this->attributes['image'] ?? '');
     }
 
     public function isAvailable(): bool

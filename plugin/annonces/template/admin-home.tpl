@@ -195,3 +195,4 @@
 .ann-res-confirmed   { background: #dcfce7; color: #166534; }
 .ann-res-cancelled   { background: #fee2e2; color: #991b1b; }
 </style>
+

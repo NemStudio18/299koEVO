@@ -76,13 +76,15 @@ class AnnoncesAdminController extends AdminController
         foreach ($allAnnonces as $item) {
             $aid = (string) $item->getId();
             $attrs = $item->attributes;
+            $images = $item->getImages();
             $annonces[] = [
                 'id'                 => $aid,
                 'title'              => (string) ($attrs['title'] ?? ''),
                 'category'           => (string) ($attrs['category'] ?? ''),
                 'price_label'        => (string) ($attrs['price_label'] ?? ''),
                 'location'           => (string) ($attrs['location'] ?? ''),
-                'image'              => (string) ($attrs['image'] ?? ''),
+                'image'              => $item->getMainImage(),
+                'images_count'       => count($images),
                 'status'             => (string) ($attrs['status'] ?? 'available'),
                 'status_label'       => $item->getStatusLabel(),
                 'is_featured'        => !empty($attrs['is_featured']),
@@ -138,6 +140,7 @@ class AnnoncesAdminController extends AdminController
         }
 
         $attrs = $item ? $item->attributes : [];
+        $images = $item ? $item->getImages() : [];
         $annonceData = [
             'id'             => $item ? $item->getId() : '',
             'title'          => (string) ($attrs['title'] ?? ''),
@@ -145,7 +148,8 @@ class AnnoncesAdminController extends AdminController
             'price_label'    => (string) ($attrs['price_label'] ?? ''),
             'location'       => (string) ($attrs['location'] ?? ''),
             'item_condition' => (string) ($attrs['item_condition'] ?? ''),
-            'image'          => (string) ($attrs['image'] ?? ''),
+            'image'          => $item ? $item->getMainImage() : '',
+            'images'         => $images,
             'description'    => (string) ($attrs['description'] ?? ''),
             'contact_info'   => (string) ($attrs['contact_info'] ?? ''),
             'status'         => (string) ($attrs['status'] ?? 'available'),
@@ -192,11 +196,33 @@ class AnnoncesAdminController extends AdminController
             $status = 'available';
         }
 
-        $imagePath = trim((string) ($_POST['image'] ?? ''));
-        $uploaded = $this->handleImageUpload();
-        if ($uploaded !== null) {
-            $imagePath = $uploaded;
+        // 1. Photos existantes conservées (dans l'ordre défini par l'administrateur)
+        $existingImages = $_POST['existing_images'] ?? [];
+        if (!is_array($existingImages)) {
+            $existingImages = [];
         }
+        $imagesList = [];
+        foreach ($existingImages as $img) {
+            $img = trim((string) $img);
+            if ($img !== '') {
+                $imagesList[] = $img;
+            }
+        }
+
+        // 2. Nouvelles photos téléversées (multiples ou fichier unique)
+        $uploaded = $this->handleMultipleUploads();
+        foreach ($uploaded as $up) {
+            $imagesList[] = $up;
+        }
+
+        // 3. Image optionnelle saisie par URL directe ou filemanager
+        $singleUrl = trim((string) ($_POST['image'] ?? ''));
+        if ($singleUrl !== '' && !in_array($singleUrl, $imagesList, true)) {
+            $imagesList[] = $singleUrl;
+        }
+
+        $imagesList = array_values(array_unique(array_filter($imagesList)));
+        $mainImage = $imagesList[0] ?? '';
 
         $now = date('Y-m-d H:i:s');
         $item->title = $title;
@@ -205,7 +231,8 @@ class AnnoncesAdminController extends AdminController
         $item->price_label = trim((string) ($_POST['price_label'] ?? ''));
         $item->location = trim((string) ($_POST['location'] ?? ''));
         $item->item_condition = trim((string) ($_POST['item_condition'] ?? ''));
-        $item->image = $imagePath;
+        $item->image = $mainImage;
+        $item->images = $imagesList;
         $item->description = (string) ($_POST['description'] ?? '');
         $item->contact_info = trim((string) ($_POST['contact_info'] ?? ''));
         $item->status = $status;
@@ -326,6 +353,68 @@ class AnnoncesAdminController extends AdminController
         Show::msg(Lang::get('annonces.config-saved') ?: 'Paramètres enregistrés.', 'success');
         $this->core->redirect($this->router->generate('admin-annonces-home') . '?tab=settings');
         return null;
+    }
+
+    /**
+     * Traite un ensemble de fichiers téléversés dans $_FILES['image_files'] ou $_FILES['image_file'].
+     *
+     * @return string[]
+     */
+    private function handleMultipleUploads(): array
+    {
+        $uploadedPaths = [];
+
+        // Cas 1 : multi-fichiers image_files[]
+        if (!empty($_FILES['image_files']) && is_array($_FILES['image_files']['name'])) {
+            $names = $_FILES['image_files']['name'];
+            $tmpNames = $_FILES['image_files']['tmp_name'];
+            $errors = $_FILES['image_files']['error'];
+            $sizes = $_FILES['image_files']['size'];
+
+            $targetDir = UPLOAD . 'annonces' . DS;
+            if (!is_dir($targetDir)) {
+                @mkdir($targetDir, 0755, true);
+            }
+            $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            $hasOversized = false;
+
+            foreach ($names as $idx => $rawName) {
+                if (($errors[$idx] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                    if (($errors[$idx] ?? 0) === UPLOAD_ERR_INI_SIZE || ($errors[$idx] ?? 0) === UPLOAD_ERR_FORM_SIZE) {
+                        $hasOversized = true;
+                    }
+                    continue;
+                }
+                if (($sizes[$idx] ?? 0) > 8 * 1024 * 1024) {
+                    $hasOversized = true;
+                    continue;
+                }
+                $ext = strtolower(pathinfo((string) $rawName, PATHINFO_EXTENSION));
+                if (!in_array($ext, $allowed, true)) {
+                    continue;
+                }
+                $tmp = $tmpNames[$idx] ?? '';
+                if (!is_uploaded_file($tmp)) {
+                    continue;
+                }
+                $filename = 'annonce_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+                if (move_uploaded_file($tmp, $targetDir . $filename)) {
+                    $uploadedPaths[] = '/data/upload/annonces/' . $filename;
+                }
+            }
+
+            if ($hasOversized) {
+                Show::msg('Certaines photos dépassaient la limite autorisée (8 Mo max par photo) et n\'ont pas pu être ajoutées.', 'warning');
+            }
+        }
+
+        // Cas 2 : fichier unique image_file (compatibilité)
+        $single = $this->handleImageUpload();
+        if ($single !== null && !in_array($single, $uploadedPaths, true)) {
+            $uploadedPaths[] = $single;
+        }
+
+        return $uploadedPaths;
     }
 
     private function handleImageUpload(): ?string

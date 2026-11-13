@@ -30,6 +30,9 @@
                             <span class="annonce-card-placeholder"><i class="fa-solid fa-tags"></i></span>
                         {% endif %}
                         <span class="annonce-badge annonce-badge-{{item.status}}">{{item.status_label}}</span>
+                        {% if item.images_count > 1 %}
+                            <span class="annonce-photo-count-badge"><i class="fa-solid fa-camera"></i> {{item.images_count}}</span>
+                        {% endif %}
                     </div>
                     <div class="annonce-card-body">
                         <div class="annonce-card-meta">

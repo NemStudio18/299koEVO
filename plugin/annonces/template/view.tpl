@@ -8,7 +8,21 @@
     <div class="annonce-detail-grid">
         <div class="annonce-detail-box">
             {% if annonce.image %}
-                <img src="{{annonce.image}}" alt="{{annonce.title}}" class="annonce-detail-img" />
+                <div class="annonce-gallery">
+                    <a id="annonceMainPhotoLink" href="{{annonce.image}}" data-fancybox="annonce-gallery" data-caption="{{annonce.title}}" class="annonce-main-photo-wrap">
+                        <img id="annonceMainPhotoImg" src="{{annonce.image}}" alt="{{annonce.title}}" class="annonce-detail-img" />
+                        <span class="annonce-zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Agrandir</span>
+                    </a>
+                    {% if count(annonce.images) > 1 %}
+                        <div class="annonce-thumbs-strip">
+                            {% for img in annonce.images %}
+                                <a href="{{img}}" data-fancybox="annonce-gallery" data-caption="{{annonce.title}}" class="annonce-thumb-item{% if img == annonce.image %} active{% endif %}" onclick="annonceSwitchPhoto('{{img}}', this, event)">
+                                    <img src="{{img}}" alt="{{annonce.title}}" loading="lazy" />
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
             {% endif %}
 
             <div class="annonce-detail-badges">
@@ -90,4 +104,18 @@
         </aside>
     </div>
 </section>
+
+<script>
+function annonceSwitchPhoto(url, el, ev) {
+    if (ev) {
+        ev.preventDefault();
+    }
+    const mainImg = document.getElementById('annonceMainPhotoImg');
+    const mainLink = document.getElementById('annonceMainPhotoLink');
+    if (mainImg) mainImg.src = url;
+    if (mainLink) mainLink.href = url;
+    document.querySelectorAll('.annonce-thumb-item').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+}
+</script>
 

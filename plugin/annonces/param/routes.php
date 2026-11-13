@@ -18,3 +18,4 @@ $router->map('GET', '/admin/annonces/delete/[a:id]/[a:token][/?]', 'Annonces\\Co
 $router->map('POST', '/admin/annonces/reservation/[a:id]/status[/?]', 'Annonces\\Controllers\\AnnoncesAdminController#updateReservationStatus', 'admin-annonces-reservation-status');
 $router->map('GET', '/admin/annonces/reservation/delete/[a:id]/[a:token][/?]', 'Annonces\\Controllers\\AnnoncesAdminController#deleteReservation', 'admin-annonces-reservation-delete');
 $router->map('POST', '/admin/annonces/saveConf[/?]', 'Annonces\\Controllers\\AnnoncesAdminController#saveConf', 'admin-annonces-save-config');
+

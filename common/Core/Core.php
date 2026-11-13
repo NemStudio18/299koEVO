@@ -1084,10 +1084,12 @@ class Core
 
             if (is_array($match)) {
                 $routeName = $match['name'] ?? '';
-                $target = $match['target'] ?? '';
+                $rawTarget = $match['target'] ?? '';
+                // Normaliser target pour le check isAdmin (supporte string et array [Class, 'method'])
+                $targetStr = is_array($rawTarget) ? implode('#', $rawTarget) : $rawTarget;
                 // Check by route name OR target controller namespace/name OR URL prefix
                 if (str_starts_with($routeName, 'admin') || 
-                    str_contains($target, 'AdminController') || 
+                    str_contains($targetStr, 'AdminController') || 
                     str_starts_with($cleanUri, '/admin/') || 
                     $cleanUri === '/admin'
                 ) {
@@ -1102,9 +1104,15 @@ class Core
             define('ADMIN_MODE', $isAdmin);
         }
 
-        $this->logger->log(\Core\Logger::LEVEL_INFO, "Core::executeCallback - URI: " . $_SERVER['REQUEST_URI'] . " - Match: " . ($match ? "{$match['name']} ({$match['target']})" : "No Match") . " - ADMIN_MODE: " . (ADMIN_MODE ? 'YES' : 'NO'));
+        $this->logger->log(\Core\Logger::LEVEL_INFO, "Core::executeCallback - URI: " . $_SERVER['REQUEST_URI'] . " - Match: " . ($match ? "{$match['name']} (" . (is_array($match['target']) ? implode('::', $match['target']) : $match['target']) . ")" : "No Match") . " - ADMIN_MODE: " . (ADMIN_MODE ? 'YES' : 'NO'));
 
         if (is_array($match)) {
+            // Normaliser le target : supporte "Class#method" (string) ET [Class, 'method'] (array)
+            $rawTarget = $match['target'];
+            if (is_array($rawTarget) && count($rawTarget) === 2) {
+                $match['target'] = $rawTarget[0] . '#' . $rawTarget[1];
+            }
+
             // Charger les contrôleurs du plugin si nécessaire
             if ($runPlugin) {
                 $runPlugin->loadControllers();
