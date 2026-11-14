@@ -40,8 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Sous-menus mobiles : toggle au clic/touch (uniquement sur mobile)
+    // Sous-menus mobiles : toggle au clic/touch (uniquement sur mobile, hors menu avatar profil)
     document.querySelectorAll("#navigation > li").forEach(function (li) {
+        if (li.classList.contains("nav-user-avatar-menu")) return;
         var sub = li.querySelector("ul");
         if (!sub) return;
         var link = li.querySelector("a");
