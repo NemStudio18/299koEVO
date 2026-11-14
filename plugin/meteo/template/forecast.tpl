@@ -1,15 +1,7 @@
 {% set HIDE_PAGE_TITLE = true %}
-﻿<section class="meteo-forecast-page">
-    <!-- En-tête Météo avec photo de Bourges -->
-    <header class="meteo-hero-banner">
-        <div class="meteo-hero-inner">
-            <div class="meteo-hero-topline">
-                <span class="meteo-hero-badge"><i class="fa-solid fa-cloud-sun"></i> Météo en direct • Bourges &amp; Berry</span>
-            </div>
-            <h1 class="meteo-hero-title">Météo à Bourges</h1>
-            <p class="meteo-hero-subtitle">Observations en temps réel, prévisions détaillées heure par heure et tendances sur 5 jours.</p>
-        </div>
-    </header>
+<section class="meteo-forecast-page">
+    <!-- Scène Météo Vectorielle Vivante Dynamique (Zéro Vidéo, Décor Unique Vivant) -->
+    {% HOOK.meteoSceneHeader %}
     
     <div class="meteo-widget {{extraClass}}"
          data-current-url="{{apiCurrentUrl}}"

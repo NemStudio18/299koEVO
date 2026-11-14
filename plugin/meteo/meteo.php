@@ -38,6 +38,15 @@ namespace Meteo {
             $vCompact = file_exists($compactCss) ? filemtime($compactCss) : '1.0';
             $output .= '<link rel="stylesheet" href="' . \Utils\Util::urlBuild('plugin/meteo/template/widget-compact.css') . '?v=' . $vCompact . '" type="text/css"/>' . "\n";
 
+            $sceneCss = PLUGINS . 'meteo/template/weather-scene.css';
+            if (file_exists($sceneCss)) {
+                $output .= '<link rel="stylesheet" href="' . \Utils\Util::urlBuild('plugin/meteo/template/weather-scene.css') . '?v=' . filemtime($sceneCss) . '" type="text/css"/>' . "\n";
+            }
+            $sceneJs = PLUGINS . 'meteo/template/weather-scene.js';
+            if (file_exists($sceneJs)) {
+                $output .= '<script src="' . \Utils\Util::urlBuild('plugin/meteo/template/weather-scene.js') . '?v=' . filemtime($sceneJs) . '" defer></script>' . "\n";
+            }
+
             if (self::getPosition($plugin) === 'sidebar') {
                 $html = self::renderWidgetHtml($plugin, 'sidebar');
                 \Utils\Show::addSidebarPublicModule(
@@ -111,6 +120,31 @@ namespace Meteo {
             $tpl->set('language', $plugin->getConfigVal('language') ?? 'fr');
             $tpl->set('latitude', $plugin->getConfigVal('latitude') ?? '');
             $tpl->set('longitude', $plugin->getConfigVal('longitude') ?? '');
+
+            return $tpl->output();
+        }
+
+        public static function renderSceneHeader(string $city = '', string $country = ''): void
+        {
+            $plugin = self::getPlugin();
+            if (!$plugin) {
+                return;
+            }
+            echo self::renderSceneHeaderHtml($plugin, $city, $country);
+        }
+
+        public static function renderSceneHeaderHtml(Plugin $plugin, string $city = '', string $country = ''): string
+        {
+            $templateFile = PLUGINS . 'meteo/template/scene-header.tpl';
+            if (!is_file($templateFile)) {
+                return '';
+            }
+
+            $router = \Core\Router\Router::getInstance();
+            $tpl = new \Template\Template($templateFile);
+            $tpl->set('apiCurrentUrl', $router->generate('meteo-api-current'));
+            $tpl->set('defaultCity', !empty($city) ? $city : ($plugin->getConfigVal('defaultCity') ?? 'Paris'));
+            $tpl->set('defaultCountry', !empty($country) ? $country : ($plugin->getConfigVal('defaultCountry') ?? 'FR'));
 
             return $tpl->output();
         }
@@ -254,6 +288,11 @@ namespace {
     function meteoWidgetHeader(): void
     {
         \Meteo\Hooks::renderWidget('header');
+    }
+
+    function meteoSceneHeader(): void
+    {
+        \Meteo\Hooks::renderSceneHeader();
     }
 
     /**
