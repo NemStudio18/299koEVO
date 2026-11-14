@@ -1,0 +1,80 @@
+name: Release 299koEVO
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number to release (e.g. 0.2.2)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine Version
+        id: get_version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            CLEAN_VERSION="${{ inputs.version }}"
+          else
+            CLEAN_VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          echo "VERSION=${CLEAN_VERSION}" >> $GITHUB_OUTPUT
+          echo "Building 299koEVO version: ${CLEAN_VERSION}"
+
+      - name: Update VERSION in common/config.php
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          sed -i -E "s/const VERSION = '[^']+';/const VERSION = '${VERSION}';/" common/config.php
+          echo "Updated common/config.php with VERSION = ${VERSION}"
+          grep "const VERSION" common/config.php
+
+      - name: Package Distribution Zip
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          ZIP_NAME="299koevo-v${VERSION}.zip"
+          zip -r "${ZIP_NAME}" . \
+            -x "*.git*" \
+            -x "*.github*" \
+            -x "data/database.sqlite*" \
+            -x "data/plugin/*/logs/*" \
+            -x "data/cache/*" \
+            -x "data/backup/*" \
+            -x "vendor_ramdisk/*" \
+            -x "*.tmp*" \
+            -x "*.log"
+          echo "Created archive ${ZIP_NAME} ($(ls -lh "${ZIP_NAME}" | awk '{print $5}'))"
+
+      - name: Commit and push version bump to main
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git status --porcelain | grep -q "common/config.php"; then
+            git add common/config.php
+            git commit -m "chore(release): bump VERSION to ${VERSION} in common/config.php"
+            git push origin HEAD:main || true
+          fi
+
+      - name: Upload Zip Asset to Release
+        if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: 299koevo-v${{ steps.get_version.outputs.VERSION }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
