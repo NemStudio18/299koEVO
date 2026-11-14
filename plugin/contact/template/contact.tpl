@@ -4,7 +4,6 @@
             <i class="fa-solid fa-envelope"></i>
         </div>
         <h1 class="contact-title">Contactez l'équipe</h1>
-        <p class="contact-subtitle">Une question, une remarque ou un projet ? Écrivez-nous directement.</p>
     </header>
 
     {{ runPlugin.getConfigVal("content1") }}

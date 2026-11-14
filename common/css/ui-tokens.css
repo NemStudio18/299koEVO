@@ -4,6 +4,8 @@
  * Tout thème peut surcharger ces variables sur :root / body.theme-dark.
  */
 
+@layer evo-tokens {
+
 :root {
     --evo-bg: #f8fafc;
     --evo-surface: #f1f5f9;
@@ -1026,5 +1028,7 @@ body.theme-dark {
 }
 @media (prefers-reduced-motion: reduce) {
     .dc-error-icon { animation: none; }
+}
+
 }
 
