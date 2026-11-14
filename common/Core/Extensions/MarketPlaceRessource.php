@@ -180,6 +180,68 @@ class MarketPlaceRessource
     {
         return $this->versionsUpdate->{$this->version} ?? 'init';
     }
+
+    public function getCategory(): string
+    {
+        if ($this->type === self::TYPE_THEME) {
+            return 'theme';
+        }
+        $slug = strtolower($this->slug);
+
+        $categories = [
+            'content'  => ['blog', 'pelleditor', 'tinymce', 'mdeditor', 'docs', 'homebuilder', 'page'],
+            'commerce' => ['paiement', 'ecommerce', 'dons', 'payment', 'boutique'],
+            'events'   => ['agenda', 'prordv', 'reservation'],
+            'social'   => ['forum', 'livechat', 'contact', 'messaging', 'guestbook', 'newsletter'],
+            'media'    => ['galerie', 'meteo', 'rss', 'searchmaps', 'sondage', '299search', 'highlight'],
+            'system'   => ['antispam', 'lightstats', 'publicstats', 'notifications', 'oauth', 'pwa', 'seo', 'csseditor', 'libmanager', 'bugtracker', 'gamification', 'localfeed', 'auth', 'demo', 'telemetryadmin'],
+        ];
+
+        foreach ($categories as $cat => $slugs) {
+            if (in_array($slug, $slugs, true)) {
+                return $cat;
+            }
+        }
+
+        $desc = strtolower($this->name . ' ' . $this->description);
+        if (str_contains($desc, 'paiement') || str_contains($desc, 'boutique') || str_contains($desc, 'don') || str_contains($desc, 'stripe') || str_contains($desc, 'paypal')) return 'commerce';
+        if (str_contains($desc, 'éditeur') || str_contains($desc, 'article') || str_contains($desc, 'texte') || str_contains($desc, 'wysiwyg')) return 'content';
+        if (str_contains($desc, 'rendez-vous') || str_contains($desc, 'agenda') || str_contains($desc, 'date') || str_contains($desc, 'calendrier')) return 'events';
+        if (str_contains($desc, 'chat') || str_contains($desc, 'message') || str_contains($desc, 'forum') || str_contains($desc, 'discussion')) return 'social';
+        if (str_contains($desc, 'carte') || str_contains($desc, 'photo') || str_contains($desc, 'image') || str_contains($desc, 'rss') || str_contains($desc, 'recherche')) return 'media';
+
+        return 'system';
+    }
+
+    public function getCategoryLabel(): string
+    {
+        $cat = $this->getCategory();
+        $labels = [
+            'content'  => 'Contenu',
+            'commerce' => 'Commerce & Dons',
+            'events'   => 'Événements & RDV',
+            'social'   => 'Social & Contact',
+            'media'    => 'Médias & Outils',
+            'system'   => 'Système & Sécurité',
+            'theme'    => 'Thème',
+        ];
+        return $labels[$cat] ?? 'Autre';
+    }
+
+    public function getCategoryIcon(): string
+    {
+        $cat = $this->getCategory();
+        $icons = [
+            'content'  => 'fa-solid fa-feather-pointed',
+            'commerce' => 'fa-solid fa-credit-card',
+            'events'   => 'fa-solid fa-calendar-days',
+            'social'   => 'fa-solid fa-comments',
+            'media'    => 'fa-solid fa-photo-film',
+            'system'   => 'fa-solid fa-shield-halved',
+            'theme'    => 'fa-solid fa-palette',
+        ];
+        return $icons[$cat] ?? 'fa-solid fa-puzzle-piece';
+    }
 }
 
 
