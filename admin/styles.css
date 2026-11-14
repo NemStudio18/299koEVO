@@ -1366,6 +1366,41 @@ section > footer, .card > footer {
     color: #ffffff;
 }
 
+/* Marketplace Footer Actions & Compact Update Button */
+.market-item > footer .button,
+.market-item > footer button.button,
+.market-update-button-highlight {
+    font-size: 0.80rem;
+    padding: 6px 12px;
+    line-height: 1.3;
+    border-radius: var(--evo-radius-sm, 6px);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.market-update-button-highlight {
+    background: #16a34a;
+    color: #ffffff;
+    border: 1px solid #15803d;
+    box-shadow: 0 1px 3px rgba(22, 163, 74, 0.25);
+    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.market-update-button-highlight:hover {
+    background: #15803d;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.35);
+}
+
+.market-update-button-highlight i {
+    font-size: 0.82rem;
+}
+
 .adm-site-link {
     display: inline-flex;
     align-items: center;

@@ -1,0 +1,12 @@
+{
+    "slug": "paiement",
+    "name": "Paiement Unifié",
+    "icon": "fa-solid fa-credit-card",
+    "description": "Passerelle de paiement unifiée (Stripe, PayPal, Mollie) pour l'ensemble du site et des extensions.",
+    "author": "299Ko Team",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
+    "version": "1.0.0",
+    "homePublicMethod": "CheckoutController#home",
+    "homeAdminMethod": "PaiementAdminController#home"
+}

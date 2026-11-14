@@ -59,6 +59,16 @@ class NotificationManager
         array $data,
         ?string $externalId = null
     ): bool {
+        if ($externalId !== null && $externalId !== '') {
+            $existing = Notification::query()
+                ->where('user_id', '=', (int) $userId)
+                ->where('external_id', '=', (string) $externalId)
+                ->first();
+            if ($existing) {
+                return false;
+            }
+        }
+
         $notif = new Notification([
             'user_id' => $userId,
             'type' => $type,

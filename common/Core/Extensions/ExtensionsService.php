@@ -104,7 +104,7 @@ class ExtensionsService
     {
         $urls = [];
         foreach ($this->adminCss as $path) {
-            $urls[] = Util::urlBuild($path, true);
+            $urls[] = Util::urlBuild('admin/' . ltrim($path, '/'), true);
         }
         return $urls;
     }

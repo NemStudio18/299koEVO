@@ -1,0 +1,13 @@
+{
+    "paiement.name"             : "Paiement",
+    "paiement.description"      : "Paiement en ligne Stripe / PayPal",
+    "paiement.choose-method"    : "Choisissez votre moyen de paiement",
+    "paiement.stripe"           : "Payer par carte bancaire (Stripe)",
+    "paiement.paypal"           : "Payer via PayPal",
+    "paiement.success"          : "Paiement reçu avec succès ! Merci.",
+    "paiement.cancel"           : "Paiement annulé.",
+    "paiement.not-configured"   : "Le système de paiement n'est pas encore configuré.",
+    "paiement.admin-title"      : "Configuration du paiement",
+    "paiement.config-saved"     : "Configuration enregistrée.",
+    "paiement.login-required"   : "Vous devez être connecté pour payer."
+}
