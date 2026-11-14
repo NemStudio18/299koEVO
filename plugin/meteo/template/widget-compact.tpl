@@ -203,8 +203,8 @@
         <div class="meteo-widget-compact__icon-container weather-icon-container" data-role="icon-container">
             <span class="meteo-widget-compact__icon" data-role="icon">🌤️</span>
         </div>
+        <span class="meteo-widget-compact__temp" data-role="temperature">--°</span>
     </div>
-    <span class="meteo-widget-compact__temp" data-role="temperature">--°</span>
 </a>
 
 <script>

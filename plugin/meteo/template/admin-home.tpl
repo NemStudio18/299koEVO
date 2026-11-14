@@ -1,4 +1,4 @@
-﻿<section class="module-card">
+<section class="module-card">
     <header><i class="fa-solid fa-cloud-sun"></i> {{Lang.meteo.meteo}}</header>
 
     <form method="POST" action="{ ROUTER.generate("admin-meteo-save") }" class="meteo-form">

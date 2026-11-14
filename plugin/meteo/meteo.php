@@ -34,7 +34,9 @@ namespace Meteo {
             if (file_exists($cssPath)) {
                 $output .= '<link rel="stylesheet" href="' . \Utils\Util::urlBuild($cssPath) . '" type="text/css"/>' . "\n";
             }
-            $output .= '<link rel="stylesheet" href="' . \Utils\Util::urlBuild('plugin/meteo/template/widget-compact.css') . '" type="text/css"/>' . "\n";
+            $compactCss = PLUGINS . 'meteo/template/widget-compact.css';
+            $vCompact = file_exists($compactCss) ? filemtime($compactCss) : '1.0';
+            $output .= '<link rel="stylesheet" href="' . \Utils\Util::urlBuild('plugin/meteo/template/widget-compact.css') . '?v=' . $vCompact . '" type="text/css"/>' . "\n";
 
             if (self::getPosition($plugin) === 'sidebar') {
                 $html = self::renderWidgetHtml($plugin, 'sidebar');
