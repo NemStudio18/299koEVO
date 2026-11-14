@@ -70,6 +70,11 @@
                                 <input type="text" name="label" id="label" value="{{ runPlugin.getConfigVal("label") }}" required />
                             </p>
                             <p>
+                                <label for="subtitle">Phrase d'accroche / Sous-titre</label><br>
+                                <input type="text" name="subtitle" id="subtitle" value="{{ runPlugin.getConfigVal("subtitle") }}" placeholder="Une question, une remarque ou un projet ? Écrivez-nous directement." style="width: 100%;" />
+                                <small>Texte d'introduction sous le titre (laisser vide pour ne rien afficher).</small>
+                            </p>
+                            <p>
                                 <label for="selectedUser">{{Lang.contact.select-user}}</label><br>
                                 <select name="selectedUser" id="selectedUser">
                                 {% for user in contactUsers %}

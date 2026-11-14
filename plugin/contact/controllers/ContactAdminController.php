@@ -77,6 +77,7 @@ class ContactAdminController extends AdminController {
             return $this->home();
         }
         if (isset($_POST['label'])) $this->runPlugin->setConfigVal('label', $_POST['label']);
+        if (isset($_POST['subtitle'])) $this->runPlugin->setConfigVal('subtitle', $_POST['subtitle']);
         if (isset($_POST['copy'])) $this->runPlugin->setConfigVal('copy', $_POST['copy']);
         if (isset($_POST['acceptation'])) $this->runPlugin->setConfigVal('acceptation', $_POST['acceptation']);
         if (isset($_POST['selectedUser'])) $this->runPlugin->setConfigVal('userMailId', (int) $_POST['selectedUser']);

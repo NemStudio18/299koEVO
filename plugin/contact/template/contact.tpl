@@ -3,7 +3,10 @@
         <div class="contact-header-badge">
             <i class="fa-solid fa-envelope"></i>
         </div>
-        <h1 class="contact-title">Contactez l'équipe</h1>
+        <h1 class="contact-title">{{ runPlugin.getConfigVal("label") ?: "Contactez l'équipe" }}</h1>
+        {% if runPlugin.getConfigVal("subtitle") != "" %}
+            <p class="contact-subtitle">{{ runPlugin.getConfigVal("subtitle") }}</p>
+        {% endif %}
     </header>
 
     {{ runPlugin.getConfigVal("content1") }}
