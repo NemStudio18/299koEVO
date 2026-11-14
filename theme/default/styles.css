@@ -388,7 +388,7 @@ textarea:focus {
 
 input[type=submit],
 input[type=button],
-button,
+button:not([class*="-btn"]):not([class*="-toggle"]):not([class*="-close"]):not(.profile-tab-button):not([class*="theme-toggle"]),
 .button,
 [type="file"]::file-selector-button,
 .button:visited {
@@ -417,7 +417,7 @@ button.small,
 
 input[type=submit]:hover,
 input[type=button]:hover,
-button:hover,
+button:not([class*="-btn"]):not([class*="-toggle"]):not([class*="-close"]):not(.profile-tab-button):not([class*="theme-toggle"]):hover,
 .button:hover,
 [type="file"]::file-selector-button:hover {
     background: var(--primary-hover-color);
@@ -1761,6 +1761,25 @@ body.theme-light #footer {
         padding: 10px 0;
         border-top: 1px solid #eee;
     }
+
+    #navigation .nav-search-item {
+        width: 100%;
+        margin: 8px 0;
+    }
+    #navigation .search299-wrapper {
+        width: 100%;
+        display: block;
+    }
+    #navigation .search299-pill-form {
+        width: 100%;
+        height: 40px;
+        border-radius: 9999px;
+    }
+    #navigation .search299-pill-form input.search299-input {
+        width: 100%;
+        opacity: 1;
+        padding: 0 14px;
+    }
 }
 
 
@@ -2214,4 +2233,122 @@ input:checked+.toggle-switch.small .toggle-slider:before {
 body.theme-dark .default-theme-toggle {
     border-color: rgba(255, 255, 255, 0.25);
     color: #f8fafc;
+}
+
+/* Recherche Navbar (.search299-*) — Thème Default (Rond) */
+.nav-search-item {
+    display: inline-flex;
+    align-items: center;
+}
+
+.search299-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.search299-pill-form {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row-reverse;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    margin: 0;
+    background: var(--section-head-bg-color, #ffffff);
+    border: 1px solid var(--form-border-color, #cbd5e1);
+    border-radius: 9999px;
+    overflow: hidden;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.search299-icon-btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    color: var(--font-color);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.92rem;
+    transition: color 0.18s ease, transform 0.18s ease;
+    flex-shrink: 0;
+}
+
+.search299-icon-btn i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search299-icon-btn:hover {
+    color: var(--primary-color);
+    background: transparent;
+    box-shadow: none;
+    transform: scale(1.08);
+}
+
+.search299-pill-form input.search299-input {
+    width: 0;
+    height: 100%;
+    opacity: 0;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    color: var(--font-color);
+    font-family: inherit;
+    font-size: 0.88rem;
+    padding: 0;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, padding 0.3s ease;
+}
+
+.search299-wrapper:hover .search299-pill-form,
+.search299-pill-form:focus-within {
+    width: 240px;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 172, 193, 0.15);
+}
+
+.search299-wrapper:hover .search299-pill-form input.search299-input,
+.search299-pill-form:focus-within input.search299-input {
+    width: calc(100% - 36px);
+    opacity: 1;
+    padding: 0 10px 0 14px;
+}
+
+body.theme-dark .search299-pill-form {
+    background: var(--dark-section-head-bg-color, #18232c);
+    border-color: var(--dark-form-border-color, #374956);
+}
+
+body.theme-dark .search299-icon-btn {
+    color: var(--font-color-light, #f8fafc);
+}
+
+body.theme-dark .search299-icon-btn:hover {
+    color: var(--dark-primary-color, #00acc1);
+}
+
+body.theme-dark .search299-pill-form input.search299-input {
+    color: var(--font-color-light, #f8fafc);
+}
+
+body.theme-dark .search299-wrapper:hover .search299-pill-form,
+body.theme-dark .search299-pill-form:focus-within {
+    border-color: var(--dark-primary-color, #00acc1);
+    box-shadow: 0 0 0 3px rgba(0, 172, 193, 0.25);
 }

@@ -36,6 +36,7 @@
     --dc-container: 1180px;
     --dc-radius: 12px;
     --dc-radius-sm: 8px;
+    --dc-radius-full: 9999px;
     --dc-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
     --dc-shadow-md: 0 8px 24px rgba(16, 24, 40, 0.08);
     --dc-header-h: 70px;
@@ -442,7 +443,7 @@ hr { border: 0; border-top: 1px solid var(--dc-border); margin: 2rem 0; }
     margin: 0;
     background: var(--dc-surface);
     border: 1px solid var(--dc-border-strong);
-    border-radius: var(--dc-radius-full);
+    border-radius: 9999px;
     overflow: hidden;
     box-shadow: var(--dc-shadow-xs);
     transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
