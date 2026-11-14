@@ -11,6 +11,7 @@ use Core\Theme;
 use Core\Plugin\PluginsManager;
 use Utils\Util;
 use Core\Plugin\Plugin;
+use Core\Settings\UpdaterManager;
 
 /**
  * @copyright (C) 2024, 299Ko
@@ -35,7 +36,7 @@ class ConfigManagerAdminController extends AdminController {
         $tpl->set('cacheClearLink', $this->router->generate('configmanager-admin-cache-clear', ['token' => $this->user->token]));
         $tpl->set('checkUpdateLink', $this->router->generate('configmanager-check-update', ['token' => $this->user->token]));
         $tpl->set('coreVersion', defined('VERSION') ? VERSION : '');
-        $updater = new UpdaterManager();
+        $updater = new \Core\Settings\UpdaterManager();
         $localCommit = $updater->getLocalCommit();
         $tpl->set('coreCommit', $localCommit ? substr($localCommit, 0, 7) : '');
 
