@@ -544,27 +544,92 @@ blockquote {
 }
 
 .search299-wrapper {
+    position: relative;
     display: inline-flex;
     align-items: center;
+    vertical-align: middle;
 }
 
 .search299-pill-form {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row-reverse;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    margin: 0;
     background: var(--vg-surface);
-    border-color: var(--vg-border-strong);
+    border: 1px solid var(--vg-border-strong);
+    border-radius: var(--vg-radius-full);
+    overflow: hidden;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
 }
 
 .search299-pill-form:focus-within,
 .search299-wrapper:hover .search299-pill-form {
+    width: 240px;
     border-color: var(--vg-accent);
     box-shadow: 0 0 0 3px var(--vg-accent-soft);
 }
 
 .search299-icon-btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
     color: var(--vg-accent);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.92rem;
+    transition: color 0.18s ease, transform 0.18s ease;
+    flex-shrink: 0;
+}
+
+.search299-icon-btn i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .search299-icon-btn:hover {
     color: var(--vg-accent-vibrant);
+    background: transparent;
+    box-shadow: none;
+    transform: scale(1.08);
+}
+
+.search299-pill-form input.search299-input {
+    width: 0;
+    height: 100%;
+    opacity: 0;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    color: var(--vg-text);
+    font-family: inherit;
+    font-size: 0.88rem;
+    padding: 0;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, padding 0.3s ease;
+}
+
+.search299-wrapper:hover .search299-pill-form input.search299-input,
+.search299-pill-form:focus-within input.search299-input {
+    width: calc(100% - 36px);
+    opacity: 1;
+    padding: 0 10px 0 14px;
 }
 
 /* Utilitaires du header */
@@ -943,7 +1008,7 @@ blockquote {
     box-shadow: 0 0 0 3px var(--vg-accent-soft);
 }
 
-:where(button, input[type="submit"], input[type="button"]):not(.profile-tab-button),
+:where(button, input[type="submit"], input[type="button"]):not(.profile-tab-button, .search299-icon-btn, .msg-button-close, [class*="-btn"], [class*="-toggle"]),
 .button,
 a.button,
 a.button:visited,
@@ -967,7 +1032,7 @@ input[type="button"].button {
     transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-:where(button, input[type="submit"], input[type="button"]):not(.profile-tab-button):hover,
+:where(button, input[type="submit"], input[type="button"]):not(.profile-tab-button, .search299-icon-btn, .msg-button-close, [class*="-btn"], [class*="-toggle"]):hover,
 .button:hover,
 a.button:hover,
 button.button:hover,
