@@ -217,8 +217,25 @@ class AnnoncesAdminController extends AdminController
 
         // 3. Image optionnelle saisie par URL directe ou filemanager
         $singleUrl = trim((string) ($_POST['image'] ?? ''));
-        if ($singleUrl !== '' && !in_array($singleUrl, $imagesList, true)) {
-            $imagesList[] = $singleUrl;
+        if ($singleUrl !== '') {
+            if (preg_match('~^https?://~i', $singleUrl)) {
+                $siteUrl = \Core\Core::getInstance()->getConfigVal('siteUrl');
+                $isOwnDomain = !empty($siteUrl) && str_starts_with($singleUrl, $siteUrl);
+                if (!$isOwnDomain) {
+                    $targetDir = UPLOAD . 'annonces' . DS;
+                    $optimized = \Utils\ImageOptimizer::downloadAndOptimizeUrl(
+                        $singleUrl,
+                        $targetDir,
+                        $this->slugify($title)
+                    );
+                    if ($optimized) {
+                        $singleUrl = '/' . ltrim($optimized, '/');
+                    }
+                }
+            }
+            if (!in_array($singleUrl, $imagesList, true)) {
+                $imagesList[] = $singleUrl;
+            }
         }
 
         $imagesList = array_values(array_unique(array_filter($imagesList)));
@@ -397,7 +414,15 @@ class AnnoncesAdminController extends AdminController
                 if (!is_uploaded_file($tmp)) {
                     continue;
                 }
-                $filename = 'annonce_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+                $baseName = 'annonce_' . date('Ymd_His') . '_' . bin2hex(random_bytes(3));
+                if (\Utils\ImageOptimizer::isOptimizableImage($tmp)) {
+                    $optName = \Utils\ImageOptimizer::optimizeUpload($tmp, $targetDir, $baseName);
+                    if ($optName) {
+                        $uploadedPaths[] = '/data/upload/annonces/' . $optName;
+                        continue;
+                    }
+                }
+                $filename = $baseName . '.' . $ext;
                 if (move_uploaded_file($tmp, $targetDir . $filename)) {
                     $uploadedPaths[] = '/data/upload/annonces/' . $filename;
                 }
@@ -435,7 +460,14 @@ class AnnoncesAdminController extends AdminController
         if (!is_dir($targetDir)) {
             @mkdir($targetDir, 0755, true);
         }
-        $filename = 'annonce_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+        $baseName = 'annonce_' . date('Ymd_His') . '_' . bin2hex(random_bytes(3));
+        if (\Utils\ImageOptimizer::isOptimizableImage($file['tmp_name'])) {
+            $optName = \Utils\ImageOptimizer::optimizeUpload($file['tmp_name'], $targetDir, $baseName);
+            if ($optName) {
+                return '/data/upload/annonces/' . $optName;
+            }
+        }
+        $filename = $baseName . '.' . $ext;
         if (move_uploaded_file($file['tmp_name'], $targetDir . $filename)) {
             return '/data/upload/annonces/' . $filename;
         }

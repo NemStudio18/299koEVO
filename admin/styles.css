@@ -1140,8 +1140,8 @@ section > footer, .card > footer {
 .adm-drop-btn {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 9px 13px;
+    gap: 0;
+    padding: 9px 12px;
     border-radius: 8px;
     border: none;
     background: transparent;
@@ -1152,6 +1152,43 @@ section > footer, .card > footer {
     text-decoration: none;
     white-space: nowrap;
     transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+#navigation.adm-nav-list > .adm-nav-item > .adm-nav-link > i:first-child,
+#navigation.adm-nav-list > .adm-nav-item > .adm-drop-btn > i:first-child {
+    font-size: 0.95rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+#navigation.adm-nav-list > .adm-nav-item > .adm-nav-link > span,
+#navigation.adm-nav-list > .adm-nav-item > .adm-drop-btn > span {
+    display: inline-block;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: middle;
+    margin-left: 0;
+    transform: translateX(-6px);
+    transition: max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.2s ease,
+                margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+#navigation.adm-nav-list > .adm-nav-item:hover > .adm-nav-link > span,
+#navigation.adm-nav-list > .adm-nav-item:hover > .adm-drop-btn > span,
+#navigation.adm-nav-list > .adm-nav-item:focus-within > .adm-nav-link > span,
+#navigation.adm-nav-list > .adm-nav-item:focus-within > .adm-drop-btn > span,
+#navigation.adm-nav-list > .adm-nav-item.is-open > .adm-drop-btn > span {
+    max-width: 140px;
+    opacity: 1;
+    margin-left: 7px;
+    transform: translateX(0);
+    pointer-events: auto;
 }
 
 .adm-nav-link:hover,
@@ -1169,9 +1206,20 @@ section > footer, .card > footer {
 }
 
 .adm-caret {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    margin-left: 0;
+    transition: max-width 0.25s ease, opacity 0.2s ease, margin-left 0.25s ease, transform 0.15s ease;
+}
+
+#navigation.adm-nav-list > .adm-nav-item:hover > .adm-drop-btn .adm-caret,
+#navigation.adm-nav-list > .adm-nav-item:focus-within > .adm-drop-btn .adm-caret,
+#navigation.adm-nav-list > .adm-nav-item.is-open > .adm-drop-btn .adm-caret {
+    max-width: 14px;
     opacity: 0.75;
-    transition: transform 0.15s ease;
+    margin-left: 5px;
 }
 
 .adm-has-drop.is-open .adm-caret {
@@ -1289,8 +1337,8 @@ section > footer, .card > footer {
 .adm-site-link {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 7px 12px;
+    gap: 0;
+    padding: 7px 11px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.18);
     color: #e2e8f0;
@@ -1300,9 +1348,39 @@ section > footer, .card > footer {
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.adm-site-link:hover {
+.adm-site-link i {
+    font-size: 0.95rem;
+}
+
+.adm-site-link span {
+    display: inline-block;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: middle;
+    margin-left: 0;
+    transform: translateX(-4px);
+    transition: max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.2s ease,
+                margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.adm-site-link:hover,
+.adm-site-link:focus {
     background: rgba(255, 255, 255, 0.12);
     color: #ffffff;
+}
+
+.adm-site-link:hover span,
+.adm-site-link:focus span {
+    max-width: 120px;
+    opacity: 1;
+    margin-left: 6px;
+    transform: translateX(0);
+    pointer-events: auto;
 }
 
 .adm-avatar-wrap {
@@ -1671,9 +1749,28 @@ tr td input.small {
     .adm-drop-btn {
         width: 100%;
         display: flex;
-        justify-content: space-between;
+        align-items: center;
+        justify-content: flex-start;
         text-align: left;
         font-size: 0.9rem !important;
+        padding: 10px 14px;
+        gap: 10px;
+    }
+
+    #navigation.adm-nav-list > .adm-nav-item > .adm-nav-link > span,
+    #navigation.adm-nav-list > .adm-nav-item > .adm-drop-btn > span,
+    .adm-site-link span {
+        max-width: none;
+        opacity: 1;
+        margin-left: 0;
+        transform: none;
+        pointer-events: auto;
+    }
+
+    #navigation.adm-nav-list > .adm-nav-item > .adm-drop-btn .adm-caret {
+        max-width: none;
+        opacity: 1;
+        margin-left: auto;
     }
 
     .adm-drop-menu {

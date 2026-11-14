@@ -523,7 +523,7 @@ class Show
 
         $isDashActive = ($currentPlugin === 'dashboard' || $currentPlugin === '');
         $html = '<li class="adm-nav-item' . ($isDashActive ? ' is-active activePlugin' : '') . '">'
-              . '<a class="adm-nav-link" href="' . htmlspecialchars($siteUrl . '/admin') . '">'
+              . '<a class="adm-nav-link" href="' . htmlspecialchars($siteUrl . '/admin') . '" title="Dashboard">'
               . '<i class="fa-solid fa-gauge-high" aria-hidden="true"></i>'
               . '<span>Dashboard</span>'
               . '</a></li>';
@@ -544,7 +544,7 @@ class Show
             }
 
             $html .= '<li class="adm-nav-item adm-has-drop' . ($catActive ? ' is-active' : '') . '">';
-            $html .= '<button type="button" class="adm-drop-btn" aria-expanded="false">';
+            $html .= '<button type="button" class="adm-drop-btn" aria-expanded="false" title="' . htmlspecialchars($meta['label']) . '">';
             $html .= '<i class="' . htmlspecialchars($meta['icon']) . '" aria-hidden="true"></i>';
             $html .= '<span>' . htmlspecialchars($meta['label']) . '</span>';
             $html .= '<i class="fa-solid fa-chevron-down adm-caret" aria-hidden="true"></i>';
