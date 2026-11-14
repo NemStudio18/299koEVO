@@ -147,6 +147,17 @@ class Core
             \Template\Template::addGlobal('ROOT', ROOT);
         }
 
+        // Nettoyage transparent des dossiers obsolètes sur les installations déployées
+        if (is_dir(ROOT . 'plugin_back')) {
+            Util::delTree(ROOT . 'plugin_back');
+        }
+        if (is_dir(ROOT . 'scripts')) {
+            Util::delTree(ROOT . 'scripts');
+        }
+        if (is_dir(ROOT . 'docs')) {
+            Util::delTree(ROOT . 'docs');
+        }
+
         // Réglage de l'error reporting suivant le paramètre debug
         if ($this->config && $this->config['debug']) {
             ini_set('display_errors', 1);

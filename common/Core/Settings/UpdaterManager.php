@@ -246,11 +246,32 @@ class UpdaterManager
             $this->saveLocalCommit((string) $this->latestCommit);
         }
         
+        // Nettoyage automatique des anciens dossiers obsolètes (plugin_back, scripts, docs)
+        $this->cleanupLegacyDirectories();
+
         // Nettoyer le dossier temporaire
         $this->cleanupTempDirectory();
         
         logg("End update to $targetDesc", 'INFO');
         return true;
+    }
+
+    /**
+     * Purge automatiquement les dossiers obsolètes de développement ou de backup
+     */
+    protected function cleanupLegacyDirectories(): void
+    {
+        $obsoleteDirs = [
+            ROOT . 'plugin_back',
+            ROOT . 'scripts',
+            ROOT . 'docs',
+        ];
+        foreach ($obsoleteDirs as $dir) {
+            if (is_dir($dir)) {
+                \Utils\Util::delTree($dir);
+                logg("Cleaned up obsolete directory: $dir", 'INFO');
+            }
+        }
     }
 
     /**
