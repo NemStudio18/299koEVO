@@ -92,18 +92,35 @@ class MarketPlaceRessource
             }
         }
 
-        // Calcul de secours du hash du fichier infos.json
+        // Calcul récursif de l'empreinte du dossier (identique à l'algorithme du Hub)
         $dir = ($this->type === self::TYPE_PLUGIN) ? (PLUGINS . $this->slug) : (THEMES . $this->slug);
         if (!is_dir($dir)) {
             return null;
         }
 
-        $infoFile = ($this->type === self::TYPE_PLUGIN) ? ($dir . '/param/infos.json') : ($dir . '/infos.json');
-        if (file_exists($infoFile)) {
-            return sha1_file($infoFile) ?: null;
-        }
+        return self::computeDirectoryHash($dir);
+    }
 
-        return null;
+    public static function computeDirectoryHash(string $dir): string
+    {
+        $hashes = [];
+        if (!is_dir($dir)) {
+            return '';
+        }
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS)
+        );
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                $subPath = substr($file->getPathname(), strlen($dir));
+                if (str_contains($subPath, 'config.json') || str_contains($subPath, '.cache') || str_contains($subPath, '.git')) {
+                    continue;
+                }
+                $hashes[] = $subPath . ':' . sha1_file($file->getPathname());
+            }
+        }
+        sort($hashes);
+        return sha1(implode('|', $hashes));
     }
 
     public function getRemoteHash(): ?string
