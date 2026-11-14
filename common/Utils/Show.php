@@ -408,14 +408,18 @@ class Show
         $pluginsManager = PluginsManager::getInstance();
 
         $categoriesMeta = [
-            'contenu'    => ['label' => 'Contenu',     'icon' => 'fa-solid fa-pen-nib'],
-            'communaute' => ['label' => 'Communauté',  'icon' => 'fa-solid fa-comments'],
-            'stats'      => ['label' => 'Stats & SEO', 'icon' => 'fa-solid fa-chart-line'],
-            'systeme'    => ['label' => 'Système',     'icon' => 'fa-solid fa-sliders'],
+            'contenu'    => ['label' => 'Contenu',      'icon' => 'fa-solid fa-pen-nib'],
+            'commerce'   => ['label' => 'Boutique',     'icon' => 'fa-solid fa-shop'],
+            'communaute' => ['label' => 'Communauté',   'icon' => 'fa-solid fa-comments'],
+            'stats'      => ['label' => 'Stats & SEO',  'icon' => 'fa-solid fa-chart-line'],
+            'outils'     => ['label' => 'Outils & Dév', 'icon' => 'fa-solid fa-toolbox'],
+            'systeme'    => ['label' => 'Système',      'icon' => 'fa-solid fa-sliders'],
         ];
 
         $categoryByModule = [
+            // Contenu
             'page'          => 'contenu',
+            'menu'          => 'contenu',
             'menus'         => 'contenu',
             'blog'          => 'contenu',
             'agenda'        => 'contenu',
@@ -423,17 +427,47 @@ class Show
             'annonces'      => 'contenu',
             'filemanager'   => 'contenu',
             'searchmaps'    => 'contenu',
-            'livechat'      => 'communaute',
+            'docs'          => 'contenu',
+            'faq'           => 'contenu',
+            'homebuilder'   => 'contenu',
+            'localfeed'     => 'contenu',
+
+            // Boutique & Commerce
+            'ecommerce'     => 'commerce',
+            'dons'          => 'commerce',
+            'prordv'        => 'commerce',
+
+            // Communauté & Membres
+            'users'         => 'communaute',
+            'auth'          => 'communaute',
+            'oauth'         => 'communaute',
             'forum'         => 'communaute',
+            'livechat'      => 'communaute',
             'contact'       => 'communaute',
             'newsletter'    => 'communaute',
             'sondage'       => 'communaute',
-            'users'         => 'communaute',
-            'auth'          => 'communaute',
+            'guestbook'     => 'communaute',
+            'messaging'     => 'communaute',
             'notifications' => 'communaute',
+            'gamification'  => 'communaute',
+
+            // Stats & Référencement
             'lightstats'    => 'stats',
             'publicstats'   => 'stats',
             'seo'           => 'stats',
+            'telemetryadmin'=> 'stats',
+
+            // Outils & Développement
+            'tinymce'       => 'outils',
+            'mdeditor'      => 'outils',
+            'pelleditor'    => 'outils',
+            'highlight'     => 'outils',
+            'csseditor'     => 'outils',
+            'libmanager'    => 'outils',
+            'bugtracker'    => 'outils',
+            'demo'          => 'outils',
+
+            // Système & Administration
             'configmanager' => 'systeme',
             'pluginsmanager'=> 'systeme',
             'marketplace'   => 'systeme',
