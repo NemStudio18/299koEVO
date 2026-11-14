@@ -145,6 +145,12 @@ class BlogReadController extends PublicController
 
         try {
             $pdo = \Core\Database::getInstance()->getPdo();
+            $isSqlite = ($pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'sqlite');
+            if ($isSqlite) {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS blog_likes (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL, user_id INTEGER NULL, ip_hash VARCHAR(64) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+            } else {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS blog_likes (id INT AUTO_INCREMENT PRIMARY KEY, post_id INT NOT NULL, user_id INT NULL, ip_hash VARCHAR(64) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+            }
             if ($userId) {
                 $stmt = $pdo->prepare("SELECT id FROM blog_likes WHERE post_id = :pid AND user_id = :uid LIMIT 1");
                 $stmt->execute([':pid' => $postId, ':uid' => $userId]);
@@ -155,7 +161,7 @@ class BlogReadController extends PublicController
                     $del->execute([':id' => $existing]);
                     $liked = false;
                 } else {
-                    $ins = $pdo->prepare("INSERT INTO blog_likes (post_id, user_id, ip_hash, created_at) VALUES (:pid, :uid, :ip, NOW())");
+                    $ins = $pdo->prepare("INSERT INTO blog_likes (post_id, user_id, ip_hash, created_at) VALUES (:pid, :uid, :ip, CURRENT_TIMESTAMP)");
                     $ins->execute([':pid' => $postId, ':uid' => $userId, ':ip' => $ipHash]);
                     $liked = true;
                 }
@@ -169,7 +175,7 @@ class BlogReadController extends PublicController
                     $del->execute([':id' => $existing]);
                     $liked = false;
                 } else {
-                    $ins = $pdo->prepare("INSERT INTO blog_likes (post_id, user_id, ip_hash, created_at) VALUES (:pid, NULL, :ip, NOW())");
+                    $ins = $pdo->prepare("INSERT INTO blog_likes (post_id, user_id, ip_hash, created_at) VALUES (:pid, NULL, :ip, CURRENT_TIMESTAMP)");
                     $ins->execute([':pid' => $postId, ':ip' => $ipHash]);
                     $liked = true;
                 }
@@ -209,7 +215,8 @@ class BlogReadController extends PublicController
     protected function addMetas($item)
     {
         $currentUrl = Util::getCurrentURL();
-        $this->core->addMeta('<meta property="og:site_name" content="Vivre Bourges" />');
+        $siteName = $this->core->getConfigVal('siteName') ?: '299koEVO';
+        $this->core->addMeta('<meta property="og:site_name" content="' . htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8') . '" />');
 
         // Facebook App ID si configuré
         $authConfFile = ROOT . 'data' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'auth' . DIRECTORY_SEPARATOR . 'auth_conf.json';
@@ -233,7 +240,7 @@ class BlogReadController extends PublicController
 
         // Fallback image si aucune illustration d'article
         if (empty($imgUrl)) {
-            $currentTheme = $this->core->getConfigVal('theme') ?: 'VivreBourges';
+            $currentTheme = $this->core->getConfigVal('theme') ?: 'default';
             $imgUrl = Util::urlBuild('theme/' . $currentTheme . '/logo.webp');
             if (!file_exists(ROOT . 'theme/' . $currentTheme . '/logo.webp')) {
                 $imgUrl = Util::urlBuild('theme/' . $currentTheme . '/logo.png');

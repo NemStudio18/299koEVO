@@ -1,0 +1,24 @@
+{
+    "GamificationPalier": {
+        "label": "Paliers de Gamification",
+        "class": "Gamification\\Entities\\GamificationPalier",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "gamification_paliers",
+        "schema": "CREATE TABLE gamification_paliers (id INT PRIMARY KEY, name VARCHAR(100), points_required INT, badge_name VARCHAR(100), badge_icon VARCHAR(50), badge_color VARCHAR(20))"
+    },
+    "GamificationTransaction": {
+        "label": "Historique des points",
+        "class": "Gamification\\Entities\\GamificationTransaction",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "gamification_transactions",
+        "schema": "CREATE TABLE gamification_transactions (id VARCHAR(50) PRIMARY KEY, user_id INT, points INT, reason VARCHAR(100), metadata TEXT, date DATETIME)"
+    }
+}

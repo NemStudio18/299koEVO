@@ -4,7 +4,7 @@
     "icon": "fa-solid fa-chart-bar",
     "description": "Gestion de sondages et votes",
     "authorEmail": "maximeblanc@flexcb.fr",
-    "authorWebsite": "https://www.flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
     "version": "1.0.0",
     "homePublicMethod": "SondageController#home",
     "homeAdminMethod": "SondageAdminController#list"

@@ -1,0 +1,5 @@
+{
+    "csseditor:admin": {
+        "allow": ["admin"]
+    }
+}

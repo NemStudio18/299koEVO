@@ -223,7 +223,7 @@ class LightStatsAnalyticsService
     }
 
     /**
-     * Catégorise automatiquement une URL dans un Module métier de Vivre-Bourges
+     * Catégorise automatiquement une URL dans un Module métier de 299koEVO
      */
     public static function classifyModule(string $url): string
     {
@@ -687,7 +687,6 @@ class LightStatsAnalyticsService
             $stmt->execute([$startBound, $endBound]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\Throwable $e) {
-            error_log('[LightStatsAnalytics] Erreur getTopSearches: ' . $e->getMessage());
             return [];
         }
     }
@@ -718,7 +717,6 @@ class LightStatsAnalyticsService
             $stmt->execute([$startBound, $endBound]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\Throwable $e) {
-            error_log('[LightStatsAnalytics] Erreur getZeroResultSearches: ' . $e->getMessage());
             return [];
         }
     }
@@ -753,7 +751,6 @@ class LightStatsAnalyticsService
             $stmt->execute([$startBound, $endBound]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\Throwable $e) {
-            error_log('[LightStatsAnalytics] Erreur getTopPoiImpressions: ' . $e->getMessage());
             return [];
         }
     }
@@ -788,7 +785,6 @@ class LightStatsAnalyticsService
             $stmt->execute([$startBound, $endBound]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\Throwable $e) {
-            error_log('[LightStatsAnalytics] Erreur getTopPoiClicks: ' . $e->getMessage());
             return [];
         }
     }

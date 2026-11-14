@@ -1,0 +1,13 @@
+{
+    "GuestbookEntry": {
+        "label": "Livre d'or",
+        "class": "Guestbook\\Entities\\GuestbookEntry",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "guestbook",
+        "schema": "CREATE TABLE guestbook (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100), email VARCHAR(150), message TEXT, approved TINYINT(1) DEFAULT 0, date DATETIME, fingerprint VARCHAR(64), likes TEXT, adminReply TEXT, adminReplyDate DATETIME NULL, adminReplyAuthor VARCHAR(100))"
+    }
+}

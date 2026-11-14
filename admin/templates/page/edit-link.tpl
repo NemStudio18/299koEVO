@@ -1,4 +1,4 @@
-﻿<section>
+<section>
     <header>{{Lang.page.edit-link}}</header>
     <form method="post" action="{ ROUTER.generate("page-admin-save") }" enctype="multipart/form-data">
         <input type="hidden" name="_csrf" value="{{_csrfToken}}" />
@@ -29,7 +29,7 @@
         {% else %}
             <p>
                 <label for="target">{{Lang.page.target}}</label><br>
-                <input placeholder="{{Lang.page.example}} : https://299ko.ovh" {% if pageItem.targetIs() == "plugin" %}readonly{% endif %} type="url" name="target" id="target" value="{{pageItem.getTarget()}}" required="required" />
+                <input placeholder="{{Lang.page.example}} : https://299ko.flexcb.fr" {% if pageItem.targetIs() == "plugin" %}readonly{% endif %} type="url" name="target" id="target" value="{{pageItem.getTarget()}}" required="required" />
             </p>
         {% endif %}
         <p>

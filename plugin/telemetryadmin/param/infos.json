@@ -1,0 +1,13 @@
+{
+    "slug": "telemetryadmin",
+    "name": "Telemetry Admin",
+    "icon": "fa-solid fa-chart-line",
+    "description": "Dashboard d'administration pour la télémétrie et les rapports",
+    "author": "Maxime Blanc",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
+    "version": "1.0.0",
+    "homeAdminMethod": "TelemetryAdminController#dashboard",
+    "isCallableOnAdmin": true,
+    "isCallableOnPublic": false
+}

@@ -1,0 +1,12 @@
+{
+    "slug": "BugTracker",
+    "name": "Bug Tracker",
+    "icon": "fa-solid fa-bug",
+    "description": "Système de suivi des bugs et rapports d'erreurs.",
+    "version": "1.0.0",
+    "author": "Maxime Blanc",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
+    "homePublicMethod": "BugTracker\\Controllers\\BugTrackerPublicController#home",
+    "homeAdminMethod": "BugTracker\\Controllers\\BugTrackerAdminController#dashboard"
+}

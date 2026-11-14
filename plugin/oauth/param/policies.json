@@ -1,0 +1,21 @@
+{
+    "oauth:admin": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "type": "role",
+                "value": "admin"
+            }
+        ]
+    },
+    "oauth:personal": {
+        "logic": "OR",
+        "conditions": [
+            {
+                "provider": "auth",
+                "type": "is_logged",
+                "value": true
+            }
+        ]
+    }
+}

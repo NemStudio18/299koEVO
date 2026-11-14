@@ -1,0 +1,12 @@
+{
+    "slug": "guestbook",
+    "name": "Livre d'or",
+    "icon": "fa-solid fa-book",
+    "description": "Livre d'or pour vos visiteurs avec modération, mentions RGPD et réponses de l'administrateur.",
+    "author": "299Ko Team",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
+    "version": "1.0.0",
+    "homePublicMethod": "GuestbookController#home",
+    "homeAdminMethod": "GuestbookAdminController#list"
+}

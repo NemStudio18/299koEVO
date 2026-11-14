@@ -1,0 +1,11 @@
+{
+    "priority" : "2",
+    "requireModeration" : "1",
+    "requireEmail" : "0",
+    "maxMessageLength" : "1000",
+    "maxEntriesPerFingerprint" : "5",
+    "pageTitle" : "Livre d'or",
+    "messagesTabTitle" : "",
+    "messagesTabContent" : "",
+    "adminReplyName" : "Réponse de l'administrateur"
+}

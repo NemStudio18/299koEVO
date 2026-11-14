@@ -47,7 +47,7 @@ class LiveChatApiController
                 'session_token' => $token,
                 'conversation' => $conv,
                 'messages' => $messages,
-                'admin_name' => $this->service->getConfig()['admin_name'] ?? 'Équipe Vivre-Bourges'
+                'admin_name' => $this->service->getConfig()['admin_name'] ?? 'Équipe Support'
             ]);
         } catch (\Exception $e) {
             $this->jsonResponse(['success' => false, 'error' => $e->getMessage()], 400);

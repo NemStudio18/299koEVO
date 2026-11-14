@@ -4,7 +4,7 @@
     "icon": "fa-solid fa-address-card",
     "description": "Formulaire de contact",
     "authorEmail": "mx.koder@gmail.com",
-    "authorWebsite": "https://299ko.ovh",
+    "authorWebsite": "https://299ko.flexcb.fr",
     "version": "1.0.0",
     "homePublicMethod": "ContactController#home",
     "homeAdminMethod": "ContactAdminController#home"

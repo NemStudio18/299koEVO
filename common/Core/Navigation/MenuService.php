@@ -308,13 +308,39 @@ class MenuService
         }
 
         if ($pluginName !== '') {
-            $candidates = [$pluginName, "{$pluginName}-index", "{$pluginName}-home"];
+            $candidates = [
+                $pluginName,
+                "{$pluginName}-index",
+                "{$pluginName}-home",
+                strtolower($pluginName),
+                strtolower($pluginName) . "-index",
+                strtolower($pluginName) . "-home",
+                "rdv-public-home", // fallback specifique ProRdv
+            ];
             foreach ($candidates as $candidate) {
                 $url = $router->generate($candidate);
                 if ($url !== '#') {
                     return $url;
                 }
             }
+
+            // Tentative d'analyse de la route mappée à homePublicMethod
+            $pluginObj = PluginsManager::getInstance()->getPlugin($pluginName);
+            if ($pluginObj) {
+                $hpm = $pluginObj->getInfoVal('homePublicMethod');
+                if (!empty($hpm)) {
+                    foreach ($router->getRoutes() as $r) {
+                        // $r = [$method, $pattern, $target, $name]
+                        if (($r[2] ?? '') === $hpm && !empty($r[3])) {
+                            $u = $router->generate($r[3]);
+                            if ($u !== '#') {
+                                return $u;
+                            }
+                        }
+                    }
+                }
+            }
+
             return $siteUrl . '/' . $pluginName . '/';
         }
 

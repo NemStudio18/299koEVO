@@ -4,7 +4,7 @@
     "icon": "fa-solid fa-magnifying-glass-chart",
     "description": "Ajoute des options liées au référencement et aux réseaux sociaux",
     "authorEmail": "mx.koder@gmail.com",
-    "authorWebsite": "https://299ko.ovh",
+    "authorWebsite": "https://299ko.flexcb.fr",
     "version": "1.0.0",
     "homeAdminMethod": "SEOAdminController#home"
 }

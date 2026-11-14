@@ -1,4 +1,4 @@
-﻿<section>
+<section>
 	{% if page.isUnlocked(pageItem) %}
 		{% HOOK.page:content-header(pageItem) %}
 		{{htmlspecialchars_decode(pageItem.getContent)}}

@@ -1,11 +1,14 @@
 {
+    "slug": "notifications",
     "name": "Notifications",
-    "icon": "fa-solid fa-circle-exclamation",
+    "icon": "fa-solid fa-bell",
     "version": "1.0.0",
-    "author": "VivréBourges",
-    "description": "Système centralisé de notifications pour tous les plugins",
+    "author": "299Ko Team",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
+    "description": "Système centralisé de notifications en temps réel pour utilisateurs et administrateurs.",
     "compatibility": [
-        "0.0.1"
+        "0.2.1"
     ],
     "admin_menu": false
 }

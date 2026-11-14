@@ -1,0 +1,13 @@
+{
+    "FaqQuestion": {
+        "label": "Questions (FAQ)",
+        "class": "Faq\\Entities\\FaqQuestion",
+        "drivers": [
+            "json",
+            "mysql",
+            "sqlite"
+        ],
+        "table": "faq",
+        "schema": "CREATE TABLE faq (id INT AUTO_INCREMENT PRIMARY KEY, question VARCHAR(255), answer TEXT, category VARCHAR(100), position INT DEFAULT 0, votes INT DEFAULT 0, fingerprints TEXT, date DATETIME, active TINYINT(1) DEFAULT 1, email VARCHAR(150))"
+    }
+}

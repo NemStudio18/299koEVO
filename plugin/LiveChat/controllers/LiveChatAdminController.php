@@ -121,7 +121,7 @@ class LiveChatAdminController extends AdminController
         $convId = (int)($_POST['conversation_id'] ?? 0);
         $message = trim($_POST['message'] ?? '');
         $config = $this->service->getConfig();
-        $adminName = !empty($_POST['admin_name']) ? trim($_POST['admin_name']) : ($config['admin_name'] ?? 'Équipe Vivre-Bourges');
+        $adminName = !empty($_POST['admin_name']) ? trim($_POST['admin_name']) : ($config['admin_name'] ?? 'Équipe Support');
 
         if ($convId <= 0 || empty($message)) {
             $this->jsonResponse(['success' => false, 'error' => 'Paramètres invalides'], 400);
@@ -193,13 +193,13 @@ class LiveChatAdminController extends AdminController
     public function saveConfig(): void
     {
         $webhook = trim($_POST['discord_webhook'] ?? '');
-        $adminName = trim($_POST['admin_name'] ?? 'Équipe Vivre-Bourges');
+        $adminName = trim($_POST['admin_name'] ?? 'Équipe Support');
         $welcome = trim($_POST['welcome_message'] ?? '');
 
         $configFile = DATA_PLUGIN . 'LiveChat/config.json';
         $current = $this->service->getConfig();
         $current['discord_webhook'] = $webhook;
-        $current['admin_name'] = $adminName ?: 'Équipe Vivre-Bourges';
+        $current['admin_name'] = $adminName ?: 'Équipe Support';
         if (!empty($welcome)) {
             $current['welcome_message'] = $welcome;
         }

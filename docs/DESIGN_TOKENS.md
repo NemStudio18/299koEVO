@@ -153,3 +153,4 @@ En CSS standard, **toute règle présente dans un layer supérieur l'emporte tou
 }
 ```
 **Résultat :** Zéro hack, zéro `!important`, et chaque thème conserve une maîtrise totale sur l'apparence des composants tiers.
+

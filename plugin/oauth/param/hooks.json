@@ -1,0 +1,19 @@
+{
+    "install": "oauthInstall",
+    "beforeRunPlugin": "oauthBeforeRunPlugin",
+    "frontHead": "oauthFrontHead",
+    "adminHead": "oauthAdminHead",
+    "publicContent": "oauthPublicContent",
+    "users:register-validation": "oauthRegisterValidation",
+    "user:profile-dynamic-fields": "oauthProfileDynamicFields",
+    "user:profile-edit-dynamic-fields": "oauthProfileEditDynamicFields",
+    "user:theme-save-url": "oauthThemeSaveUrl",
+    "user:login-url": "oauthLoginUrl",
+    "user:register-url": "oauthRegisterUrl",
+    "user:logout-url": "oauthLogoutUrl",
+    "admin:url": "oauthAdminUrl",
+    "user:profile-url": "oauthProfileUrl",
+    "auth:login-failed": "oauthOnLoginFailed",
+    "auth:registered": "oauthOnRegistered",
+    "users:after-registration-success": "oauthOnRegistered"
+}

@@ -1,5 +1,5 @@
 /**
- * Vivre-Bourges Native LiveChat Widget
+ * 299koEVO Native LiveChat Widget
  * 100% autonome, sans dépendance externe
  */
 (function() {

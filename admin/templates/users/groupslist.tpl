@@ -1,4 +1,4 @@
-﻿<section class="module-card">
+<section class="module-card">
 	<header>{{Lang.groups-list}}</header>
 	<div class="module-actions">
 		<a class='button success' href='{ ROUTER.generate("groups-add") }'>

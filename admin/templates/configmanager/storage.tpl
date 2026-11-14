@@ -48,11 +48,11 @@
         <!-- Panel Default -->
         <div id="panel-default" class="connection-panel active">
             {% if connectionStatuses.default and not connectionStatuses.default.success %}
-            <div class="msg error storage-msg-gap">
+            <div class="msg error" style="margin-bottom: 1rem;">
                 <i class="fa-solid fa-triangle-exclamation"></i> <strong>Erreur de connexion :</strong> {{ connectionStatuses.default.message }}
             </div>
             {% elseif connectionStatuses.default %}
-            <div class="msg success storage-msg-gap">
+            <div class="msg success" style="margin-bottom: 1rem;">
                 <i class="fa-solid fa-circle-check"></i> <strong>Connexion établie avec succès.</strong>
             </div>
             {% endif %}
@@ -69,12 +69,12 @@
                                 <option value="pgsql" {% if dbConfig.driver == 'pgsql' %}selected{% endif %}>PostgreSQL</option>
                             </select>
                         </div>
-                        <div class="form-group db-fields-mysql {% if dbConfig.driver != 'mysql' %}evo-is-hidden{% endif %}">
+                        <div class="form-group db-fields-mysql" style="{% if dbConfig.driver != 'mysql' %}display:none{% endif %}">
                             <label>Hôte</label>
                             <input type="text" name="database[host]" value="{{dbConfig.host|default('localhost')}}">
                         </div>
                     </div>
-                    <div class="db-fields-mysql {% if dbConfig.driver != 'mysql' %}evo-is-hidden{% endif %}">
+                    <div class="db-fields-mysql" style="{% if dbConfig.driver != 'mysql' %}display:none{% endif %}">
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Base de données</label>
@@ -90,7 +90,7 @@
                             <input type="password" name="database[password]" placeholder="Laisser vide pour ne pas modifier">
                         </div>
                     </div>
-                    <div class="db-fields-sqlite {% if dbConfig.driver != 'sqlite' %}evo-is-hidden{% endif %}">
+                    <div class="db-fields-sqlite" style="{% if dbConfig.driver != 'sqlite' %}display:none{% endif %}">
                         <div class="form-group">
                             <label>Chemin du fichier (.sqlite)</label>
                             <input type="text" name="database[path]" value="{{dbConfig.path}}" placeholder="ex: data/storage/custom.sqlite">
@@ -148,11 +148,11 @@
         {% for name, db in databases %}
         <div id="panel-{{name|replace(':', '-')}}" class="connection-panel">
             {% if connectionStatuses[name] and not connectionStatuses[name].success %}
-            <div class="msg error storage-msg-gap">
+            <div class="msg error" style="margin-bottom: 1rem;">
                 <i class="fa-solid fa-triangle-exclamation"></i> <strong>Erreur de connexion ({{name}}) :</strong> {{ connectionStatuses[name].message }}
             </div>
             {% elseif connectionStatuses[name] %}
-            <div class="msg success storage-msg-gap">
+            <div class="msg success" style="margin-bottom: 1rem;">
                 <i class="fa-solid fa-circle-check"></i> <strong>Connexion '{{name}}' établie avec succès.</strong>
             </div>
             {% endif %}
@@ -169,12 +169,12 @@
                                 <option value="pgsql" {% if db.driver == 'pgsql' %}selected{% endif %}>PostgreSQL</option>
                             </select>
                         </div>
-                        <div class="form-group db-fields-mysql {% if db.driver != 'mysql' %}evo-is-hidden{% endif %}">
+                        <div class="form-group db-fields-mysql" style="{% if db.driver != 'mysql' %}display:none{% endif %}">
                             <label>Hôte</label>
                             <input type="text" name="database[host]" value="{{db.host|default('localhost')}}">
                         </div>
                     </div>
-                    <div class="db-fields-mysql {% if db.driver != 'mysql' %}evo-is-hidden{% endif %}">
+                    <div class="db-fields-mysql" style="{% if db.driver != 'mysql' %}display:none{% endif %}">
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Base de données</label>
@@ -190,13 +190,13 @@
                             <input type="password" name="database[password]" placeholder="Laisser vide pour ne pas modifier">
                         </div>
                     </div>
-                    <div class="db-fields-sqlite {% if db.driver != 'sqlite' %}evo-is-hidden{% endif %}">
+                    <div class="db-fields-sqlite" style="{% if db.driver != 'sqlite' %}display:none{% endif %}">
                         <div class="form-group">
                             <label>Chemin du fichier (.sqlite)</label>
                             <input type="text" name="database[path]" value="{{db.path}}">
                         </div>
                     </div>
-                    <div class="storage-actions-row">
+                    <div style="display: flex; gap: 10px;">
                         <button type="submit" class="button primary">Mettre à jour {{name}}</button>
                         <button type="submit" name="delete_conn" value="1" class="button outline danger" onclick="return confirm('Supprimer cette connexion ?')">Supprimer</button>
                     </div>
@@ -259,7 +259,7 @@
                                 </select>
                             </td>
                             <td class="migration-cell">
-                                <button type="button" class="button outline btn-migrate evo-is-hidden">
+                                <button type="button" class="button outline btn-migrate" style="display:none">
                                     <i class="fa-solid fa-arrows-rotate"></i> Migrer
                                 </button>
                                 <div class="migration-status"></div>
@@ -296,11 +296,11 @@
 
             <!-- TAB 3 : Informations -->
             <li class="tab">
-                <div class="storage-section storage-section-gap">
+                <div class="storage-section" style="margin-bottom: 1.5rem;">
                     <h3><i class="fa-solid fa-circle-info"></i> Comment fonctionne le Stockage</h3>
                     <p class="section-desc">Le CMS peut stocker ses entités (Utilisateurs, Pages, Menus, Galerie, Redirections SEO…) soit dans des <strong>fichiers JSON locaux</strong> (<code>data/</code>), soit dans une <strong>base SQL</strong> (<strong>SQLite</strong>, <strong>MySQL</strong> ou <strong>PostgreSQL</strong>) configurée dans <code>data/env.json</code>.</p>
 
-                    <div class="help-grid storage-section-gap">
+                    <div class="help-grid" style="margin-bottom: 1.5rem;">
                         <div class="storage-help">
                             <h4><i class="fa-solid fa-database"></i> 1. Connexions SQL</h4>
                             <p>La connexion <strong>Défaut</strong> est la base principale du site. Vous pouvez aussi déclarer des connexions secondaires nommées si vous voulez isoler un module sur une autre base.</p>
@@ -318,16 +318,16 @@
                     <h3><i class="fa-solid fa-book"></i> Exemples concrets de paramétrage</h3>
                     <div class="help-grid">
                         <div class="db-config-grid">
-                            <strong class="storage-example-title">Exemple A — Site standard autonome (Recommandé)</strong>
-                            <ul class="storage-example-list">
+                            <strong style="display: block; margin-bottom: 6px; color: #0f172a;">Exemple A — Site standard autonome (Recommandé)</strong>
+                            <ul style="margin: 0 0 0 18px; line-height: 1.6; font-size: 0.9rem;">
                                 <li><strong>Connexion Défaut :</strong> Driver <code>SQLite</code>, chemin <code>/home/.../data/database.sqlite</code> (aucun serveur MySQL externe nécessaire).</li>
                                 <li><strong>Composants principaux :</strong> <code>User</code>, <code>PageItem</code>, <code>MenuItem</code>, <code>ContactMessage</code>, <code>GalerieItem</code>, <code>Redirect</code> sur <code>Défaut (SQL)</code>.</li>
                                 <li><strong>Stockage par défaut :</strong> <code>JSON</code> pour les petits réglages et caches légers.</li>
                             </ul>
                         </div>
                         <div class="db-config-grid">
-                            <strong class="storage-example-title">Exemple B — Site à fort trafic (MySQL dédié)</strong>
-                            <ul class="storage-example-list">
+                            <strong style="display: block; margin-bottom: 6px; color: #0f172a;">Exemple B — Site à fort trafic (MySQL dédié)</strong>
+                            <ul style="margin: 0 0 0 18px; line-height: 1.6; font-size: 0.9rem;">
                                 <li><strong>Connexion Défaut :</strong> Driver <code>MySQL</code> (<code>localhost</code>, base dédiée, utilisateur &amp; mot de passe).</li>
                                 <li><strong>Procédure :</strong> 1) Enregistrer la connexion MySQL et vérifier le voyant vert, 2) Cliquer sur <em>Migrer</em> pour chaque composant souhaité dans l'onglet <em>Gestion par Composant</em>, 3) Enregistrer les affectations.</li>
                             </ul>
@@ -338,6 +338,59 @@
         </ul>
     </div>
 </section>
+
+<style>
+.storage-section { margin-bottom: 2.5rem; }
+.storage-section h3 { margin-bottom: 0.5rem; font-size: 1.25em; display: flex; align-items: center; gap: 10px; }
+.section-desc { color: #666; margin-bottom: 1.5rem; font-size: 0.95em; }
+.section-divider { border: 0; border-top: 1px solid #eee; margin: 2rem 0; }
+
+/* Connections Manager */
+.connection-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+.tab-btn { padding: 7px 14px; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 600; }
+.tab-btn.active { background: var(--primary-color, #1f62a9); color: #ffffff; border-color: var(--primary-color, #1f62a9); }
+.tab-btn:hover:not(.active) { background: #f1f5f9; color: #0f172a; }
+.btn-add-conn { background: #ecfdf5; color: #15803d; border-color: #bbf7d0; }
+
+.connection-panel { display: none; }
+.connection-panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* DB Config Form */
+.db-config-grid { background: #f8fafc; padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 12px; max-width: 820px; }
+.form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+.form-group { flex: 1; display: flex; flex-direction: column; gap: 5px; margin-bottom: 1rem; }
+.form-group label { font-weight: 600; font-size: 0.85rem; color: #334155; }
+.form-group input, .form-group select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; }
+
+/* Model Table */
+.badge { padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.badge-json { background: #475569; color: white; }
+.badge-sql { background: var(--primary-color, #1f62a9); color: white; }
+
+.storage-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.storage-table th { background: #f8fafc; padding: 12px; font-size: 0.85rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+.storage-table td { padding: 14px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+
+.button.outline { background: transparent; border: 1px solid var(--primary-color, #1f62a9); color: var(--primary-color, #1f62a9); font-size: 0.82rem; }
+.button.outline:hover { background: var(--primary-color, #1f62a9); color: white; }
+
+.migration-status { font-size: 0.8em; margin-top: 5px; font-weight: 500; }
+.migration-status.success { color: #16a34a; }
+.migration-status.error { color: #dc2626; }
+
+.storage-help { background: #fff; border: 1px solid #e2e8f0; border-left: 4px solid var(--success-color, #16a34a); border-radius: 12px; padding: 1.5rem; }
+.help-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+.help-item strong { color: #15803d; }
+
+.status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-left: 5px; }
+.status-online { background-color: #16a34a; box-shadow: 0 0 5px rgba(22, 163, 74, 0.5); }
+.status-offline { background-color: #dc2626; box-shadow: 0 0 5px rgba(220, 38, 38, 0.5); }
+
+.migration-loading::after { content: "..."; animation: dots 1.5s infinite; }
+@keyframes dots { 0% { content: "."; } 33% { content: ".."; } 66% { content: "..."; } }
+</style>
 
 <script>
 // Tabs Management avec mémorisation de l'onglet actif
@@ -375,8 +428,8 @@
 document.querySelectorAll('.db-driver-selector').forEach(select => {
     select.addEventListener('change', function() {
         const panel = this.closest('.connection-panel');
-        panel.querySelectorAll('.db-fields-mysql').forEach(el => el.classList.toggle('evo-is-hidden', this.value !== 'mysql'));
-        panel.querySelectorAll('.db-fields-sqlite').forEach(el => el.classList.toggle('evo-is-hidden', this.value !== 'sqlite'));
+        panel.querySelector('.db-fields-mysql').style.display = (this.value === 'mysql') ? 'block' : 'none';
+        panel.querySelector('.db-fields-sqlite').style.display = (this.value === 'sqlite') ? 'block' : 'none';
     });
 });
 
@@ -393,9 +446,9 @@ document.querySelectorAll('.storage-selector').forEach(select => {
         const targetDriver = (targetId === 'json') ? 'json' : 'sql';
 
         if (targetId === currentId) {
-            btn.classList.add('evo-is-hidden');
+            btn.style.display = 'none';
         } else {
-            btn.classList.remove('evo-is-hidden');
+            btn.style.display = 'inline-block';
             btn.dataset.targetId = targetId;
             btn.dataset.sourceId = currentId;
             

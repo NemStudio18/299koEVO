@@ -4,7 +4,7 @@
     "icon": "fa-regular fa-newspaper",
     "description": "Gestion des abonnements à la newsletter",
     "authorEmail": "maximeblanc@flexcb.fr",
-    "authorWebsite": "https://www.flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
     "version": "1.0.0",
     "homePublicMethod": "NewsletterController#home",
     "homeAdminMethod": "NewsletterAdminController#list",

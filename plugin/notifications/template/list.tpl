@@ -1,4 +1,4 @@
-﻿{# Template liste notifications #}
+{# Template liste notifications #}
 
 <div class="notifications-container">
     <div class="notifications-header">

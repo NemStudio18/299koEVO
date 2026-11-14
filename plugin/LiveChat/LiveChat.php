@@ -17,7 +17,7 @@ class Hooks
     public static function addFooter(): void
     {
         // Ne pas injecter dans l'administration
-        if (defined('IS_ADMIN') && IS_ADMIN && !empty($_SESSION['admin'])) {
+        if ((defined('ADMIN_MODE') && ADMIN_MODE) || (defined('IS_ADMIN') && IS_ADMIN)) {
             return;
         }
 
@@ -42,7 +42,7 @@ class Hooks
         return [
             'activate' => 1,
             'discord_webhook' => '',
-            'admin_name' => 'Équipe Vivre-Bourges',
+            'admin_name' => 'Équipe Support',
             'welcome_message' => 'Bonjour ! Une question sur votre établissement ou sur le site ? Discutons en direct.'
         ];
     }

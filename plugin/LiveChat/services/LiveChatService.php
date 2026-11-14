@@ -12,15 +12,73 @@ class LiveChatService
     public function __construct()
     {
         $this->pdo = \Core\Database::getInstance()->getPdo();
+        $this->ensureSchema();
         $this->loadConfig();
+    }
+
+    private function ensureSchema(): void
+    {
+        try {
+            $this->pdo->query("SELECT 1 FROM vb_livechat_conversations LIMIT 1");
+        } catch (\Throwable $e) {
+            try {
+                $isSqlite = ($this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'sqlite');
+                if ($isSqlite) {
+                    $this->pdo->exec("CREATE TABLE IF NOT EXISTS vb_livechat_conversations (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        session_token VARCHAR(64) NOT NULL UNIQUE,
+                        visitor_name VARCHAR(120) NULL,
+                        visitor_contact VARCHAR(160) NULL,
+                        last_message TEXT NULL,
+                        unread_admin INTEGER NOT NULL DEFAULT 0,
+                        unread_visitor INTEGER NOT NULL DEFAULT 0,
+                        status VARCHAR(20) NOT NULL DEFAULT 'open',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )");
+                    $this->pdo->exec("CREATE TABLE IF NOT EXISTS vb_livechat_messages (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        conversation_id INTEGER NOT NULL,
+                        sender VARCHAR(20) NOT NULL,
+                        sender_name VARCHAR(120) NULL,
+                        message TEXT NOT NULL,
+                        is_read INTEGER NOT NULL DEFAULT 0,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )");
+                } else {
+                    $this->pdo->exec("CREATE TABLE IF NOT EXISTS vb_livechat_conversations (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        session_token VARCHAR(64) NOT NULL UNIQUE,
+                        visitor_name VARCHAR(120) NULL,
+                        visitor_contact VARCHAR(160) NULL,
+                        last_message TEXT NULL,
+                        unread_admin INT NOT NULL DEFAULT 0,
+                        unread_visitor INT NOT NULL DEFAULT 0,
+                        status VARCHAR(20) NOT NULL DEFAULT 'open',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+                    $this->pdo->exec("CREATE TABLE IF NOT EXISTS vb_livechat_messages (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        conversation_id INT NOT NULL,
+                        sender VARCHAR(20) NOT NULL,
+                        sender_name VARCHAR(120) NULL,
+                        message TEXT NOT NULL,
+                        is_read TINYINT(1) NOT NULL DEFAULT 0,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        INDEX (conversation_id)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+                }
+            } catch (\Throwable $ex) {}
+        }
     }
 
     private function loadConfig(): void
     {
         $this->config = [
             'discord_webhook' => '',
-            'admin_name' => 'Équipe Vivre-Bourges',
-            'welcome_message' => 'Bonjour ! Une question sur votre établissement ou sur le site ? Discutons en direct.',
+            'admin_name' => 'Équipe Support',
+            'welcome_message' => 'Bonjour ! Une question sur le site ? Discutons en direct.',
             'auto_notify_discord' => true
         ];
         
@@ -171,10 +229,10 @@ class LiveChatService
     public function markAsRead(int $conversationId, string $readerRole): void
     {
         if ($readerRole === 'admin') {
-            $this->pdo->prepare('UPDATE vb_livechat_messages SET is_read = 1 WHERE conversation_id = ? AND sender = "visitor"')->execute([$conversationId]);
+            $this->pdo->prepare("UPDATE vb_livechat_messages SET is_read = 1 WHERE conversation_id = ? AND sender = 'visitor'")->execute([$conversationId]);
             $this->pdo->prepare('UPDATE vb_livechat_conversations SET unread_admin = 0 WHERE id = ?')->execute([$conversationId]);
         } else {
-            $this->pdo->prepare('UPDATE vb_livechat_messages SET is_read = 1 WHERE conversation_id = ? AND sender = "admin"')->execute([$conversationId]);
+            $this->pdo->prepare("UPDATE vb_livechat_messages SET is_read = 1 WHERE conversation_id = ? AND sender = 'admin'")->execute([$conversationId]);
             $this->pdo->prepare('UPDATE vb_livechat_conversations SET unread_visitor = 0 WHERE id = ?')->execute([$conversationId]);
         }
     }
@@ -298,12 +356,15 @@ class LiveChatService
             return false;
         }
 
-        $replyUrl = "https://vivre-bourges.fr/admin/livechat?conv={$conversationId}";
+        $core = \Core\Core::getInstance();
+        $siteUrl = rtrim($core->getConfigVal('siteUrl') ?: '', '/');
+        $siteName = $core->getConfigVal('siteName') ?: '299koEVO';
+        $replyUrl = "{$siteUrl}/admin/livechat?conv={$conversationId}";
 
         $embed = [
             'title' => '💬 Nouveau message LiveChat reçu !',
             'color' => 15368460, // Orange foncé #ea580c
-            'description' => "Un internaute discute en direct sur **Vivre-Bourges.fr** :",
+            'description' => "Un internaute discute en direct sur **{$siteName}** :",
             'fields' => [
                 [
                     'name' => '👤 Interlocuteur',
@@ -327,14 +388,14 @@ class LiveChatService
                 ]
             ],
             'footer' => [
-                'text' => 'Vivre-Bourges.fr LiveChat direct',
+                'text' => "{$siteName} LiveChat direct",
             ],
             'timestamp' => date('c'),
         ];
 
         $payload = json_encode([
-            'username' => 'LiveChat Vivre-Bourges',
-            'avatar_url' => 'https://vivre-bourges.fr/favicon.ico',
+            'username' => "LiveChat {$siteName}",
+            'avatar_url' => "{$siteUrl}/favicon.ico",
             'embeds' => [$embed],
         ]);
 

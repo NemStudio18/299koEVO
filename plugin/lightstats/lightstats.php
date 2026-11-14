@@ -115,7 +115,7 @@ class Hooks
 
             // 3. Détection Administrateur (authentifié côté serveur)
             $isAdminUser = false;
-            if (defined('IS_ADMIN') && IS_ADMIN) {
+            if ((defined('ADMIN_MODE') && ADMIN_MODE) || (defined('IS_ADMIN') && IS_ADMIN)) {
                 $isAdminUser = true;
             } elseif (!empty($_SESSION['user']) && !empty($_SESSION['user']['admin'])) {
                 $isAdminUser = true;

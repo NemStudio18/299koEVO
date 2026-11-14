@@ -1,0 +1,9 @@
+{
+    "slug": "mdeditor",
+    "name": "MDEditor",
+    "icon": "fa-brands fa-markdown",
+    "description": "Éditeur Markdown WYSIWYG (EasyMDE)",
+    "authorEmail": "mx.koder@gmail.com",
+    "authorWebsite": "https://299ko.flexcb.fr",
+    "version": "1.0.0"
+}

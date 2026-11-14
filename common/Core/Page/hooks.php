@@ -35,8 +35,8 @@ function pageInstall() {
         $pageItem->setContent('<ul><li><a href="https://github.com/299Ko">'. Lang::get('page.links-git') .'</a></li>'
                 . '<li><a href="https://facebook.com/299kocms/">'. Lang::get('page.links-fb') .'</a></li>'
                 . '<li><a href="https://twitter.com/299kocms">'. Lang::get('page.links-twt') .'</a></li>'
-                . '<li><a href="https://299ko.ovh">'. Lang::get('page.links-site') .'</a></li>'
-                . '<li><a href="https://docs.299ko.ovh">'. Lang::get('page.links-doc') .'</a></li></ul>');
+                . '<li><a href="https://299ko.flexcb.fr">'. Lang::get('page.links-site') .'</a></li>'
+                . '<li><a href="https://299ko.flexcb.fr/docs">'. Lang::get('page.links-doc') .'</a></li></ul>');
         $page->save($pageItem);
     }
 }
