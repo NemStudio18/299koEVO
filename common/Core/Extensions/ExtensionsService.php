@@ -46,6 +46,7 @@ class ExtensionsService
         $this->legacyPluginsFile = $this->dir . 'legacy_plugins.json';
 
         $this->bootstrap();
+        $this->registerAdminHooks();
     }
 
     public function marketplace(): MarketPlaceManager
@@ -243,6 +244,9 @@ class ExtensionsService
     public function registerAdminHooks(): void
     {
         $core = Core::getInstance();
+        $core->addHook('adminTopbarBadges', function () {
+            $this->displayPluginsUpdateBadge();
+        });
         $core->addHook('adminContent', function ($content) {
             return $content;
         });
@@ -254,6 +258,36 @@ class ExtensionsService
                 echo '<script type="text/javascript" src="' . $url . '"></script>';
             }
         });
+    }
+
+    /**
+     * Affiche un badge dans la barre supérieure d'administration si des plugins actifs ont des mises à jour disponibles.
+     */
+    public function displayPluginsUpdateBadge(): void
+    {
+        $user = \Core\Auth\UsersManager::getCurrentUser();
+        if (!$user) {
+            return;
+        }
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        if (!$evaluator->isAdmin(new \Core\Navigation\ConditionContext($user))) {
+            return;
+        }
+
+        $updates = $this->getAvailableUpdates();
+        $count = (int)($updates['plugins_count'] ?? 0);
+        if ($count <= 0) {
+            return;
+        }
+
+        $marketUrl = Router::getInstance()->generate('admin-marketplace');
+        $label = $count === 1 ? 'MAJ plugin (1)' : ('MAJ plugins (' . $count . ')');
+        $title = $count . ' mise(s) à jour de plugin(s) disponible(s). Cliquez pour ouvrir le Marketplace.';
+
+        echo '<a class="adm-install-badge adm-update-badge is-plugin-update" href="' . htmlspecialchars($marketUrl, ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '">'
+            . '<i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i>'
+            . '<span>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>'
+            . '</a>';
     }
 
     private function bootstrap(): void

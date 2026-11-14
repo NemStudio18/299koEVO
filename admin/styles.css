@@ -1501,6 +1501,22 @@ section > footer, .card > footer {
     color: #ffffff;
 }
 
+.adm-update-badge.is-plugin-update {
+    border-color: rgba(249, 115, 22, 0.6);
+    background: rgba(249, 115, 22, 0.18);
+    color: #ffedd5;
+}
+
+.adm-update-badge.is-plugin-update i {
+    color: #fb923c;
+}
+
+.adm-update-badge.is-plugin-update:hover {
+    background: rgba(249, 115, 22, 0.32);
+    border-color: #f97316;
+    color: #ffffff;
+}
+
 /* Marketplace Footer Actions & Compact Update Button */
 .market-item > footer .button,
 .market-item > footer button.button,
