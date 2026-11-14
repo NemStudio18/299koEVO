@@ -52,6 +52,7 @@ class ThemesMarketController extends AdminController
         $themesTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
         $themesTpl->set('ressources', $themes);
         $themesTpl->set('ressourcesCount', count($themes));
+        $themesTpl->set('showToolbar', true);
         $themesTpl->set('token', $this->user->token);
         $tpl->set('THEMES_TPL', $themesTpl->output());
         $response->addTemplate($tpl);

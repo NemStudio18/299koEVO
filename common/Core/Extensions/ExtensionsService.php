@@ -109,7 +109,7 @@ class ExtensionsService
         foreach ($this->adminCss as $path) {
             $abs = ADMIN_PATH . ltrim($path, '/');
             $v = file_exists($abs) ? ('?v=' . filemtime($abs)) : '';
-            $urls[] = Util::urlBuild('admin/' . ltrim($path, '/'), true) . $v;
+            $urls[] = Util::urlBuild(ltrim($path, '/'), true) . $v;
         }
         return $urls;
     }
@@ -120,7 +120,7 @@ class ExtensionsService
         foreach ($this->adminJs as $path) {
             $abs = ADMIN_PATH . ltrim($path, '/');
             $v = file_exists($abs) ? ('?v=' . filemtime($abs)) : '';
-            $urls[] = Util::urlBuild('admin/' . ltrim($path, '/'), true) . $v;
+            $urls[] = Util::urlBuild(ltrim($path, '/'), true) . $v;
         }
         return $urls;
     }

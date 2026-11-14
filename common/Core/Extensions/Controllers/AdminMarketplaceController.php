@@ -89,30 +89,34 @@ class AdminMarketplaceController extends AdminController
         $tpl = $response->createPluginTemplate('marketplace', 'admin-marketplace');
         $response->setTitle(Lang::get('marketplace.description'));
         
-        // Featured templates for overview tab
+        // Featured templates for overview tab (no search toolbar needed for 5 items)
         $featuredPluginsTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
         $featuredPluginsTpl->set('ressources', $featuredPlugins);
         $featuredPluginsTpl->set('ressourcesCount', count($featuredPlugins));
+        $featuredPluginsTpl->set('showToolbar', false);
         $featuredPluginsTpl->set('token', $this->user->token);
         $tpl->set('FEATURED_PLUGINS_TPL', $featuredPluginsTpl->output());
         
         $featuredThemesTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
         $featuredThemesTpl->set('ressources', $featuredThemes);
         $featuredThemesTpl->set('ressourcesCount', count($featuredThemes));
+        $featuredThemesTpl->set('showToolbar', false);
         $featuredThemesTpl->set('token', $this->user->token);
         $tpl->set('FEATURED_THEMES_TPL', $featuredThemesTpl->output());
         
-        // All plugins template for plugins tab
+        // All plugins template for plugins tab (with full categories and search)
         $allPluginsTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
         $allPluginsTpl->set('ressources', $allPluginsResources);
         $allPluginsTpl->set('ressourcesCount', count($allPluginsResources));
+        $allPluginsTpl->set('showToolbar', true);
         $allPluginsTpl->set('token', $this->user->token);
         $tpl->set('ALL_PLUGINS_TPL', $allPluginsTpl->output());
         
-        // All themes template for themes tab
+        // All themes template for themes tab (with search)
         $allThemesTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
         $allThemesTpl->set('ressources', $allThemesResources);
         $allThemesTpl->set('ressourcesCount', count($allThemesResources));
+        $allThemesTpl->set('showToolbar', true);
         $allThemesTpl->set('token', $this->user->token);
         $tpl->set('ALL_THEMES_TPL', $allThemesTpl->output());
         
