@@ -51,7 +51,7 @@ function homebuilderBeforeRunPlugin(): void
 /**
  * Hook pour intercepter l'affichage de la racine /
  */
-function homebuilderRenderHome($param)
+function homebuilderRenderHome($param = null)
 {
     $pluginManager = \Core\Plugin\PluginsManager::getInstance();
     $plugin = $pluginManager->getPlugin('homebuilder');
