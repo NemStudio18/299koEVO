@@ -43,10 +43,10 @@
     </tfoot>
 </table>
 
-<a href="/checkout" class="btn btn-primary">{{ Lang.ecommerce.checkout }}</a>
+<a href="/checkout" class="button primary">{{ Lang.ecommerce.checkout }}</a>
 {% ELSE %}
 <p>{{ Lang.ecommerce.cart-empty }}</p>
-<a href="/shop" class="btn">{{ Lang.ecommerce.shop }}</a>
+<a href="/shop" class="button secondary">{{ Lang.ecommerce.shop }}</a>
 {% ENDIF %}
 
 <script>

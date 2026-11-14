@@ -10,7 +10,7 @@
         <p class="ecommerce-product-price">{{ product.getPrice() }}€</p>
         {% IF product.isInStock() %}
         <p style="color: green;">{{ Lang.ecommerce.in-stock }}</p>
-        <a href="{{ product.getUrl() }}" class="btn">{{ Lang.ecommerce.add-to-cart }}</a>
+        <a href="{{ product.getUrl() }}" class="button primary">{{ Lang.ecommerce.add-to-cart }}</a>
         {% ELSE %}
         <p style="color: red;">{{ Lang.ecommerce.out-of-stock }}</p>
         {% ENDIF %}

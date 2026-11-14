@@ -89,7 +89,7 @@
                 </div>
                 <h2 class="search299-empty-title">Aucun résultat trouvé pour « {{ q }} »</h2>
                 <p class="search299-empty-text">Vérifiez l'orthographe des mots-clés ou essayez avec d'autres termes plus généraux.</p>
-                <a href="{{ homeUrl }}" class="search299-main-btn">
+                <a href="{{ homeUrl }}" class="button primary search299-main-btn">
                     Retour à l'accueil
                 </a>
             </div>

@@ -15,7 +15,7 @@
         
         {% IF messagingEnabled and currentUser.id != targetUser.id %}
         <div style="margin-top: 1rem;">
-            <a href="/messaging/compose/{{ targetUser.id }}" class="btn btn-primary btn-sm" style="border-radius: 20px; padding: 0.5rem 1.5rem;">
+            <a href="/messaging/compose/{{ targetUser.id }}" class="button primary small" style="border-radius: 20px; padding: 0.5rem 1.5rem;">
                 <i class="fa-solid fa-envelope"></i> Envoyer un message
             </a>
         </div>
@@ -126,7 +126,7 @@
     </div>
     
     <div style="text-align: center; margin-top: 2rem;">
-        <a href="{{ ROUTER.generate('gamification-leaderboard') }}" class="btn btn-secondary">
+        <a href="{{ ROUTER.generate('gamification-leaderboard') }}" class="button secondary">
             <i class="fa-solid fa-arrow-left"></i> Retour au classement
         </a>
     </div>
