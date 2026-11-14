@@ -85,7 +85,7 @@ class ConfigManagerUpdateController extends AdminController {
             return;
         }
 
-        $settings = new \Core\Settings\SettingsService();
+        $settings = \Core\Core::getInstance()->settings();
         $nextVersion = $settings->getNewVersion();
         if ($nextVersion) {
             $settings->displayNewVersion((string) $nextVersion);

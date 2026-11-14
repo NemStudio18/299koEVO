@@ -22,8 +22,10 @@ class SettingsService
     private string $settingsDir;
     private string $legacyDir;
     private string $cacheFile;
-    private bool $routesRegistered = false;
-    private bool $hooksRegistered = false;
+    private static bool $routesRegistered = false;
+    private static bool $hooksRegistered = false;
+    private static bool $installBadgeDisplayed = false;
+    private static bool $updateBadgeDisplayed = false;
     private array $adminCss = [
         'templates/configmanager/admin.css',
     ];
@@ -68,7 +70,7 @@ class SettingsService
      */
     public function displayInstallBadge(): void
     {
-        if (!$this->hasInstallArtifacts()) {
+        if (self::$installBadgeDisplayed || !$this->hasInstallArtifacts()) {
             return;
         }
         $user = UsersManager::getCurrentUser();
@@ -79,6 +81,7 @@ class SettingsService
         if (!$evaluator->isAdmin(new \Core\Navigation\ConditionContext($user))) {
             return;
         }
+        self::$installBadgeDisplayed = true;
 
         $deleteUrl = Router::getInstance()->generate('configmanager-delete-install', ['token' => $user->token]);
         $label = Lang::get('configmanager-install-badge') ?: 'install.php non supprimé';
@@ -95,6 +98,9 @@ class SettingsService
      */
     public function displayUpdateBadge(): void
     {
+        if (self::$updateBadgeDisplayed) {
+            return;
+        }
         $user = UsersManager::getCurrentUser();
         if (!$user) {
             return;
@@ -109,6 +115,7 @@ class SettingsService
         if (!$nextVersion) {
             return;
         }
+        self::$updateBadgeDisplayed = true;
 
         $isPatch = !empty($cachedInfos['isPatch']) || (bool) preg_match('/^[a-f0-9]{7,40}$/i', (string) $nextVersion);
         $updateUrl = Router::getInstance()->generate('configmanager-update', ['token' => $user->token]);
@@ -269,10 +276,10 @@ class SettingsService
 
     public function registerRoutes(Router $router): void
     {
-        if ($this->routesRegistered) {
+        if (self::$routesRegistered) {
             return;
         }
-        $this->routesRegistered = true;
+        self::$routesRegistered = true;
 
         $router->map('GET', '/admin/configmanager[/?]', 'Core\Settings\Controllers\ConfigManagerAdminController#home', 'configmanager-admin');
         $router->map('POST', '/admin/configmanager/save', 'Core\Settings\Controllers\ConfigManagerAdminController#save', 'configmanager-admin-save');
@@ -298,10 +305,10 @@ class SettingsService
 
     public function registerHooks(): void
     {
-        if ($this->hooksRegistered) {
+        if (self::$hooksRegistered) {
             return;
         }
-        $this->hooksRegistered = true;
+        self::$hooksRegistered = true;
 
         $core = Core::getInstance();
         $core->addHook('adminTopbarBadges', function () {

@@ -40,7 +40,7 @@ class ConfigManagerAdminController extends AdminController {
         $localCommit = $updater->getLocalCommit();
         $tpl->set('coreCommit', $localCommit ? substr($localCommit, 0, 7) : '');
 
-        $settingsService = new \Core\Settings\SettingsService();
+        $settingsService = \Core\Core::getInstance()->settings();
         $cachedUpdate = \Utils\Util::readJsonFile($settingsService->cacheFile());
         $nextCoreVersion = $cachedUpdate['nextVersion'] ?? false;
         $tpl->set('hasCoreUpdate', (bool) $nextCoreVersion);
