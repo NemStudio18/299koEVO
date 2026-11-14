@@ -1,41 +1,42 @@
 @layer evo-plugins {
-/* Widget météo compact pour le header (badge ultra-compact optimisé) */
+/* Widget météo compact pour le header (optimisé et proportionnel) */
 .meteo-widget-compact,
 #header .meteo-widget-compact,
 #header_content a.meteo-widget-compact,
 #navigation .meteo-widget-compact {
-    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
     height: 38px;
-    min-width: 38px;
     padding: 0;
-    margin: 0 3px;
+    margin: 0 4px;
     border: none;
     background: transparent;
     text-decoration: none;
     vertical-align: middle;
     transition: transform 0.18s ease;
     box-sizing: border-box;
+    white-space: nowrap;
 }
 
 .meteo-widget-compact:hover,
 #header .meteo-widget-compact:hover,
 #header_content a.meteo-widget-compact:hover {
-    transform: scale(1.08);
+    transform: scale(1.06);
     text-decoration: none;
 }
 
 .meteo-widget-compact__icon-wrapper {
     position: relative;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    max-width: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: visible;
+    flex-shrink: 0;
 }
 
 .meteo-widget-compact__icon {
@@ -43,25 +44,24 @@
     line-height: 1;
 }
 
-/* Température décalée en badge superposé sur l'icône */
+/* Température décalée légèrement sur l'icône pour optimiser l'espace */
 .meteo-widget-compact__temp {
-    position: absolute;
-    bottom: -2px;
-    right: -4px;
-    background: rgba(15, 23, 42, 0.82);
-    color: #ffffff;
-    font-size: 0.72rem;
-    font-weight: 800;
+    font-size: 0.88rem;
+    font-weight: 700;
     line-height: 1;
-    padding: 2px 4px;
-    border-radius: 9999px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-    pointer-events: none;
+    color: var(--evo-text, inherit);
+    margin-left: -6px;
+    z-index: 15;
+    position: relative;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
     white-space: nowrap;
-    z-index: 25;
     letter-spacing: -0.02em;
-    backdrop-filter: blur(2px);
+    pointer-events: none;
+}
+
+body.theme-dark .meteo-widget-compact__temp {
+    color: var(--evo-text, #f8fafc);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
 }
 
 /* Intégration dans le header */
@@ -77,21 +77,18 @@
 @media (max-width: 768px) {
     .meteo-widget-compact,
     #header .meteo-widget-compact {
-        width: 34px;
         height: 34px;
-        min-width: 34px;
     }
 
     .meteo-widget-compact__icon-wrapper {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
     }
 
     .meteo-widget-compact__temp {
-        font-size: 0.68rem;
-        bottom: -2px;
-        right: -3px;
-        padding: 1.5px 3.5px;
+        font-size: 0.8rem;
+        margin-left: -5px;
     }
 }
 
