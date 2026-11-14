@@ -96,6 +96,9 @@ class Theme {
                 return $layoutParent;
             }
         }
+        if ($this->folderName !== 'default' && file_exists(THEMES . 'default/layout.tpl')) {
+            return THEMES . 'default/layout.tpl';
+        }
         return null;
     }
 
