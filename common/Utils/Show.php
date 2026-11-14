@@ -483,6 +483,15 @@ class Show
             '299search'     => 'systeme',
         ];
 
+        $updatesInfo = [];
+        try {
+            $updatesInfo = $core->extensions()->getAvailableUpdates();
+        } catch (\Throwable $e) {}
+
+        $pluginsWithUpdate = $updatesInfo['plugins'] ?? [];
+        $pluginsUpdatesCount = (int)($updatesInfo['plugins_count'] ?? 0);
+        $totalUpdatesCount = (int)($updatesInfo['total'] ?? 0);
+
         $grouped = [];
         foreach (array_keys($categoriesMeta) as $catKey) {
             $grouped[$catKey] = [];
@@ -494,20 +503,25 @@ class Show
                 ? $customCat
                 : ($categoryByModule[$idLower] ?? 'systeme');
             $grouped[$cat][] = [
-                'name'  => (string)$entry['name'],
-                'slug'  => $idLower,
-                'label' => (string)$entry['label'],
-                'icon'  => !empty($entry['icon']) ? (string)$entry['icon'] : 'fa-regular fa-font-awesome',
+                'name'      => (string)$entry['name'],
+                'slug'      => $idLower,
+                'label'     => (string)$entry['label'],
+                'icon'      => !empty($entry['icon']) ? (string)$entry['icon'] : 'fa-regular fa-font-awesome',
+                'hasUpdate' => !empty($entry['hasUpdate']),
+                'badge'     => $entry['badge'] ?? null,
             ];
         };
 
         foreach ($pluginsManager->getPlugins() as $plugin) {
             if ($plugin->getConfigVal('activate') && $plugin->getIsCallableOnAdmin()) {
+                $slug = strtolower($plugin->getName());
+                $hasUpdate = !empty($pluginsWithUpdate[$slug]);
                 $customCat = $plugin->getInfoVal('adminCategory');
                 $pushEntry([
-                    'name'  => $plugin->getName(),
-                    'label' => $plugin->getTranslatedName(),
-                    'icon'  => $plugin->getInfoVal('icon'),
+                    'name'      => $plugin->getName(),
+                    'label'     => $plugin->getTranslatedName(),
+                    'icon'      => $plugin->getInfoVal('icon'),
+                    'hasUpdate' => $hasUpdate,
                 ], is_string($customCat) ? strtolower($customCat) : null);
             }
         }
@@ -541,27 +555,51 @@ class Show
             usort($items, fn($a, $b) => strcasecmp($a['label'], $b['label']));
 
             $catActive = false;
+            $catHasUpdate = false;
             foreach ($items as $it) {
                 if ($currentPlugin === $it['slug']) {
                     $catActive = true;
-                    break;
+                }
+                if (!empty($it['hasUpdate'])) {
+                    $catHasUpdate = true;
                 }
             }
 
+            $badgeHtml = '';
+            if ($catKey === 'systeme' && $pluginsUpdatesCount > 0) {
+                $badgeHtml = '<span class="adm-cat-badge" title="' . $pluginsUpdatesCount . ' plugin(s) à mettre à jour">MAJ plugins (' . $pluginsUpdatesCount . ')</span>';
+            } elseif ($catKey === 'systeme' && $totalUpdatesCount > 0) {
+                $badgeHtml = '<span class="adm-cat-badge" title="' . $totalUpdatesCount . ' mise(s) à jour disponible(s)">MAJ (' . $totalUpdatesCount . ')</span>';
+            } elseif ($catHasUpdate) {
+                $badgeHtml = '<span class="adm-cat-dot" title="Mise à jour disponible"></span>';
+            }
+
             $html .= '<li class="adm-nav-item adm-has-drop' . ($catActive ? ' is-active' : '') . '">';
-            $html .= '<button type="button" class="adm-drop-btn" aria-expanded="false" title="' . htmlspecialchars($meta['label']) . '">';
+            $html .= '<button type="button" class="adm-drop-btn' . ($badgeHtml !== '' ? ' has-updates' : '') . '" aria-expanded="false" title="' . htmlspecialchars($meta['label']) . '">';
             $html .= '<i class="' . htmlspecialchars($meta['icon']) . '" aria-hidden="true"></i>';
             $html .= '<span>' . htmlspecialchars($meta['label']) . '</span>';
+            if ($badgeHtml !== '') {
+                $html .= $badgeHtml;
+            }
             $html .= '<i class="fa-solid fa-chevron-down adm-caret" aria-hidden="true"></i>';
             $html .= '</button>';
             $html .= '<ul class="adm-drop-menu">';
             foreach ($items as $it) {
                 $itemActive = ($currentPlugin === $it['slug']);
                 $href = $siteUrl . '/admin/' . $it['slug'];
+                $itemDot = !empty($it['hasUpdate'])
+                    ? '<span class="adm-update-dot" title="Mise à jour disponible">●</span>'
+                    : '';
+                $itemBadge = !empty($it['badge'])
+                    ? '<span class="adm-menu-badge">' . htmlspecialchars((string)$it['badge']) . '</span>'
+                    : '';
+
                 $html .= '<li' . ($itemActive ? ' class="activePlugin"' : '') . '>';
                 $html .= '<a href="' . htmlspecialchars($href) . '"' . ($itemActive ? ' aria-current="page"' : '') . '>';
                 $html .= '<i class="' . htmlspecialchars($it['icon']) . '" aria-hidden="true"></i>';
+                $html .= $itemDot;
                 $html .= '<span>' . htmlspecialchars($it['label']) . '</span>';
+                $html .= $itemBadge;
                 $html .= '</a></li>';
             }
             $html .= '</ul></li>';

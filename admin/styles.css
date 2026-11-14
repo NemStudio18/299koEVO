@@ -1317,6 +1317,123 @@ section > footer, .card > footer {
     color: #1d4ed8;
 }
 
+/* Update notifications in admin navigation */
+.adm-drop-btn {
+    position: relative;
+}
+
+.adm-cat-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 3px 6px;
+    border-radius: 9999px;
+    margin-left: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    vertical-align: middle;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+}
+
+#navigation.adm-nav-list > .adm-nav-item > .adm-drop-btn > .adm-cat-badge {
+    display: inline-block;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: middle;
+    margin-left: 0;
+    transform: translateX(-6px);
+    transition: max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.2s ease,
+                margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+#navigation.adm-nav-list > .adm-nav-item:hover > .adm-drop-btn > .adm-cat-badge,
+#navigation.adm-nav-list > .adm-nav-item:focus-within > .adm-drop-btn > .adm-cat-badge,
+#navigation.adm-nav-list > .adm-nav-item.is-open > .adm-drop-btn > .adm-cat-badge {
+    max-width: 160px;
+    opacity: 1;
+    margin-left: 7px;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.adm-drop-btn.has-updates::after {
+    content: '';
+    position: absolute;
+    top: 7px;
+    left: 21px;
+    width: 7px;
+    height: 7px;
+    background: #ef4444;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #0f172a;
+    animation: admPulseDot 2s infinite ease-in-out;
+}
+
+#navigation.adm-nav-list > .adm-nav-item:hover > .adm-drop-btn.has-updates::after,
+#navigation.adm-nav-list > .adm-nav-item:focus-within > .adm-drop-btn.has-updates::after,
+#navigation.adm-nav-list > .adm-nav-item.is-open > .adm-drop-btn.has-updates::after {
+    display: none;
+}
+
+.adm-cat-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    margin-left: 5px;
+    box-shadow: 0 0 0 2px #0f172a, 0 0 6px rgba(239, 68, 68, 0.6);
+    flex-shrink: 0;
+    animation: admPulseDot 2s infinite ease-in-out;
+}
+
+.adm-update-dot {
+    color: #ef4444;
+    font-size: 0.85rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: -2px;
+    flex-shrink: 0;
+    animation: admPulseDot 2s infinite ease-in-out;
+}
+
+.adm-menu-badge {
+    margin-left: auto;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 3px 8px;
+    border-radius: 9999px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+@keyframes admPulseDot {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.65;
+    }
+}
+
 .adm-topbar-right {
     display: flex;
     align-items: center;
@@ -1850,6 +1967,19 @@ tr td input.small {
         margin-left: 0;
         transform: none;
         pointer-events: auto;
+    }
+
+    #navigation.adm-nav-list > .adm-nav-item > .adm-drop-btn > .adm-cat-badge {
+        max-width: none;
+        opacity: 1;
+        margin-left: auto;
+        margin-right: 8px;
+        transform: none;
+        pointer-events: auto;
+    }
+
+    .adm-drop-btn.has-updates::after {
+        display: none;
     }
 
     #navigation.adm-nav-list > .adm-nav-item > .adm-drop-btn .adm-caret {

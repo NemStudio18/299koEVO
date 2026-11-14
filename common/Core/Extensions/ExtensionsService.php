@@ -3,6 +3,8 @@
 namespace Core\Extensions;
 
 use Core\Extensions\MarketPlaceManager;
+use Core\Plugin\PluginsManager;
+use Core\Storage\Cache;
 use Utils\Util;
 use Core\Lang;
 use Core\Router\Router;
@@ -125,27 +127,72 @@ class ExtensionsService
         return $urls;
     }
 
-    public function getAdminNavigationEntries(): array
+    /**
+     * Calcule et met en cache (5 min) la synthèse des mises à jour disponibles pour les plugins installés & actifs,
+     * ainsi que pour les thèmes.
+     */
+    public function getAvailableUpdates(bool $forceRefresh = false): array
     {
-        $entries = [];
-        $updatesCount = 0;
+        $cache = new Cache();
+        $cacheKey = 'marketplace-updates-summary';
+        if (!$forceRefresh) {
+            $cached = $cache->get($cacheKey);
+            if (is_array($cached)) {
+                return $cached;
+            }
+        }
+
+        $summary = [
+            'plugins_count' => 0,
+            'themes_count' => 0,
+            'total' => 0,
+            'plugins' => [],
+            'themes' => [],
+        ];
+
         try {
             $marketplace = $this->marketplace();
             $plugins = $marketplace->getPlugins();
             $themes = $marketplace->getThemes();
+            $pluginsManager = PluginsManager::getInstance();
+
             if (is_array($plugins)) {
                 foreach ($plugins as $p) {
                     $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_PLUGIN, $p);
-                    if ($r->updateNeeded()) $updatesCount++;
+                    if ($r->updateNeeded()) {
+                        $pluginSlug = strtolower((string)$p->slug);
+                        $installed = $pluginsManager->getPlugin($pluginSlug);
+                        // Ne notifier que pour les plugins installés ET actifs
+                        if ($installed && $installed->getConfigVal('activate')) {
+                            $summary['plugins'][$pluginSlug] = true;
+                            $summary['plugins_count']++;
+                        }
+                    }
                 }
             }
+
             if (is_array($themes)) {
                 foreach ($themes as $t) {
                     $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_THEME, $t);
-                    if ($r->updateNeeded()) $updatesCount++;
+                    if ($r->updateNeeded()) {
+                        $themeSlug = strtolower((string)$t->slug);
+                        $summary['themes'][$themeSlug] = true;
+                        $summary['themes_count']++;
+                    }
                 }
             }
+
+            $summary['total'] = $summary['plugins_count'] + $summary['themes_count'];
+            $cache->set($cacheKey, $summary, 300);
         } catch (\Throwable $e) {}
+
+        return $summary;
+    }
+
+    public function getAdminNavigationEntries(): array
+    {
+        $entries = [];
+        $updates = $this->getAvailableUpdates();
 
         foreach ($this->adminModules as $module) {
             $entry = [
@@ -153,8 +200,10 @@ class ExtensionsService
                 'icon' => $module['icon'],
                 'label' => Lang::get($module['label']),
             ];
-            if ($module['name'] === 'marketplace' && $updatesCount > 0) {
-                $entry['badge'] = $updatesCount;
+            if ($module['name'] === 'marketplace' && $updates['plugins_count'] > 0) {
+                $entry['badge'] = 'MAJ plugins ' . $updates['plugins_count'];
+            } elseif ($module['name'] === 'marketplace' && $updates['total'] > 0) {
+                $entry['badge'] = 'MAJ ' . $updates['total'];
             }
             $entries[] = $entry;
         }

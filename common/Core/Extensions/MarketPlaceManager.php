@@ -73,6 +73,7 @@ class MarketPlaceManager
     {
         $this->cache->delete('marketplace-plugins');
         $this->cache->delete('marketplace-themes');
+        $this->cache->delete('marketplace-updates-summary');
     }
 
     public function getPlugin(string $slug)
