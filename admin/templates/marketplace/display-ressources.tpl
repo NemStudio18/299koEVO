@@ -1,8 +1,55 @@
+<div class="market-toolbar" data-market-toolbar>
+    <div class="market-search-wrapper">
+        <div class="market-search-box">
+            <i class="fa-solid fa-magnifying-glass market-search-icon"></i>
+            <input type="text" class="market-search-input" placeholder="Rechercher par mot-clé, nom, description..." autocomplete="off">
+            <button type="button" class="market-search-clear" title="Effacer la recherche" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="market-counter-bar">
+            <span class="market-counter-text"><strong class="market-count-num">{{ ressources|length }}</strong> affiché(s)</span>
+        </div>
+    </div>
+    
+    <div class="market-categories-bar">
+        <button type="button" class="market-cat-pill active" data-cat="all"><i class="fa-solid fa-layer-group"></i> Tous</button>
+        <button type="button" class="market-cat-pill" data-cat="content"><i class="fa-solid fa-feather-pointed"></i> Contenu</button>
+        <button type="button" class="market-cat-pill" data-cat="commerce"><i class="fa-solid fa-credit-card"></i> Commerce & Dons</button>
+        <button type="button" class="market-cat-pill" data-cat="events"><i class="fa-solid fa-calendar-days"></i> Événements & RDV</button>
+        <button type="button" class="market-cat-pill" data-cat="social"><i class="fa-solid fa-comments"></i> Social & Contact</button>
+        <button type="button" class="market-cat-pill" data-cat="media"><i class="fa-solid fa-photo-film"></i> Médias & Outils</button>
+        <button type="button" class="market-cat-pill" data-cat="system"><i class="fa-solid fa-shield-halved"></i> Système</button>
+        <button type="button" class="market-cat-pill market-cat-updates" data-cat="updates"><i class="fa-solid fa-rotate"></i> Mises à jour</button>
+    </div>
+</div>
+
 <div class="market-list">
     {% if ressources %}
         {% for ressource in ressources %}
-            <section class="market-item {% if ressource.updateNeeded() %}has-update{% endif %}">
+            <section class="market-item {% if ressource.updateNeeded() %}has-update{% endif %}"
+                     data-slug="{{ressource.slug}}"
+                     data-type="{{ressource.type}}"
+                     data-category="{{ressource.getCategory()}}"
+                     data-name="{{ressource.name}}"
+                     data-desc="{{ressource.description}}">
                 <header>
+                    <div class="market-item-top-row">
+                        <span class="market-cat-badge cat-{{ressource.getCategory()}}">
+                            <i class="{{ressource.getCategoryIcon()}}"></i> {{ressource.getCategoryLabel()}}
+                        </span>
+                        {% if ressource.updateNeeded() %}
+                            {% if ressource.isSecurityPatch() %}
+                                <span class="market-badge-patch" title="Correctif / Patch de sécurité disponible">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                    <span>Correctif</span>
+                                </span>
+                            {% else %}
+                                <span class="market-badge-update" title="Nouvelle version v{{ressource.lastVersion}} disponible">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                    <span>v{{ressource.lastVersion}}</span>
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
                     <h2>
                         {% if ressource.getPreviewUrl() %}
                             <a data-fancybox="ress-{{ressource.slug}}" href="{{ressource.getPreviewUrl()}}">
@@ -22,19 +69,6 @@
                             <i class="{{ressource.icon}}"></i>
                         {% endif %}
                         <span class="market-item-title">{{ressource.name}}</span>
-                        {% if ressource.updateNeeded() %}
-                            {% if ressource.isSecurityPatch() %}
-                                <span class="market-badge-patch" title="Correctif / Patch de sécurité disponible">
-                                    <i class="fa-solid fa-shield-halved"></i>
-                                    <span>Correctif</span>
-                                </span>
-                            {% else %}
-                                <span class="market-badge-update" title="Nouvelle version v{{ressource.lastVersion}} disponible">
-                                    <i class="fa-solid fa-arrows-rotate"></i>
-                                    <span>v{{ressource.lastVersion}}</span>
-                                </span>
-                            {% endif %}
-                        {% endif %}
                     </h2>
                 </header>
                 <div>
@@ -106,4 +140,11 @@
             </section>
         {% endfor %}
     {% endif %}
+</div>
+
+<div class="market-empty-state" style="display:none;">
+    <div class="market-empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+    <h3>Aucun résultat trouvé</h3>
+    <p>Aucune ressource ne correspond à votre recherche ou catégorie sélectionnée.</p>
+    <button type="button" class="button small market-reset-btn"><i class="fa-solid fa-rotate-left"></i> Réinitialiser les filtres</button>
 </div>

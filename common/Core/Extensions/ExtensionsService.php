@@ -19,6 +19,9 @@ class ExtensionsService
     private array $adminCss = [
         'templates/marketplace/admin.css',
     ];
+    private array $adminJs = [
+        'templates/marketplace/admin.js',
+    ];
     private array $adminModules = [
         [
             'name' => 'pluginsmanager',
@@ -111,7 +114,11 @@ class ExtensionsService
 
     public function getAdminJsUrls(): array
     {
-        return [];
+        $urls = [];
+        foreach ($this->adminJs as $path) {
+            $urls[] = Util::urlBuild('admin/' . ltrim($path, '/'), true);
+        }
+        return $urls;
     }
 
     public function getAdminNavigationEntries(): array
