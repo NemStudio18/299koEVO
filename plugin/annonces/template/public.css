@@ -157,7 +157,10 @@
     line-height: 1.5;
     flex: 1;
 }
-.annonce-card-btn {
+.annonce-card-btn,
+a.annonce-card-btn,
+a.annonce-card-btn:link,
+a.annonce-card-btn:visited {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -165,14 +168,18 @@
     padding: 9px 14px;
     border-radius: var(--evo-radius-sm);
     background: var(--evo-accent);
-    color: var(--evo-accent-text);
+    color: var(--evo-accent-text, #ffffff);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
     margin-top: 6px;
 }
-.annonce-card-btn:hover {
+.annonce-card-btn:hover,
+a.annonce-card-btn:hover,
+a.annonce-card-btn:focus {
     background: var(--evo-accent-hover);
+    color: #ffffff;
+    text-decoration: none;
 }
 .annonce-detail-grid {
     display: grid;

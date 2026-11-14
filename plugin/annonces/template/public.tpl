@@ -44,7 +44,7 @@
                         {% if item.excerpt %}
                             <p class="annonce-card-excerpt">{{item.excerpt}}</p>
                         {% endif %}
-                        <a href="{{item.url}}" class="annonce-card-btn">
+                        <a href="{{item.url}}" class="button primary annonce-card-btn">
                             <i class="fa-solid fa-eye"></i>
                             {% if item.is_available %}Voir &amp; réserver{% else %}Voir l'annonce{% endif %}
                         </a>
