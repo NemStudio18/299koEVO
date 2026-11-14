@@ -208,6 +208,10 @@ class FileManager
         if ($foldername === '' || $foldername === '.' || $foldername === '..') {
             return false;
         }
+        // Protect core 'files' directory from deletion at upload root
+        if (strtolower($foldername) === 'files' && rtrim($this->directory, '/') === rtrim(UPLOAD, '/')) {
+            return false;
+        }
         $target = $this->directory . $foldername;
         if (!is_dir($target)) {
             unset($this->subDir[$foldername]);

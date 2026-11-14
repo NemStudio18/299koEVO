@@ -32,7 +32,7 @@ class MediaService
 
     public function __construct()
     {
-        $this->rootDir = rtrim(UPLOAD . 'files', '/') . '/';
+        $this->rootDir = rtrim(UPLOAD, '/') . '/';
         $this->legacyDataFile = DATA_PLUGIN . 'filemanager/files.json';
         $this->dataFile = DATA_CORE_MEDIA . 'files.json';
 
@@ -112,6 +112,10 @@ class MediaService
     {
         if (!is_dir($this->rootDir)) {
             @mkdir($this->rootDir, 0755, true);
+        }
+
+        if (!is_dir($this->rootDir . 'files')) {
+            @mkdir($this->rootDir . 'files', 0755, true);
         }
 
         if (!is_dir(DATA_CORE_MEDIA)) {
