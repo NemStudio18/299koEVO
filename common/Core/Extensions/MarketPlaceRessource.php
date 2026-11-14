@@ -133,7 +133,7 @@ class MarketPlaceRessource
         }
 
         // 1. Détection classique par version SemVer (ex: 1.0.0 vs 1.1.0)
-        if (!empty($this->lastVersion) && $this->version != $this->lastVersion) {
+        if (!empty($this->lastVersion) && version_compare($this->lastVersion, $this->version, '>')) {
             return true;
         }
 
