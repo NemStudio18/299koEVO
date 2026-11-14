@@ -544,6 +544,7 @@ blockquote {
     align-items: center;
 }
 
+#navigation .search299-wrapper,
 .search299-wrapper {
     position: relative;
     display: inline-flex;
@@ -551,6 +552,7 @@ blockquote {
     vertical-align: middle;
 }
 
+#navigation .search299-pill-form,
 .search299-pill-form {
     box-sizing: border-box;
     display: inline-flex;
@@ -570,6 +572,8 @@ blockquote {
                 box-shadow 0.2s ease;
 }
 
+#navigation .search299-pill-form:focus-within,
+#navigation .search299-wrapper:hover .search299-pill-form,
 .search299-pill-form:focus-within,
 .search299-wrapper:hover .search299-pill-form {
     width: 240px;
@@ -577,6 +581,7 @@ blockquote {
     box-shadow: 0 0 0 3px var(--vg-accent-soft);
 }
 
+#navigation .search299-icon-btn,
 .search299-icon-btn {
     box-sizing: border-box;
     display: inline-flex;
@@ -604,6 +609,7 @@ blockquote {
     justify-content: center;
 }
 
+#navigation .search299-icon-btn:hover,
 .search299-icon-btn:hover {
     color: var(--vg-accent-vibrant);
     background: transparent;
@@ -611,6 +617,7 @@ blockquote {
     transform: scale(1.08);
 }
 
+#navigation .search299-pill-form input.search299-input,
 .search299-pill-form input.search299-input {
     width: 0;
     height: 100%;
@@ -626,6 +633,8 @@ blockquote {
     transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, padding 0.3s ease;
 }
 
+#navigation .search299-wrapper:hover .search299-pill-form input.search299-input,
+#navigation .search299-pill-form:focus-within input.search299-input,
 .search299-wrapper:hover .search299-pill-form input.search299-input,
 .search299-pill-form:focus-within input.search299-input {
     width: calc(100% - 36px);

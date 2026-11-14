@@ -1,8 +1,9 @@
 {
     "name": "Vegetal",
-    "authorEmail": "contact@declic18.fr",
-    "authorWebsite": "https://declic18.test",
-    "version": "1.0.1",
+    "author": "Maxime Blanc",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
+    "version": "1.0.2",
     "description": "Thème moderne et épuré aux tonalités végétales douces, basé sur l'architecture Déclic."
 }
 

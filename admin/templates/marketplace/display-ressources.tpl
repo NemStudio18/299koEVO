@@ -2,20 +2,6 @@
     {% if ressources %}
         {% for ressource in ressources %}
             <section class="market-item {% if ressource.updateNeeded() %}has-update{% endif %}">
-                {% if ressource.updateNeeded() %}
-                    <div class="market-update-badge-bar">
-                        {% if ressource.isSecurityPatch() %}
-                            <span class="market-update-pill security">
-                                <i class="fa-solid fa-shield-halved"></i> Correctif / Patch disponible
-                            </span>
-                        {% else %}
-                            <span class="market-update-pill">
-                                <i class="fa-solid fa-arrows-rotate"></i> Mise à jour disponible : v{{ressource.lastVersion}}
-                            </span>
-                        {% endif %}
-                    </div>
-                {% endif %}
-
                 <header>
                     <h2>
                         {% if ressource.getPreviewUrl() %}
@@ -35,7 +21,20 @@
                         {% if ressource.icon %}
                             <i class="{{ressource.icon}}"></i>
                         {% endif %}
-                        {{ressource.name}}
+                        <span class="market-item-title">{{ressource.name}}</span>
+                        {% if ressource.updateNeeded() %}
+                            {% if ressource.isSecurityPatch() %}
+                                <span class="market-badge-patch" title="Correctif / Patch de sécurité disponible">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                    <span>Correctif</span>
+                                </span>
+                            {% else %}
+                                <span class="market-badge-update" title="Nouvelle version v{{ressource.lastVersion}} disponible">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                    <span>v{{ressource.lastVersion}}</span>
+                                </span>
+                            {% endif %}
+                        {% endif %}
                     </h2>
                 </header>
                 <div>

@@ -27,52 +27,49 @@
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
-/* Carte avec mise à jour disponible : mise en valeur immédiate */
-.market-item.has-update {
-    border: 2px solid #ea580c;
-    box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.15), 0 4px 14px rgba(234, 88, 12, 0.18);
-    background: linear-gradient(180deg, rgba(254, 243, 199, 0.25) 0%, var(--evo-surface, #ffffff) 25%);
-}
-
-.market-update-badge-bar {
-    margin: -1.25rem -1.25rem 1rem -1.25rem;
-    padding: 6px 12px;
-    background: linear-gradient(90deg, #ea580c 0%, #f97316 100%);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.market-update-pill {
-    color: #ffffff;
-    font-size: 0.82rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+/* Badges de mise à jour et de correctif inline à côté du titre */
+.market-badge-update,
+.market-badge-patch {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    text-transform: uppercase;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0.25rem 0.55rem;
+    border-radius: 9999px;
+    vertical-align: middle;
 }
 
-.market-update-pill.security {
-    background: transparent;
-    color: #ffffff;
+.market-badge-update {
+    background: rgba(37, 99, 235, 0.10);
+    color: #2563eb;
+    border: 1px solid rgba(37, 99, 235, 0.25);
 }
 
-.market-item.has-update:has(.market-update-pill.security) {
-    border-color: #dc2626;
-    box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.2), 0 4px 14px rgba(220, 38, 38, 0.25);
+.market-badge-update i {
+    display: inline-block;
+    animation: spinUpdate 2s linear infinite;
 }
 
-.market-update-pill i {
-    animation: spinSlow 3s linear infinite;
+.market-badge-patch {
+    background: rgba(220, 38, 38, 0.10);
+    color: #dc2626;
+    border: 1px solid rgba(220, 38, 38, 0.25);
 }
 
-@keyframes spinSlow {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+.market-badge-patch i {
+    display: inline-block;
+    animation: none;
+}
+
+@keyframes spinUpdate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .market-item > header + div {

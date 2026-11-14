@@ -1,7 +1,9 @@
 {
     "name": "Declic",
-    "authorEmail": "contact@declic18.fr",
-    "authorWebsite": "https://declic18.test",
-    "version": "1.0.0"
+    "author": "Maxime Blanc",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
+    "version": "1.0.1",
+    "description": "Thème moderne et élégant conçu pour 299koEVO."
 }
 
