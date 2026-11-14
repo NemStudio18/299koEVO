@@ -238,6 +238,11 @@ class AdminMarketplaceController extends AdminController
                 Show::msg(Lang::get('marketplace.theme_is_used'), 'error');
             }
         }
+        $this->marketManager->clearCache();
+        if (class_exists('\Core\Storage\CacheManager')) {
+            $cacheManager = new \Core\Storage\CacheManager();
+            $cacheManager->clearCache();
+        }
         $this->core->redirect($this->router->generate('admin-marketplace'));
     }
 

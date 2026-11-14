@@ -229,6 +229,9 @@ class MarketPlaceManager
             
             $zip->close();
 
+            // Mettre à jour l'horodatage des fichiers extraits pour forcer l'invalidation des caches
+            $this->touchDirectoryRecursive($hasParentDir ? ($targetDir . $ressource->slug) : $pluginDir);
+
             // Enregistrer l'empreinte (hash) de la version installée pour le suivi automatique des correctifs
             $installedHash = $ressource->getRemoteHash() ?: (file_exists(CACHE . 'tmp.zip') ? sha1_file(CACHE . 'tmp.zip') : null);
             if ($installedHash) {
@@ -240,11 +243,40 @@ class MarketPlaceManager
 
             unlink(CACHE . 'tmp.zip');
             $this->runAfterUpdatePlugin($ressource);
+
+            // Invalider immédiatement le cache de la marketplace (plugins et thèmes)
+            $this->clearCache();
+
+            // Vider le cache des templates compilés, OPcache et forcer le cache-busting des assets
+            if (class_exists('\Core\Storage\CacheManager')) {
+                $cacheManager = new \Core\Storage\CacheManager();
+                $cacheManager->clearCache();
+            }
+
             $this->logger->info($ressource->slug . ' correctly installed');
             return true;
         }
         $this->logger->error('Unable to install ressource ' . $ressource->slug . ' (zip error)');
         return false;
+    }
+
+    protected function touchDirectoryRecursive(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            if (is_file($dir)) {
+                @touch($dir);
+            }
+            return;
+        }
+        try {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::SELF_FIRST
+            );
+            foreach ($iterator as $item) {
+                @touch($item->getPathname());
+            }
+        } catch (\Throwable $e) {}
     }
 
     protected function runAfterUpdatePlugin(MarketPlaceRessource $ressource)
