@@ -1,6 +1,0 @@
-{
-    "frontHead": "publicstatsAddStyles",
-    "publicstats:index-url": "publicstatsIndexUrl",
-    "user:get-stats": "PublicStats\\UserStatsProvider::getStats",
-    "core:stats-collector": "PublicStats\\UserStatsProvider::collectStats"
-}

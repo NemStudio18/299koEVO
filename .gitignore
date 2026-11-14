@@ -2,8 +2,17 @@ data/cache/
 data/logs/
 *.log
 .DS_Store
+
+# Themes : seul le thème de secours par défaut reste dans le CMS
 theme/*
 !theme/default/
 !theme/default/**
 
+# Plugins : gérés via le dépôt dédié Plugins_299koEVO et la Marketplace
+plugin/*
+!plugin/.gitkeep
 
+# Dossiers internes et sauvegardes de dev
+plugin_back/
+scripts/
+docs/

@@ -1,6 +1,0 @@
-{
-    "antispam:get-captcha": "antispamGetCaptcha",
-    "antispam:validate": "antispamValidate",
-    "endFrontHead": "antispamEndHead",
-    "endAdminHead": "antispamEndHead"
-}

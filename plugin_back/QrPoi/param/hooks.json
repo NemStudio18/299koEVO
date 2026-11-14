@@ -1,4 +1,0 @@
-{
-  "beforeRunPlugin": "qrPoiBeforeRunPlugin",
-  "poi:get-qr-display": "qrPoiGetQrDisplay"
-}

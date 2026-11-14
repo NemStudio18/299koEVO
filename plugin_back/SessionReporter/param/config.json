@@ -1,7 +1,0 @@
-{
-    "priority": 1,
-    "session_reporter_disabled": 0,
-    "slow_request_threshold": 2.5,
-    "max_events_session": 50,
-    "max_events_total": 2000
-}

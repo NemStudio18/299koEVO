@@ -1,8 +1,0 @@
-{
-    "endFrontHead": "seoEndFrontHead",
-    "footer": "seoFooter",
-    "beforeExecution": "seoHandleRedirections",
-    "beforeRunPlugin": "seoBeforeRunPlugin",
-    "blog:after-save": "seoBlogAfterSave",
-    "cli:generate-sitemap": "seoGenerateSitemap"
-}

@@ -1,7 +1,0 @@
-{
-    "install": "BusinessDashboard\\BusinessDashboard::install",
-    "beforerun": "BusinessDashboard\\BusinessDashboard::onBeforeRun",
-    "user:avatar-menu": "BusinessDashboard\\BusinessDashboard::addToAvatarMenu",
-    "poi:show": "BusinessDashboard\\DataCollector::trackView",
-    "search:results-rendered": "BusinessDashboard\\DataCollector::trackImpressions"
-}

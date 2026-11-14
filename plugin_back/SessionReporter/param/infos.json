@@ -1,7 +1,0 @@
-{
-    "name": "SessionReporter",
-    "description": "Industrial-grade debug collector and session reporter with Beta-only gating.",
-    "version": "1.0.0",
-    "author": "Antigravity",
-    "homeAdminMethod": "SessionReporter\\Controllers\\ReporterAdminController#index"
-}

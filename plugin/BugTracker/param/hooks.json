@@ -1,5 +1,0 @@
-{
-    "beforeRunPlugin": "bugTrackerBeforeRunPlugin",
-    "endFrontHead": "bugTrackerEndFrontHead",
-    "user:avatar-menu": "bugTrackerUserAvatarMenu"
-}

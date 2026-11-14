@@ -1,5 +1,0 @@
-{
-    "publicContent": "Parrainage\\Hooks\\ParrainageHooks::publicContent",
-    "users:after-registration-success": "Parrainage\\Hooks\\ParrainageHooks::afterRegistrationSuccess",
-    "user:avatar-menu": "Parrainage\\Hooks\\ParrainageHooks::avatarMenu"
-}

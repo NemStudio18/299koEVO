@@ -1,7 +1,0 @@
-{
-    "beforeRunPlugin": "newsletterBeforeRunPlugin",
-    "endFrontHead": "newsletterEndFrontHead",
-    "endFrontBody": "newsletterEndFrontBody",
-    "user:profile-settings": "newsletterUserProfileSettings",
-    "user:avatar-menu": "newsletterUserAvatarMenu"
-}

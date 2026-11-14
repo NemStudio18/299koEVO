@@ -1,7 +1,0 @@
-{
-    "poi:detail-actions": "ProRdv\\Hooks\\ProRdvHooks::onPoiDetailActions",
-    "poi:detail-tabs": "ProRdv\\Hooks\\ProRdvHooks::onPoiDetailTabs",
-    "poi:detail-tab-content": "ProRdv\\Hooks\\ProRdvHooks::onPoiDetailTabContent",
-    "user:avatar-menu": "ProRdv\\Hooks\\ProRdvHooks::onUserAvatarMenu",
-    "navigation:catalog": "ProRdvNavigationCatalog"
-}

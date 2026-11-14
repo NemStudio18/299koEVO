@@ -1,9 +1,0 @@
-{
-    "slug": "poi-manager",
-    "name": "POI Manager",
-    "icon": "fa-solid fa-map-location-dot",
-    "description": "Gestion complète des fiches POI : création admin, propositions membres (proposal), corrections (suggestion), édition propriétaire avec limites d'abonnement.",
-    "version": "1.0.0",
-    "homePublicMethod": "PoiManager\\Controllers\\PoiManagerPublicController#myPois",
-    "homeAdminMethod": "PoiManager\\Controllers\\PoiManagerAdminController#dashboard"
-}

@@ -1,8 +1,0 @@
-{
-    "beforeRunPlugin": "poiEditBeforeRunPlugin",
-    "navigation:build": "poiEditNavigationBuild",
-    "endFrontHead": "poiEditEndFrontHead",
-    "poi:card-actions": "poiEditPoiCardActions",
-    "poi:detail-actions": "poiEditPoiDetailActions",
-    "poi-edit:suggestion-decided": "poiEditOnSuggestionDecided"
-}

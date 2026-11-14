@@ -1,4 +1,0 @@
-{
-    "before404": "debug404OnBefore404",
-    "admin:menu": "debug404AdminMenu"
-}

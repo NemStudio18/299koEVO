@@ -1,9 +1,0 @@
-{
-  "endFrontHead": "meteoEndFrontHead",
-  "afterHeader": "meteoAfterHeader",
-  "footer": "meteoFooter",
-  "endFrontBody": "meteoEndFrontBody",
-  "meteoWidget": "meteoWidget",
-  "meteoWidgetHeader": "meteoWidgetHeader",
-  "notifications:collect": "meteoNotificationsCollect"
-}

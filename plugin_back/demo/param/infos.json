@@ -1,8 +1,0 @@
-{
-    "name": "Demo",
-    "description": "Mode démonstration et simulation",
-    "author": "299Ko",
-    "version": "1.0",
-    "homePublicMethod": "Demo\\Controllers\\DemoPublicController#activate",
-    "icon": "fa-solid fa-flask"
-}

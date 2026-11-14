@@ -1,9 +1,0 @@
-{
-    "endFrontHead": "galerieEndFrontHead",
-    "galerie:display-carousel": "galerieDisplayHookCarousel",
-    "page:content-header": "galeriePageContentHeader",
-    "search:get-results": "galerieSearchResultsHook",
-    "page:og-image": "galerieOgImage",
-    "page:save-featured-image": "galerieSaveFeaturedImage",
-    "page:admin-edit-sections": "galerieAdminEditSections"
-}

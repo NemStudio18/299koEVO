@@ -1,8 +1,0 @@
-{
-    "beforeRunPlugin": "SearchMaps\\Hooks\\SearchMapsHooks::onBeforeRunPlugin",
-    "endFrontHead": "SearchMaps\\Hooks\\SearchMapsHooks::onEndFrontHead",
-    "map:is-enabled": "SearchMaps\\Hooks\\SearchMapsHooks::isEnabled",
-    "map:load-assets": "SearchMaps\\Hooks\\SearchMapsHooks::loadAssets",
-    "map:render": "SearchMaps\\Hooks\\SearchMapsHooks::renderMap",
-    "map:editor-config": "SearchMaps\\Hooks\\SearchMapsHooks::getEditorConfig"
-}

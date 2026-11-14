@@ -1,4 +1,0 @@
-{
-    "search:generate-url-name": "SearchEngine\\Hooks\\SearchEngineHooks::generateUrlName",
-    "search:count-total": "SearchEngine\\Hooks\\SearchEngineHooks::countTotal"
-}

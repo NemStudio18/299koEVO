@@ -1,9 +1,0 @@
-{
-    "slug": "BugTracker",
-    "name": "Bug Tracker",
-    "icon": "fa-solid fa-bug",
-    "description": "Système de suivi des bugs et rapports d'erreurs.",
-    "version": "0.1.0",
-    "homePublicMethod": "BugTracker\\Controllers\\BugTrackerPublicController#home",
-    "homeAdminMethod": "BugTracker\\Controllers\\BugTrackerAdminController#dashboard"
-}

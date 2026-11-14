@@ -1,4 +1,0 @@
-{
-    "install": "libManagerInstall",
-    "navigation:build": "libManagerNavigation"
-}

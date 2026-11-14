@@ -1,4 +1,0 @@
-{
-    "adminAfterHeader": "\\Demo\\Hooks::adminAfterHeader",
-    "afterHeader": "\\Demo\\Hooks::afterHeader"
-}
