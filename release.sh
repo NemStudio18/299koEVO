@@ -24,3 +24,4 @@ git push origin main
 git push origin "${TAG}"
 
 echo "🎉 Release ${TAG} publiée sur GitHub !"
+

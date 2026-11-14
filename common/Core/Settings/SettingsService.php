@@ -152,48 +152,56 @@ class SettingsService
     public function checkNewVersion(): void
     {
         $cachedInfos = Util::readJsonFile($this->cacheFile);
-        if ($cachedInfos !== false && is_array($cachedInfos) && isset($cachedInfos['lastVersion'])) {
-            $lastVersion = $cachedInfos['lastVersion'];
-            if ($lastVersion === VERSION) {
-                $lastCheckUpdate = (int) ($cachedInfos['lastCheckUpdate'] ?? 0);
-                if ($lastCheckUpdate + 3600 < time()) {
-                    $nextVersion = $this->getNewVersion();
-                } else {
-                    $nextVersion = false;
-                }
-            } else {
-                $nextVersion = ($lastVersion > VERSION) ? $lastVersion : false;
-            }
-        } else {
+        $lastCheckUpdate = (int) ($cachedInfos['lastCheckUpdate'] ?? 0);
+
+        if (!is_array($cachedInfos) || ($lastCheckUpdate + 3600 < time())) {
             $nextVersion = $this->getNewVersion();
+        } else {
+            $nextVersion = $cachedInfos['nextVersion'] ?? false;
         }
 
         if ($nextVersion) {
-            $this->displayNewVersion($nextVersion);
+            $this->displayNewVersion((string) $nextVersion);
         }
     }
 
     public function displayNewVersion(string $nextVersion): void
     {
-        Show::msg("<p>" . Lang::get('configmanager-update-msg', $nextVersion) . "</p>
-            <div style='text-align:center'><a class='button alert' href='" .
-            Router::getInstance()->generate('configmanager-update', ['token' => (UsersManager::getCurrentUser() ? UsersManager::getCurrentUser()->token : '')]) .
-            "'>" . Lang::get('configmanager-update') . "</a></div>");
+        $updater = new UpdaterManager();
+        $isPatch = (bool) preg_match('/^[a-f0-9]{7,40}$/i', $nextVersion);
+        $token = UsersManager::getCurrentUser() ? UsersManager::getCurrentUser()->token : '';
+        $updateUrl = Router::getInstance()->generate('configmanager-update', ['token' => $token]);
+
+        if ($isPatch) {
+            $shortCommit = substr($nextVersion, 0, 7);
+            $msg = "<p><strong>[CORRECTIF / PATCH CMS DISPONIBLE]</strong> Un correctif de mise à jour pour le CMS est disponible (correctif <code>" . htmlspecialchars($shortCommit, ENT_QUOTES, 'UTF-8') . "</code>).</p>"
+                . "<div style='text-align:center'><a class='button alert' href='" . htmlspecialchars($updateUrl, ENT_QUOTES, 'UTF-8') . "'>"
+                . "<i class='fa-solid fa-shield-halved'></i> Appliquer le correctif</a></div>";
+        } else {
+            $msg = "<p>" . Lang::get('configmanager-update-msg', $nextVersion) . "</p>"
+                . "<div style='text-align:center'><a class='button alert' href='" . htmlspecialchars($updateUrl, ENT_QUOTES, 'UTF-8') . "'>"
+                . Lang::get('configmanager-update') . "</a></div>";
+        }
+
+        Show::msg($msg);
     }
 
     public function getNewVersion()
     {
         $updaterManager = new UpdaterManager();
-        $nextVersion = $updaterManager ? $updaterManager->getNextVersion() : false;
+        $nextVersion = $updaterManager->isReady ? $updaterManager->getNextVersion() : false;
         $cachedInfos = Util::readJsonFile($this->cacheFile);
-        if ($cachedInfos === false) {
+        if (!is_array($cachedInfos)) {
             $cachedInfos = [];
         }
         $cachedInfos['lastVersion'] = $updaterManager->lastVersion;
+        $cachedInfos['latestCommit'] = $updaterManager->latestCommit;
+        $cachedInfos['nextVersion'] = $nextVersion;
+        $cachedInfos['isPatch'] = (bool) preg_match('/^[a-f0-9]{7,40}$/i', (string) $nextVersion);
         $cachedInfos['lastCheckUpdate'] = time();
         Util::writeJsonFile($this->cacheFile, $cachedInfos);
         if ($nextVersion) {
-            \Core\Core::getInstance()->getLogger()->info('Nouvelle version trouvée : ' . $nextVersion);
+            \Core\Core::getInstance()->getLogger()->info('Mise à jour trouvée : ' . $nextVersion . ($cachedInfos['isPatch'] ? ' (correctif/patch)' : ''));
         }
         return $nextVersion;
     }

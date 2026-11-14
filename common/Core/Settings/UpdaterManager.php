@@ -13,6 +13,7 @@ if (!function_exists('Core\Settings\logg')) {
 class UpdaterManager
 {
     public $lastVersion;
+    public ?string $latestCommit = null;
     public $nextVersion;
     protected $metaDatas;
     public bool $isReady;
@@ -66,6 +67,7 @@ class UpdaterManager
         }
 
         $this->lastVersion = $file['last_version'];
+        $this->latestCommit = isset($file['latest_commit']) && is_string($file['latest_commit']) ? trim($file['latest_commit']) : null;
         $this->metaDatas = $file;
         $this->isReady = true;
     }
@@ -104,19 +106,85 @@ class UpdaterManager
         return 0;
     }
 
+    /**
+     * Récupère le hash du commit local (depuis core_patch.json ou Git HEAD)
+     */
+    public function getLocalCommit(): ?string
+    {
+        $patchFile = DATA_CORE_SETTINGS . 'core_patch.json';
+        if (is_file($patchFile)) {
+            $data = json_decode((string) @file_get_contents($patchFile), true);
+            if (is_array($data) && !empty($data['commit']) && is_string($data['commit'])) {
+                return trim($data['commit']);
+            }
+        }
+
+        // Si nous sommes dans un clone Git, vérifier le commit courant
+        $gitHead = ROOT . '.git' . DIRECTORY_SEPARATOR . 'HEAD';
+        if (is_file($gitHead)) {
+            $headContent = trim((string) @file_get_contents($gitHead));
+            if (str_starts_with($headContent, 'ref: ')) {
+                $refFile = ROOT . '.git' . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, substr($headContent, 5));
+                if (is_file($refFile)) {
+                    return trim((string) @file_get_contents($refFile));
+                }
+            } elseif (preg_match('/^[a-f0-9]{40}$/i', $headContent)) {
+                return $headContent;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Enregistre le hash du commit appliqué localement
+     */
+    public function saveLocalCommit(string $commit): void
+    {
+        if (!is_dir(DATA_CORE_SETTINGS)) {
+            @mkdir(DATA_CORE_SETTINGS, 0755, true);
+        }
+        $data = [
+            'version' => defined('VERSION') ? VERSION : $this->lastVersion,
+            'commit' => trim($commit),
+            'updated_at' => time(),
+        ];
+        @file_put_contents(DATA_CORE_SETTINGS . 'core_patch.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
+    }
+
+    /**
+     * Détermine si la prochaine mise à jour est un simple correctif/patch de commit
+     */
+    public function isSecurityPatch(): bool
+    {
+        $next = $this->getNextVersion();
+        if ($next === false) {
+            return false;
+        }
+        return (bool) preg_match('/^[a-f0-9]{7,40}$/i', (string) $next);
+    }
+
     public function getNextVersion()
     {
         if (!$this->isReady || !$this->lastVersion) {
             return false;
         }
 
-        // Use semantic version comparison instead of string comparison
         $comparison = $this->compareVersions($this->lastVersion, VERSION);
         
-        // Only return next version if remote version is greater than current
+        // 1. Nouvelle version formelle disponible (ex: 0.2.2 > 0.2.1)
         if ($comparison > 0) {
-            if (key_exists(VERSION, $this->metaDatas)) {
-                return $this->metaDatas[VERSION];
+            if (isset($this->metaDatas[VERSION])) {
+                return (string) $this->metaDatas[VERSION];
+            }
+            return (string) $this->lastVersion;
+        }
+        
+        // 2. Correctif de sécurité continu (même version SemVer, nouveau commit sur main)
+        if ($comparison === 0 && !empty($this->latestCommit)) {
+            $localCommit = $this->getLocalCommit();
+            if ($localCommit === null || strtolower(substr($localCommit, 0, 7)) !== strtolower(substr($this->latestCommit, 0, 7))) {
+                return (string) $this->latestCommit;
             }
         }
         
@@ -130,15 +198,11 @@ class UpdaterManager
             return false;
         }
 
-        $rawFiles = $this->getRemoteFileContent($this->resolveApiBaseUrl() . 'repository/api/core/files?version=' . rawurlencode((string) $nextVersion), 'ERROR');
-        if ($rawFiles === false) {
-            return false;
-        }
-        $files = json_decode($rawFiles, true);
-
-        logg("Begin update to v$nextVersion", 'INFO');
+        $isPatch = $this->isSecurityPatch();
+        $targetDesc = $isPatch ? ('patch ' . substr((string) $nextVersion, 0, 7)) : ('v' . $nextVersion);
+        logg("Begin update to $targetDesc", 'INFO');
         
-        // Télécharger et extraire le ZIP complet de la version
+        // Télécharger et extraire le ZIP complet de la version ou du commit
         $tempPath = $this->downloadAndExtractVersion($nextVersion);
         if ($tempPath === false) {
             logg('Failed to download or extract version ZIP', 'ERROR');
@@ -147,30 +211,101 @@ class UpdaterManager
         $this->tempExtractPath = $tempPath;
 
         if (!$this->runBeforeChangeFiles($nextVersion)) {
-            logg('Update aborted', 'ERROR');
+            logg('Update aborted by before-hook', 'ERROR');
             $this->cleanupTempDirectory();
             return false;
         }
-        
-        foreach ((array) ($files['M'] ?? []) as $fileArray) {
-            $this->processModify($fileArray, $nextVersion);
-        }
-        foreach ((array) ($files['A'] ?? []) as $fileArray) {
-            $this->processAdd($fileArray, $nextVersion);
-        }
-        foreach ((array) ($files['D'] ?? []) as $fileArray) {
-            $this->processDelete($fileArray);
+
+        // Tenter de récupérer le manifest des fichiers s'il existe
+        $rawFiles = $this->getRemoteFileContent($this->resolveApiBaseUrl() . 'repository/api/core/files?version=' . rawurlencode((string) $nextVersion), 'INFO');
+        $files = $rawFiles ? json_decode($rawFiles, true) : null;
+
+        if (is_array($files) && (isset($files['M']) || isset($files['A']) || isset($files['D']))) {
+            foreach ((array) ($files['M'] ?? []) as $fileArray) {
+                $this->processModify($fileArray, $nextVersion);
+            }
+            foreach ((array) ($files['A'] ?? []) as $fileArray) {
+                $this->processAdd($fileArray, $nextVersion);
+            }
+            foreach ((array) ($files['D'] ?? []) as $fileArray) {
+                $this->processDelete($fileArray);
+            }
+        } else {
+            // Pas de manifest (patch continu ou archive complète) : copie récursive protégée
+            $this->applyExtractedArchive($this->tempExtractPath);
         }
         
         if (!$this->runAfterChangeFiles($nextVersion)) {
-            logg('Update may be not successfull', 'ERROR');
+            logg('Update after-hook reported warnings', 'WARNING');
+        }
+
+        // Enregistrer le commit appliqué
+        if ($isPatch) {
+            $this->saveLocalCommit((string) $nextVersion);
+        } elseif (!empty($this->latestCommit)) {
+            $this->saveLocalCommit((string) $this->latestCommit);
         }
         
         // Nettoyer le dossier temporaire
         $this->cleanupTempDirectory();
         
-        logg("End update to v$nextVersion", 'INFO');
+        logg("End update to $targetDesc", 'INFO');
         return true;
+    }
+
+    /**
+     * Applique les fichiers de l'archive extraite vers ROOT en protégeant les dossiers critiques
+     */
+    protected function applyExtractedArchive(string $sourceDir): void
+    {
+        $sourceDir = rtrim($sourceDir, '/') . '/';
+        $targetDir = rtrim(ROOT, '/') . '/';
+
+        $protectedPaths = [
+            'data',
+            'config',
+            '.git',
+            '.github',
+            '.env',
+            'install.php',
+            'install',
+        ];
+
+        $this->copyDirectoryRecursive($sourceDir, $targetDir, $protectedPaths);
+    }
+
+    protected function copyDirectoryRecursive(string $src, string $dst, array $excludes = []): void
+    {
+        if (!is_dir($src)) {
+            return;
+        }
+        if (!is_dir($dst)) {
+            @mkdir($dst, 0775, true);
+        }
+
+        $items = scandir($src);
+        if ($items === false) {
+            return;
+        }
+
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+            if (in_array($item, $excludes, true)) {
+                continue;
+            }
+
+            $srcPath = $src . $item;
+            $dstPath = $dst . $item;
+
+            if (is_dir($srcPath)) {
+                $this->copyDirectoryRecursive($srcPath, $dstPath, []);
+            } else {
+                $this->createDirectories($dstPath);
+                @copy($srcPath, $dstPath);
+            }
+        }
     }
 
     public function clearCache()
@@ -199,7 +334,8 @@ class UpdaterManager
     protected function downloadAndExtractVersion($version)
     {
         $zipUrl = $this->resolveApiBaseUrl() . 'repository/api/core/download?version=' . rawurlencode(ltrim((string) $version, 'vV'));
-        $tempDir = CACHE . 'update_temp_' . $version . '_' . time() . '/';
+        $safeVersion = preg_replace('/[^a-zA-Z0-9._-]/', '_', (string) $version);
+        $tempDir = CACHE . 'update_temp_' . $safeVersion . '_' . time() . '/';
         
         // Créer le dossier temporaire
         if (!is_dir($tempDir)) {

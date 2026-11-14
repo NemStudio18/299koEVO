@@ -30,9 +30,11 @@ class ConfigManagerUpdateController extends AdminController {
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
         if ($nextVersion && $evaluator->isAdmin($ctx)) {
+            $isPatch = $updaterManager->isSecurityPatch();
+            $label = $isPatch ? ('patch ' . substr((string) $nextVersion, 0, 7)) : ('v' . $nextVersion);
             if ($updaterManager->update()) {
-                $this->logger->info('Config update applied to ' . $nextVersion . ' by ' . $actor);
-                show::msg(Lang::get('configmanager-updated', $nextVersion), 'success');
+                $this->logger->info('Config update applied to ' . $label . ' by ' . $actor);
+                show::msg($isPatch ? "Le correctif de sécurité {$label} a été appliqué avec succès." : Lang::get('configmanager-updated', $nextVersion), 'success');
                 $updaterManager->clearCache();
             } else {
                 $this->logger->error('Config update failed for ' . $nextVersion . ' by ' . $actor);
@@ -89,7 +91,10 @@ class ConfigManagerUpdateController extends AdminController {
             $settings->displayNewVersion((string) $nextVersion);
         } else {
             $current = defined('VERSION') ? VERSION : '';
-            Show::msg('Votre CMS est à jour' . ($current !== '' ? ' (version ' . htmlspecialchars($current, ENT_QUOTES, 'UTF-8') . ')' : '') . '.', 'success');
+            $updater = new UpdaterManager();
+            $commit = $updater->getLocalCommit();
+            $commitSuffix = $commit ? ' (patch ' . substr($commit, 0, 7) . ')' : '';
+            Show::msg('Votre CMS est à jour' . ($current !== '' ? ' (version ' . htmlspecialchars($current . $commitSuffix, ENT_QUOTES, 'UTF-8') . ')' : '') . '.', 'success');
         }
         $this->core->redirect($this->router->generate('configmanager-admin'));
     }

@@ -4,6 +4,7 @@ namespace Core\Extensions;
 
 use Core\Plugin\PluginsManager;
 use Core\Theme;
+use Utils\Util;
 use stdClass;
 
 defined('ROOT') or exit('Access denied!');
