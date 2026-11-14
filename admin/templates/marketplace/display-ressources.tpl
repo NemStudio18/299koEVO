@@ -82,7 +82,18 @@
                             {% else %}
                                 <span class="up-to-date-icon" title="Ressource à jour">&#x2714; À jour</span>
                             {% endif %}
-                            <a href="{ ROUTER.generate("marketplace-uninstall-ressource", ["type" => ressource.type, "slug" => ressource.slug, "token" => token]) }" onclick="if (!confirm('{{Lang.marketplace.uninstall_confirm}}')) return false;" class="button alert">{{Lang.delete}}</a>
+                            {% if ressource.type == 'plugin' %}
+                                <div class="market-actions-group">
+                                    <a href="{ ROUTER.generate("marketplace-uninstall-ressource", ["type" => ressource.type, "slug" => ressource.slug, "token" => token]) }" onclick="if (!confirm('{{Lang.marketplace.uninstall_keep_data_confirm}}')) return false;" class="market-btn-uninstall" title="Désinstaller le code en conservant les données">
+                                        <i class="fa-solid fa-power-off"></i> {{Lang.marketplace.uninstall_keep_data}}
+                                    </a>
+                                    <a href="{ ROUTER.generate("marketplace-uninstall-ressource", ["type" => ressource.type, "slug" => ressource.slug, "token" => token]) }?purge=1" onclick="if (!confirm('{{Lang.marketplace.uninstall_purge_data_confirm}}')) return false;" class="market-btn-purge" title="Supprimer le code et purger définitivement les données">
+                                        <i class="fa-solid fa-trash-can"></i> {{Lang.marketplace.uninstall_purge_data}}
+                                    </a>
+                                </div>
+                            {% else %}
+                                <a href="{ ROUTER.generate("marketplace-uninstall-ressource", ["type" => ressource.type, "slug" => ressource.slug, "token" => token]) }" onclick="if (!confirm('{{Lang.marketplace.uninstall_confirm}}')) return false;" class="button alert">{{Lang.delete}}</a>
+                            {% endif %}
                         {% else %}
                             <a href='{ ROUTER.generate("marketplace-install-release", ["type" => ressource.type, "slug" => ressource.slug, "token" => token]) }' class="button market-install">
                                 <i class="fa-solid fa-download"></i> {{Lang.marketplace.install}}

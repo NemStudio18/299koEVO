@@ -147,6 +147,58 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+    flex-wrap: wrap;
+}
+
+.market-actions-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.market-btn-uninstall {
+    font-size: 0.80rem;
+    padding: 6px 10px;
+    background: var(--evo-surface-alt, #f1f5f9);
+    color: var(--evo-text-muted, #64748b);
+    border: 1px solid var(--evo-border, #cbd5e1);
+    border-radius: var(--evo-radius-sm, 6px);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.market-btn-uninstall:hover {
+    background: #e2e8f0;
+    color: var(--evo-text, #1e293b);
+    border-color: #94a3b8;
+}
+
+.market-btn-purge {
+    font-size: 0.80rem;
+    padding: 6px 10px;
+    background: rgba(220, 38, 38, 0.08);
+    color: #dc2626;
+    border: 1px solid rgba(220, 38, 38, 0.25);
+    border-radius: var(--evo-radius-sm, 6px);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.market-btn-purge:hover {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
 }
 
 .market-update-button-highlight {

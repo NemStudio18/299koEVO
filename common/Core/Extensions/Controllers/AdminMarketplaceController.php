@@ -210,13 +210,17 @@ class AdminMarketplaceController extends AdminController
         if (!$evaluator->isAdmin($ctx)) {
             $this->core->redirect($this->router->generate('admin-marketplace'));
         }
+        $purgeData = isset($_GET['purge']) && $_GET['purge'] === '1';
         if ($type === MarketPlaceRessource::TYPE_PLUGIN) {
             $plugin = $this->pluginsManager->getPlugin($slug);
             if ($plugin !== false) {
                 $defaultPlugin = $this->core->getConfigVal('defaultPlugin');
                 if ($slug !== $defaultPlugin) {
-                    if ($this->pluginsManager->uninstallPlugin($slug)) {
-                        Show::msg(Lang::get('marketplace.plugin_uninstalled'), 'success');
+                    if ($this->pluginsManager->uninstallPlugin($slug, $purgeData)) {
+                        $msg = $purgeData
+                            ? (Lang::get('marketplace.plugin_uninstalled_purged') ?: 'Plugin et données définitivement supprimés.')
+                            : (Lang::get('marketplace.plugin_uninstalled_kept') ?: 'Plugin désinstallé avec succès (données conservées).');
+                        Show::msg($msg, 'success');
                     } else {
                         Show::msg(Lang::get('marketplace.error_during_uninstall'), 'error');
                     }

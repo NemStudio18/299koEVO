@@ -158,31 +158,32 @@ class PluginsManager {
      * Uninstalls a plugin by its name.
      * 
      * This method performs the following actions:
-     * - Calls the plugin's uninstall function, if it exists.
-     * - Removes the plugin's data directory.
+     * - Calls the plugin's uninstall function if $purgeData is true.
+     * - Removes the plugin's data directory only if $purgeData is true.
      * - Removes the plugin's directory.
      * - Logs the uninstallation process.
      *
      * @param string $name The name of the plugin to uninstall.
+     * @param bool $purgeData Whether to delete data in /data/plugin/[name] as well. Default is false (preserve data).
      * @return bool Returns true if the plugin was successfully uninstalled.
      */
-    public function uninstallPlugin(string $name) {
-        // Call uninstall function if exists
-        if (file_exists(PLUGINS . $name . DS . $name . '.php')) {
+    public function uninstallPlugin(string $name, bool $purgeData = false) {
+        // Call uninstall function if exists (only on full purge or when plugin explicitly defines clean-up)
+        if ($purgeData && file_exists(PLUGINS . $name . DS . $name . '.php')) {
             require_once (PLUGINS . $name . DS . $name . '.php');
             if (function_exists($name . 'Uninstall')) {
                 Core::getInstance()->getLogger()->log(\Core\Logger::LEVEL_INFO, "Call function '" . $name . "Uninstall'");
                 call_user_func($name . 'Uninstall');
             }
         }
-        // Remove plugin data
-        if (is_dir(DATA_PLUGIN . $name)) {
+        // Remove plugin data only if explicitly requested
+        if ($purgeData && is_dir(DATA_PLUGIN . $name)) {
             Util::delTree(DATA_PLUGIN . $name);
         }
         if (is_dir(PLUGINS . $name)) {
             Util::delTree(PLUGINS . $name);
         }
-        Core::getInstance()->getLogger()->log(\Core\Logger::LEVEL_INFO, "Plugin $name successfully uninstalled");
+        Core::getInstance()->getLogger()->log(\Core\Logger::LEVEL_INFO, "Plugin $name successfully uninstalled (purgeData=" . ($purgeData ? 'true' : 'false') . ")");
         return true;
     }
         
