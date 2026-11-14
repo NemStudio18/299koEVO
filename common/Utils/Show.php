@@ -556,20 +556,28 @@ class Show
 
             $catActive = false;
             $catHasUpdate = false;
+            $cmsHasUpdate = false;
             foreach ($items as $it) {
                 if ($currentPlugin === $it['slug']) {
                     $catActive = true;
                 }
                 if (!empty($it['hasUpdate'])) {
                     $catHasUpdate = true;
+                    if ($it['slug'] === 'configmanager') {
+                        $cmsHasUpdate = true;
+                    }
                 }
             }
 
             $badgeHtml = '';
-            if ($catKey === 'systeme' && $pluginsUpdatesCount > 0) {
-                $badgeHtml = '<span class="adm-cat-badge" title="' . $pluginsUpdatesCount . ' plugin(s) à mettre à jour">MAJ plugins (' . $pluginsUpdatesCount . ')</span>';
-            } elseif ($catKey === 'systeme' && $totalUpdatesCount > 0) {
-                $badgeHtml = '<span class="adm-cat-badge" title="' . $totalUpdatesCount . ' mise(s) à jour disponible(s)">MAJ (' . $totalUpdatesCount . ')</span>';
+            if ($catKey === 'systeme') {
+                if ($pluginsUpdatesCount > 0) {
+                    $badgeHtml = '<span class="adm-cat-badge" title="' . $pluginsUpdatesCount . ' plugin(s) à mettre à jour">MAJ plugins (' . $pluginsUpdatesCount . ')</span>';
+                } elseif ($cmsHasUpdate) {
+                    $badgeHtml = '<span class="adm-cat-badge" title="Mise à jour du CMS disponible">MAJ CMS</span>';
+                } elseif ($totalUpdatesCount > 0) {
+                    $badgeHtml = '<span class="adm-cat-badge" title="' . $totalUpdatesCount . ' mise(s) à jour disponible(s)">MAJ (' . $totalUpdatesCount . ')</span>';
+                }
             } elseif ($catHasUpdate) {
                 $badgeHtml = '<span class="adm-cat-dot" title="Mise à jour disponible"></span>';
             }

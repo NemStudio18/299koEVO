@@ -195,7 +195,7 @@ class SettingsService
     }
 
     /**
-     * Checks for new versions using cache (hourly).
+     * Checks for new versions using cache (every 5 minutes across all admin pages, 1 minute on configmanager).
      */
     public function checkNewVersion(): void
     {
@@ -204,7 +204,7 @@ class SettingsService
             $cachedInfos = [];
         }
         $lastCheckUpdate = (int) ($cachedInfos['lastCheckUpdate'] ?? 0);
-        $ttl = $this->isCurrentModule() ? 60 : 3600;
+        $ttl = $this->isCurrentModule() ? 60 : 300;
 
         if ($lastCheckUpdate + $ttl < time()) {
             $nextVersion = $this->getNewVersion();
@@ -408,13 +408,23 @@ class SettingsService
 
     public function getAdminNavigationEntries(): array
     {
+        $cachedInfos = Util::readJsonFile($this->cacheFile);
+        $hasUpdate = !empty($cachedInfos['nextVersion']);
+        $isPatch = !empty($cachedInfos['isPatch']);
+        $nextVersion = $cachedInfos['nextVersion'] ?? '';
+
         $entries = [];
         foreach ($this->adminModules as $module) {
-            $entries[] = [
+            $entry = [
                 'name' => $module['name'],
                 'icon' => $module['icon'],
                 'label' => Lang::get($module['label']),
             ];
+            if ($module['name'] === 'configmanager' && $hasUpdate) {
+                $entry['hasUpdate'] = true;
+                $entry['badge'] = $isPatch ? 'Patch' : ('v' . $nextVersion);
+            }
+            $entries[] = $entry;
         }
         return $entries;
     }
