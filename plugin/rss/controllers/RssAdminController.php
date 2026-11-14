@@ -42,6 +42,7 @@ class RssAdminController extends BaseAdminController
         $tpl->set('providers', $providers);
         $tpl->set('providersCount', count($providers));
         $tpl->set('csrfToken', \Core\Security\Csrf::token());
+        $tpl->set('saveUrl', $this->router->generate('admin-rss-save'));
 
         $response->addTemplate($tpl);
         return $response;

@@ -14,7 +14,7 @@
         <ul class="tabs">
             <!-- Tab 1: Réglages -->
             <li class="tab">
-                <form action="{{ router.generate('admin-rss-save') }}" method="POST">
+                <form action="{{ saveUrl }}" method="POST">
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
                     <div class="field">

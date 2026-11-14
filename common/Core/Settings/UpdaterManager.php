@@ -489,6 +489,10 @@ class UpdaterManager
 
     protected function treatTheme($filename)
     {
+        // Seul le thème 'default' est géré par les mises à jour du Core
+        if (!str_starts_with($filename, 'theme/default/')) {
+            return false;
+        }
         preg_match('/^theme\/(.*)$/i', $filename, $matches);
         return THEMES . $matches[1];
     }
@@ -525,6 +529,9 @@ class UpdaterManager
     protected function processAdd($file, $version)
     {
         $localFileName = $this->rewritePathFile($file, true);
+        if ($localFileName === false) {
+            return true;
+        }
         
         // Copier depuis le dossier temporaire au lieu de télécharger
         $sourceFile = $this->tempExtractPath . $file;

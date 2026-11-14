@@ -2,4 +2,8 @@ data/cache/
 data/logs/
 *.log
 .DS_Store
+theme/*
+!theme/default/
+!theme/default/**
+
 

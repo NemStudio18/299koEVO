@@ -12,4 +12,5 @@ $router->map('GET', '/rss/[*:channel][/?]', 'Rss\\Controllers\\RssPublicControll
 // Admin Configuration
 $router->map('GET', '/admin/rss[/?]', 'Rss\\Controllers\\RssAdminController#home', 'admin-rss-home');
 $router->map('POST', '/admin/rss/save[/?]', 'Rss\\Controllers\\RssAdminController#save', 'admin-rss-save');
+$router->map('POST', '/admin/rss[/?]', 'Rss\\Controllers\\RssAdminController#save', 'admin-rss-save-fallback');
 

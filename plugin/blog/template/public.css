@@ -55,7 +55,7 @@
     gap: 10px;
     align-items: center;
 }
-.blog-cat-pill {
+a.blog-cat-pill {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -69,17 +69,22 @@
     transition: all 0.2s ease;
     border: 1px solid var(--evo-border);
 }
-.blog-cat-pill:hover {
+a.blog-cat-pill:hover {
     background: var(--evo-accent-soft);
     color: var(--evo-accent);
     text-decoration: none;
 }
-.blog-cat-pill.active {
+a.blog-cat-pill.active,
+a.blog-cat-pill.active:link,
+a.blog-cat-pill.active:visited,
+a.blog-cat-pill.active:hover,
+a.blog-cat-pill.active:focus {
     background: var(--evo-accent);
-    color: var(--evo-accent-text);
+    color: var(--evo-accent-text, #ffffff);
     border-color: var(--evo-accent);
     font-weight: 600;
     box-shadow: var(--evo-shadow-sm);
+    text-decoration: none;
 }
 .cat-pill-count {
     display: inline-flex;
@@ -94,9 +99,9 @@
     background: var(--evo-surface-alt);
     color: var(--evo-text);
 }
-.blog-cat-pill.active .cat-pill-count {
-    background: var(--evo-accent-hover);
-    color: var(--evo-accent-text);
+a.blog-cat-pill.active .cat-pill-count {
+    background: rgba(255, 255, 255, 0.25);
+    color: var(--evo-accent-text, #ffffff);
 }
 
 /* Comments */
