@@ -51,6 +51,7 @@ class PluginsMarketController extends AdminController
         
         $pluginsTpl = $response->createPluginTemplate('marketplace', 'display-ressources');
         $pluginsTpl->set('ressources', $plugins);
+        $pluginsTpl->set('ressourcesCount', count($plugins));
         $pluginsTpl->set('token', $this->user->token);
         $tpl->set('PLUGINS_TPL', $pluginsTpl->output());
         $response->addTemplate($tpl);

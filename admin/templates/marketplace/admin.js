@@ -43,19 +43,15 @@ function initMarketplaceToolbars() {
         catPills.forEach(function (pill) {
             const cat = pill.getAttribute('data-cat');
             const cnt = counts[cat] || 0;
-            if (cat !== 'all') {
-                const countBadge = document.createElement('span');
+            let countBadge = pill.querySelector('.pill-count');
+            if (!countBadge) {
+                countBadge = document.createElement('span');
                 countBadge.className = 'pill-count';
-                countBadge.textContent = cnt;
                 pill.appendChild(countBadge);
-                if (cnt === 0 && cat !== 'updates') {
-                    pill.style.display = 'none';
-                }
-            } else {
-                const countBadge = document.createElement('span');
-                countBadge.className = 'pill-count';
-                countBadge.textContent = cnt;
-                pill.appendChild(countBadge);
+            }
+            countBadge.textContent = cnt;
+            if (cnt === 0 && cat !== 'all' && cat !== 'updates') {
+                pill.style.display = 'none';
             }
             if (cat === 'updates' && counts.updates === 0) {
                 pill.style.display = 'none';
@@ -163,4 +159,3 @@ function initMarketplaceToolbars() {
         filterItems();
     });
 }
-

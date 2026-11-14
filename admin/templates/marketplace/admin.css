@@ -1,44 +1,84 @@
+/* ==========================================================================
+   299koEVO Marketplace Styles
+   ========================================================================== */
+
+/* Grid container for resources */
 .market-list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+    align-items: stretch;
+    margin-top: 1.25rem;
 }
 
-.market-item {
+/* Individual Resource Card */
+.market-card.market-item {
     display: flex;
     flex-direction: column;
-    font-size: 0.9em;
-    flex: 0 0 calc(33.333% - 1rem);
-    max-width: calc(33.333% - 1rem);
-    box-sizing: border-box;
-    background: var(--evo-surface, #ffffff);
+    background: var(--evo-card-bg, #ffffff);
     border: 1px solid var(--evo-border, #e2e8f0);
     border-radius: 12px;
     padding: 1.25rem;
-    position: relative;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    box-sizing: border-box;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    position: relative;
 }
 
-.market-item:hover {
+.market-card.market-item:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    border-color: var(--evo-border-strong, #cbd5e1);
 }
 
-/* Badges de mise à jour et de correctif inline à côté du titre */
+.market-card.market-item.has-update {
+    border-color: rgba(37, 99, 235, 0.35);
+    background: linear-gradient(180deg, rgba(239, 246, 255, 0.3) 0%, #ffffff 100%);
+}
+
+/* Top Row: Category + Update Badge */
+.market-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.market-cat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--evo-surface-alt, #f1f5f9);
+    color: var(--evo-text-muted, #64748b);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.market-cat-badge.cat-content  { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+.market-cat-badge.cat-commerce { background: rgba(16, 185, 129, 0.12); color: #059669; }
+.market-cat-badge.cat-events   { background: rgba(245, 158, 11, 0.12); color: #d97706; }
+.market-cat-badge.cat-social   { background: rgba(139, 92, 246, 0.12); color: #7c3aed; }
+.market-cat-badge.cat-media    { background: rgba(236, 72, 153, 0.12); color: #db2777; }
+.market-cat-badge.cat-system   { background: rgba(100, 116, 139, 0.12); color: #475569; }
+.market-cat-badge.cat-theme    { background: rgba(14, 165, 233, 0.12); color: #0284c7; }
+
+/* Update and Patch Badges */
 .market-badge-update,
 .market-badge-patch {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     line-height: 1;
-    padding: 0.25rem 0.55rem;
+    padding: 3px 8px;
     border-radius: 9999px;
-    vertical-align: middle;
 }
 
 .market-badge-update {
@@ -48,7 +88,6 @@
 }
 
 .market-badge-update i {
-    display: inline-block;
     animation: spinUpdate 2s linear infinite;
 }
 
@@ -58,80 +97,149 @@
     border: 1px solid rgba(220, 38, 38, 0.25);
 }
 
-.market-badge-patch i {
-    display: inline-block;
-    animation: none;
-}
-
 @keyframes spinUpdate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-.market-item > header + div {
-    flex-grow: 2;
-    margin-top: 0.75rem;
+/* Previews */
+.market-card-preview {
+    margin-bottom: 0.75rem;
 }
 
-.market-item > header h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    line-height: 1.3;
+.market-card-preview img {
+    width: 100%;
+    max-height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--evo-border, #e2e8f0);
+    display: block;
+}
+
+.market-others-previews {
+    display: none;
+}
+
+/* Card Title */
+.market-card-title {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    margin-bottom: 0.65rem;
 }
 
-.market-item-desc {
-    margin: 0.5rem 0;
+.market-title-icon {
+    font-size: 1.25rem;
+    color: var(--evo-accent, #1f62a9);
+    flex-shrink: 0;
+}
+
+.market-card-title h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--evo-text, #0f172a);
+}
+
+/* Card Body & Description */
+.market-card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.market-card-desc {
+    margin: 0 0 0.85rem 0;
+    font-size: 0.88rem;
     line-height: 1.5;
+    color: var(--evo-text-muted, #64748b);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Metadata List */
+.market-card-meta {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.82rem;
     color: var(--evo-text-muted, #475569);
 }
 
-.market-item-version {
-    margin: 0.6rem 0;
+.market-meta-row {
     display: flex;
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
 }
 
+.market-meta-row i {
+    width: 14px;
+    text-align: center;
+    color: var(--evo-text-muted, #94a3b8);
+    font-size: 0.80rem;
+}
+
+.meta-label {
+    font-weight: 600;
+    color: var(--evo-text, #334155);
+}
+
+.meta-link {
+    color: var(--evo-accent, #1f62a9);
+    text-decoration: none;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.meta-link:hover {
+    text-decoration: underline;
+}
+
+/* Version Pill Displays */
 .version-update-box {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(234, 88, 12, 0.1);
-    padding: 2px 8px;
+    gap: 5px;
+    background: rgba(234, 88, 12, 0.08);
+    padding: 1px 7px;
     border-radius: 6px;
     border: 1px solid rgba(234, 88, 12, 0.25);
 }
 
 .ver-current {
-    font-size: 0.85rem;
+    font-size: 0.80rem;
     color: #64748b;
     text-decoration: line-through;
 }
 
 .ver-arrow {
-    font-size: 0.75rem;
+    font-size: 0.70rem;
     color: #ea580c;
 }
 
 .ver-latest {
-    font-size: 0.9rem;
-    font-weight: 800;
+    font-size: 0.85rem;
+    font-weight: 700;
     color: #c2410c;
+}
+
+.ver-normal, .ver-available {
+    font-weight: 600;
+    color: var(--evo-text, #1e293b);
 }
 
 .badge-uptodate {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: #16a34a;
     background: rgba(22, 163, 74, 0.1);
@@ -139,10 +247,11 @@
     border-radius: 4px;
 }
 
-.market-item > footer {
-    margin-top: 1.25rem;
+/* Card Footer */
+.market-card-footer {
+    margin-top: 1rem;
     padding-top: 0.85rem;
-    border-top: 1px solid var(--evo-border, #e2e8f0);
+    border-top: 1px solid var(--evo-border, #f1f5f9);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -150,27 +259,100 @@
     flex-wrap: wrap;
 }
 
-.market-actions-group {
+.market-footer-primary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.market-footer-actions {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     margin-left: auto;
 }
 
-.market-btn-uninstall {
+/* Action Buttons */
+.market-status-installed {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #16a34a;
+    background: rgba(22, 163, 74, 0.08);
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.market-btn-update {
+    background: #16a34a;
+    color: #ffffff;
+    font-weight: 600;
     font-size: 0.80rem;
-    padding: 6px 10px;
+    padding: 6px 12px;
+    line-height: 1.3;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(22, 163, 74, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #15803d;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.market-btn-update:hover {
+    background: #15803d;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.market-btn-install {
+    background: var(--evo-accent, #1f62a9);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.80rem;
+    padding: 6px 12px;
+    line-height: 1.3;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.market-btn-install:hover {
+    background: var(--evo-accent-hover, #164980);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.market-btn-disabled {
+    font-size: 0.80rem;
+    padding: 6px 12px;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.market-btn-uninstall {
+    font-size: 0.78rem;
+    padding: 5px 9px;
     background: var(--evo-surface-alt, #f1f5f9);
     color: var(--evo-text-muted, #64748b);
     border: 1px solid var(--evo-border, #cbd5e1);
-    border-radius: var(--evo-radius-sm, 6px);
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     gap: 5px;
     text-decoration: none;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    transition: all 0.15s ease;
 }
 
 .market-btn-uninstall:hover {
@@ -180,112 +362,25 @@
 }
 
 .market-btn-purge {
-    font-size: 0.80rem;
-    padding: 6px 10px;
+    font-size: 0.78rem;
+    padding: 5px 9px;
     background: rgba(220, 38, 38, 0.08);
     color: #dc2626;
     border: 1px solid rgba(220, 38, 38, 0.25);
-    border-radius: var(--evo-radius-sm, 6px);
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     gap: 5px;
     text-decoration: none;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    transition: all 0.15s ease;
 }
 
 .market-btn-purge:hover {
     background: #dc2626;
     color: #ffffff;
     border-color: #dc2626;
-}
-
-.market-item > footer .button,
-.market-item > footer button.button {
-    font-size: 0.80rem;
-    padding: 6px 12px;
-    line-height: 1.3;
-    border-radius: var(--evo-radius-sm, 6px);
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-    box-sizing: border-box;
-}
-
-.market-item > footer .market-update-button-highlight {
-    background: #16a34a;
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 0.80rem;
-    padding: 6px 12px;
-    line-height: 1.3;
-    border-radius: var(--evo-radius-sm, 6px);
-    box-shadow: 0 1px 4px rgba(22, 163, 74, 0.25);
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    border: 1px solid #15803d;
-    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.market-item > footer .market-update-button-highlight:hover {
-    background: #15803d;
-    color: #ffffff;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.35);
-}
-
-.market-item > footer .market-update-button-highlight i {
-    font-size: 0.82rem;
-}
-
-.up-to-date-icon {
-    color: #16a34a;
-    font-weight: 600;
-    font-size: 0.88rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-/* Badge compteur rouge/orange sur les onglets */
-.market-tab-badge {
-    background: #ef4444;
-    color: #ffffff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 9999px;
-    margin-left: 6px;
-    line-height: 1;
-    display: inline-block;
-    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.35);
-}
-
-.market-others-previews {
-    display: none;
-}
-
-@media screen and (max-width: 1024px) {
-    .market-item {
-        flex: 0 0 calc(50% - 0.75rem);
-        max-width: calc(50% - 0.75rem);
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .market-item {
-        flex: 0 0 100%;
-        max-width: 100%;
-        margin-bottom: 1rem;
-    }
-
-    .market-list {
-        flex-direction: column;
-    }
 }
 
 /* ==========================================================================
@@ -295,9 +390,9 @@
 .market-toolbar {
     background: var(--evo-surface, #ffffff);
     border: 1px solid var(--evo-border, #e2e8f0);
-    border-radius: var(--evo-radius-lg, 12px);
-    padding: 1.15rem 1.25rem;
-    margin-bottom: 1.75rem;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     display: flex;
     flex-direction: column;
@@ -314,37 +409,42 @@
 
 .market-search-box {
     position: relative;
+    display: flex;
+    align-items: center;
     flex: 1 1 320px;
-    max-width: 520px;
+    max-width: 480px;
 }
 
-.market-search-icon {
+.market-search-box .market-search-icon {
     position: absolute;
-    left: 12px;
+    left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--evo-text-muted, #94a3b8);
-    font-size: 0.90rem;
+    color: #94a3b8;
+    font-size: 0.92rem;
     pointer-events: none;
+    z-index: 2;
 }
 
-.market-search-input {
+.market-search-box input.market-search-input {
     width: 100%;
-    padding: 8px 36px 8px 36px;
+    padding: 8px 36px 8px 38px;
     font-size: 0.88rem;
     border: 1px solid var(--evo-input-border, #cbd5e1);
-    border-radius: var(--evo-radius-full, 9999px);
-    background: var(--evo-input-bg, #f8fafc);
+    border-radius: 9999px;
+    background: var(--evo-input-bg, #ffffff);
     color: var(--evo-text, #1e293b);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     box-sizing: border-box;
+    line-height: 1.4;
+    height: 38px;
 }
 
-.market-search-input:focus {
+.market-search-box input.market-search-input:focus {
     outline: none;
     background: #ffffff;
     border-color: var(--evo-primary, #0284c7);
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
 .market-search-clear {
@@ -354,7 +454,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: var(--evo-text-muted, #94a3b8);
+    color: #94a3b8;
     cursor: pointer;
     font-size: 0.85rem;
     padding: 4px;
@@ -364,7 +464,7 @@
 }
 
 .market-search-clear:hover {
-    color: var(--evo-danger, #ef4444);
+    color: #ef4444;
 }
 
 .market-counter-bar {
@@ -375,8 +475,10 @@
 
 .market-counter-bar strong {
     color: var(--evo-text, #0f172a);
+    font-weight: 700;
 }
 
+/* Category Pills */
 .market-categories-bar {
     display: flex;
     align-items: center;
@@ -392,12 +494,13 @@
     font-size: 0.78rem;
     font-weight: 600;
     border: 1px solid var(--evo-border, #cbd5e1);
-    border-radius: var(--evo-radius-full, 9999px);
-    background: var(--evo-surface-alt, #f1f5f9);
+    border-radius: 9999px;
+    background: var(--evo-surface-alt, #f8fafc);
     color: var(--evo-text-muted, #475569);
     cursor: pointer;
     transition: all 0.15s ease;
     user-select: none;
+    line-height: 1.3;
 }
 
 .market-cat-pill:hover {
@@ -407,10 +510,10 @@
 }
 
 .market-cat-pill.active {
-    background: var(--evo-primary, #0284c7);
+    background: var(--evo-accent, #1f62a9);
     color: #ffffff;
-    border-color: var(--evo-primary, #0284c7);
-    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+    border-color: var(--evo-accent, #1f62a9);
+    box-shadow: 0 2px 6px rgba(31, 98, 169, 0.25);
 }
 
 .market-cat-pill.market-cat-updates.active {
@@ -424,6 +527,8 @@
     border-radius: 9999px;
     font-size: 0.70rem;
     font-weight: 700;
+    min-width: 14px;
+    text-align: center;
 }
 
 .market-cat-pill.active .pill-count {
@@ -431,49 +536,19 @@
     color: #ffffff;
 }
 
-.market-item-top-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.market-cat-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background: var(--evo-surface-alt, #f1f5f9);
-    color: var(--evo-text-muted, #64748b);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-}
-
-.market-cat-badge.cat-content  { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
-.market-cat-badge.cat-commerce { background: rgba(16, 185, 129, 0.1); color: #059669; }
-.market-cat-badge.cat-events   { background: rgba(245, 158, 11, 0.1); color: #d97706; }
-.market-cat-badge.cat-social   { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
-.market-cat-badge.cat-media    { background: rgba(236, 72, 153, 0.1); color: #db2777; }
-.market-cat-badge.cat-system   { background: rgba(100, 116, 139, 0.1); color: #475569; }
-.market-cat-badge.cat-theme    { background: rgba(14, 165, 233, 0.1); color: #0284c7; }
-
+/* Empty State */
 .market-empty-state {
     text-align: center;
     padding: 3rem 1.5rem;
     background: var(--evo-surface, #ffffff);
     border: 1px dashed var(--evo-border, #cbd5e1);
-    border-radius: var(--evo-radius-lg, 12px);
+    border-radius: 12px;
     margin: 1.5rem 0;
 }
 
 .market-empty-icon {
     font-size: 2.2rem;
-    color: var(--evo-text-muted, #94a3b8);
+    color: #94a3b8;
     margin-bottom: 0.75rem;
 }
 
@@ -487,4 +562,22 @@
     color: var(--evo-text-muted, #64748b);
     font-size: 0.88rem;
     margin-bottom: 1.25rem;
+}
+
+/* Responsive */
+@media screen and (max-width: 900px) {
+    .market-list {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .market-list {
+        grid-template-columns: 1fr;
+    }
+    .market-search-box {
+        max-width: 100%;
+        flex-basis: 100%;
+    }
 }

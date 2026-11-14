@@ -135,8 +135,18 @@ class MarketPlaceRessource
         if (empty($remoteHash)) {
             return false;
         }
-        $localHash = $this->getLocalHash();
-        return (!empty($localHash) && $localHash !== $remoteHash);
+
+        // Vérifier dans le registre des hashes enregistrés lors de l'installation
+        $hashFile = DATA_CORE_EXTENSIONS . 'hashes.json';
+        if (file_exists($hashFile)) {
+            $hashes = \Utils\Util::readJsonFile($hashFile, true) ?: [];
+            $installedHash = $hashes[$this->type . ':' . $this->slug] ?? null;
+            if (!empty($installedHash) && $installedHash !== $remoteHash) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function isSecurityPatch(): bool
