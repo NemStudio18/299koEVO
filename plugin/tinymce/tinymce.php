@@ -25,7 +25,7 @@ function tinymceInstall() {
 function tinymceGetEditorHeadHtml(bool $isAdmin = false): string {
     $user = \Core\Auth\UsersManager::getCurrentUser();
     $token = $user ? ($user->token ?? '') : '';
-    $uploadUrl = ($token && IS_ADMIN) ? \Core\Router\Router::getInstance()->generate('filemanager-upload-api', ['token' => $token]) : '';
+    $uploadUrl = ($token && ($isAdmin || (defined('ADMIN_MODE') && ADMIN_MODE) || (defined('IS_ADMIN') && IS_ADMIN))) ? \Core\Router\Router::getInstance()->generate('filemanager-upload-api', ['token' => $token]) : '';
 
     $url = \Utils\Util::urlBuild(PLUGINS . 'tinymce/lib/tinymce/tinymce.min.js');
     $baseUrl = dirname($url);
@@ -410,6 +410,7 @@ function initTinyMceSafe() {
         branding: false,
         language: '{$locale}',
         toolbar_mode: 'wrap',
+        contextmenu: false,
         {$imageUploadConfig}
         {$mascotImageListConfig}convert_urls: false,
         document_base_url: '{$siteUrl}',
@@ -417,7 +418,9 @@ function initTinyMceSafe() {
         image_advtab: true,
         sandbox_iframes: false,
         extended_valid_elements: 'iframe[src|title|width|height|allowfullscreen|frameborder|allow|referrerpolicy|loading|class|style],#i[class|style|aria-hidden],#span[class|style|aria-hidden]',
-        plugins: 'advlist anchor autolink autoresize charmap code codesample emoticons fullscreen help image insertdatetime link lists media nonbreaking searchreplace table visualblocks visualchars wordcount',
+        plugins: 'advlist anchor autolink autoresize charmap code codesample emoticons fullscreen help image insertdatetime link lists media nonbreaking quickbars searchreplace table visualblocks visualchars wordcount',
+        quickbars_selection_toolbar: 'bold italic underline | quicklink blockquote',
+        quickbars_insert_toolbar: 'quickimage quicktable',
         toolbar: 'blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | forecolor backcolor removeformat | insertfile image media link{$mascotToolbar} | dialog-add-icon{$mapToolbar} charmap emoticons codesample | fullscreen',
         max_height: 600,
         image_caption: true,
