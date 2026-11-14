@@ -1,1 +1,39 @@
-[{"id":1,"slug":"admin","name":"Administrators","permissions":["*"],"system":true},{"id":2,"slug":"moderator","name":"Moderators","permissions":["admin.access","pages.manage","media.manage"],"system":true},{"id":3,"slug":"member","name":"Members","permissions":["profile.view","profile.edit"],"system":true}]
+[
+    {
+        "id": 1,
+        "slug": "admin",
+        "name": "Administrators",
+        "permissions": [
+            "*"
+        ],
+        "system": true
+    },
+    {
+        "id": 2,
+        "slug": "moderator",
+        "name": "Moderators",
+        "permissions": [
+            "admin.access",
+            "pages.manage",
+            "media.manage"
+        ],
+        "system": true
+    },
+    {
+        "id": 3,
+        "slug": "member",
+        "name": "Members",
+        "permissions": [
+            "profile.view",
+            "profile.edit"
+        ],
+        "system": true
+    },
+    {
+        "name": "test",
+        "slug": "test",
+        "permissions": [],
+        "system": false,
+        "id": "6af4370549ebf"
+    }
+]

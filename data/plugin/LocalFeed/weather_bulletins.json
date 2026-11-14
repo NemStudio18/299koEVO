@@ -1,0 +1,115 @@
+{
+    "1794632400": {
+        "slot": 1794632400,
+        "generated_at": 1794641746,
+        "is_morning": true,
+        "title": "Bonjour Bourges ! La météo de votre journée",
+        "summary": "🌧️ Averses, températures entre 0°C et 9°C sur les prochaines 24 heures.",
+        "tmin": 0,
+        "tmax": 9,
+        "pop_max": 88,
+        "rain_total": 1.4,
+        "gust_max": 35,
+        "main_icon": "🌧️",
+        "mascot": {
+            "webp": "\/images\/mascot\/what_froid_neige.webp",
+            "png": "\/images\/mascot\/what_froid_neige.png",
+            "alt": "What bien au chaud (froid \/ neige)",
+            "mood": "froid"
+        },
+        "periods": [
+            {
+                "label": "Matinée",
+                "temp": 1,
+                "icon": "☀️",
+                "desc": "Grand soleil",
+                "pop": 0
+            },
+            {
+                "label": "Après-midi",
+                "temp": 8,
+                "icon": "🌤️",
+                "desc": "Ciel dégagé",
+                "pop": 0
+            },
+            {
+                "label": "Soirée",
+                "temp": 8,
+                "icon": "🌧️",
+                "desc": "Pluie",
+                "pop": 88
+            },
+            {
+                "label": "Demain nuit",
+                "temp": 9,
+                "icon": "🌧️",
+                "desc": "Averses",
+                "pop": 25
+            }
+        ],
+        "tips": [
+            "☂️ Pensez au parapluie : jusqu'à 88 % de risque de pluie (1.4 mm attendus).",
+            "🧊 Risque de gel : attention au verglas sur les trottoirs et les routes."
+        ]
+    },
+    "1794596400": {
+        "slot": 1794596400,
+        "generated_at": 1794602541,
+        "is_morning": false,
+        "title": "Bonsoir Bourges ! La météo de la nuit et de demain",
+        "summary": "⛅ Éclaircies et passages nuageux, températures entre 0°C et 10°C sur les prochaines 24 heures.",
+        "tmin": 0,
+        "tmax": 10,
+        "pop_max": 30,
+        "rain_total": 0,
+        "gust_max": 34,
+        "main_icon": "🌙",
+        "mascot": {
+            "webp": "\/images\/mascot\/what_froid_neige.webp",
+            "png": "\/images\/mascot\/what_froid_neige.png",
+            "alt": "What bien au chaud (froid \/ neige)",
+            "mood": "froid"
+        },
+        "periods": [
+            {
+                "label": "Soirée",
+                "temp": 4,
+                "icon": "🌙",
+                "desc": "Grand soleil",
+                "pop": 0
+            },
+            {
+                "label": "Demain nuit",
+                "temp": 2,
+                "icon": "🌙",
+                "desc": "Grand soleil",
+                "pop": 0
+            },
+            {
+                "label": "Demain matinée",
+                "temp": 2,
+                "icon": "☀️",
+                "desc": "Grand soleil",
+                "pop": 0
+            },
+            {
+                "label": "Demain après-midi",
+                "temp": 9,
+                "icon": "☀️",
+                "desc": "Grand soleil",
+                "pop": 5
+            },
+            {
+                "label": "Demain soirée",
+                "temp": 8,
+                "icon": "☁️",
+                "desc": "Ciel couvert",
+                "pop": 30
+            }
+        ],
+        "tips": [
+            "🌂 Quelques averses possibles (30 %), un petit parapluie peut servir.",
+            "🧊 Risque de gel : attention au verglas sur les trottoirs et les routes."
+        ]
+    }
+}

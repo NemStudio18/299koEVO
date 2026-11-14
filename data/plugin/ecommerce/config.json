@@ -1,0 +1,1 @@
+{"priority":6,"currency":"EUR","currencySymbol":"\u20ac","taxRate":20,"shippingCost":5,"freeShippingThreshold":50,"paymentMethods":{"bank_transfer":true,"paypal":false,"stripe":false},"stockManagement":true,"lowStockThreshold":5,"activate":1}

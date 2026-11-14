@@ -1,0 +1,58 @@
+{
+    "timestamp": 1794514968,
+    "checked_at": "2026-11-12 21:22:48",
+    "results": {
+        "mpdf": {
+            "name": "mPDF",
+            "description": "G\u00e9n\u00e9ration de documents PDF depuis HTML",
+            "type": "php",
+            "install_path": "plugin/PellEditor/libs/mpdf/",
+            "is_installed": true,
+            "current": "8.3.1",
+            "latest": "8.3.1",
+            "tag": "v8.3.1",
+            "outdated": false,
+            "error": false,
+            "rate_limited": false
+        },
+        "phpword": {
+            "name": "PHPWord",
+            "description": "G\u00e9n\u00e9ration et export de documents Word (.docx)",
+            "type": "php",
+            "install_path": "plugin/PellEditor/libs/PHPWord/",
+            "is_installed": true,
+            "current": "1.3.0",
+            "latest": "1.4.0",
+            "tag": "1.4.0",
+            "outdated": true,
+            "error": false,
+            "rate_limited": false
+        },
+        "parsedown": {
+            "name": "Parsedown",
+            "description": "Parseur Markdown l\u00e9ger et performant",
+            "type": "php",
+            "install_path": "plugin/PellEditor/libs/parsedown/",
+            "is_installed": true,
+            "current": "1.8.0",
+            "latest": "1.8.0",
+            "tag": "1.8.0",
+            "outdated": false,
+            "error": false,
+            "rate_limited": false
+        },
+        "pell": {
+            "name": "Pell WYSIWYG",
+            "description": "\u00c9diteur de texte riche \u00e9pur\u00e9 et minimaliste",
+            "type": "js",
+            "install_path": "plugin/PellEditor/assets/pell/",
+            "is_installed": true,
+            "current": "1.0.6",
+            "latest": "1.0.6",
+            "tag": "v1.0.6",
+            "outdated": false,
+            "error": false,
+            "rate_limited": false
+        }
+    }
+}

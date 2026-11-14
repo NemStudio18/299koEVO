@@ -1,0 +1,12 @@
+{
+    "activate": true,
+    "points_contribution": 10,
+    "points_contribution_accepted": 50,
+    "points_edit_poi": 5,
+    "points_edit_poi_accepted": 25,
+    "points_claim_poi": 100,
+    "points_claim_poi_validated": 200,
+    "points_login_daily": 1,
+    "points_first_contribution": 50,
+    "points_review_added": 15
+}

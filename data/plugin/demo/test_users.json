@@ -1,0 +1,58 @@
+[
+    {
+        "id": "900001",
+        "email": "jean.dupont@demo.local",
+        "username": "JeanDupont",
+        "pwd": "$2y$12$FAKEHASH.SIMULATION.ONLY.NEVER.LOGIN",
+        "token": "test_token_membre_classique_900001",
+        "group_id": 3,
+        "status": "active",
+        "permissions": [],
+        "public_email": false,
+        "age": 32,
+        "allow_notifications": true,
+        "notif_email": true,
+        "allow_messaging": true,
+        "theme_preference": "light",
+        "_test_role": "membre",
+        "_test_label": "Jean Dupont (Membre Démo)"
+    },
+    {
+        "id": "900002",
+        "email": "claire.martin@demo.local",
+        "username": "ClaireMartin",
+        "pwd": "$2y$12$FAKEHASH.SIMULATION.ONLY.NEVER.LOGIN",
+        "token": "test_token_owner_900002",
+        "group_id": 2,
+        "status": "active",
+        "permissions": [],
+        "public_email": true,
+        "age": 35,
+        "allow_notifications": true,
+        "notif_email": true,
+        "allow_messaging": true,
+        "theme_preference": "dark",
+        "_test_role": "editeur",
+        "_test_label": "Claire Martin (Éditrice Démo)"
+    },
+    {
+        "id": "900003",
+        "email": "admin.demo@demo.local",
+        "username": "AdminDemo",
+        "pwd": "$2y$12$FAKEHASH.SIMULATION.ONLY.NEVER.LOGIN",
+        "token": "test_token_admin_900003",
+        "group_id": 1,
+        "status": "active",
+        "permissions": [
+            "*"
+        ],
+        "public_email": false,
+        "age": 40,
+        "allow_notifications": true,
+        "notif_email": true,
+        "allow_messaging": true,
+        "theme_preference": "dark",
+        "_test_role": "admin",
+        "_test_label": "Administrateur Démo (299koEVO)"
+    }
+]
