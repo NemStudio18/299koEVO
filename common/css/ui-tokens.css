@@ -527,13 +527,14 @@ body.theme-dark {
     margin: 0 0 1.5rem;
     padding-bottom: 0;
 }
+.profile-tabs-nav .profile-tab-button,
 .profile-tab-button {
     padding: 0.85rem 1.25rem;
-    background: transparent !important;
-    border: none !important;
-    border-bottom: 3px solid transparent !important;
-    color: var(--evo-text-muted) !important;
-    text-decoration: none !important;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--evo-text-muted);
+    text-decoration: none;
     cursor: pointer;
     font-size: 0.96rem;
     font-weight: 600;
@@ -543,28 +544,32 @@ body.theme-dark {
     gap: 8px;
     margin-bottom: -2px;
     border-radius: var(--evo-radius-sm) var(--evo-radius-sm) 0 0;
-    box-shadow: none !important;
-    transform: none !important;
+    box-shadow: none;
+    transform: none;
 }
+.profile-tabs-nav .profile-tab-button:hover,
 .profile-tab-button:hover {
-    color: var(--evo-accent) !important;
-    background: var(--evo-accent-soft) !important;
-    box-shadow: none !important;
-    transform: none !important;
+    color: var(--evo-accent);
+    background: var(--evo-accent-soft);
+    box-shadow: none;
+    transform: none;
 }
+.profile-tabs-nav .profile-tab-button.active,
 .profile-tab-button.active {
-    color: var(--evo-accent) !important;
-    border-bottom-color: var(--evo-accent) !important;
-    background: transparent !important;
-    font-weight: 700 !important;
+    color: var(--evo-accent);
+    border-bottom-color: var(--evo-accent);
+    background: transparent;
+    font-weight: 700;
 }
+.profile-tabs-nav .profile-tab-button.profile-tab-danger,
 .profile-tab-button.profile-tab-danger {
     margin-left: auto;
-    color: var(--evo-danger) !important;
+    color: var(--evo-danger);
 }
+.profile-tabs-nav .profile-tab-button.profile-tab-danger:hover,
 .profile-tab-button.profile-tab-danger:hover {
-    background: var(--evo-danger-bg) !important;
-    color: var(--evo-danger) !important;
+    background: var(--evo-danger-bg);
+    color: var(--evo-danger);
 }
 .user-profile {
     background: transparent !important;

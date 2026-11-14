@@ -1023,48 +1023,53 @@ a.button.warning:visited {
 /* ==========================================================================
    Onglets de Profil (.profile-tab-button)
    ========================================================================== */
+.profile-tabs-nav .profile-tab-button,
 .profile-tab-button {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    padding: 0.85rem 1.25rem !important;
-    background: transparent !important;
-    border: none !important;
-    border-bottom: 3px solid transparent !important;
-    border-radius: var(--vg-radius-sm) var(--vg-radius-sm) 0 0 !important;
-    color: var(--vg-text-muted, #4b6354) !important;
-    font-size: 0.96rem !important;
-    font-weight: 600 !important;
-    box-shadow: none !important;
-    transform: none !important;
-    text-decoration: none !important;
-    cursor: pointer !important;
-    margin-bottom: -2px !important;
-    transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.85rem 1.25rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: var(--vg-radius-sm) var(--vg-radius-sm) 0 0;
+    color: var(--vg-text-muted, #4b6354);
+    font-size: 0.96rem;
+    font-weight: 600;
+    box-shadow: none;
+    transform: none;
+    text-decoration: none;
+    cursor: pointer;
+    margin-bottom: -2px;
+    transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
 }
 
+.profile-tabs-nav .profile-tab-button:hover,
 .profile-tab-button:hover {
-    color: var(--vg-accent, #205c3b) !important;
-    background: var(--vg-accent-soft, rgba(32, 92, 59, 0.1)) !important;
-    box-shadow: none !important;
-    transform: none !important;
+    color: var(--vg-accent, #205c3b);
+    background: var(--vg-accent-soft, rgba(32, 92, 59, 0.1));
+    box-shadow: none;
+    transform: none;
 }
 
+.profile-tabs-nav .profile-tab-button.active,
 .profile-tab-button.active {
-    color: var(--vg-accent, #205c3b) !important;
-    border-bottom: 3px solid var(--vg-accent, #205c3b) !important;
-    background: transparent !important;
-    font-weight: 700 !important;
+    color: var(--vg-accent, #205c3b);
+    border-bottom-color: var(--vg-accent, #205c3b);
+    background: transparent;
+    font-weight: 700;
 }
 
+.profile-tabs-nav .profile-tab-button.profile-tab-danger,
 .profile-tab-button.profile-tab-danger {
-    margin-left: auto !important;
-    color: var(--vg-error, #dc2626) !important;
+    margin-left: auto;
+    color: var(--vg-error, #dc2626);
 }
 
+.profile-tabs-nav .profile-tab-button.profile-tab-danger:hover,
 .profile-tab-button.profile-tab-danger:hover {
-    color: var(--vg-error, #dc2626) !important;
-    background: rgba(220, 38, 38, 0.08) !important;
+    color: var(--vg-error, #dc2626);
+    background: rgba(220, 38, 38, 0.08);
 }
 
 table {
@@ -1224,164 +1229,164 @@ section > header > .featured,
     }
 
     #navigation > li:not(.nav-user-avatar-menu) > ul {
-        display: none !important;
-        position: static !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        max-height: none !important;
-        transform: none !important;
-        box-shadow: none !important;
-        border: none !important;
-        border-left: 2px solid var(--vg-accent) !important;
-        border-radius: 0 !important;
-        padding: 4px 0 4px 14px !important;
-        background: transparent !important;
-        margin: 4px 0 6px 12px !important;
+        display: none;
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        max-height: none;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        border-left: 2px solid var(--vg-accent);
+        border-radius: 0;
+        padding: 4px 0 4px 14px;
+        background: transparent;
+        margin: 4px 0 6px 12px;
     }
 
     #navigation > li:not(.nav-user-avatar-menu).vg-open > ul {
-        display: block !important;
+        display: block;
     }
 
     #navigation > li:not(.nav-user-avatar-menu) > ul > li > a {
-        padding: 6px 10px !important;
-        font-size: 0.92rem !important;
-        white-space: normal !important;
-        border-radius: 6px !important;
+        padding: 6px 10px;
+        font-size: 0.92rem;
+        white-space: normal;
+        border-radius: 6px;
     }
 
     /* Recherche mobile toujours ouverte */
-    .nav-search-item {
-        display: block !important;
-        width: 100% !important;
-        margin: 10px 0 6px !important;
-        padding: 0 !important;
+    #navigation .nav-search-item {
+        display: block;
+        width: 100%;
+        margin: 10px 0 6px;
+        padding: 0;
     }
 
-    .search299-wrapper {
-        display: block !important;
-        width: 100% !important;
-        margin: 0 !important;
-        position: static !important;
+    #navigation .search299-wrapper {
+        display: block;
+        width: 100%;
+        margin: 0;
+        position: static;
     }
 
-    .search299-pill-form {
-        box-sizing: border-box !important;
-        display: flex !important;
-        flex-direction: row-reverse !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        height: 42px !important;
-        background: var(--vg-surface, #ffffff) !important;
-        border: 1.5px solid var(--vg-border-strong, #cbd5e1) !important;
-        padding: 0 4px !important;
-        border-radius: 9999px !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    #navigation .search299-pill-form {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        height: 42px;
+        background: var(--vg-surface, #ffffff);
+        border: 1.5px solid var(--vg-border-strong, #cbd5e1);
+        padding: 0 4px;
+        border-radius: 9999px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    .search299-pill-form input.search299-input {
-        box-sizing: border-box !important;
-        width: 100% !important;
-        opacity: 1 !important;
-        padding: 0 12px 0 16px !important;
-        font-size: 0.92rem !important;
-        color: var(--vg-text, #1e293b) !important;
-        background: transparent !important;
+    #navigation .search299-pill-form input.search299-input {
+        box-sizing: border-box;
+        width: 100%;
+        opacity: 1;
+        padding: 0 12px 0 16px;
+        font-size: 0.92rem;
+        color: var(--vg-text, #1e293b);
+        background: transparent;
     }
 
-    .search299-icon-btn {
-        width: 36px !important;
-        height: 36px !important;
-        min-width: 36px !important;
-        flex-shrink: 0 !important;
-        color: var(--vg-accent, #205c3b) !important;
+    #navigation .search299-icon-btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        flex-shrink: 0;
+        color: var(--vg-accent, #205c3b);
     }
 
     /* Menu utilisateur avatar mobile aligné sur le menu principal */
-    .nav-user-avatar-menu {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-        width: 100% !important;
-        border-left: none !important;
-        border-top: 1px solid var(--vg-border) !important;
-        margin: 12px 0 0 !important;
-        padding: 12px 0 0 !important;
+    #navigation .nav-user-avatar-menu {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--vg-border);
+        margin: 12px 0 0;
+        padding: 12px 0 0;
     }
 
-    .nav-user-avatar-menu .nav-avatar-link {
-        display: flex !important;
-        align-items: center !important;
-        gap: 12px !important;
-        padding: 8px 12px !important;
-        margin-bottom: 6px !important;
-        border-radius: var(--vg-radius-sm) !important;
-        text-decoration: none !important;
-        color: var(--vg-text) !important;
-        background: var(--vg-surface-alt, rgba(32, 92, 59, 0.05)) !important;
+    #navigation .nav-user-avatar-menu .nav-avatar-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        border-radius: var(--vg-radius-sm);
+        text-decoration: none;
+        color: var(--vg-text);
+        background: var(--vg-surface-alt, rgba(32, 92, 59, 0.05));
     }
 
-    .nav-user-avatar-menu .nav-avatar-username {
-        display: inline-block !important;
-        font-weight: 700 !important;
-        font-size: 0.98rem !important;
-        color: var(--vg-text) !important;
+    #navigation .nav-user-avatar-menu .nav-avatar-username {
+        display: inline-block;
+        font-weight: 700;
+        font-size: 0.98rem;
+        color: var(--vg-text);
     }
 
-    .nav-user-avatar-menu > ul {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-        position: static !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        max-height: none !important;
-        transform: none !important;
-        box-shadow: none !important;
-        border: none !important;
-        border-radius: 0 !important;
-        background: transparent !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        min-width: 100% !important;
-        width: 100% !important;
-        list-style: none !important;
+    #navigation .nav-user-avatar-menu > ul {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        max-height: none;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        margin: 0;
+        padding: 0;
+        min-width: 100%;
+        width: 100%;
+        list-style: none;
     }
 
-    .nav-user-avatar-menu > ul > li {
-        margin: 0 !important;
-        width: 100% !important;
+    #navigation .nav-user-avatar-menu > ul > li {
+        margin: 0;
+        width: 100%;
     }
 
-    .nav-user-avatar-menu > ul > li > a {
-        display: flex !important;
-        align-items: center !important;
-        gap: 10px !important;
-        padding: 10px 14px !important;
-        font-size: 0.95rem !important;
-        font-weight: 500 !important;
-        color: var(--vg-text) !important;
-        border-radius: var(--vg-radius-sm) !important;
-        text-decoration: none !important;
-        transition: background-color 0.15s ease, color 0.15s ease !important;
-        white-space: normal !important;
+    #navigation .nav-user-avatar-menu > ul > li > a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--vg-text);
+        border-radius: var(--vg-radius-sm);
+        text-decoration: none;
+        transition: background-color 0.15s ease, color 0.15s ease;
+        white-space: normal;
     }
 
-    .nav-user-avatar-menu > ul > li > a:hover {
-        background: var(--vg-accent-soft) !important;
-        color: var(--vg-accent) !important;
+    #navigation .nav-user-avatar-menu > ul > li > a:hover {
+        background: var(--vg-accent-soft);
+        color: var(--vg-accent);
     }
 
-    .nav-user-avatar-menu > ul > li.avatar-menu-separator {
-        padding: 4px 0 !important;
+    #navigation .nav-user-avatar-menu > ul > li.avatar-menu-separator {
+        padding: 4px 0;
     }
 
-    .nav-user-avatar-menu > ul > li.avatar-menu-separator hr {
-        margin: 6px 0 !important;
-        border: 0 !important;
-        border-top: 1px solid var(--vg-border) !important;
+    #navigation .nav-user-avatar-menu > ul > li.avatar-menu-separator hr {
+        margin: 6px 0;
+        border: 0;
+        border-top: 1px solid var(--vg-border);
     }
 
     .nav-auth-links {
