@@ -640,6 +640,17 @@ blockquote {
     gap: 8px;
 }
 
+.header-utilities .meteo-widget-compact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    height: 38px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
 .nav-toggle {
     display: none;
 }

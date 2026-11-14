@@ -517,6 +517,17 @@ hr { border: 0; border-top: 1px solid var(--dc-border); margin: 2rem 0; }
 /* Utilitaires Header */
 .header-utilities { display: inline-flex; align-items: center; gap: 8px; }
 
+.header-utilities .meteo-widget-compact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    height: 38px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
 .declic-theme-toggle {
     display: inline-flex;
     align-items: center;

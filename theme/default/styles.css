@@ -2352,3 +2352,16 @@ body.theme-dark .search299-pill-form:focus-within {
     border-color: var(--dark-primary-color, #00acc1);
     box-shadow: 0 0 0 3px rgba(0, 172, 193, 0.25);
 }
+
+/* Météo Header Alignement Parfait avec l'Avatar */
+#header_content a.meteo-widget-compact,
+.header-utilities .meteo-widget-compact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    height: 40px;
+    line-height: 1;
+    vertical-align: middle;
+}
