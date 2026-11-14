@@ -50,6 +50,11 @@ class Show
         if (!isset($_SESSION['flash_msg']) || !is_array($_SESSION['flash_msg'])) {
             $_SESSION['flash_msg'] = [];
         }
+        foreach ($_SESSION['flash_msg'] as $existing) {
+            if (isset($existing['content'], $existing['class']) && $existing['content'] === $content && $existing['class'] === $class) {
+                return;
+            }
+        }
         $_SESSION['flash_msg'][] = [
             'class' => $class,
             'content' => $content

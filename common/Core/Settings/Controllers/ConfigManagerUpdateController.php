@@ -89,6 +89,13 @@ class ConfigManagerUpdateController extends AdminController {
         $nextVersion = $settings->getNewVersion();
         if ($nextVersion) {
             $settings->displayNewVersion((string) $nextVersion);
+            // Mark as notified so the redirect to configmanager-admin does not trigger a duplicate message
+            $cacheFile = $settings->cacheFile();
+            $cached = \Utils\Util::readJsonFile($cacheFile);
+            if (is_array($cached)) {
+                $cached['lastNotifiedUpdate'] = (string) $nextVersion;
+                \Utils\Util::writeJsonFile($cacheFile, $cached);
+            }
         } else {
             $current = defined('VERSION') ? VERSION : '';
             $updater = new UpdaterManager();

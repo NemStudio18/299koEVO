@@ -164,7 +164,16 @@
 				</p>
 				<p>
 					<label id="checkUpdateDesc">Mises à jour du CMS{% if coreVersion %} (version actuelle : <strong>{{coreVersion}}</strong>{% if coreCommit %} / correctif <code>{{coreCommit}}</code>{% endif %}){% endif %}</label><br>
-					<a aria-describedby="checkUpdateDesc" class="button" href="{{checkUpdateLink}}"><i class="fa-solid fa-rotate"></i> Vérifier les mises à jour</a>
+					<div style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;">
+						<a aria-describedby="checkUpdateDesc" class="button" href="{{checkUpdateLink}}"><i class="fa-solid fa-rotate"></i> Vérifier les mises à jour</a>
+						{% if hasCoreUpdate %}
+							{% if isCorePatch %}
+								<a href="{{coreUpdateUrl}}" class="button alert"><i class="fa-solid fa-shield-halved"></i> Appliquer le correctif disponible</a>
+							{% else %}
+								<a href="{{coreUpdateUrl}}" class="button alert"><i class="fa-solid fa-cloud-arrow-down"></i> Mettre à jour vers v{{nextCoreVersion}}</a>
+							{% endif %}
+						{% endif %}
+					</div>
 				</p>
 				<p>
 					<input {% if CORE.getConfigVal("debug") %} checked {% endif %} type="checkbox" name="debug"/>

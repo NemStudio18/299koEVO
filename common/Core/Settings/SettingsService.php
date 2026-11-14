@@ -91,6 +91,47 @@ class SettingsService
     }
 
     /**
+     * Render a compact persistent topbar badge when a CMS update/patch is available.
+     */
+    public function displayUpdateBadge(): void
+    {
+        $user = UsersManager::getCurrentUser();
+        if (!$user) {
+            return;
+        }
+        $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
+        if (!$evaluator->isAdmin(new \Core\Navigation\ConditionContext($user))) {
+            return;
+        }
+
+        $cachedInfos = Util::readJsonFile($this->cacheFile);
+        $nextVersion = $cachedInfos['nextVersion'] ?? false;
+        if (!$nextVersion) {
+            return;
+        }
+
+        $isPatch = !empty($cachedInfos['isPatch']) || (bool) preg_match('/^[a-f0-9]{7,40}$/i', (string) $nextVersion);
+        $updateUrl = Router::getInstance()->generate('configmanager-update', ['token' => $user->token]);
+
+        if ($isPatch) {
+            $shortCommit = substr((string) $nextVersion, 0, 7);
+            $label = 'Correctif ' . $shortCommit;
+            $title = 'Un correctif CMS est disponible (' . $shortCommit . '). Cliquez pour l\'appliquer.';
+            echo '<a class="adm-install-badge adm-update-badge is-patch" href="' . htmlspecialchars($updateUrl, ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '">'
+                . '<i class="fa-solid fa-shield-halved" aria-hidden="true"></i>'
+                . '<span>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>'
+                . '</a>';
+        } else {
+            $label = 'Màj v' . $nextVersion;
+            $title = 'Une nouvelle version ' . $nextVersion . ' est disponible. Cliquez pour mettre à jour.';
+            echo '<a class="adm-install-badge adm-update-badge is-update" href="' . htmlspecialchars($updateUrl, ENT_QUOTES, 'UTF-8') . '" title="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '">'
+                . '<i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>'
+                . '<span>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>'
+                . '</a>';
+        }
+    }
+
+    /**
      * Queue the install cleanup flash message once immediately after installation.
      */
     public function displayPostInstallWarningOnce(): void
@@ -152,16 +193,26 @@ class SettingsService
     public function checkNewVersion(): void
     {
         $cachedInfos = Util::readJsonFile($this->cacheFile);
+        if (!is_array($cachedInfos)) {
+            $cachedInfos = [];
+        }
         $lastCheckUpdate = (int) ($cachedInfos['lastCheckUpdate'] ?? 0);
+        $ttl = $this->isCurrentModule() ? 60 : 3600;
 
-        if (!is_array($cachedInfos) || ($lastCheckUpdate + 3600 < time())) {
+        if ($lastCheckUpdate + $ttl < time()) {
             $nextVersion = $this->getNewVersion();
+            $cachedInfos = Util::readJsonFile($this->cacheFile);
         } else {
             $nextVersion = $cachedInfos['nextVersion'] ?? false;
         }
 
         if ($nextVersion) {
-            $this->displayNewVersion((string) $nextVersion);
+            $lastNotified = $cachedInfos['lastNotifiedUpdate'] ?? null;
+            if ($lastNotified !== (string) $nextVersion) {
+                $this->displayNewVersion((string) $nextVersion);
+                $cachedInfos['lastNotifiedUpdate'] = (string) $nextVersion;
+                Util::writeJsonFile($this->cacheFile, $cachedInfos);
+            }
         }
     }
 
@@ -255,6 +306,7 @@ class SettingsService
         $core = Core::getInstance();
         $core->addHook('adminTopbarBadges', function () {
             $this->displayInstallBadge();
+            $this->displayUpdateBadge();
         });
         $core->addHook('adminHead', function () {
             $this->displayPostInstallWarningOnce();

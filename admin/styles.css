@@ -1334,6 +1334,38 @@ section > footer, .card > footer {
     color: #ffffff;
 }
 
+.adm-update-badge.is-patch {
+    border-color: rgba(239, 68, 68, 0.6);
+    background: rgba(239, 68, 68, 0.18);
+    color: #fecaca;
+}
+
+.adm-update-badge.is-patch i {
+    color: #f87171;
+}
+
+.adm-update-badge.is-patch:hover {
+    background: rgba(239, 68, 68, 0.32);
+    border-color: #ef4444;
+    color: #ffffff;
+}
+
+.adm-update-badge.is-update {
+    border-color: rgba(59, 130, 246, 0.6);
+    background: rgba(59, 130, 246, 0.18);
+    color: #bfdbfe;
+}
+
+.adm-update-badge.is-update i {
+    color: #60a5fa;
+}
+
+.adm-update-badge.is-update:hover {
+    background: rgba(59, 130, 246, 0.32);
+    border-color: #3b82f6;
+    color: #ffffff;
+}
+
 .adm-site-link {
     display: inline-flex;
     align-items: center;

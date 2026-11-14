@@ -3,7 +3,7 @@
     "name": "Flux RSS Universel",
     "icon": "fa-solid fa-rss",
     "description": "Génération de flux RSS 2.0 unifiés et personnalisables pour l'ensemble du site (Blog, Agenda, Petites Annonces, Forum, Pages).",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "299Ko Team",
     "authorEmail": "maximeblanc@flexcb.fr",
     "authorWebsite": "https://299ko.flexcb.fr",

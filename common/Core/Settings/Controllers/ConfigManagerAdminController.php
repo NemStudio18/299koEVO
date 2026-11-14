@@ -40,6 +40,14 @@ class ConfigManagerAdminController extends AdminController {
         $localCommit = $updater->getLocalCommit();
         $tpl->set('coreCommit', $localCommit ? substr($localCommit, 0, 7) : '');
 
+        $settingsService = new \Core\Settings\SettingsService();
+        $cachedUpdate = \Utils\Util::readJsonFile($settingsService->cacheFile());
+        $nextCoreVersion = $cachedUpdate['nextVersion'] ?? false;
+        $tpl->set('hasCoreUpdate', (bool) $nextCoreVersion);
+        $tpl->set('nextCoreVersion', (string) $nextCoreVersion);
+        $tpl->set('isCorePatch', !empty($cachedUpdate['isPatch']) || (bool) preg_match('/^[a-f0-9]{7,40}$/i', (string) $nextCoreVersion));
+        $tpl->set('coreUpdateUrl', $this->router->generate('configmanager-update', ['token' => $this->user->token]));
+
         // Get cache statistics
         $cacheManager = new CacheManager();
         $tpl->set('cacheStats', $cacheManager->getStats());
