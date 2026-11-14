@@ -40,6 +40,26 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Sous-menus mobiles : toggle au clic/touch (uniquement sur mobile)
+    document.querySelectorAll("#navigation > li").forEach(function (li) {
+        var sub = li.querySelector("ul");
+        if (!sub) return;
+        var link = li.querySelector("a");
+        if (!link) return;
+        link.addEventListener("click", function (e) {
+            if (window.innerWidth > 1024) return; // Laisser CSS :hover gérer le desktop
+            e.preventDefault();
+            var isOpen = li.classList.contains("is-open");
+            // Fermer tous les autres
+            document.querySelectorAll("#navigation > li.is-open").forEach(function (el) {
+                el.classList.remove("is-open");
+            });
+            if (!isOpen) {
+                li.classList.add("is-open");
+            }
+        });
+    });
+
     // Compteur dynamique de téléchargements (si présent sur la page)
     var dlBadges = document.querySelectorAll(".js-evo-dl-count");
     if (dlBadges.length > 0) {

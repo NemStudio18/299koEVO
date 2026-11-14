@@ -12,11 +12,15 @@
 }
 
 .search299-pill-form {
-    display: inline-flex;
-    align-items: center;
-    flex-direction: row-reverse;
-    width: 36px;
-    height: 36px;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: row-reverse !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
     background: var(--evo-surface);
     border: 1.5px solid var(--evo-input-border);
     border-radius: 9999px;
@@ -29,6 +33,7 @@
 }
 
 .search299-icon-btn {
+    box-sizing: border-box !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -40,12 +45,25 @@
     color: var(--evo-text-muted) !important;
     cursor: pointer !important;
     font-size: 0.95rem !important;
+    line-height: 1 !important;
     padding: 0 !important;
     margin: 0 !important;
     border-radius: 50% !important;
     box-shadow: none !important;
     transition: color 0.2s ease, transform 0.2s ease !important;
-    flex-shrink: 0;
+    flex-shrink: 0 !important;
+}
+
+.search299-icon-btn i {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    width: 1em !important;
+    height: 1em !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: 0 !important;
 }
 
 .search299-icon-btn:hover {

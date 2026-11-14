@@ -787,8 +787,9 @@ class Show
 
         // 7. Générer le HTML
         $html = '<li class="nav-user-avatar-menu">';
-        $html .= '<a href="' . $router->generate('profile') . '" class="nav-avatar-link" aria-label="Menu utilisateur">';
+        $html .= '<a href="' . $router->generate('profile') . '" class="nav-avatar-link" aria-label="Menu utilisateur: ' . htmlspecialchars($currentUser->username()) . '">';
         
+        $html .= '<span class="nav-avatar-badge-wrap">';
         $html .= $core->callHook('user:avatar-overlay', '');
 
         if ($avatarData['has_photo']) {
@@ -798,8 +799,8 @@ class Show
             $html .= htmlspecialchars($avatarData['initials']);
             $html .= '</div>';
         }
+        $html .= '</span>';
         $html .= '<span class="nav-avatar-username">' . htmlspecialchars($currentUser->username()) . '</span>';
-        $html .= '<i class="fa-solid fa-chevron-down nav-avatar-chevron"></i>';
         $html .= '</a>';
         $html .= '<ul>';
 

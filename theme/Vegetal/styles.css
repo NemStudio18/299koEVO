@@ -334,8 +334,8 @@ blockquote {
     font-weight: 700;
 }
 
-/* Flèche chevron pour les menus déroulants */
-#navigation > li:has(> ul) > a::after {
+/* Flèche chevron pour les menus déroulants (hors menu avatar utilisateur) */
+#navigation > li:not(.nav-user-avatar-menu):has(> ul) > a::after {
     content: "\f078";
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
@@ -346,8 +346,10 @@ blockquote {
     transition: transform 0.2s ease;
 }
 
-#navigation > li:hover:has(> ul) > a::after,
-#navigation > li:focus-within:has(> ul) > a::after {
+#navigation > li:not(.nav-user-avatar-menu):hover:has(> ul) > a::after,
+#navigation > li:not(.nav-user-avatar-menu):focus-within:has(> ul) > a::after,
+#navigation > li:not(.nav-user-avatar-menu).vg-open:has(> ul) > a::after,
+#navigation > li:not(.nav-user-avatar-menu).is-open:has(> ul) > a::after {
     transform: rotate(180deg);
 }
 
@@ -449,6 +451,32 @@ blockquote {
     margin-left: 8px;
     padding-left: 10px;
     border-left: 1px solid var(--vg-border);
+    display: inline-flex;
+    align-items: center;
+}
+
+.nav-user-avatar-menu .nav-avatar-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0 !important;
+    text-decoration: none !important;
+}
+
+.nav-user-avatar-menu .nav-avatar-username {
+    display: none !important;
+}
+
+.nav-user-avatar-menu .nav-avatar-chevron,
+#navigation > li.nav-user-avatar-menu > a::after {
+    display: none !important;
+    content: none !important;
+}
+
+.nav-avatar-badge-wrap {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .nav-user-avatar-menu > ul {
@@ -514,49 +542,28 @@ blockquote {
     align-items: center;
 }
 
-.search299-pill-form {
+.search299-wrapper {
     display: inline-flex;
     align-items: center;
-    background: var(--vg-surface);
-    border: 1px solid var(--vg-border-strong);
-    border-radius: 999px;
-    padding: 3px 8px;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.search299-pill-form:focus-within {
-    border-color: var(--vg-accent);
-    box-shadow: 0 0 0 3px var(--vg-accent-soft);
+.search299-pill-form {
+    background: var(--vg-surface) !important;
+    border-color: var(--vg-border-strong) !important;
 }
 
-.search299-pill-form input {
-    border: none !important;
-    background: transparent !important;
-    padding: 4px 8px !important;
-    font-size: 0.88rem !important;
-    color: var(--vg-text) !important;
-    outline: none !important;
-    box-shadow: none !important;
-    width: 140px;
-    transition: width 0.2s ease;
-}
-
-.search299-pill-form input:focus {
-    width: 200px;
+.search299-pill-form:focus-within,
+.search299-wrapper:hover .search299-pill-form {
+    border-color: var(--vg-accent) !important;
+    box-shadow: 0 0 0 3px var(--vg-accent-soft) !important;
 }
 
 .search299-icon-btn {
-    background: none;
-    border: none;
-    color: var(--vg-accent);
-    cursor: pointer;
-    padding: 0 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 33px;
-    height: 33px;
-    flex-shrink: 0;
+    color: var(--vg-accent) !important;
+}
+
+.search299-icon-btn:hover {
+    color: var(--vg-accent-vibrant) !important;
 }
 
 /* Utilitaires du header */
@@ -1152,6 +1159,11 @@ section > header > .featured,
         box-shadow: var(--vg-shadow-md);
         padding: 16px 24px 22px;
         z-index: 999;
+        max-height: calc(100vh - var(--vg-header-h, 64px));
+        max-height: calc(100dvh - var(--vg-header-h, 64px));
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
     }
 
     .nav-toggle:checked ~ .header-links {
@@ -1165,33 +1177,37 @@ section > header > .featured,
     }
 
     #navigation > li > ul {
-        position: static;
-        opacity: 0;
-        visibility: hidden;
-        max-height: 0;
-        overflow: hidden;
-        transform: none;
-        box-shadow: none;
-        border: none;
-        border-left: 2px solid var(--vg-accent);
-        padding-left: 16px;
-        background: var(--vg-surface-alt);
-        margin: 0 0 0 12px;
-        transition: opacity 0.2s ease, max-height 0.25s ease;
+        display: none !important;
+        position: static !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        max-height: none !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-left: 2px solid var(--vg-accent) !important;
+        border-radius: 0 !important;
+        padding: 4px 0 4px 14px !important;
+        background: transparent !important;
+        margin: 4px 0 6px 12px !important;
     }
 
     #navigation > li.vg-open > ul {
-        opacity: 1;
-        visibility: visible;
-        max-height: 500px;
-        margin: 6px 0 6px 12px;
+        display: block !important;
+    }
+
+    #navigation > li > ul > li > a {
+        padding: 6px 10px !important;
+        font-size: 0.92rem !important;
+        white-space: normal !important;
+        border-radius: 6px !important;
     }
 
     .nav-user-avatar-menu {
         border-left: none;
         border-top: 1px solid var(--vg-border);
-        margin: 8px 0 0;
-        padding: 10px 0 0;
+        margin: 10px 0 0;
+        padding: 12px 0 0;
     }
 
     .nav-auth-links {

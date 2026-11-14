@@ -178,12 +178,19 @@
     position: relative !important;
 }
 
+.nav-avatar-badge-wrap {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
 .nav-avatar-overlay-bell {
     position: absolute;
-    top: 1px;
-    right: 1px;
-    background: var(--evo-danger);
-    color: var(--evo-accent-text);
+    top: -2px;
+    right: -2px;
+    background: var(--evo-danger, #ef4444);
+    color: var(--evo-accent-text, #ffffff);
     width: 17px;
     height: 17px;
     border-radius: 50%;
@@ -191,8 +198,8 @@
     align-items: center;
     justify-content: center;
     font-size: 0.65rem;
-    border: 2px solid var(--evo-card-bg);
-    box-shadow: var(--evo-shadow-sm);
+    border: 2px solid var(--evo-card-bg, #ffffff);
+    box-shadow: var(--evo-shadow-sm, 0 1px 2px rgba(0,0,0,0.1));
     z-index: 10;
     pointer-events: none;
 }
