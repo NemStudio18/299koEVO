@@ -529,10 +529,10 @@ body.theme-dark {
 }
 .profile-tab-button {
     padding: 0.85rem 1.25rem;
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
-    color: var(--evo-text-muted);
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    color: var(--evo-text-muted) !important;
     text-decoration: none !important;
     cursor: pointer;
     font-size: 0.96rem;
@@ -543,22 +543,28 @@ body.theme-dark {
     gap: 8px;
     margin-bottom: -2px;
     border-radius: var(--evo-radius-sm) var(--evo-radius-sm) 0 0;
+    box-shadow: none !important;
+    transform: none !important;
 }
 .profile-tab-button:hover {
-    color: var(--evo-accent);
-    background: var(--evo-accent-soft);
+    color: var(--evo-accent) !important;
+    background: var(--evo-accent-soft) !important;
+    box-shadow: none !important;
+    transform: none !important;
 }
 .profile-tab-button.active {
-    color: var(--evo-accent);
-    border-bottom-color: var(--evo-accent);
+    color: var(--evo-accent) !important;
+    border-bottom-color: var(--evo-accent) !important;
+    background: transparent !important;
+    font-weight: 700 !important;
 }
 .profile-tab-button.profile-tab-danger {
     margin-left: auto;
-    color: var(--evo-danger);
+    color: var(--evo-danger) !important;
 }
 .profile-tab-button.profile-tab-danger:hover {
-    background: var(--evo-danger-bg);
-    color: var(--evo-danger);
+    background: var(--evo-danger-bg) !important;
+    color: var(--evo-danger) !important;
 }
 .user-profile {
     background: transparent !important;

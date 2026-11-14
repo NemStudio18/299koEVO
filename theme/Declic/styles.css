@@ -658,7 +658,7 @@ hr { border: 0; border-top: 1px solid var(--dc-border); margin: 2rem 0; }
     box-shadow: 0 0 0 3px var(--dc-accent-soft);
 }
 
-:where(button, input[type="submit"], input[type="button"]),
+:where(button, input[type="submit"], input[type="button"]):not(.profile-tab-button),
 .button,
 a.button,
 a.button:visited,
@@ -766,6 +766,53 @@ a.button.warning:hover {
     background: var(--evo-warning);
     filter: brightness(0.92);
     color: var(--evo-accent-text);
+}
+
+/* ==========================================================================
+   Onglets de Profil (.profile-tab-button)
+   ========================================================================== */
+.profile-tab-button {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0.85rem 1.25rem !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    border-radius: var(--dc-radius-sm) var(--dc-radius-sm) 0 0 !important;
+    color: var(--dc-text-muted, #64748b) !important;
+    font-size: 0.96rem !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    margin-bottom: -2px !important;
+    transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease !important;
+}
+
+.profile-tab-button:hover {
+    color: var(--dc-accent) !important;
+    background: var(--dc-accent-soft) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.profile-tab-button.active {
+    color: var(--dc-accent) !important;
+    border-bottom: 3px solid var(--dc-accent) !important;
+    background: transparent !important;
+    font-weight: 700 !important;
+}
+
+.profile-tab-button.profile-tab-danger {
+    margin-left: auto !important;
+    color: var(--evo-danger, #dc2626) !important;
+}
+
+.profile-tab-button.profile-tab-danger:hover {
+    color: var(--evo-danger, #dc2626) !important;
+    background: var(--evo-danger-bg, rgba(220, 38, 38, 0.08)) !important;
 }
 
 table { width: 100%; border-collapse: collapse; font-size: 0.94rem; }

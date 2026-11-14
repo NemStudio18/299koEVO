@@ -942,7 +942,7 @@ blockquote {
     box-shadow: 0 0 0 3px var(--vg-accent-soft);
 }
 
-:where(button, input[type="submit"], input[type="button"]),
+:where(button, input[type="submit"], input[type="button"]):not(.profile-tab-button),
 .button,
 a.button,
 a.button:visited,
@@ -957,7 +957,7 @@ input[type="button"].button {
     border-radius: var(--vg-radius-sm);
     border: 1px solid transparent;
     background: var(--vg-accent);
-    color: #ffffff !important;
+    color: #ffffff;
     font-family: inherit;
     font-size: 0.94rem;
     font-weight: 600;
@@ -966,14 +966,14 @@ input[type="button"].button {
     transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-:where(button, input[type="submit"], input[type="button"]):hover,
+:where(button, input[type="submit"], input[type="button"]):not(.profile-tab-button):hover,
 .button:hover,
 a.button:hover,
 button.button:hover,
 input[type="submit"].button:hover,
 input[type="button"].button:hover {
     background: var(--vg-accent-hover);
-    color: #ffffff !important;
+    color: #ffffff;
     transform: translateY(-1px);
     box-shadow: var(--vg-shadow-sm);
 }
@@ -1018,6 +1018,53 @@ a.button.warning,
 a.button.warning:visited {
     background: var(--vg-warning);
     color: #ffffff !important;
+}
+
+/* ==========================================================================
+   Onglets de Profil (.profile-tab-button)
+   ========================================================================== */
+.profile-tab-button {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0.85rem 1.25rem !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    border-radius: var(--vg-radius-sm) var(--vg-radius-sm) 0 0 !important;
+    color: var(--vg-text-muted, #4b6354) !important;
+    font-size: 0.96rem !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    margin-bottom: -2px !important;
+    transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease !important;
+}
+
+.profile-tab-button:hover {
+    color: var(--vg-accent, #205c3b) !important;
+    background: var(--vg-accent-soft, rgba(32, 92, 59, 0.1)) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.profile-tab-button.active {
+    color: var(--vg-accent, #205c3b) !important;
+    border-bottom: 3px solid var(--vg-accent, #205c3b) !important;
+    background: transparent !important;
+    font-weight: 700 !important;
+}
+
+.profile-tab-button.profile-tab-danger {
+    margin-left: auto !important;
+    color: var(--vg-error, #dc2626) !important;
+}
+
+.profile-tab-button.profile-tab-danger:hover {
+    color: var(--vg-error, #dc2626) !important;
+    background: rgba(220, 38, 38, 0.08) !important;
 }
 
 table {
