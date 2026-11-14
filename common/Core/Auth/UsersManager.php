@@ -38,6 +38,11 @@ class UsersManager
         return self::service()->getCurrentUser();
     }
 
+    public static function getUsers(): array
+    {
+        return User::queryBuilder()->get();
+    }
+
     public static function encrypt(string $data): string
     {
         return self::service()->encrypt($data);

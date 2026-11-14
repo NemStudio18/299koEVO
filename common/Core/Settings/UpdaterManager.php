@@ -114,8 +114,13 @@ class UpdaterManager
         $patchFile = DATA_CORE_SETTINGS . 'core_patch.json';
         if (is_file($patchFile)) {
             $data = json_decode((string) @file_get_contents($patchFile), true);
-            if (is_array($data) && !empty($data['commit']) && is_string($data['commit'])) {
-                return trim($data['commit']);
+            if (is_array($data)) {
+                if (!empty($data['commit']) && is_string($data['commit'])) {
+                    return trim($data['commit']);
+                }
+                if (!empty($data['patch']) && is_string($data['patch'])) {
+                    return trim($data['patch']);
+                }
             }
         }
 
@@ -500,7 +505,12 @@ class UpdaterManager
 
     protected function treatPlugin($filename, $ignoreExist)
     {
-        preg_match('/^plugin\/(\w+)\/(.*)$/i', $filename, $matches);
+        if ($filename === 'plugin/.gitkeep') {
+            return PLUGINS . '.gitkeep';
+        }
+        if (!preg_match('/^plugin\/([a-zA-Z0-9_-]+)\/(.*)$/i', $filename, $matches)) {
+            return false;
+        }
         $plugin = $matches[1];
         if (is_dir(PLUGINS . $plugin) === false && $ignoreExist === false) {
             return false;
