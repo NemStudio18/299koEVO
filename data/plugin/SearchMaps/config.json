@@ -1,1 +1,8 @@
-{"priority":1,"debug":0,"activate":1}
+{
+    "priority": 10,
+    "debug": 0,
+    "activate": 1,
+    "center_lat": 47.0833,
+    "center_lon": 2.4,
+    "zoom_default": 13
+}
