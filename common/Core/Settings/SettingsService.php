@@ -259,40 +259,48 @@ class SettingsService
             return;
         }
 
-        require_once $notifEntityFile;
-        require_once $notifManagerFile;
+        try {
+            require_once $notifEntityFile;
+            require_once $notifManagerFile;
 
-        $manager = new \NotificationManager();
-        $isPatch = (bool) preg_match('/^[a-f0-9]{7,40}$/i', $nextVersion);
-        $shortVersion = $isPatch ? substr($nextVersion, 0, 7) : $nextVersion;
-        $title = $isPatch
-            ? "Correctif CMS disponible (" . $shortVersion . ")"
-            : "Nouvelle mise à jour CMS v" . $shortVersion;
-        $message = $isPatch
-            ? "Un correctif CMS est disponible. Cliquez pour l'appliquer."
-            : "La version v" . $shortVersion . " est disponible pour votre CMS.";
+            if (!class_exists('\\Notifications\\Entities\\NotificationManager')) {
+                return;
+            }
 
-        $users = UsersManager::getUsers();
-        foreach ($users as $user) {
-            $role = $user->role ?? ($user->attributes['role'] ?? '');
-            if ($role === 'admin' || $role === 1 || $role === '1') {
-                $adminId = (int) ($user->id ?? ($user->attributes['id'] ?? 0));
-                if ($adminId > 0) {
-                    $token = $user->token ?? '';
-                    $link = Router::getInstance()->generate('configmanager-update', ['token' => $token]);
-                    $manager->create(
-                        $adminId,
-                        'core_update',
-                        'configmanager',
-                        [
-                            'title' => $title,
-                            'message' => $message,
-                            'url' => $link
-                        ],
-                        'core_update_' . $nextVersion
-                    );
+            $manager = new \Notifications\Entities\NotificationManager();
+            $isPatch = (bool) preg_match('/^[a-f0-9]{7,40}$/i', $nextVersion);
+            $shortVersion = $isPatch ? substr($nextVersion, 0, 7) : $nextVersion;
+            $title = $isPatch
+                ? "Correctif CMS disponible (" . $shortVersion . ")"
+                : "Nouvelle mise à jour CMS v" . $shortVersion;
+            $message = $isPatch
+                ? "Un correctif CMS est disponible. Cliquez pour l'appliquer."
+                : "La version v" . $shortVersion . " est disponible pour votre CMS.";
+
+            $users = UsersManager::getUsers();
+            foreach ($users as $user) {
+                $role = $user->role ?? ($user->attributes['role'] ?? '');
+                if ($role === 'admin' || $role === 1 || $role === '1') {
+                    $adminId = (int) ($user->id ?? ($user->attributes['id'] ?? 0));
+                    if ($adminId > 0) {
+                        $token = $user->token ?? '';
+                        $link = Router::getInstance()->generate('configmanager-update', ['token' => $token]);
+                        $manager->create(
+                            $adminId,
+                            'core_update',
+                            'configmanager',
+                            [
+                                'title' => $title,
+                                'message' => $message,
+                                'url' => $link
+                            ],
+                            'core_update_' . $nextVersion
+                        );
+                    }
                 }
             }
+        } catch (\Throwable $e) {
+            \Core\Core::getInstance()->getLogger()->error("SettingsService: notifyAdminsUpdate failed: " . $e->getMessage());
         }
     }
 
