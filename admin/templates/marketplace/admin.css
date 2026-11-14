@@ -308,76 +308,89 @@
     padding-top: 0.85rem;
     border-top: 1px solid #f1f5f9;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
     gap: 8px;
-    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.market-footer-primary {
+.market-footer-main {
+    width: 100%;
+}
+
+.market-btn-block,
+.market-status-block {
+    width: 100%;
     display: flex;
     align-items: center;
-    gap: 6px;
-}
-
-.market-footer-actions {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-left: auto;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 8px 14px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    border-radius: 8px;
 }
 
 /* Action Buttons */
 .market-status-installed {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.82rem;
-    font-weight: 600;
     color: #16a34a;
     background: rgba(22, 163, 74, 0.08);
-    padding: 5px 10px;
-    border-radius: 6px;
     border: 1px solid rgba(22, 163, 74, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .market-btn-update {
     background: #16a34a;
     color: #ffffff;
     font-weight: 600;
-    font-size: 0.80rem;
-    padding: 6px 12px;
+    font-size: 0.84rem;
     line-height: 1.3;
-    border-radius: 6px;
+    border-radius: 8px;
     box-shadow: 0 1px 4px rgba(22, 163, 74, 0.25);
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 7px;
     border: 1px solid #15803d;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.15s ease, transform 0.15s ease;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .market-btn-update:hover {
     background: #15803d;
     color: #ffffff;
     transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.35);
 }
 
 .market-btn-install {
     background: #1f62a9;
     color: #ffffff;
     font-weight: 600;
-    font-size: 0.80rem;
-    padding: 6px 12px;
+    font-size: 0.84rem;
     line-height: 1.3;
-    border-radius: 6px;
-    display: inline-flex;
+    border-radius: 8px;
+    display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 7px;
     text-decoration: none;
     cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
     transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
@@ -389,14 +402,33 @@
 
 .market-btn-disabled {
     font-size: 0.80rem;
-    padding: 6px 12px;
+    padding: 7px 12px;
     opacity: 0.6;
     cursor: not-allowed;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.market-footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.market-footer-actions .market-btn-uninstall,
+.market-footer-actions .market-btn-purge {
+    flex: 1;
+    justify-content: center;
+    text-align: center;
 }
 
 .market-btn-uninstall {
     font-size: 0.78rem;
-    padding: 5px 9px;
+    padding: 6px 10px;
     background: #f1f5f9;
     color: #64748b;
     border: 1px solid #cbd5e1;
@@ -418,6 +450,25 @@
 
 .market-btn-purge {
     font-size: 0.78rem;
+    padding: 6px 10px;
+    background: rgba(220, 38, 38, 0.08);
+    color: #dc2626;
+    border: 1px solid rgba(220, 38, 38, 0.25);
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.market-btn-purge:hover {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
+}
     padding: 5px 9px;
     background: rgba(220, 38, 38, 0.08);
     color: #dc2626;

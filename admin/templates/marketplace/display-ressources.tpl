@@ -129,25 +129,25 @@
 
                 <!-- Footer d'actions -->
                 <div class="market-card-footer">
-                    <div class="market-footer-primary">
+                    <div class="market-footer-main">
                         {% if ressource.isInstallable %}
                             {% if ressource.isInstalled %}
                                 {% if ressource.updateNeeded() %}
-                                    <a href='{ ROUTER.generate("marketplace-install-release", ["type" => ressource.type, "slug" => ressource.slug, "token" => token]) }' class="button success market-btn-update">
+                                    <a href='{ ROUTER.generate("marketplace-install-release", ["type" => ressource.type, "slug" => ressource.slug, "token" => token]) }' class="button success market-btn-update market-btn-block">
                                         <i class="fa-solid fa-cloud-arrow-down"></i> {{Lang.marketplace.update}} (v{{ressource.lastVersion}})
                                     </a>
                                 {% else %}
-                                    <span class="market-status-installed">
+                                    <div class="market-status-installed market-status-block">
                                         <i class="fa-solid fa-circle-check"></i> {{Lang.marketplace.installed}}
-                                    </span>
+                                    </div>
                                 {% endif %}
                             {% else %}
-                                <a href='{ ROUTER.generate("marketplace-install-release", ["type" => ressource.type, "slug" => ressource.slug, "token" => token]) }' class="button market-btn-install">
+                                <a href='{ ROUTER.generate("marketplace-install-release", ["type" => ressource.type, "slug" => ressource.slug, "token" => token]) }' class="button market-btn-install market-btn-block">
                                     <i class="fa-solid fa-download"></i> {{Lang.marketplace.install}}
                                 </a>
                             {% endif %}
                         {% else %}
-                            <button disabled class="button market-btn-disabled">{{Lang.marketplace.not-installable}}</button>
+                            <button disabled class="button market-btn-disabled market-btn-block">{{Lang.marketplace.not-installable}}</button>
                         {% endif %}
                     </div>
 
