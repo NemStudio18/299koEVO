@@ -119,9 +119,9 @@ class ExtensionsService
         $entries = [];
         $updatesCount = 0;
         try {
-            $cache = new \Core\Storage\Cache();
-            $plugins = $cache->get('marketplace-plugins');
-            $themes = $cache->get('marketplace-themes');
+            $marketplace = $this->marketplace();
+            $plugins = $marketplace->getPlugins();
+            $themes = $marketplace->getThemes();
             if (is_array($plugins)) {
                 foreach ($plugins as $p) {
                     $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_PLUGIN, $p);
