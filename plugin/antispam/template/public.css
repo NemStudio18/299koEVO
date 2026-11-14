@@ -1,3 +1,4 @@
+@layer evo-plugins {
 
 .grecaptcha-badge {
     visibility: hidden;
@@ -111,7 +112,7 @@
 }
 .fb-submit-locked {
     opacity: 0.55;
-    cursor: not-allowed !important;
+    cursor: not-allowed;
 }
 
 /* Admin Antispam : aperçus & journal des blocages */
@@ -304,4 +305,5 @@
     background: var(--evo-accent);
     border-color: var(--evo-accent);
     color: var(--evo-accent-text);
+}
 }

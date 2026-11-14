@@ -20,7 +20,7 @@ Designed for speed, simplicity, and full data ownership, it runs out of the box 
 - **Flexible Storage**: Works out of the box with JSON files, with optional SQLite or MySQL support.
 - **Modular Plugin Architecture**: Blog, Forum, Gallery, Polls (`sondage`), Contact, Newsletter, RSS, Search, SEO, and more.
 - **Built-in Marketplace Hub**: Install and update plugins, themes, and core releases directly from the admin panel.
-- **Modern Admin & Themes**: Responsive Light & Dark mode UI (`Declic` and `default` themes) powered by CSS design tokens (`--evo-*`).
+- **Modern Admin & Themes**: Responsive Light & Dark mode UI (`Declic` and `default` themes) with automatic visual harmony across plugins.
 - **Local Antispam (`299nobot`)**: Privacy-friendly form protection using server-signed HMAC-SHA256 challenges, adaptive browser SHA-256 Proof-of-Work, SQLite rate limiting, honeypot, and an accessible `<noscript>` fallback — **no Google reCAPTCHA or third-party tracking**.
 - **Built-in Security**: CSRF tokens, role/group permissions (`AccessPolicyEvaluator`), session hardening, and HTML sanitization.
 
@@ -46,3 +46,4 @@ Designed for speed, simplicity, and full data ownership, it runs out of the box 
 ## 📄 License
 
 Distributed under the **GNU General Public License v3.0 (GPLv3)**.
+

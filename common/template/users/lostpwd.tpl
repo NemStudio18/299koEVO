@@ -26,7 +26,7 @@
 			<form method="post" action="{{lostPwdLink}}">
 				<p>
 					<label for="email">{{Lang.email}}</label><br>
-					<input type="text" name="_hp_website" value="" class="hp-field" aria-hidden="true" tabindex="-1" autocomplete="off" style="display:none !important; position:absolute !important; left:-9999px !important; visibility:hidden !important; pointer-events:none !important;" rel="nofollow">
+					<input type="text" name="_hp_website" value="" class="hp-field" aria-hidden="true" tabindex="-1" autocomplete="off" style="display:none; position:absolute; left:-9999px; visibility:hidden; pointer-events:none;" rel="nofollow">
 					<input type="email" id="email" name="email" required>
 				</p>
                 <p>

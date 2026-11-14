@@ -6,18 +6,18 @@ input[name="_hp_website"].hp-field,
 input.hp-field[name="_hp_website"],
 input[type="text"][name="_hp_website"],
 input[name="_hp_website"][class*="hp"] {
-    position: absolute !important;
-    left: -9999px !important;
-    width: 1px !important;
-    height: 1px !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-    display: none !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: none;
+    padding: 0;
+    margin: 0;
 }
 
 /* Conteneur principal des formulaires */

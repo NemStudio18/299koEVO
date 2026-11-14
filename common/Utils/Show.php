@@ -100,6 +100,11 @@ class Show
             $pluginsManager = PluginsManager::getInstance();
             $activePlugin = $core->getPluginToCall();
             $isAdminAssets = self::isAdminAssetsMode();
+            $coreCss = 'common/css/evo-core.css';
+            if (file_exists(ROOT . $coreCss)) {
+                $ver = '?v=' . filemtime(ROOT . $coreCss);
+                echo '<link href="' . Util::urlBuild($coreCss) . $ver . '" rel="stylesheet" type="text/css" />';
+            }
             $tokensCss = 'common/css/ui-tokens.css';
             if (file_exists(ROOT . $tokensCss)) {
                 $ver = '?v=' . filemtime(ROOT . $tokensCss);

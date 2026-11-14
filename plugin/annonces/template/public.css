@@ -1,9 +1,10 @@
+@layer evo-plugins {
 .annonces-wrap {
     max-width: 1120px;
     margin: 0 auto;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 .annonces-intro {
     margin-bottom: 1.5rem;
@@ -164,8 +165,8 @@
     padding: 9px 14px;
     border-radius: var(--evo-radius-sm);
     background: var(--evo-accent);
-    color: var(--evo-accent-text) !important;
-    text-decoration: none !important;
+    color: var(--evo-accent-text);
+    text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
     margin-top: 6px;
@@ -357,7 +358,7 @@
     margin-bottom: 10px;
 }
 .annonce-hp-field {
-    display: none !important;
+    display: none;
 }
 .annonce-antispam-wrap {
     margin-bottom: 1rem;
@@ -368,3 +369,5 @@
     cursor: pointer;
 }
 
+
+}

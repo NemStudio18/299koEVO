@@ -676,13 +676,13 @@ div.warning:before {
 
 /* Auth Links Alignment */
 .nav-auth-links {
-    display: flex !important;
+    display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .nav-auth-links a {
-    padding: 10px 15px !important;
+    padding: 10px 15px;
     /* Force padding for better hit area */
     display: inline-block;
 }
@@ -869,10 +869,10 @@ article>header>div,
 }
 
 .hp-field {
-    display: none !important;
-    visibility: hidden !important;
-    position: absolute !important;
-    left: -9999px !important;
+    display: none;
+    visibility: hidden;
+    position: absolute;
+    left: -9999px;
 }
 
 section>header>.featured,
@@ -1674,7 +1674,7 @@ body.theme-light #footer {
 .user-avatar-css {
     width: 40px;
     height: 40px;
-    border-radius: 50% !important;
+    border-radius: 50%;
     border: 2px solid #ddd;
     display: flex;
     align-items: center;
@@ -1685,7 +1685,7 @@ body.theme-light #footer {
     font-weight: bold;
     text-transform: uppercase;
     font-size: 14px;
-    color: #fff !important;
+    color: #fff;
     background: #f0f0f0;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
@@ -1701,7 +1701,7 @@ body.theme-light #footer {
 
 /* Mobile Menu Toggle */
 .nav-toggle {
-    display: none !important;
+    display: none;
 }
 
 #mobile_menu {
@@ -1821,9 +1821,9 @@ body.theme-light #footer {
 }
 
 .profile-tab-content.active {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
+    display: block;
+    opacity: 1;
+    visibility: visible;
     /* Ensure content has background if needed, but transparent is usually fine */
 }
 
@@ -2112,89 +2112,6 @@ body.theme-light .card>header {
 
 input:checked+.toggle-switch.small .toggle-slider:before {
     transform: translateX(16px);
-}
-
-/* COMPREHENSIVE LIGHT THEME OVERRIDES - MOVED TO END FOR SPECIFICITY */
-body.theme-light {
-    --header-bg-color: #fff;
-    --background-color: #fafafa;
-    --dark-section-bg-color: #fff;
-    /* Reset to light */
-    --dark-font-color: #415462;
-    /* Reset to light text */
-    --dark-header-links-color: #415462;
-    --dark-form-bg-color: #fff;
-    --dark-form-border-color: #ccc;
-    --dark-section-head-bg-color: #f5f5f5;
-
-    color: rgb(65, 84, 98);
-}
-
-body.theme-light input[type=text],
-body.theme-light input[type=email],
-body.theme-light input[type=password],
-body.theme-light input[type=url],
-body.theme-light textarea,
-body.theme-light input[type=number],
-body.theme-light .contact .acceptation {
-    background: #fff;
-    color: #415462;
-    border-color: #ccc;
-}
-
-body.theme-light section,
-body.theme-light article,
-body.theme-light .card {
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-}
-
-body.theme-light section>header,
-body.theme-light article>header,
-body.theme-light .card>header {
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #ddd;
-}
-
-/* COMPREHENSIVE LIGHT THEME OVERRIDES - MOVED TO END FOR SPECIFICITY */
-body.theme-light {
-    --header-bg-color: #fff;
-    --background-color: #fafafa;
-    --dark-section-bg-color: #fff;
-    /* Reset to light */
-    --dark-font-color: #415462;
-    /* Reset to light text */
-    --dark-header-links-color: #415462;
-    --dark-form-bg-color: #fff;
-    --dark-form-border-color: #ccc;
-    --dark-section-head-bg-color: #f5f5f5;
-
-    color: rgb(65, 84, 98);
-}
-
-body.theme-light input[type=text],
-body.theme-light input[type=email],
-body.theme-light input[type=password],
-body.theme-light input[type=url],
-body.theme-light textarea,
-body.theme-light input[type=number],
-body.theme-light .contact .acceptation {
-    background: #fff;
-    color: #415462;
-    border-color: #ccc;
-}
-
-body.theme-light section,
-body.theme-light article,
-body.theme-light .card {
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-}
-
-body.theme-light section>header,
-body.theme-light article>header,
-body.theme-light .card>header {
-    border-bottom: 1px solid #ddd;
 }
 
 /* Profile layout is unified in common/css/ui-tokens.css via --evo-* tokens. */

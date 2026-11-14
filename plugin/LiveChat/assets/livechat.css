@@ -53,16 +53,16 @@
 }
 @media (min-width: 769px) {
     .vb-chat-launcher:hover {
-        width: 275px !important;
-        padding: 0 18px !important;
+        width: 275px;
+        padding: 0 18px;
         gap: 10px;
         justify-content: flex-start;
         border-radius: 999px;
         transform: translateY(-2px) scale(1.02);
     }
     .vb-chat-launcher:hover .vb-chat-launcher-text {
-        max-width: 210px !important;
-        opacity: 1 !important;
+        max-width: 210px;
+        opacity: 1;
         margin-left: 2px;
     }
     .vb-chat-launcher:hover .vb-chat-launcher-dot {

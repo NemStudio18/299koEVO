@@ -1,3 +1,4 @@
+@layer evo-plugins {
 /* Widget météo compact pour le header */
 .meteo-widget-compact {
     display: inline-flex;
@@ -55,11 +56,12 @@
 
 /* Force hide full widget in header if it leaks */
 #header .meteo-widget {
-    display: none !important;
+    display: none;
 }
 
 #header .meteo-widget-compact {
-    display: inline-flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+    display: inline-flex;
+    visibility: visible;
+    opacity: 1;
+}
 }

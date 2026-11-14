@@ -1,3 +1,4 @@
+@layer evo-plugins {
 /* Notifications Plugin Styles */
 .notifications-container {
     max-width: 800px;
@@ -158,7 +159,7 @@
 
     .notif-header-content {
         flex-direction: column;
-        align-items: flex-start !important;
+        align-items: flex-start;
         gap: 1rem;
     }
 
@@ -175,14 +176,14 @@
 
 /* Header/Navigation integration - Superimposed on Avatar */
 .nav-avatar-link {
-    position: relative !important;
+    position: relative;
 }
 
 .nav-avatar-badge-wrap {
-    position: relative !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-avatar-overlay-bell {
@@ -210,18 +211,18 @@
 }
 .adm-notif-btn {
     position: relative;
-    padding: 7px 11px !important;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    background: var(--nav-bg-color, #16202e) !important;
-    color: var(--evo-accent-text) !important;
+    padding: 7px 11px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: var(--nav-bg-color, #16202e);
+    color: var(--evo-accent-text);
     border-radius: var(--evo-radius-sm);
     transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 .adm-notif-btn:hover,
 .adm-notif-wrap.is-open .adm-notif-btn {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(255, 255, 255, 0.35) !important;
-    color: var(--evo-accent-text) !important;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: var(--evo-accent-text);
 }
 .adm-notif-count {
     display: inline-flex;
@@ -240,7 +241,7 @@
 .adm-notif-menu {
     width: 340px;
     max-width: min(92vw, 360px);
-    padding: 0 !important;
+    padding: 0;
     overflow: hidden;
 }
 .adm-notif-head {
@@ -254,17 +255,17 @@
     font-size: 0.88rem;
 }
 .adm-notif-markall {
-    background: transparent !important;
-    border: none !important;
-    padding: 3px 6px !important;
-    color: var(--evo-accent) !important;
-    font-size: 0.76rem !important;
-    font-weight: 700 !important;
+    background: transparent;
+    border: none;
+    padding: 3px 6px;
+    color: var(--evo-accent);
+    font-size: 0.76rem;
+    font-weight: 700;
     cursor: pointer;
     border-radius: 6px;
 }
 .adm-notif-markall:hover {
-    background: var(--evo-info-bg) !important;
+    background: var(--evo-info-bg);
 }
 .adm-notif-list {
     max-height: 320px;
@@ -283,14 +284,14 @@
     align-items: center;
 }
 .adm-notif-item {
-    display: flex !important;
-    align-items: flex-start !important;
-    gap: 10px !important;
-    padding: 10px 14px !important;
-    border-radius: 0 !important;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 0;
     border-bottom: 1px solid var(--evo-border);
     text-decoration: none;
-    color: var(--evo-text) !important;
+    color: var(--evo-text);
     background: var(--evo-card-bg);
 }
 .adm-notif-item:last-child {
@@ -300,7 +301,7 @@
     background: var(--evo-accent-soft);
 }
 .adm-notif-item:hover {
-    background: var(--evo-surface) !important;
+    background: var(--evo-surface);
 }
 .adm-notif-dot {
     width: 8px;
@@ -345,8 +346,8 @@
 .adm-notif-foot a {
     flex: 1;
     justify-content: center;
-    padding: 6px 8px !important;
-    font-size: 0.78rem !important;
+    padding: 6px 8px;
+    font-size: 0.78rem;
 }
 
 /* Onglet notifications du profil utilisateur (sans styles inline) */
@@ -468,4 +469,5 @@
     border-radius: 10px;
     font-weight: bold;
     margin-left: 5px;
+}
 }

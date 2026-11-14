@@ -20,7 +20,7 @@ Conçu pour la rapidité, la simplicité et la maîtrise totale de vos données,
 - **Stockage flexible** : fonctionne par défaut sur fichiers JSON, avec prise en charge optionnelle de SQLite et MySQL.
 - **Architecture modulaire par plugins** : Blog, Forum, Galerie, Sondages, Contact, Newsletter, RSS, Recherche, SEO, etc.
 - **Marketplace Hub intégré** : installez et mettez à jour vos plugins, thèmes et le cœur du CMS directement depuis l'administration.
-- **Interface moderne & Thèmes** : prise en charge native du mode Clair / Sombre (`Declic` et `default`) via des variables CSS unifiées (`--evo-*`).
+- **Interface moderne & Thèmes** : prise en charge native du mode Clair / Sombre (`Declic` et `default`) avec harmonisation visuelle automatique.
 - **Antispam local (`299nobot`)** : protection des formulaires par challenge signé HMAC-SHA256 côté serveur, preuve de travail (PoW) SHA-256 adaptative dans le navigateur, rate-limiting SQLite, honeypot et fallback accessible `<noscript>` — **sans Google reCAPTCHA ni suivi tiers**.
 - **Sécurité intégrée** : jetons CSRF, gestion fine des rôles et permissions (`AccessPolicyEvaluator`), durcissement des sessions et filtrage HTML.
 
@@ -46,3 +46,4 @@ Conçu pour la rapidité, la simplicité et la maîtrise totale de vos données,
 ## 📄 Licence
 
 Distribué sous licence **GNU General Public License v3.0 (GPLv3)**.
+

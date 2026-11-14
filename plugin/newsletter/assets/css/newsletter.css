@@ -1,6 +1,7 @@
+@layer evo-plugins {
 /* --- NEWSLETTER MODAL --- */
 .newsletter-hidden {
-    display: none !important;
+    display: none;
 }
 
 .newsletter-floating-btn {
@@ -152,4 +153,5 @@
 .newsletter-btn-subscribe {
     font-size: 0.85rem;
     padding: 0.5rem 1rem;
+}
 }

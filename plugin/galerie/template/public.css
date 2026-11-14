@@ -1,3 +1,4 @@
+@layer evo-plugins {
 /* Carousel Styles */
 .swiper-container-wrapper {
     margin-bottom: 2rem;
@@ -42,11 +43,11 @@
 /* Navigation & Pagination Colors */
 .swiper-button-next,
 .swiper-button-prev {
-    color: #fff !important;
+    color: #fff;
 }
 
 .swiper-pagination-bullet-active {
-    background: #fff !important;
+    background: #fff;
 }
 
 /* Gallery Improvements */
@@ -99,4 +100,5 @@
     background: var(--evo-accent);
     color: var(--evo-accent-text);
     border-color: var(--evo-accent);
+}
 }

@@ -1,4 +1,4 @@
-﻿<section class="user-profile-danger">
+<section class="user-profile-danger">
     <div class="profile-danger-header">
         <h1>Zone de danger</h1>
         <a href="{{ ROUTER.generate("profile") }}" class="button secondary">

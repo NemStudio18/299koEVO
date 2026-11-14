@@ -1,3 +1,4 @@
+@layer evo-plugins {
 /* Plugin Sondage - Styles publics */
 
 .sondages-list {
@@ -288,10 +289,10 @@ form small {
 
 /* Bouton retour à la liste */
 .sondage-back-button a.button {
-    color: var(--evo-accent-text) !important;
-    background-color: var(--evo-accent) !important;
+    color: var(--evo-accent-text);
+    background-color: var(--evo-accent);
     text-decoration: none;
-    display: inline-flex !important;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
@@ -301,18 +302,18 @@ form small {
 }
 
 .sondage-back-button a.button:hover {
-    background-color: var(--evo-accent-hover) !important;
-    color: var(--evo-accent-text) !important;
+    background-color: var(--evo-accent-hover);
+    color: var(--evo-accent-text);
     transform: translateY(-2px);
     box-shadow: var(--evo-shadow-sm);
 }
 
 .sondage-back-button a.button span {
-    color: var(--evo-accent-text) !important;
+    color: var(--evo-accent-text);
 }
 
 .sondage-back-button a.button i {
-    color: var(--evo-accent-text) !important;
+    color: var(--evo-accent-text);
 }
 /* === Utility Classes for Inline Styles Cleanup === */
 
@@ -346,3 +347,5 @@ form small {
 .admin-chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
 .admin-chart-grid h4 { text-align: center; margin-bottom: 1rem; }
 .options-stats { overflow-y: auto; max-height: 300px; }
+
+}

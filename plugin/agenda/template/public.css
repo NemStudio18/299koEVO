@@ -1,3 +1,4 @@
+@layer evo-plugins {
 /**
  * Agenda Plugin - Public Styles
  * Uses theme variables for a consistent look & feel.
@@ -217,8 +218,8 @@
 }
 
 .button.primary {
-    background-color: var(--evo-accent) !important;
-    color: var(--evo-accent-text) !important;
+    background-color: var(--evo-accent);
+    color: var(--evo-accent-text);
 }
 
 /* Calendar Popups */
@@ -723,4 +724,5 @@
     border: 1px solid var(--evo-input-border);
     margin-bottom: 10px;
     background: var(--evo-surface);
+}
 }

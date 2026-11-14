@@ -1,11 +1,11 @@
 <style>
 /* Anti-Spam Honeypot Field Hidden Rule */
 .hp-field, input[name="_hp_website"] {
-    display: none !important;
-    position: absolute !important;
-    left: -9999px !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+    display: none;
+    position: absolute;
+    left: -9999px;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* Native Password Visibility Toggle Styles */
@@ -16,16 +16,16 @@
 }
 
 .password-input-wrapper input {
-    padding-right: 45px !important;
+    padding-right: 45px;
 }
 
 .toggle-password {
     position: absolute;
     right: 12px;
     top: 50%;
-    transform: translateY(-50%) !important;
-    background: none !important;
-    border: none !important;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
     padding: 0;
     margin: 0;
     cursor: pointer;
@@ -37,7 +37,7 @@
     align-items: center;
     justify-content: center;
     z-index: 5;
-    box-shadow: none !important;
+    box-shadow: none;
 }
 
 .toggle-password:hover {

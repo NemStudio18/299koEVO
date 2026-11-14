@@ -1,0 +1,1225 @@
+/**
+ * 299koEVO - Core CSS Framework & Base Theme
+ * Architecture moderne basée sur CSS @layer (zéro !important).
+ * 
+ * Hiérarchie des couches (du moins spécifique au plus spécifique) :
+ * 1. evo-reset      : Normalisation typographique, box-sizing, honeypots
+ * 2. evo-tokens     : Design tokens globaux (:root, mode sombre, accessibilité)
+ * 3. evo-base       : Layout structurel (#container, #header, #body, #content, #footer)
+ * 4. evo-components : Composants fonctionnels (navbar, burger, boutons, formulaires, tables, profil, alertes)
+ * 5. evo-plugins    : Styles injectés par les extensions
+ * 6. evo-theme      : Personnalisation visuelle du thème actif (surcharge naturelle sans conflit)
+ */
+
+@layer evo-reset, evo-tokens, evo-base, evo-components, evo-plugins, evo-theme;
+
+/* ==========================================================================
+   COUCHE 1 : EVO-RESET
+   ========================================================================== */
+@layer evo-reset {
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        font-family: var(--evo-font);
+        line-height: 1.6;
+        -webkit-text-size-adjust: 100%;
+        tab-size: 4;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--evo-bg);
+        color: var(--evo-text);
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    img, picture, video, canvas, svg {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+    input, button, textarea, select {
+        font: inherit;
+        color: inherit;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    a {
+        color: var(--evo-accent);
+        text-decoration: none;
+        transition: color 0.18s ease;
+    }
+
+    a:hover {
+        color: var(--evo-accent-hover);
+    }
+
+    p, h1, h2, h3, h4, h5, h6 {
+        overflow-wrap: break-word;
+    }
+
+    /* Champs antispam honeypot et utilitaires d'accessibilité (masquage propre sans !important) */
+    .hp-field,
+    [class*="hp-field"],
+    input[name="_hp_website"],
+    .visually-hidden,
+    .evo-sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* ==========================================================================
+   COUCHE 2 : EVO-TOKENS (Design Tokens & Dark Mode)
+   ========================================================================== */
+@layer evo-tokens {
+    :root {
+        /* Polices & Typographie */
+        --evo-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        --evo-font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+        --evo-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+        /* Fonds & Surfaces (Clair par défaut) */
+        --evo-bg: #f8fafc;
+        --evo-surface: #ffffff;
+        --evo-surface-alt: #f1f5f9;
+        --evo-card-bg: #ffffff;
+
+        /* Typographie */
+        --evo-text: #1e293b;
+        --evo-text-muted: #64748b;
+
+        /* Bordures & Séparateurs */
+        --evo-border: #e2e8f0;
+        --evo-border-strong: #cbd5e1;
+
+        /* Formulaires & Champs */
+        --evo-input-bg: #ffffff;
+        --evo-input-border: #cbd5e1;
+
+        /* Couleur d'accentuation principale */
+        --evo-accent: #1d4ed8;
+        --evo-accent-hover: #1e40af;
+        --evo-accent-soft: rgba(29, 78, 216, 0.08);
+        --evo-accent-text: #ffffff;
+
+        /* Nuances fonctionnelles */
+        --evo-success: #166534;
+        --evo-success-bg: #dcfce7;
+        --evo-success-border: #86efac;
+
+        --evo-warning: #92400e;
+        --evo-warning-bg: #fef3c7;
+        --evo-warning-border: #fde68a;
+
+        --evo-danger: #991b1b;
+        --evo-danger-bg: #fee2e2;
+        --evo-danger-border: #fecaca;
+
+        --evo-info: #075985;
+        --evo-info-bg: #e0f2fe;
+        --evo-info-border: #bae6fd;
+
+        /* Rayons de courbure */
+        --evo-radius-xs: 4px;
+        --evo-radius-sm: 8px;
+        --evo-radius-md: 12px;
+        --evo-radius-lg: 16px;
+        --evo-radius-full: 9999px;
+
+        /* Ombres portées */
+        --evo-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+        --evo-shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+        --evo-shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12), 0 4px 10px rgba(15, 23, 42, 0.06);
+
+        /* Dimensions de mise en page */
+        --evo-container-width: 1240px;
+        --evo-header-height: 68px;
+        --evo-sidebar-width: 320px;
+    }
+
+    /* Thème sombre manuel (body.theme-dark) */
+    body.theme-dark {
+        --evo-bg: #0b1118;
+        --evo-surface: #131c26;
+        --evo-surface-alt: #1a2533;
+        --evo-card-bg: #141e2a;
+
+        --evo-text: #e2e8f0;
+        --evo-text-muted: #94a3b8;
+
+        --evo-border: #233142;
+        --evo-border-strong: #334458;
+
+        --evo-input-bg: #0f1620;
+        --evo-input-border: #334458;
+
+        --evo-accent: #60a5fa;
+        --evo-accent-hover: #93c5fd;
+        --evo-accent-soft: rgba(96, 165, 250, 0.15);
+        --evo-accent-text: #0b1118;
+
+        --evo-success: #86efac;
+        --evo-success-bg: rgba(34, 197, 94, 0.18);
+        --evo-success-border: rgba(74, 222, 128, 0.35);
+
+        --evo-warning: #fcd34d;
+        --evo-warning-bg: rgba(245, 158, 11, 0.18);
+        --evo-warning-border: rgba(251, 191, 36, 0.35);
+
+        --evo-danger: #fca5a5;
+        --evo-danger-bg: rgba(239, 68, 68, 0.18);
+        --evo-danger-border: rgba(248, 113, 113, 0.35);
+
+        --evo-info: #7dd3fc;
+        --evo-info-bg: rgba(14, 165, 233, 0.18);
+        --evo-info-border: rgba(56, 189, 248, 0.35);
+
+        --evo-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+        --evo-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.5);
+        --evo-shadow-lg: 0 14px 34px rgba(0, 0, 0, 0.65);
+        color-scheme: dark;
+    }
+
+    /* Thème sombre automatique selon préférences système */
+    @media (prefers-color-scheme: dark) {
+        body:not(.theme-light) {
+            --evo-bg: #0b1118;
+            --evo-surface: #131c26;
+            --evo-surface-alt: #1a2533;
+            --evo-card-bg: #141e2a;
+
+            --evo-text: #e2e8f0;
+            --evo-text-muted: #94a3b8;
+
+            --evo-border: #233142;
+            --evo-border-strong: #334458;
+
+            --evo-input-bg: #0f1620;
+            --evo-input-border: #334458;
+
+            --evo-accent: #60a5fa;
+            --evo-accent-hover: #93c5fd;
+            --evo-accent-soft: rgba(96, 165, 250, 0.15);
+            --evo-accent-text: #0b1118;
+
+            --evo-success: #86efac;
+            --evo-success-bg: rgba(34, 197, 94, 0.18);
+            --evo-success-border: rgba(74, 222, 128, 0.35);
+
+            --evo-warning: #fcd34d;
+            --evo-warning-bg: rgba(245, 158, 11, 0.18);
+            --evo-warning-border: rgba(251, 191, 36, 0.35);
+
+            --evo-danger: #fca5a5;
+            --evo-danger-bg: rgba(239, 68, 68, 0.18);
+            --evo-danger-border: rgba(248, 113, 113, 0.35);
+
+            --evo-info: #7dd3fc;
+            --evo-info-bg: rgba(14, 165, 233, 0.18);
+            --evo-info-border: rgba(56, 189, 248, 0.35);
+
+            --evo-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+            --evo-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.5);
+            --evo-shadow-lg: 0 14px 34px rgba(0, 0, 0, 0.65);
+            color-scheme: dark;
+        }
+    }
+}
+
+/* ==========================================================================
+   COUCHE 3 : EVO-BASE (Layout Structurel CMS)
+   ========================================================================== */
+@layer evo-base {
+    #container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        min-height: 100dvh;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    #header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--evo-surface);
+        border-bottom: 1px solid var(--evo-border);
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    #body {
+        flex: 1 0 auto;
+        width: 100%;
+        max-width: var(--evo-container-width);
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        box-sizing: border-box;
+    }
+
+    #body-page {
+        display: flex;
+        align-items: flex-start;
+        gap: 2rem;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #content {
+        flex: 1 1 0%;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    #modulesSidebar {
+        width: var(--evo-sidebar-width);
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    #footer {
+        flex-shrink: 0;
+        background: var(--evo-surface);
+        border-top: 1px solid var(--evo-border);
+        padding: 2rem 1.5rem;
+        margin-top: auto;
+    }
+
+    /* Typographie globale */
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--evo-text);
+        font-weight: 700;
+        line-height: 1.25;
+        margin-top: 0;
+    }
+
+    h1 { font-size: clamp(1.75rem, 3.5vw, 2.5rem); margin-bottom: 1rem; }
+    h2 { font-size: clamp(1.35rem, 2.5vw, 1.85rem); margin-bottom: 0.85rem; margin-top: 2rem; }
+    h3 { font-size: 1.25rem; margin-bottom: 0.75rem; margin-top: 1.5rem; }
+    h4 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+
+    p {
+        margin: 0 0 1rem;
+        line-height: 1.7;
+    }
+
+    blockquote {
+        margin: 1.5rem 0;
+        padding: 0.75rem 1.25rem;
+        border-left: 4px solid var(--evo-accent);
+        background: var(--evo-surface-alt);
+        border-radius: 0 var(--evo-radius-sm) var(--evo-radius-sm) 0;
+        color: var(--evo-text-muted);
+        font-style: italic;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid var(--evo-border);
+        margin: 2rem 0;
+    }
+
+    /* Responsive mobile du layout central */
+    @media (max-width: 1024px) {
+        #body {
+            padding: 1.25rem 1rem;
+        }
+
+        #body-page {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        #modulesSidebar {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+}
+
+/* ==========================================================================
+   COUCHE 4 : EVO-COMPONENTS (Composants Universels)
+   ========================================================================== */
+@layer evo-components {
+    /* --------------------------------------------------------------------------
+       1. Header & Navigation Principale
+       -------------------------------------------------------------------------- */
+    .header-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: var(--evo-container-width);
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        height: var(--evo-header-height);
+        gap: 1.5rem;
+    }
+
+    .header-brand {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .brand-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: var(--evo-text);
+        font-size: 1.35rem;
+        font-weight: 700;
+    }
+
+    .site-logo {
+        max-height: 38px;
+        width: auto;
+        object-fit: contain;
+    }
+
+    .nav-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        justify-content: flex-end;
+        flex: 1;
+    }
+
+    .header-links {
+        display: flex;
+        align-items: center;
+    }
+
+    #navigation {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    #navigation > li {
+        position: relative;
+    }
+
+    #navigation > li > a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        color: var(--evo-text);
+        font-weight: 600;
+        font-size: 0.94rem;
+        border-radius: var(--evo-radius-sm);
+        text-decoration: none;
+        transition: background-color 0.18s ease, color 0.18s ease;
+    }
+
+    #navigation > li > a:hover,
+    #navigation > li > a:focus-visible {
+        background: var(--evo-accent-soft);
+        color: var(--evo-accent);
+    }
+
+    #navigation > li > a.active {
+        background: var(--evo-accent-soft);
+        color: var(--evo-accent);
+        font-weight: 700;
+    }
+
+    /* Indicateur flèche déroulante pour sous-menus (excluant menu avatar) */
+    #navigation > li:has(> ul):not(.nav-user-avatar-menu) > a::after {
+        content: "\f078";
+        font-family: "Font Awesome 6 Free", sans-serif;
+        font-weight: 900;
+        font-size: 0.68rem;
+        margin-left: 6px;
+        opacity: 0.75;
+        transition: transform 0.2s ease;
+        display: inline-block;
+    }
+
+    #navigation > li:has(> ul):not(.nav-user-avatar-menu):hover > a::after,
+    #navigation > li:has(> ul):not(.nav-user-avatar-menu).is-open > a::after,
+    #navigation > li:has(> ul):not(.nav-user-avatar-menu).vg-open > a::after {
+        transform: rotate(180deg);
+    }
+
+    /* Sous-menus déroulants (Desktop) */
+    #navigation > li > ul {
+        display: none;
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        min-width: 220px;
+        background: var(--evo-surface);
+        border: 1px solid var(--evo-border);
+        border-radius: var(--evo-radius-sm);
+        box-shadow: var(--evo-shadow-md);
+        list-style: none;
+        padding: 6px;
+        margin: 0;
+        z-index: 200;
+    }
+
+    #navigation > li:hover > ul,
+    #navigation > li:focus-within > ul {
+        display: block;
+    }
+
+    #navigation > li > ul > li {
+        margin: 0;
+    }
+
+    #navigation > li > ul > li > a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        color: var(--evo-text);
+        font-size: 0.92rem;
+        font-weight: 500;
+        border-radius: var(--evo-radius-xs);
+        text-decoration: none;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    #navigation > li > ul > li > a:hover {
+        background: var(--evo-accent-soft);
+        color: var(--evo-accent);
+    }
+
+    /* Bouton hamburger mobile */
+    .nav-toggle {
+        display: none;
+    }
+
+    #mobile_menu {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--evo-radius-sm);
+        color: var(--evo-text);
+        cursor: pointer;
+        font-size: 1.25rem;
+        transition: background-color 0.18s ease;
+    }
+
+    #mobile_menu:hover {
+        background: var(--evo-surface-alt);
+    }
+
+    /* Tiroir de navigation mobile (Responsive) */
+    @media (max-width: 1024px) {
+        #mobile_menu {
+            display: inline-flex;
+        }
+
+        .header-links {
+            display: none;
+            position: absolute;
+            top: var(--evo-header-height);
+            left: 0;
+            right: 0;
+            background: var(--evo-surface);
+            border-bottom: 2px solid var(--evo-accent);
+            box-shadow: var(--evo-shadow-lg);
+            padding: 16px 20px 24px;
+            z-index: 999;
+            max-height: calc(100vh - var(--evo-header-height));
+            max-height: calc(100dvh - var(--evo-header-height));
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+
+        .nav-toggle:checked ~ .header-links,
+        #nav_toggle:checked ~ .header-links {
+            display: block;
+        }
+
+        #navigation {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 6px;
+            width: 100%;
+        }
+
+        #navigation > li {
+            width: 100%;
+        }
+
+        #navigation > li > a {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 14px;
+            font-size: 1rem;
+        }
+
+        #navigation > li:not(.nav-user-avatar-menu) > ul {
+            display: none;
+            position: static;
+            border: none;
+            border-left: 2px solid var(--evo-accent);
+            border-radius: 0;
+            box-shadow: none;
+            background: transparent;
+            padding: 4px 0 4px 14px;
+            margin: 4px 0 6px 14px;
+            min-width: 100%;
+        }
+
+        #navigation > li:not(.nav-user-avatar-menu).is-open > ul,
+        #navigation > li:not(.nav-user-avatar-menu).vg-open > ul {
+            display: block;
+        }
+
+        #navigation > li:not(.nav-user-avatar-menu) > ul > li > a {
+            padding: 7px 10px;
+            font-size: 0.94rem;
+        }
+    }
+
+    /* --------------------------------------------------------------------------
+       2. Menu Avatar Utilisateur (.nav-user-avatar-menu)
+       -------------------------------------------------------------------------- */
+    .nav-user-avatar-menu {
+        margin-left: 6px;
+        padding-left: 10px;
+        border-left: 1px solid var(--evo-border);
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .nav-user-avatar-menu .nav-avatar-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px;
+        text-decoration: none;
+    }
+
+    /* Sur desktop : cacher le pseudo à côté de l'avatar pour garder une barre propre */
+    .nav-user-avatar-menu .nav-avatar-username {
+        display: none;
+    }
+
+    /* Jamais de double flèche ni de ::after sur l'avatar */
+    .nav-user-avatar-menu .nav-avatar-chevron,
+    #navigation > li.nav-user-avatar-menu > a::after {
+        display: none;
+        content: none;
+    }
+
+    .nav-avatar-badge-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .user-avatar-img,
+    .user-avatar-css {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 2px solid var(--evo-surface);
+        box-shadow: 0 0 0 1.5px var(--evo-accent);
+        flex-shrink: 0;
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .user-avatar-img {
+        object-fit: cover;
+    }
+
+    .user-avatar-css {
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.88rem;
+        text-transform: uppercase;
+    }
+
+    .nav-avatar-link:hover .user-avatar-img,
+    .nav-avatar-link:hover .user-avatar-css {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 2px var(--evo-accent);
+    }
+
+    /* Cloche de notifications superposée sur l'avatar */
+    .nav-avatar-overlay-bell {
+        position: absolute;
+        top: -3px;
+        right: -3px;
+        background: var(--evo-danger);
+        color: #ffffff;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.62rem;
+        border: 2px solid var(--evo-surface);
+        box-shadow: var(--evo-shadow-sm);
+        z-index: 10;
+        pointer-events: none;
+    }
+
+    /* Menu déroulant de l'avatar (Desktop) */
+    .nav-user-avatar-menu > ul {
+        right: 0;
+        left: auto;
+        min-width: 240px;
+        padding: 8px;
+    }
+
+    .nav-user-avatar-menu > ul > li > a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        font-size: 0.92rem;
+        color: var(--evo-text);
+        border-radius: var(--evo-radius-xs);
+    }
+
+    .nav-user-avatar-menu > ul > li > a:hover {
+        background: var(--evo-accent-soft);
+        color: var(--evo-accent);
+    }
+
+    .nav-user-avatar-menu > ul > li.avatar-menu-separator hr {
+        margin: 6px 0;
+        border: none;
+        border-top: 1px solid var(--evo-border);
+    }
+
+    /* Avatar menu sur Mobile */
+    @media (max-width: 1024px) {
+        .nav-user-avatar-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            width: 100%;
+            border-left: none;
+            border-top: 1px solid var(--evo-border);
+            margin: 12px 0 0;
+            padding: 12px 0 0;
+        }
+
+        .nav-user-avatar-menu .nav-avatar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            border-radius: var(--evo-radius-sm);
+            background: var(--evo-surface-alt);
+        }
+
+        .nav-user-avatar-menu .nav-avatar-username {
+            display: inline-block;
+            font-weight: 700;
+            font-size: 0.98rem;
+            color: var(--evo-text);
+        }
+
+        .nav-user-avatar-menu > ul {
+            display: flex;
+            flex-direction: column;
+            position: static;
+            box-shadow: none;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-width: 100%;
+        }
+
+        .nav-user-avatar-menu > ul > li > a {
+            padding: 10px 14px;
+            font-size: 0.95rem;
+        }
+    }
+
+    /* --------------------------------------------------------------------------
+       3. Barre de recherche (299Search)
+       -------------------------------------------------------------------------- */
+    .nav-search-item {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .search299-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        vertical-align: middle;
+    }
+
+    .search299-pill-form {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row-reverse;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        margin: 0;
+        background: var(--evo-surface);
+        border: 1.5px solid var(--evo-border-strong);
+        border-radius: var(--evo-radius-full);
+        overflow: hidden;
+        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.2s ease,
+                    box-shadow 0.2s ease;
+    }
+
+    .search299-icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        min-width: 35px;
+        background: transparent;
+        border: none;
+        color: var(--evo-text-muted);
+        cursor: pointer;
+        font-size: 0.95rem;
+        padding: 0;
+        margin: 0;
+        border-radius: 50%;
+        transition: color 0.18s ease, transform 0.18s ease;
+        flex-shrink: 0;
+    }
+
+    .search299-icon-btn i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .search299-icon-btn:hover {
+        color: var(--evo-accent);
+        transform: scale(1.08);
+    }
+
+    .search299-pill-form input.search299-input {
+        width: 0;
+        height: 100%;
+        opacity: 0;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--evo-text);
+        font-size: 0.9rem;
+        padding: 0;
+        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, padding 0.3s ease;
+    }
+
+    .search299-wrapper:hover .search299-pill-form,
+    .search299-pill-form:focus-within {
+        width: 240px;
+        border-color: var(--evo-accent);
+        box-shadow: 0 0 0 3px var(--evo-accent-soft);
+    }
+
+    .search299-wrapper:hover .search299-pill-form input.search299-input,
+    .search299-pill-form:focus-within input.search299-input {
+        width: calc(100% - 38px);
+        opacity: 1;
+        padding: 0 8px 0 14px;
+    }
+
+    /* Recherche mobile toujours ouverte pleine largeur */
+    @media (max-width: 1024px) {
+        .nav-search-item {
+            width: 100%;
+            margin: 8px 0;
+        }
+
+        .search299-wrapper {
+            width: 100%;
+        }
+
+        .search299-pill-form {
+            width: 100%;
+            max-width: 100%;
+            height: 42px;
+            padding: 0 4px;
+        }
+
+        .search299-pill-form input.search299-input {
+            width: calc(100% - 40px);
+            opacity: 1;
+            padding: 0 12px 0 16px;
+        }
+    }
+
+    /* --------------------------------------------------------------------------
+       4. Boutons & Contrôles de Formulaire
+       -------------------------------------------------------------------------- */
+    .button,
+    button,
+    input[type="submit"],
+    input[type="button"],
+    input[type="reset"] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0.65rem 1.25rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.4;
+        border-radius: var(--evo-radius-sm);
+        border: 1px solid transparent;
+        background: var(--evo-accent);
+        color: var(--evo-accent-text);
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
+        box-shadow: var(--evo-shadow-sm);
+    }
+
+    .button:hover,
+    button:hover,
+    input[type="submit"]:hover {
+        background: var(--evo-accent-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--evo-shadow-md);
+    }
+
+    .button:active,
+    button:active,
+    input[type="submit"]:active {
+        transform: translateY(0);
+    }
+
+    .button.secondary,
+    button.secondary {
+        background: var(--evo-surface-alt);
+        color: var(--evo-text);
+        border: 1px solid var(--evo-border);
+    }
+
+    .button.secondary:hover,
+    button.secondary:hover {
+        background: var(--evo-border);
+        color: var(--evo-text);
+    }
+
+    .button.danger,
+    button.danger {
+        background: var(--evo-danger);
+        color: #ffffff;
+    }
+
+    .button.danger:hover,
+    button.danger:hover {
+        background: #7f1d1d;
+    }
+
+    .button.warning,
+    button.warning {
+        background: var(--evo-warning);
+        color: #ffffff;
+    }
+
+    .button.small,
+    button.small {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    /* Champs de saisie */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 0.65rem 0.95rem;
+        font-size: 0.95rem;
+        background: var(--evo-input-bg);
+        color: var(--evo-text);
+        border: 1px solid var(--evo-input-border);
+        border-radius: var(--evo-radius-sm);
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: var(--evo-accent);
+        box-shadow: 0 0 0 3px var(--evo-accent-soft);
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.92rem;
+        margin-bottom: 0.35rem;
+        color: var(--evo-text);
+    }
+
+    /* --------------------------------------------------------------------------
+       5. Tableaux Responsives
+       -------------------------------------------------------------------------- */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+        font-size: 0.95rem;
+        background: var(--evo-card-bg);
+        border: 1px solid var(--evo-border);
+        border-radius: var(--evo-radius-md);
+        overflow: hidden;
+    }
+
+    th, td {
+        padding: 0.85rem 1.1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--evo-border);
+    }
+
+    th {
+        background: var(--evo-surface-alt);
+        color: var(--evo-text);
+        font-weight: 700;
+        font-size: 0.88rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:hover td {
+        background: var(--evo-accent-soft);
+    }
+
+    /* Défilement horizontal automatique sur petit écran */
+    #content table {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (min-width: 769px) {
+        #content table {
+            display: table;
+        }
+    }
+
+    /* --------------------------------------------------------------------------
+       6. Messages Flash & Alertes (.msg)
+       -------------------------------------------------------------------------- */
+    .msg {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.9rem 1.25rem;
+        margin: 1rem 0;
+        border-radius: var(--evo-radius-sm);
+        border: 1px solid var(--evo-info-border);
+        background: var(--evo-info-bg);
+        color: var(--evo-info);
+        font-size: 0.95rem;
+        box-shadow: var(--evo-shadow-sm);
+    }
+
+    .msg.success {
+        background: var(--evo-success-bg);
+        border-color: var(--evo-success-border);
+        color: var(--evo-success);
+    }
+
+    .msg.warning {
+        background: var(--evo-warning-bg);
+        border-color: var(--evo-warning-border);
+        color: var(--evo-warning);
+    }
+
+    .msg.alert,
+    .msg.danger {
+        background: var(--evo-danger-bg);
+        border-color: var(--evo-danger-border);
+        color: var(--evo-danger);
+    }
+
+    .msg-button-close {
+        background: transparent;
+        border: none;
+        color: inherit;
+        opacity: 0.7;
+        cursor: pointer;
+        padding: 4px;
+        font-size: 1rem;
+        line-height: 1;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .msg-button-close:hover {
+        opacity: 1;
+        background: transparent;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* --------------------------------------------------------------------------
+       7. Onglets de Profil Utilisateur (.profile-tabs-nav)
+       -------------------------------------------------------------------------- */
+    .profile-tabs-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        border-bottom: 2px solid var(--evo-border);
+        margin: 0 0 1.5rem;
+        padding-bottom: 0;
+    }
+
+    .profile-tabs-nav .profile-tab-button,
+    .profile-tab-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.85rem 1.25rem;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: var(--evo-text-muted);
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 0.96rem;
+        font-weight: 600;
+        margin-bottom: -2px;
+        border-radius: var(--evo-radius-sm) var(--evo-radius-sm) 0 0;
+        box-shadow: none;
+        transform: none;
+        transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .profile-tabs-nav .profile-tab-button:hover,
+    .profile-tab-button:hover {
+        color: var(--evo-accent);
+        background: var(--evo-accent-soft);
+        box-shadow: none;
+        transform: none;
+    }
+
+    .profile-tabs-nav .profile-tab-button.active,
+    .profile-tab-button.active {
+        color: var(--evo-accent);
+        border-bottom-color: var(--evo-accent);
+        background: transparent;
+        font-weight: 700;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .profile-tabs-nav .profile-tab-button.profile-tab-danger,
+    .profile-tab-button.profile-tab-danger {
+        margin-left: auto;
+        color: var(--evo-danger);
+    }
+
+    .profile-tabs-nav .profile-tab-button.profile-tab-danger:hover,
+    .profile-tab-button.profile-tab-danger:hover {
+        background: var(--evo-danger-bg);
+        color: var(--evo-danger);
+    }
+
+    .profile-tab-content {
+        display: none;
+        padding: 4px 0;
+    }
+
+    .profile-tab-content.active {
+        display: block;
+    }
+
+    /* --------------------------------------------------------------------------
+       8. Cartes & Badges (.evo-card, .evo-badge)
+       -------------------------------------------------------------------------- */
+    .evo-card,
+    .card,
+    .sidebarModule {
+        background: var(--evo-card-bg);
+        border: 1px solid var(--evo-border);
+        border-radius: var(--evo-radius-md);
+        padding: 1.25rem 1.5rem;
+        color: var(--evo-text);
+        box-shadow: var(--evo-shadow-sm);
+    }
+
+    .evo-badge,
+    .nav-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 9px;
+        border-radius: var(--evo-radius-full);
+        font-size: 0.74rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .evo-badge-success { background: var(--evo-success-bg); color: var(--evo-success); }
+    .evo-badge-warning { background: var(--evo-warning-bg); color: var(--evo-warning); }
+    .evo-badge-danger  { background: var(--evo-danger-bg); color: var(--evo-danger); }
+    .evo-badge-info    { background: var(--evo-info-bg); color: var(--evo-info); }
+    .evo-badge-neutral { background: var(--evo-surface-alt); color: var(--evo-text-muted); }
+}
