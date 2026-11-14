@@ -248,16 +248,97 @@ class EcommerceController extends PublicController
             }
             
             \Ecommerce\Entities\Cart::clear();
+
+            // Envoi des emails de confirmation et notification
+            $this->sendOrderEmails($order, $orderItems, $orderData, $plugin);
             
             $response->status = \Core\Responses\ApiResponse::STATUS_SUCCESS;
             $response->message = Lang::get('ecommerce.order-created');
-            $response->redirect = Util::urlBuild('/shop');
+            $response->redirect = Util::urlBuild('/order/success/' . $order->getId());
         } else {
             $response->status = \Core\Responses\ApiResponse::STATUS_ERROR;
             $response->message = Lang::get('ecommerce.order-create-error');
         }
         
         return $response;
+    }
+
+    public function orderSuccess($id)
+    {
+        $order = $this->orderManager->findById((int)$id);
+        if (!$order) {
+            \Utils\Show::msg('Commande introuvable.', 'error');
+            return $this->core->redirect(Util::urlBuild('/shop'));
+        }
+
+        $plugin = \Core\Plugin\PluginsManager::getInstance()->getPlugin('ecommerce');
+        $currency = $plugin ? $plugin->getConfigVal('currency') : '€';
+
+        $items = $this->orderManager->getOrderItems($order->getId());
+
+        $response = new PublicResponse();
+        $tpl = $response->createPluginTemplate('ecommerce', 'order-success');
+        $tpl->set('order', $order);
+        $tpl->set('items', $items);
+        $tpl->set('currency', $currency ?: '€');
+
+        $bankDetails = [
+            'owner' => $this->core->getConfigVal('siteName') ?: 'Boutique en ligne',
+            'iban' => $plugin ? ($plugin->getConfigVal('bank_iban') ?: 'FR76 1234 5678 9012 3456 7890 123') : '',
+            'bic' => $plugin ? ($plugin->getConfigVal('bank_bic') ?: 'BNPAFRPPXXX') : '',
+        ];
+        $tpl->set('bankDetails', $bankDetails);
+
+        $response->addTemplate($tpl);
+        return $response;
+    }
+
+    private function sendOrderEmails($order, array $orderItems, array $orderData, $plugin): void
+    {
+        $siteName = $this->core->getConfigVal('siteName') ?: '299koEVO';
+        $siteEmail = $this->core->getConfigVal('siteEmail') ?: 'noreply@' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
+        $customerEmail = trim($orderData['customer_email'] ?? '');
+        $currency = $plugin ? $plugin->getConfigVal('currency') : '€';
+
+        $itemsText = "";
+        foreach ($orderItems as $item) {
+            $lineTotal = (float)$item['price'] * (int)$item['quantity'];
+            $itemsText .= "- " . $item['product_name'] . " x" . $item['quantity'] . " : " . number_format($lineTotal, 2) . " " . $currency . "\n";
+        }
+
+        // 1. Email au client
+        if (!empty($customerEmail) && filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+            $clientSubject = "[" . $siteName . "] Confirmation de votre commande #" . $order->getId();
+            $clientMsg = "Bonjour " . ($orderData['customer_name'] ?: 'Cher client') . ",\n\n";
+            $clientMsg .= "Nous vous remercions pour votre commande #" . $order->getId() . " passée sur notre boutique " . $siteName . ".\n\n";
+            $clientMsg .= "Détail de vos articles :\n" . $itemsText . "\n";
+            $clientMsg .= "Total TTC : " . number_format((float)$orderData['total'], 2) . " " . $currency . "\n";
+            $clientMsg .= "Mode de paiement : " . $orderData['payment_method'] . "\n\n";
+            $clientMsg .= "Adresse de livraison :\n" . $orderData['customer_address'] . "\n\n";
+            if ($orderData['payment_method'] === 'bank_transfer') {
+                $iban = $plugin ? ($plugin->getConfigVal('bank_iban') ?: 'FR76 1234 5678 9012 3456 7890 123') : '';
+                $bic = $plugin ? ($plugin->getConfigVal('bank_bic') ?: 'BNPAFRPPXXX') : '';
+                $clientMsg .= "Pour finaliser votre commande, merci d'effectuer votre virement avec la référence CMD-" . $order->getId() . " :\n";
+                $clientMsg .= "IBAN : " . $iban . "\nBIC : " . $bic . "\n\n";
+            }
+            $clientMsg .= "À très bientôt sur " . $siteName . " !\n";
+
+            @Util::sendEmail($siteEmail, $siteEmail, $customerEmail, $clientSubject, $clientMsg);
+        }
+
+        // 2. Notification à l'administrateur
+        if (!empty($siteEmail) && filter_var($siteEmail, FILTER_VALIDATE_EMAIL)) {
+            $adminSubject = "[Nouvelle Commande #" . $order->getId() . "] " . ($orderData['customer_name'] ?: 'Client');
+            $adminMsg = "Une nouvelle commande #" . $order->getId() . " vient d'être passée sur votre boutique.\n\n";
+            $adminMsg .= "Client : " . $orderData['customer_name'] . " (" . $orderData['customer_email'] . ")\n";
+            $adminMsg .= "Téléphone : " . ($orderData['customer_phone'] ?: 'Non renseigné') . "\n";
+            $adminMsg .= "Total : " . number_format((float)$orderData['total'], 2) . " " . $currency . "\n";
+            $adminMsg .= "Mode de règlement : " . $orderData['payment_method'] . "\n\n";
+            $adminMsg .= "Articles commandés :\n" . $itemsText . "\n";
+            $adminMsg .= "Consultez la commande dans l'administration : " . Util::urlBuild('/admin/ecommerce/orders/view/' . $order->getId()) . "\n";
+
+            @Util::sendEmail($siteEmail, $customerEmail ?: $siteEmail, $siteEmail, $adminSubject, $adminMsg);
+        }
     }
 }
 

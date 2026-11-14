@@ -117,12 +117,35 @@ class ExtensionsService
     public function getAdminNavigationEntries(): array
     {
         $entries = [];
+        $updatesCount = 0;
+        try {
+            $cache = new \Core\Storage\Cache();
+            $plugins = $cache->get('marketplace-plugins');
+            $themes = $cache->get('marketplace-themes');
+            if (is_array($plugins)) {
+                foreach ($plugins as $p) {
+                    $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_PLUGIN, $p);
+                    if ($r->updateNeeded()) $updatesCount++;
+                }
+            }
+            if (is_array($themes)) {
+                foreach ($themes as $t) {
+                    $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_THEME, $t);
+                    if ($r->updateNeeded()) $updatesCount++;
+                }
+            }
+        } catch (\Throwable $e) {}
+
         foreach ($this->adminModules as $module) {
-            $entries[] = [
+            $entry = [
                 'name' => $module['name'],
                 'icon' => $module['icon'],
                 'label' => Lang::get($module['label']),
             ];
+            if ($module['name'] === 'marketplace' && $updatesCount > 0) {
+                $entry['badge'] = $updatesCount;
+            }
+            $entries[] = $entry;
         }
         return $entries;
     }

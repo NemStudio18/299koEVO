@@ -82,9 +82,67 @@ class MarketPlaceRessource
         }
     }
 
+    public function getLocalHash(): ?string
+    {
+        $hashFile = DATA_CORE_EXTENSIONS . 'hashes.json';
+        if (file_exists($hashFile)) {
+            $hashes = Util::readJsonFile($hashFile, true);
+            if (is_array($hashes) && isset($hashes[$this->type . ':' . $this->slug])) {
+                return $hashes[$this->type . ':' . $this->slug];
+            }
+        }
+
+        // Calcul de secours du hash du fichier infos.json
+        $dir = ($this->type === self::TYPE_PLUGIN) ? (PLUGINS . $this->slug) : (THEMES . $this->slug);
+        if (!is_dir($dir)) {
+            return null;
+        }
+
+        $infoFile = ($this->type === self::TYPE_PLUGIN) ? ($dir . '/param/infos.json') : ($dir . '/infos.json');
+        if (file_exists($infoFile)) {
+            return sha1_file($infoFile) ?: null;
+        }
+
+        return null;
+    }
+
+    public function getRemoteHash(): ?string
+    {
+        return $this->origRessource->hash ?? $this->origRessource->sha ?? $this->origRessource->commit ?? null;
+    }
+
+    public function remoteHashMismatch(): bool
+    {
+        $remoteHash = $this->getRemoteHash();
+        if (empty($remoteHash)) {
+            return false;
+        }
+        $localHash = $this->getLocalHash();
+        return (!empty($localHash) && $localHash !== $remoteHash);
+    }
+
+    public function isSecurityPatch(): bool
+    {
+        return ($this->isInstalled && $this->version === $this->lastVersion && $this->remoteHashMismatch());
+    }
+
     public function updateNeeded(): bool
     {
-        return ($this->isInstalled && $this->version != $this->lastVersion);
+        if (!$this->isInstalled) {
+            return false;
+        }
+
+        // 1. Détection classique par version SemVer (ex: 1.0.0 vs 1.1.0)
+        if (!empty($this->lastVersion) && $this->version != $this->lastVersion) {
+            return true;
+        }
+
+        // 2. Détection automatique par hash (patch de sécurité / micro-fix sans incrément de version)
+        if ($this->remoteHashMismatch()) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getPreviewUrl()

@@ -130,6 +130,7 @@ class AdminMarketplaceController extends AdminController
             'plugins_updates' => 0,
             'themes_total' => count($allThemes),
             'themes_installed' => 0,
+            'themes_updates' => 0,
         ];
 
         foreach ($allPlugins as $plugin) {
@@ -146,6 +147,9 @@ class AdminMarketplaceController extends AdminController
             $r = new MarketPlaceRessource(MarketPlaceRessource::TYPE_THEME, $theme);
             if ($r->isInstalled) {
                 $stats['themes_installed']++;
+            }
+            if ($r->updateNeeded()) {
+                $stats['themes_updates']++;
             }
         }
 

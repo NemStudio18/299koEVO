@@ -256,16 +256,18 @@ class AgendaController extends PublicController
 
         // Balises Open Graph pour le partage Facebook
         $core = \Core\Core::getInstance();
-        $eventUrl = 'https://vivre-bourges.fr/agenda/event/' . $id;
-        $eventDesc = trim(strip_tags(html_entity_decode($event->getDescription() ?? 'Événement à Bourges', ENT_QUOTES | ENT_HTML5, 'UTF-8')));
-        $eventImg = $event->getImageUrl() ?: '/theme/halloween/logo.png';
+        $siteUrl = rtrim($core->getConfigVal('siteUrl') ?: '', '/');
+        $eventUrl = $siteUrl . '/agenda/event/' . $id;
+        $eventDesc = trim(strip_tags(html_entity_decode($event->getDescription() ?? 'Événement', ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+        $eventImg = $event->getImageUrl() ?: '/theme/' . ($core->getConfigVal('theme') ?: 'default') . '/logo.png';
         if (!preg_match('#^https?://#i', $eventImg)) {
-            $eventImg = 'https://vivre-bourges.fr' . (str_starts_with($eventImg, '/') ? '' : '/') . $eventImg;
+            $eventImg = $siteUrl . (str_starts_with($eventImg, '/') ? '' : '/') . $eventImg;
         }
+        $siteName = $core->getConfigVal('siteName') ?: '299koEVO';
         $core->addMeta('<link rel="canonical" href="' . htmlspecialchars($eventUrl, ENT_QUOTES, 'UTF-8') . '">');
         $core->addMeta('<meta property="og:type" content="article">');
-        $core->addMeta('<meta property="og:site_name" content="Vivre Bourges">');
-        $core->addMeta('<meta property="og:title" content="' . htmlspecialchars($eventTitle . ' | Agenda Vivre-Bourges', ENT_QUOTES, 'UTF-8') . '">');
+        $core->addMeta('<meta property="og:site_name" content="' . htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8') . '">');
+        $core->addMeta('<meta property="og:title" content="' . htmlspecialchars($eventTitle . ' | Agenda ' . $siteName, ENT_QUOTES, 'UTF-8') . '">');
         $core->addMeta('<meta property="og:description" content="' . htmlspecialchars(mb_substr($eventDesc, 0, 200), ENT_QUOTES, 'UTF-8') . '">');
         $core->addMeta('<meta property="og:url" content="' . htmlspecialchars($eventUrl, ENT_QUOTES, 'UTF-8') . '">');
         $core->addMeta('<meta property="og:image" content="' . htmlspecialchars($eventImg, ENT_QUOTES, 'UTF-8') . '">');
@@ -290,7 +292,7 @@ class AgendaController extends PublicController
                     $lat = (float)$poiCoord['lat'];
                     $lon = (float)$poiCoord['lon'];
                 }
-            } catch (\Exception $e) {}
+            } catch (\Throwable $e) {}
         }
 
         $mapHtml = '';
@@ -337,7 +339,7 @@ class AgendaController extends PublicController
                 $linkedOffers = \Offers\Entities\Offer::query()
                     ->where('event_id', '=', $id)
                     ->get();
-            } catch (\Exception $e) {}
+            } catch (\Throwable $e) {}
         }
         $tpl->set('linkedOffers', $linkedOffers);
 
@@ -610,5 +612,117 @@ class AgendaController extends PublicController
 
         return $this->core->redirect('/agenda');
     }
+
+    /**
+     * Exporte un événement individuel au format iCal (.ics)
+     */
+    public function exportIcal($id)
+    {
+        $event = $this->eventManager->findById((int)$id);
+        if (!$event || $event->getStatus() !== 'published') {
+            Show::msg('Événement non trouvé ou non publié.', 'error');
+            return $this->core->redirect('/agenda');
+        }
+
+        $ics = $this->buildIcal([$event], $event->getTitle());
+        $filename = 'evenement-' . $event->getId() . '.ics';
+
+        header('Content-Type: text/calendar; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        echo $ics;
+        exit;
+    }
+
+    /**
+     * Exporte tous les événements futurs publiés au format iCal (.ics)
+     */
+    public function exportAllIcal()
+    {
+        $today = date('Y-m-d');
+        $events = $this->eventManager->findFutureEvents($today);
+
+        $core = \Core\Core::getInstance();
+        $siteName = $core->getConfigVal('siteName') ?: '299koEVO';
+        $ics = $this->buildIcal($events, 'Agenda ' . $siteName);
+        $filename = 'agenda-' . date('Y-m-d') . '.ics';
+
+        header('Content-Type: text/calendar; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        echo $ics;
+        exit;
+    }
+
+    private function buildIcal(array $events, string $calName): string
+    {
+        $core = \Core\Core::getInstance();
+        $siteUrl = rtrim($core->getConfigVal('siteUrl') ?: 'http://localhost', '/');
+        
+        $lines = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//299koEVO//Agenda Plugin//FR',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+            'X-WR-CALNAME:' . $this->escapeIcal($calName),
+            'X-WR-TIMEZONE:Europe/Paris'
+        ];
+
+        $nowStr = gmdate('Ymd\THis\Z');
+
+        foreach ($events as $event) {
+            $id = $event->getId();
+            $title = $event->getTitle();
+            $desc = strip_tags(html_entity_decode($event->getDescription() ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            $loc = $event->getLocation() ?? '';
+            $url = $siteUrl . '/agenda/event/' . $id;
+
+            $startDate = $event->getStartDate();
+            $endDate = $event->getEndDate() ?: $startDate;
+
+            $dtStart = $this->toIcalTimestamp($startDate);
+            $dtEnd = $this->toIcalTimestamp($endDate);
+
+            $lines[] = 'BEGIN:VEVENT';
+            $lines[] = 'UID:agenda-' . $id . '@' . parse_url($siteUrl, PHP_URL_HOST);
+            $lines[] = 'DTSTAMP:' . $nowStr;
+            $lines[] = 'DTSTART:' . $dtStart;
+            $lines[] = 'DTEND:' . $dtEnd;
+            $lines[] = 'SUMMARY:' . $this->escapeIcal($title);
+            if (!empty($desc)) {
+                $lines[] = 'DESCRIPTION:' . $this->escapeIcal($desc);
+            }
+            if (!empty($loc)) {
+                $lines[] = 'LOCATION:' . $this->escapeIcal($loc);
+            }
+            $lines[] = 'URL:' . $url;
+            $lines[] = 'STATUS:CONFIRMED';
+            $lines[] = 'END:VEVENT';
+        }
+
+        $lines[] = 'END:VCALENDAR';
+        return implode("\r\n", $lines) . "\r\n";
+    }
+
+    private function toIcalTimestamp(string $dateStr): string
+    {
+        $ts = strtotime($dateStr);
+        if (!$ts) {
+            return gmdate('Ymd\THis\Z');
+        }
+        // If it's a date only (Y-m-d), produce VALUE=DATE format or timestamp
+        if (strlen(trim($dateStr)) <= 10) {
+            return date('Ymd', $ts);
+        }
+        return gmdate('Ymd\THis\Z', $ts);
+    }
+
+    private function escapeIcal(string $text): string
+    {
+        $text = str_replace('\\', '\\\\', $text);
+        $text = str_replace(';', '\;', $text);
+        $text = str_replace(',', '\,', $text);
+        return str_replace(["\r\n", "\n", "\r"], '\n', $text);
+    }
 }
+
 

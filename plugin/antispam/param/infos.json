@@ -2,9 +2,10 @@
     "slug": "antispam",
     "name": "Antispam",
     "icon": "fa-solid fa-shield-virus",
-    "description": "Protège vos formulaires des robots spammeurs",
-    "authorEmail": "mx.koder@gmail.com",
-    "authorWebsite": "https://kodercloud.ovh",
-    "version": "1.1.0",
+    "description": "Protection antispam avancée avec moteur 299nobot intégré (preuve de travail PoW SHA-256 locale, zéro captcha intrusif, conforme RGPD).",
+    "author": "299Ko Team",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
+    "version": "1.2.0",
     "homeAdminMethod": "AntispamAdminController#home"
 }

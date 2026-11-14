@@ -43,6 +43,12 @@ class CoreController extends Controller
 
     public function renderHome()
     {
+        // Hook prioritaire pour intercepter la page d'accueil (ex: HomeBuilder)
+        $homeResponse = Core::getInstance()->callHook('core:render-home', null);
+        if ($homeResponse instanceof \Core\Responses\Response) {
+            return $homeResponse;
+        }
+
         // Handle core modules
         if ($this->defaultModule === 'page') {
             $controller = new PageController();

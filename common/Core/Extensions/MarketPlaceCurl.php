@@ -12,7 +12,7 @@ class MarketPlaceCurl extends Curl
 {
     protected string $siteID = '';
 
-    protected string $endPoint = 'https://299ko.ovh/';
+    protected string $endPoint = 'https://299ko-api.flexcb.fr/';
 
     protected ExtensionsService $service;
 

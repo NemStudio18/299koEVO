@@ -1,5 +1,5 @@
 /**
- * Global Geolocation Service for Vivre-Bourges
+ * Global Geolocation Service for 299koEVO
  * Features:
  * - High-accuracy GPS positioning (enableHighAccuracy: true)
  * - 10-minute cache TTL on localStorage (prevents stale/wrong location trap)
@@ -157,7 +157,7 @@ if (typeof GlobalGeolocation === 'undefined') {
             const cookieVal = parseFloat(lat).toFixed(6) + ',' + parseFloat(lon).toFixed(6);
             document.cookie = 'user_geoloc=' + cookieVal + '; path=/; max-age=86400; SameSite=Lax';
 
-            console.log("Vivre-Bourges: Nouvelle position GPS fixée ->", lat, lon, "(précision: " + Math.round(accuracy) + "m)");
+            console.log("299koEVO: Nouvelle position GPS fixée ->", lat, lon, "(précision: " + Math.round(accuracy) + "m)");
             this.dispatchLocationUpdate();
         }
 

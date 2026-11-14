@@ -1,0 +1,55 @@
+[
+  {
+    "id": "bourges-cathedrale",
+    "title": "Cathédrale Saint-Étienne",
+    "category": "Patrimoine & Culture",
+    "lat": 47.0827,
+    "lon": 2.3992,
+    "address": "Place Étienne Dolet, 18000 Bourges",
+    "phone": "02 48 65 49 44",
+    "website": "https://www.bourgesberrytourisme.com",
+    "description": "Chef-d'œuvre de l'art gothique classé au patrimoine mondial de l'UNESCO.",
+    "icon": "fa-monument",
+    "color": "#e65100"
+  },
+  {
+    "id": "bourges-palais-jacques-coeur",
+    "title": "Palais Jacques Cœur",
+    "category": "Patrimoine & Culture",
+    "lat": 47.0844,
+    "lon": 2.3941,
+    "address": "10bis Rue Jacques Cœur, 18000 Bourges",
+    "phone": "02 48 24 06 87",
+    "website": "https://www.palais-jacques-coeur.fr",
+    "description": "L'un des plus somptueux édifices civils du XVe siècle en France.",
+    "icon": "fa-landmark",
+    "color": "#1565c0"
+  },
+  {
+    "id": "bourges-marais",
+    "title": "Les Marais de Bourges",
+    "category": "Nature & Balades",
+    "lat": 47.0895,
+    "lon": 2.4110,
+    "address": "Chemin des Marais, 18000 Bourges",
+    "phone": "",
+    "website": "https://www.ville-bourges.fr",
+    "description": "135 hectares de parcelles maraîchères et d'eau en plein cœur de ville.",
+    "icon": "fa-leaf",
+    "color": "#2e7d32"
+  },
+  {
+    "id": "bourges-halle-ble",
+    "title": "Halle au Blé",
+    "category": "Commerces & Marchés",
+    "lat": 47.0818,
+    "lon": 2.3975,
+    "address": "Place de la Halle au Blé, 18000 Bourges",
+    "phone": "",
+    "website": "",
+    "description": "Marché traditionnel et lieu de vie incontournable du centre-ville.",
+    "icon": "fa-store",
+    "color": "#f57c00"
+  }
+]
+

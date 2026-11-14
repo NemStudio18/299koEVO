@@ -228,6 +228,16 @@ class MarketPlaceManager
             }
             
             $zip->close();
+
+            // Enregistrer l'empreinte (hash) de la version installée pour le suivi automatique des correctifs
+            $installedHash = $ressource->getRemoteHash() ?: (file_exists(CACHE . 'tmp.zip') ? sha1_file(CACHE . 'tmp.zip') : null);
+            if ($installedHash) {
+                $hashFile = DATA_CORE_EXTENSIONS . 'hashes.json';
+                $hashes = file_exists($hashFile) ? (\Utils\Util::readJsonFile($hashFile, true) ?: []) : [];
+                $hashes[$ressource->type . ':' . $ressource->slug] = $installedHash;
+                \Utils\Util::writeJsonFile($hashFile, $hashes);
+            }
+
             unlink(CACHE . 'tmp.zip');
             $this->runAfterUpdatePlugin($ressource);
             $this->logger->info($ressource->slug . ' correctly installed');

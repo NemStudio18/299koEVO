@@ -1,12 +1,11 @@
 {
+    "slug": "SearchMaps",
     "name": "SearchMaps",
     "icon": "fa-solid fa-map-location-dot",
-    "description": "Leaflet integration for Search UI",
+    "description": "Cartographie OpenStreetMap et Leaflet pour intégration d'itinéraires et points géolocalisés.",
     "version": "1.0.0",
-    "author": "Antigravity",
-    "provider": "299Ko",
-    "type": "tool",
-    "targetPrototype": "SearchMaps",
-    "dependencies": [],
+    "author": "299Ko Team",
+    "authorEmail": "maximeblanc@flexcb.fr",
+    "authorWebsite": "https://299ko.flexcb.fr",
     "homeAdminMethod": "SearchMaps\\Controllers\\SearchMapsAdminController#home"
 }

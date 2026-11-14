@@ -34,4 +34,5 @@ $router->map('POST', '/cart/update', '\\Ecommerce\\Controllers\\EcommerceControl
 $router->map('GET', '/cart/remove/[i:id]', '\\Ecommerce\\Controllers\\EcommerceController#removeFromCart', 'ecommerce-cart-remove');
 $router->map('GET', '/checkout[/?]', '\\Ecommerce\\Controllers\\EcommerceController#checkout', 'ecommerce-checkout');
 $router->map('POST', '/checkout/process', '\\Ecommerce\\Controllers\\EcommerceController#processCheckout', 'ecommerce-checkout-process');
+$router->map('GET', '/order/success/[i:id]', '\\Ecommerce\\Controllers\\EcommerceController#orderSuccess', 'ecommerce-order-success');
 

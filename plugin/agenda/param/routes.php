@@ -19,9 +19,11 @@ $router->map('POST', '/admin/agenda/save-config', 'Agenda\\Controllers\\AgendaAd
 $router->map('GET', '/agenda[/?]', 'Agenda\\Controllers\\AgendaController#index', 'agenda-index');
 $router->map('GET', '/agenda/page/[i:page]', 'Agenda\\Controllers\\AgendaController#index', 'agenda-index-page');
 $router->map('GET', '/agenda/api/events', 'Agenda\\Controllers\\AgendaController#apiEvents', 'agenda-api-events');
+$router->map('GET', '/agenda/export.ics[/?]', 'Agenda\\Controllers\\AgendaController#exportAllIcal', 'agenda-export-all-ical');
 $router->map('GET', '/agenda/event/add', 'Agenda\\Controllers\\AgendaController#add', 'agenda-event-add');
 $router->map('POST', '/agenda/event/add', 'Agenda\\Controllers\\AgendaController#addSend', 'agenda-event-add-send');
 $router->map('GET', '/agenda/event/propose', 'Agenda\\Controllers\\AgendaController#propose', 'agenda-event-propose');
 $router->map('POST', '/agenda/event/propose', 'Agenda\\Controllers\\AgendaController#proposeSend', 'agenda-event-propose-send');
+$router->map('GET', '/agenda/event/[*:id]/ical[/?]', 'Agenda\\Controllers\\AgendaController#exportIcal', 'agenda-event-ical');
 $router->map('POST', '/agenda/event/[*:id]/attendance', 'Agenda\\Controllers\\AgendaController#toggleAttendance', 'agenda-event-attendance-toggle');
 $router->map('GET', '/agenda/event/[*:id]', 'Agenda\\Controllers\\AgendaController#event', 'agenda-event');

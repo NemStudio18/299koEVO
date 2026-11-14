@@ -1,0 +1,76 @@
+{
+    "blocks": [
+        {
+            "id": "hero",
+            "type": "html",
+            "title": "",
+            "content": "<section class=\"homebuilder-hero\"><p class=\"kicker\">299Ko CMS</p><h1>Construisez une page d'accueil moderne en quelques minutes</h1><p class=\"subtitle\">Ajoutez des textes, des boutons, des articles du blog ou des blocs dynamiques sans écrire de code.</p><div class=\"cta-group\"><a class=\"btn primary\" href=\"#latest\">Explorer les nouveautés</a><a class=\"btn ghost\" href=\"/admin/homebuilder\">Configurer les blocs</a></div></section>",
+            "order": 1,
+            "active": true,
+            "styles": {
+                "container": {
+                    "backgroundColor": "#0b1f3a",
+                    "color": "#ffffff",
+                    "padding": "60px",
+                    "borderRadius": "16px",
+                    "margin": "10px 0",
+                    "textAlign": "left"
+                },
+                "title": {
+                    "color": "#ffffff",
+                    "fontSize": "32px",
+                    "fontWeight": "bold",
+                    "marginBottom": "20px",
+                    "textAlign": "left"
+                },
+                "content": {
+                    "color": "#d7e0f0",
+                    "fontSize": "18px",
+                    "lineHeight": "1.8",
+                    "marginBottom": "15px"
+                }
+            }
+        },
+        {
+            "id": "features",
+            "type": "text",
+            "title": "Pourquoi HomeBuilder ?",
+            "content": "• Sections entièrement personnalisables\\n• Blocs dynamiques (articles, sondages, livre d'or)\\n• Styles éditables sans CSS\\n• Compatible avec tous les thèmes 299Ko",
+            "order": 2,
+            "active": true
+        },
+        {
+            "id": "latest_articles",
+            "type": "latest_articles",
+            "title": "Derniers articles du blog",
+            "content": "",
+            "order": 3,
+            "active": true,
+            "options": {
+                "count": 3
+            }
+        },
+        {
+            "id": "latest_sondages",
+            "type": "latest_sondages",
+            "title": "Sondages en cours",
+            "content": "",
+            "order": 4,
+            "active": true,
+            "options": {
+                "count": 2
+            }
+        },
+        {
+            "id": "guestbook_cta",
+            "type": "guestbook_cta",
+            "title": "Un mot pour l'équipe ?",
+            "content": "Votre avis compte ! Laissez un message dans le livre d'or et partagez votre expérience.",
+            "order": 5,
+            "active": true,
+            "options": {
+                "button_text": "Signer le livre d'or"
+            }
+        }
+    ]
+}

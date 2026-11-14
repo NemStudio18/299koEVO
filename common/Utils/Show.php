@@ -431,6 +431,7 @@ class Show
             'faq'           => 'contenu',
             'homebuilder'   => 'contenu',
             'localfeed'     => 'contenu',
+            'rss'           => 'contenu',
 
             // Boutique & Commerce
             'ecommerce'     => 'commerce',

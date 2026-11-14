@@ -129,12 +129,17 @@
             </div>
 
             <div class="event-share-action">
+                <a href="/agenda/event/{{event.getId()}}/ical" 
+                   class="button small secondary btn-ical-export" 
+                   title="Ajouter cet événement à Google Agenda, Outlook ou Apple Calendar">
+                    <i class="fa-solid fa-calendar-arrow-down"></i> Ajouter au calendrier (.ics)
+                </a>
                 <a href="{{ fb_share_url }}" 
                    target="_blank" 
                    rel="noopener noreferrer" 
                    class="btn-facebook-share"
                    aria-label="Partager cet événement sur Facebook">
-                    <i class="fa-brands fa-facebook"></i> Partager sur Facebook
+                    <i class="fa-brands fa-facebook"></i> Partager
                 </a>
                 <button type="button" 
                         onclick="vbCopyLink(window.location.href, this)"

@@ -680,29 +680,38 @@ HTML;
     {
         $pdo = $this->getSqlite();
         if ($pdo !== null) {
+            $began = false;
             try {
                 $pdo->exec('BEGIN IMMEDIATE');
+                $began = true;
                 if ($this->isRateLimited($ctx)) {
                     $this->lastReason = 'rate_limited';
-                    $this->recordRateAttempt($ctx, true);
+                    $this->recordRateAttempt($ctx, true, true);
                     $pdo->exec('COMMIT');
+                    $began = false;
                     return false;
                 }
                 if (!$this->markNonceUsed($nonce, true)) {
                     $this->lastReason = 'invalid_nonce';
-                    $this->recordRateAttempt($ctx, true);
+                    $this->recordRateAttempt($ctx, true, true);
                     $pdo->exec('COMMIT');
+                    $began = false;
                     return false;
                 }
-                $this->recordRateAttempt($ctx, false);
+                $this->recordRateAttempt($ctx, false, true);
                 $pdo->exec('COMMIT');
+                $began = false;
                 return true;
             } catch (\Throwable $e) {
-                try {
-                    $pdo->exec('ROLLBACK');
-                } catch (\Throwable $ignored) {
+                // Aucune validation indue : rollback intégral si la transaction est ouverte
+                if ($began || $pdo->inTransaction()) {
+                    try {
+                        $pdo->exec('ROLLBACK');
+                    } catch (\Throwable $ignored) {
+                    }
                 }
-                $this->lastReason = 'invalid_nonce';
+                // Verrou occupé (busy_timeout expiré) ou erreur d'écriture : échec fermé
+                $this->lastReason = $began ? 'storage_error' : 'storage_busy';
                 return false;
             }
         }
@@ -850,7 +859,7 @@ HTML;
             || $counts['route_failures'] >= self::RATE_MAX_FAILURES_ROUTE;
     }
 
-    protected function recordRateAttempt(array $ctx, bool $failed): void
+    protected function recordRateAttempt(array $ctx, bool $failed, bool $strict = false): void
     {
         $now = time();
         $cutoff = $now - self::RATE_WINDOW_SECONDS;
@@ -870,6 +879,10 @@ HTML;
                 ]);
                 return;
             } catch (\Throwable $e) {
+                // Dans une transaction atomique, l'échec doit remonter pour provoquer un ROLLBACK intégral
+                if ($strict) {
+                    throw $e;
+                }
             }
         }
 

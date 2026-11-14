@@ -1,0 +1,12 @@
+{
+    "activate": 1,
+    "feed_title": "Flux d'actualités",
+    "feed_description": "Toutes les dernières publications et nouveautés du site.",
+    "max_items": 30,
+    "enable_blog": 1,
+    "enable_agenda": 1,
+    "enable_annonces": 1,
+    "enable_forum": 0,
+    "enable_pages": 1
+}
+

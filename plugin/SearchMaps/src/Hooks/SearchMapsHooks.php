@@ -80,14 +80,42 @@ class SearchMapsHooks
         $zoom = isset($attributes['zoom']) && is_numeric($attributes['zoom']) ? max(1, min(21, (int) $attributes['zoom'])) : $defaults['zoom'];
         $title = isset($attributes['title']) ? trim((string) $attributes['title']) : '';
         $height = isset($attributes['height']) ? trim((string) $attributes['height']) : '';
+        $poisAttr = $attributes['pois'] ?? null;
+        $categoryAttr = $attributes['category'] ?? null;
+
+        $markers = [];
+        $fitBounds = false;
+
+        if ($poisAttr !== null || $categoryAttr !== null) {
+            $allPois = \SearchMaps\Services\PoiManager::getAll();
+            foreach ($allPois as $poi) {
+                if ($categoryAttr && mb_strtolower($poi['category'] ?? '') !== mb_strtolower($categoryAttr)) {
+                    continue;
+                }
+                $markers[] = [
+                    'lat' => (float)$poi['lat'],
+                    'lon' => (float)$poi['lon'],
+                    'title' => $poi['title'] ?? '',
+                    'popup' => '<strong>' . htmlspecialchars($poi['title'] ?? '') . '</strong><br>' .
+                               '<small>' . htmlspecialchars($poi['category'] ?? '') . '</small>' .
+                               (!empty($poi['address']) ? '<br><small>' . htmlspecialchars($poi['address']) . '</small>' : '') .
+                               (!empty($poi['description']) ? '<p style="margin:4px 0 0;font-size:12px;">' . htmlspecialchars($poi['description']) . '</p>' : '')
+                ];
+            }
+            if (!empty($markers)) {
+                $fitBounds = true;
+            }
+        }
 
         return self::renderMap([
-            'id'     => $id,
-            'lat'    => $lat,
-            'lon'    => $lon,
-            'zoom'   => $zoom,
-            'title'  => $title,
-            'height' => $height,
+            'id'        => $id,
+            'lat'       => $lat,
+            'lon'       => $lon,
+            'zoom'      => $zoom,
+            'title'     => $title,
+            'height'    => $height,
+            'markers'   => $markers,
+            'fitBounds' => $fitBounds,
         ]);
     }
 
@@ -129,7 +157,7 @@ class SearchMapsHooks
         $output .= '<link rel="stylesheet" href="' . Util::urlBuild('plugin/SearchMaps/assets/css/search-maps.css?v=11') . '">' . "\n";
         
         // Inject Global Geolocation (only on front)
-        if (!defined('IS_ADMIN') || !IS_ADMIN) {
+        if ((!defined('ADMIN_MODE') || !ADMIN_MODE) && (!defined('IS_ADMIN') || !IS_ADMIN)) {
             $output .= '<script src="' . Util::urlBuild('plugin/SearchMaps/js/geolocation.js?v=12') . '" defer></script>' . "\n";
         }
 

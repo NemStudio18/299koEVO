@@ -1,4 +1,4 @@
-﻿<section class="module-card">
+<section class="module-card">
     <header>
         {{Lang.marketplace.description}}
         <a href="{{refreshCacheUrl}}" class="button small" style="float: right; margin-top: -5px;" title="{{Lang.marketplace.refresh_cache}}">
@@ -8,8 +8,18 @@
     <div class="tabs-container">
         <ul class="tabs-header">
             <li class="default-tab"><i class="fa-solid fa-chart-pie"></i> {{Lang.marketplace.tab-overview}}</li>
-            <li><i class="fa-solid fa-puzzle-piece"></i> {{Lang.marketplace.plugins}}</li>
-            <li><i class="fa-solid fa-panorama"></i> {{Lang.marketplace.themes}}</li>
+            <li>
+                <i class="fa-solid fa-puzzle-piece"></i> {{Lang.marketplace.plugins}}
+                {% if stats.plugins_updates > 0 %}
+                    <span class="market-tab-badge" title="{{stats.plugins_updates}} mise(s) à jour disponible(s)">{{stats.plugins_updates}}</span>
+                {% endif %}
+            </li>
+            <li>
+                <i class="fa-solid fa-panorama"></i> {{Lang.marketplace.themes}}
+                {% if stats.themes_updates > 0 %}
+                    <span class="market-tab-badge" title="{{stats.themes_updates}} mise(s) à jour disponible(s)">{{stats.themes_updates}}</span>
+                {% endif %}
+            </li>
         </ul>
         <ul class="tabs">
             <li class="tab">
