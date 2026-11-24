@@ -75,11 +75,27 @@ class Util
      */
     public static function strToUrl($str)
     {
-        $str = str_replace('&', 'et', $str);
-        if ($str !== mb_convert_encoding(mb_convert_encoding($str, 'UTF-32', 'UTF-8'), 'UTF-8', 'UTF-32'))
+        if (empty($str)) {
+            return '';
+        }
+        $str = html_entity_decode((string)$str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $str = str_replace(
+            ['&', '…', '’', '‘', '“', '”', '«', '»', '—', '–', '\''],
+            [' et ', '', '', '', '', '', '', '', '-', '-', ''],
+            $str
+        );
+        if (class_exists('Transliterator')) {
+            $transliterator = \Transliterator::create('Any-Latin; Latin-ASCII; Lower()');
+            if ($transliterator) {
+                $str = $transliterator->transliterate($str);
+            }
+        }
+        if ($str !== mb_convert_encoding(mb_convert_encoding($str, 'UTF-32', 'UTF-8'), 'UTF-8', 'UTF-32')) {
             $str = mb_convert_encoding($str, 'UTF-8');
+        }
         $str = htmlentities($str, ENT_NOQUOTES, 'UTF-8');
         $str = preg_replace('`&([a-z]{1,2})(acute|uml|circ|grave|ring|cedil|slash|tilde|caron|lig);`i', '$1', $str);
+        $str = preg_replace('`&[a-z0-9#]+;`i', '', $str);
         $str = preg_replace(array('`[^a-z0-9]`i', '`[-]+`'), '-', $str);
         return strtolower(trim($str, '-'));
     }
