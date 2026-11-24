@@ -125,6 +125,11 @@ class PageController extends PublicController
         return $response;
     }
 
+    public function weekEndBourges()
+    {
+        return $this->read('que-faire-a-bourges-ce-week-end', 2);
+    }
+
     public function espacePro()
     {
         $theme = $this->core->getConfigVal('theme');

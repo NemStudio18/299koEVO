@@ -15,6 +15,7 @@ defined('ROOT') OR exit('Access denied!');
 $router = \Core\Router\Router::getInstance();
 
 $router->map('GET|POST', '/page[/?]', 'Core\Page\Controllers\PageController#home', 'page-home');
+$router->map('GET', '/que-faire-a-bourges-ce-week-end[/?]', 'Core\Page\Controllers\PageController#weekEndBourges', 'page-weekend-bourges');
 $router->map('GET', '/mentions-legales[/?]', 'Core\Page\Controllers\PageController#mentionsLegales', 'mentions-legales');
 $router->map('GET', '/page/mentions-legales[/?]', 'Core\Page\Controllers\PageController#mentionsLegales', 'page-mentions-legales');
 $router->map('GET', '/pro[/?]', 'Core\Page\Controllers\PageController#espacePro', 'espace-pro');
