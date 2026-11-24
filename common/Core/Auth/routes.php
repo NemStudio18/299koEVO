@@ -16,7 +16,9 @@ $router->map('GET', '/login[/?]', 'Core\Auth\Controllers\UsersLoginController#lo
 $router->map('POST', '/users/login-send[/?]', 'Core\Auth\Controllers\UsersLoginController#loginSend', 'login-send');
 $router->map('GET', '/users/logout[/?]', 'Core\Auth\Controllers\UsersLoginController#logout', 'logout');
 $router->map('GET', '/users/lost-password[/?]', 'Core\Auth\Controllers\UsersLoginController#lostPassword', 'lost-password');
+$router->map('GET', '/lost-password[/?]', 'Core\Auth\Controllers\UsersLoginController#lostPassword', 'lost-password-alias');
 $router->map('POST', '/users/lost-password-send[/?]', 'Core\Auth\Controllers\UsersLoginController#lostPasswordSend', 'lost-password-send');
+$router->map('POST', '/lost-password-send[/?]', 'Core\Auth\Controllers\UsersLoginController#lostPasswordSend', 'lost-password-send-alias');
 $router->map('GET', '/users/lost-password/confirm/[a:token][/?]', 'Core\Auth\Controllers\UsersLoginController#lostPasswordConfirm', 'lost-password-confirm');
 $router->map('GET', '/users/register[/?]', 'Core\Auth\Controllers\UsersLoginController#register', 'register');
 $router->map('GET', '/register[/?]', 'Core\Auth\Controllers\UsersLoginController#register', 'register-alias');
