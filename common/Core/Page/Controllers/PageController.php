@@ -140,6 +140,17 @@ class PageController extends PublicController
         return $this->read('stationnement-gratuit-bourges', 4);
     }
 
+    public function noelBourges()
+    {
+        return $this->read('marches-de-noel-bourges', 5);
+    }
+
+    public function noelRedirect()
+    {
+        header('Location: /marches-de-noel-bourges', true, 301);
+        exit;
+    }
+
     public function stationnementRedirect()
     {
         header('Location: /stationnement-gratuit-bourges', true, 301);
