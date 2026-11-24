@@ -533,6 +533,12 @@ class Template
                             $val = \Utils\Sanitizer::cleanHtml($val);
                         }
                         break;
+                    case 'url_encode':
+                    case 'urlencode':
+                        if (is_string($val) || is_numeric($val)) {
+                            $val = urlencode((string)$val);
+                        }
+                        break;
                     case 'slice':
                         if ($filterArgs) {
                             $args = array_map('intval', explode(',', trim($filterArgs, '()')));

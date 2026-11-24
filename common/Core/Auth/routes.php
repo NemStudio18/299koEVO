@@ -12,12 +12,22 @@ defined('ROOT') OR exit('Access denied!');
 $router = \Core\Router\Router::getInstance();
 
 $router->map('GET', '/users/login[/?]', 'Core\Auth\Controllers\UsersLoginController#login', 'login');
+$router->map('GET', '/login[/?]', function() {
+    $qs = !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '';
+    header('Location: /users/login' . $qs, true, 301);
+    exit;
+}, 'login-alias');
 $router->map('POST', '/users/login-send[/?]', 'Core\Auth\Controllers\UsersLoginController#loginSend', 'login-send');
 $router->map('GET', '/users/logout[/?]', 'Core\Auth\Controllers\UsersLoginController#logout', 'logout');
 $router->map('GET', '/users/lost-password[/?]', 'Core\Auth\Controllers\UsersLoginController#lostPassword', 'lost-password');
 $router->map('POST', '/users/lost-password-send[/?]', 'Core\Auth\Controllers\UsersLoginController#lostPasswordSend', 'lost-password-send');
 $router->map('GET', '/users/lost-password/confirm/[a:token][/?]', 'Core\Auth\Controllers\UsersLoginController#lostPasswordConfirm', 'lost-password-confirm');
 $router->map('GET', '/users/register[/?]', 'Core\Auth\Controllers\UsersLoginController#register', 'register');
+$router->map('GET', '/register[/?]', function() {
+    $qs = !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '';
+    header('Location: /users/register' . $qs, true, 301);
+    exit;
+}, 'register-alias');
 $router->map('POST', '/users/register/send[/?]', 'Core\Auth\Controllers\UsersLoginController#registerSend', 'register-send');
 $router->map('GET', '/users/register/confirm/[a:token][/?]', 'Core\Auth\Controllers\UsersLoginController#confirmRegistration', 'register-confirm');
 $router->map('GET', '/users/profile[/?]', 'Core\Auth\Controllers\UsersLoginController#profile', 'profile');
