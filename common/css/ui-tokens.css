@@ -1065,8 +1065,8 @@ body.theme-dark a.evo-btn-secondary {
 .dc-error-btn,
 a.dc-error-btn,
 a.dc-error-btn:visited {
-    background: var(--evo-accent) !important;
-    color: var(--evo-accent-text, #ffffff) !important;
+    background: var(--evo-accent);
+    color: var(--evo-accent-text, #ffffff);
     font-weight: 700;
     padding: 12px 26px;
     border-radius: 10px;
@@ -1079,13 +1079,13 @@ a.dc-error-btn:visited {
 }
 .dc-error-btn:hover,
 a.dc-error-btn:hover {
-    background: var(--evo-accent-hover) !important;
-    color: var(--evo-accent-text, #ffffff) !important;
+    background: var(--evo-accent-hover);
+    color: var(--evo-accent-text, #ffffff);
     transform: translateY(-1px);
 }
 .dc-error-btn *,
 a.dc-error-btn * {
-    color: var(--evo-accent-text, #ffffff) !important;
+    color: var(--evo-accent-text, #ffffff);
 }
 .dc-error-redirect {
     margin: 18px 0 0;
@@ -1110,9 +1110,9 @@ a.dc-error-btn * {
     }
     #navigation:has(.search299-wrapper:hover) > li:not(.nav-search-item),
     #navigation:has(.search299-pill-form:focus-within) > li:not(.nav-search-item) {
-        opacity: 0 !important;
-        pointer-events: none !important;
-        transform: scale(0.96) translateX(-4px) !important;
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.96) translateX(-4px);
     }
 }
 

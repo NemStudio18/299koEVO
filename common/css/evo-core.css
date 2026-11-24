@@ -1,6 +1,6 @@
 /**
  * 299koEVO - Core CSS Framework & Base Theme
- * Architecture moderne basée sur CSS @layer (zéro !important).
+ * Architecture moderne basée sur CSS @layer (zéro).
  * 
  * Hiérarchie des couches (du moins spécifique au plus spécifique) :
  * 1. evo-reset      : Normalisation typographique, box-sizing, honeypots
@@ -72,7 +72,7 @@
         overflow-wrap: break-word;
     }
 
-    /* Champs antispam honeypot et utilitaires d'accessibilité (masquage propre sans !important) */
+    /* Champs antispam honeypot et utilitaires d'accessibilité (masquage propre sans) */
     .hp-field,
     [class*="hp-field"],
     input[name="_hp_website"],
