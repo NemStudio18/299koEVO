@@ -100,6 +100,11 @@ class Util
         return strtolower(trim($str, '-'));
     }
 
+    public static function slugify($str): string
+    {
+        return self::strToUrl($str);
+    }
+
     ## Vérifie si la chaîne est un email valide
 
     public static function isEmail($email)
