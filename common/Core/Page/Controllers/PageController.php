@@ -140,6 +140,18 @@ class PageController extends PublicController
         return $this->read('stationnement-gratuit-bourges', 4);
     }
 
+    public function stationnementRedirect()
+    {
+        header('Location: /stationnement-gratuit-bourges', true, 301);
+        exit;
+    }
+
+    public function marchesRedirect()
+    {
+        header('Location: /les-marches-de-bourges', true, 301);
+        exit;
+    }
+
     public function espacePro()
     {
         $theme = $this->core->getConfigVal('theme');

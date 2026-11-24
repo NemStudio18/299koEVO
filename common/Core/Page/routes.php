@@ -18,19 +18,10 @@ $router->map('GET|POST', '/page[/?]', 'Core\Page\Controllers\PageController#home
 $router->map('GET', '/que-faire-a-bourges-ce-week-end[/?]', 'Core\Page\Controllers\PageController#weekEndBourges', 'page-weekend-bourges');
 $router->map('GET', '/les-marches-de-bourges[/?]', 'Core\Page\Controllers\PageController#marchesBourges', 'page-marches-bourges');
 $router->map('GET', '/marches-de-bourges[/?]', 'Core\Page\Controllers\PageController#marchesBourges', 'page-marches-bourges-alias');
-$router->map('GET', '/marches-bourges[/?]', function() {
-    header('Location: /les-marches-de-bourges', true, 301);
-    exit;
-}, 'page-marches-bourges-alias2');
+$router->map('GET', '/marches-bourges[/?]', 'Core\Page\Controllers\PageController#marchesRedirect', 'page-marches-bourges-alias2');
 $router->map('GET', '/stationnement-gratuit-bourges[/?]', 'Core\Page\Controllers\PageController#stationnementBourges', 'page-stationnement-bourges');
-$router->map('GET', '/stationnement-gratuit[/?]', function() {
-    header('Location: /stationnement-gratuit-bourges', true, 301);
-    exit;
-}, 'page-stationnement-bourges-alias');
-$router->map('GET', '/parkings-gratuits-bourges[/?]', function() {
-    header('Location: /stationnement-gratuit-bourges', true, 301);
-    exit;
-}, 'page-parkings-bourges-alias');
+$router->map('GET', '/stationnement-gratuit[/?]', 'Core\Page\Controllers\PageController#stationnementRedirect', 'page-stationnement-bourges-alias');
+$router->map('GET', '/parkings-gratuits-bourges[/?]', 'Core\Page\Controllers\PageController#stationnementRedirect', 'page-parkings-bourges-alias');
 $router->map('GET', '/mentions-legales[/?]', 'Core\Page\Controllers\PageController#mentionsLegales', 'mentions-legales');
 $router->map('GET', '/page/mentions-legales[/?]', 'Core\Page\Controllers\PageController#mentionsLegales', 'page-mentions-legales');
 $router->map('GET', '/pro[/?]', 'Core\Page\Controllers\PageController#espacePro', 'espace-pro');
