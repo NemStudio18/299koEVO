@@ -130,6 +130,11 @@ class PageController extends PublicController
         return $this->read('que-faire-a-bourges-ce-week-end', 2);
     }
 
+    public function marchesBourges()
+    {
+        return $this->read('les-marches-de-bourges', 3);
+    }
+
     public function espacePro()
     {
         $theme = $this->core->getConfigVal('theme');
