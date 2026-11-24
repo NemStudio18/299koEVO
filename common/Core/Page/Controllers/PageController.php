@@ -135,6 +135,11 @@ class PageController extends PublicController
         return $this->read('les-marches-de-bourges', 3);
     }
 
+    public function stationnementBourges()
+    {
+        return $this->read('stationnement-gratuit-bourges', 4);
+    }
+
     public function espacePro()
     {
         $theme = $this->core->getConfigVal('theme');
