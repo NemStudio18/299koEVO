@@ -22,6 +22,7 @@ $router->map('GET', '/marches-bourges[/?]', 'Core\Page\Controllers\PageControlle
 $router->map('GET', '/stationnement-gratuit-bourges[/?]', 'Core\Page\Controllers\PageController#stationnementBourges', 'page-stationnement-bourges');
 $router->map('GET', '/stationnement-gratuit[/?]', 'Core\Page\Controllers\PageController#stationnementRedirect', 'page-stationnement-bourges-alias');
 $router->map('GET', '/parkings-gratuits-bourges[/?]', 'Core\Page\Controllers\PageController#stationnementRedirect', 'page-parkings-bourges-alias');
+$router->map('GET', '/cathedrale-saint-etienne-de-bourges[/?]', 'Core\Page\Controllers\PageController#cathedraleRedirect', 'page-cathedrale-alias');
 $router->map('GET', '/mentions-legales[/?]', 'Core\Page\Controllers\PageController#mentionsLegales', 'mentions-legales');
 $router->map('GET', '/page/mentions-legales[/?]', 'Core\Page\Controllers\PageController#mentionsLegales', 'page-mentions-legales');
 $router->map('GET', '/pro[/?]', 'Core\Page\Controllers\PageController#espacePro', 'espace-pro');

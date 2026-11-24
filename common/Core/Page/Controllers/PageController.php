@@ -152,6 +152,12 @@ class PageController extends PublicController
         exit;
     }
 
+    public function cathedraleRedirect()
+    {
+        header('Location: /cathedrale-saint-etienne', true, 301);
+        exit;
+    }
+
     public function espacePro()
     {
         $theme = $this->core->getConfigVal('theme');
