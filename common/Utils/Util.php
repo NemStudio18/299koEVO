@@ -302,6 +302,10 @@ class Util
                 'gif' => 'image/gif',
                 'pdf' => 'application/pdf',
                 'webp' => 'image/webp',
+                'mp4' => 'video/mp4',
+                'webm' => 'video/webm',
+                'mp3' => 'audio/mpeg',
+                'zip' => 'application/zip',
             ];
 
             // Si l'extension est connue dans notre mapping, on force la vérification

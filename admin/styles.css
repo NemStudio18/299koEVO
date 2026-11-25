@@ -1254,7 +1254,12 @@ input#adm_nav_toggle[type="checkbox"] {
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
-    min-width: 225px;
+    min-width: 235px;
+    max-height: min(78vh, 580px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
