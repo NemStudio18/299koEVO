@@ -1314,6 +1314,27 @@ class Core
             }
         }
 
+        // Dynamic Page slug fallback (URLs propres à la racine: /mon-slug)
+        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+        $basePath = $router->getBasePath();
+        if ($basePath && $basePath !== '/' && str_starts_with($uri, $basePath)) {
+            $uri = substr($uri, strlen($basePath));
+        }
+        $slug = trim($uri, '/');
+        if ($slug !== '' && !str_contains($slug, '/') && !str_contains($slug, '.')) {
+            $pageController = new \Core\Page\Controllers\PageController();
+            $pageResponse = $pageController->resolveSlug($slug);
+            if ($pageResponse instanceof \Core\Responses\Response) {
+                $optimizedContent = $this->processResponseContent($pageResponse);
+                echo $optimizedContent;
+                if (ob_get_level() > 0) {
+                    @ob_end_flush();
+                }
+                $this->logGenerationTime();
+                die();
+            }
+        }
+
         $this->error404();
     }
 

@@ -20,6 +20,8 @@ defined('ROOT') or exit('Access denied!');
 class ConfigManagerUpdateController extends AdminController {
 
     public function process($token) {
+        @ini_set('max_execution_time', '180');
+        @set_time_limit(180);
         $actor = $this->user->email ?? 'unknown';
         $updaterManager = new UpdaterManager(true);
         $nextVersion = $updaterManager->getNextVersion();
@@ -32,8 +34,8 @@ class ConfigManagerUpdateController extends AdminController {
             $isPatch = $updaterManager->isSecurityPatch();
             $label = $isPatch ? ('patch ' . substr((string) $nextVersion, 0, 7)) : ('v' . $nextVersion);
             
-            // Snapshot automatique pré-mise à jour Core
-            \Core\Settings\SettingsService::createAutoSnapshot('all', 'pre-update-core-' . ($isPatch ? 'patch' : ('v' . $nextVersion)));
+            // Snapshot automatique pré-mise à jour Core (fichiers système: admin, common, index.php)
+            \Core\Settings\SettingsService::createAutoSnapshot('core', 'pre-update-core-' . ($isPatch ? 'patch' : ('v' . $nextVersion)));
 
             if ($updaterManager->update()) {
                 $this->logger->info('Config update applied to ' . $label . ' by ' . $actor);

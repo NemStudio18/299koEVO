@@ -15,23 +15,8 @@ defined('ROOT') OR exit('Access denied!');
 $router = \Core\Router\Router::getInstance();
 
 $router->map('GET|POST', '/page[/?]', 'Core\Page\Controllers\PageController#home', 'page-home');
-$router->map('GET', '/que-faire-a-bourges-ce-week-end[/?]', 'Core\Page\Controllers\PageController#weekEndBourges', 'page-weekend-bourges');
-$router->map('GET', '/les-marches-de-bourges[/?]', 'Core\Page\Controllers\PageController#marchesBourges', 'page-marches-bourges');
-$router->map('GET', '/marches-de-bourges[/?]', 'Core\Page\Controllers\PageController#marchesBourges', 'page-marches-bourges-alias');
-$router->map('GET', '/marches-bourges[/?]', 'Core\Page\Controllers\PageController#marchesRedirect', 'page-marches-bourges-alias2');
-$router->map('GET', '/stationnement-gratuit-bourges[/?]', 'Core\Page\Controllers\PageController#stationnementBourges', 'page-stationnement-bourges');
-$router->map('GET', '/stationnement-gratuit[/?]', 'Core\Page\Controllers\PageController#stationnementRedirect', 'page-stationnement-bourges-alias');
-$router->map('GET', '/parkings-gratuits-bourges[/?]', 'Core\Page\Controllers\PageController#stationnementRedirect', 'page-parkings-bourges-alias');
-$router->map('GET', '/marches-de-noel-bourges[/?]', 'Core\Page\Controllers\PageController#noelBourges', 'page-noel-bourges');
-$router->map('GET', '/marches-noel-bourges[/?]', 'Core\Page\Controllers\PageController#noelRedirect', 'page-noel-bourges-alias');
-$router->map('GET', '/marche-noel-bourges[/?]', 'Core\Page\Controllers\PageController#noelRedirect', 'page-noel-bourges-alias2');
-$router->map('GET', '/cathedrale-saint-etienne-de-bourges[/?]', 'Core\Page\Controllers\PageController#cathedraleRedirect', 'page-cathedrale-alias');
 $router->map('GET', '/mentions-legales[/?]', 'Core\Page\Controllers\PageController#mentionsLegales', 'mentions-legales');
 $router->map('GET', '/page/mentions-legales[/?]', 'Core\Page\Controllers\PageController#mentionsLegales', 'page-mentions-legales');
-$router->map('GET', '/pro[/?]', 'Core\Page\Controllers\PageController#espacePro', 'espace-pro');
-$router->map('GET', '/comment-revendiquer[/?]', 'Core\Page\Controllers\PageController#espacePro', 'comment-revendiquer');
-$router->map('GET', '/page/comment-revendiquer[/?]', 'Core\Page\Controllers\PageController#espacePro', 'page-comment-revendiquer');
-$router->map('POST', '/api/pro/chat[/?]', 'Core\Page\Controllers\PageController#sendProChatAjax', 'pro-chat-ajax');
 $router->map('GET|POST', '/page/[*:name]-[a:id][/?]', 'Core\Page\Controllers\PageController#read', 'page-read');
 
 $router->map('GET', '/admin/page[/?]', 'Core\Page\Controllers\PageAdminController#list', 'page-admin-home');

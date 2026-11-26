@@ -75,6 +75,74 @@ class Zip
         return true;
     }
 
+    /**
+     * Create a ZIP containing only specific relative paths from a base directory.
+     *
+     * @param array<string> $relativePaths List of relative files or directories
+     * @param string $filename Output ZIP path
+     * @param string $baseDir Base directory (defaults to ROOT)
+     * @param array<string> $ignoreRegex Patterns to exclude
+     */
+    public static function createZipFromPaths(array $relativePaths, string $filename, string $baseDir = ROOT, array $ignoreRegex = []): bool
+    {
+        $zip = new \ZipArchive();
+        if ($zip->open($filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            return false;
+        }
+        $realBase = rtrim(str_replace('\\', '/', realpath($baseDir) ?: $baseDir), '/');
+
+        foreach ($relativePaths as $rel) {
+            $rel = trim(str_replace('\\', '/', $rel), '/');
+            $fullPath = $realBase . '/' . $rel;
+            if (!file_exists($fullPath)) {
+                continue;
+            }
+
+            if (is_file($fullPath)) {
+                $skip = false;
+                foreach ($ignoreRegex as $regex) {
+                    if (preg_match($regex, $rel) || preg_match($regex, $fullPath)) {
+                        $skip = true;
+                        break;
+                    }
+                }
+                if (!$skip) {
+                    $zip->addFile($fullPath, $rel);
+                }
+            } elseif (is_dir($fullPath)) {
+                $items = Util::scanDirRecursive($fullPath);
+                foreach ($items['dir'] as $dir) {
+                    $normalizedDir = str_replace('\\', '/', $dir);
+                    $localDir = trim(substr($normalizedDir, strlen($realBase)), '/');
+                    if ($localDir === '' || $localDir === '.' || $localDir === '..' || str_ends_with($localDir, '/.') || str_ends_with($localDir, '/..')) {
+                        continue;
+                    }
+                    foreach ($ignoreRegex as $regex) {
+                        if (preg_match($regex, $localDir) || preg_match($regex, $normalizedDir)) {
+                            continue 2;
+                        }
+                    }
+                    $zip->addEmptyDir($localDir);
+                }
+                foreach ($items['file'] as $file) {
+                    $normalizedFile = str_replace('\\', '/', $file);
+                    $localFile = trim(substr($normalizedFile, strlen($realBase)), '/');
+                    if ($localFile === '') {
+                        continue;
+                    }
+                    foreach ($ignoreRegex as $regex) {
+                        if (preg_match($regex, $localFile) || preg_match($regex, $normalizedFile)) {
+                            continue 2;
+                        }
+                    }
+                    $zip->addFile($file, $localFile);
+                }
+            }
+        }
+        $zip->close();
+        return true;
+    }
+
     public function extractTo(string $targetDir): bool
     {
         if (!class_exists('\ZipArchive') || !file_exists($this->filename)) {

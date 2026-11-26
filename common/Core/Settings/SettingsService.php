@@ -352,8 +352,11 @@ class SettingsService
     /**
      * Create an automated pre-update safety snapshot.
      */
-    public static function createAutoSnapshot(string $scope = 'all', string $context = 'pre-update'): ?string
+    public static function createAutoSnapshot(string $scope = 'core', string $context = 'pre-update'): ?string
     {
+        @ini_set('max_execution_time', '180');
+        @set_time_limit(180);
+
         $backupDir = DATA_CORE_SETTINGS;
         if (!is_dir($backupDir)) {
             @mkdir($backupDir, 0755, true);
@@ -365,7 +368,18 @@ class SettingsService
             '/.*\.git.*/i',
             '/.*\.cache.*/i',
             '/data\/cache(\/.*)?$/i',
+            '/.*\.sql(\.gz)?$/i',
+            '/^backups(\/.*)?$/i',
         ];
+
+        if ($scope === 'core') {
+            $corePaths = ['admin', 'common', 'index.php'];
+            if (is_file(ROOT . 'cli.php')) {
+                $corePaths[] = 'cli.php';
+            }
+            $result = \Core\Storage\Zip::createZipFromPaths($corePaths, $filename, ROOT, $ignore);
+            return $result ? $filename : null;
+        }
 
         $targetFolder = ROOT;
         if ($scope === 'data') {

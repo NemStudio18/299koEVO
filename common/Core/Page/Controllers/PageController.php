@@ -125,183 +125,50 @@ class PageController extends PublicController
         return $response;
     }
 
-    public function weekEndBourges()
-    {
-        return $this->read('que-faire-a-bourges-ce-week-end', 2);
-    }
-
-    public function marchesBourges()
-    {
-        return $this->read('les-marches-de-bourges', 3);
-    }
-
-    public function stationnementBourges()
-    {
-        return $this->read('stationnement-gratuit-bourges', 4);
-    }
-
-    public function noelBourges()
-    {
-        return $this->read('marches-de-noel-bourges', 5);
-    }
-
-    public function noelRedirect()
-    {
-        header('Location: /marches-de-noel-bourges', true, 301);
-        exit;
-    }
-
-    public function stationnementRedirect()
-    {
-        header('Location: /stationnement-gratuit-bourges', true, 301);
-        exit;
-    }
-
-    public function marchesRedirect()
-    {
-        header('Location: /les-marches-de-bourges', true, 301);
-        exit;
-    }
-
-    public function cathedraleRedirect()
-    {
-        header('Location: /cathedrale-saint-etienne', true, 301);
-        exit;
-    }
-
-    public function espacePro()
-    {
-        $theme = $this->core->getConfigVal('theme');
-        $tplFile = THEMES . $theme . '/pro.tpl';
-        if (!file_exists($tplFile)) {
-            $tplFile = THEMES . 'default/pro.tpl';
-        }
-        if (!file_exists($tplFile)) {
-            $tplFile = THEMES . $theme . '/comment-revendiquer.tpl';
-        }
-        if (!file_exists($tplFile)) {
-            $tplFile = PLUGINS . 'SearchUi/template/comment-revendiquer.tpl';
-        }
-        
-        $chatConfig = [
-            'crisp_website_id' => '',
-            'discord_invite_url' => 'https://discord.gg/8Rpsm2zWH',
-            'whatsapp_phone' => '33766471292',
-            'whatsapp_message' => "Bonjour, je vous contacte depuis " . ($this->core->getConfigVal("siteName") ?: "le site") . " concernant mon établissement : ",
-        ];
-        $chatConfigFile = ROOT . 'data/config_pro_chat.json';
-        if (file_exists($chatConfigFile)) {
-            $parsed = json_decode(file_get_contents($chatConfigFile), true);
-            if (is_array($parsed)) {
-                $chatConfig = array_merge($chatConfig, $parsed);
-            }
-        }
-
-        $response = new PublicResponse();
-        $response->setTitle('<i class="fa-solid fa-store"></i> Espace Professionnels & Artisans');
-        $response->setMetaDescription("Découvrez comment revendiquer gratuitement votre fiche établissement sur " . ($this->core->getConfigVal("siteName") ?: "notre site") . " et développer votre visibilité locale.");
-        $tpl = new Template($tplFile);
-        $tpl->set('proChatWhatsappUrl', 'https://wa.me/' . preg_replace('/[^0-9]/', '', $chatConfig['whatsapp_phone']) . '?text=' . rawurlencode($chatConfig['whatsapp_message']));
-        $tpl->set('proChatWhatsappPhone', $chatConfig['whatsapp_phone']);
-        $tpl->set('discordInviteUrl', $chatConfig['discord_invite_url'] ?? 'https://discord.gg/8Rpsm2zWH');
-        $tpl->set('crispWebsiteId', $chatConfig['crisp_website_id'] ?? '');
-        $response->addTemplate($tpl);
-        return $response;
-    }
-
     /**
-     * Traitement AJAX du tchat direct /pro envoyé vers Discord Webhook
+     * Résolution dynamique d'une page par son slug ou son alias
+     * Permet les URLs propres à la racine (ex: /a-propos, /marches-de-noel) sans routes hardcodées.
      */
-    public function sendProChatAjax()
+    public function resolveSlug(string $slug): ?PublicResponse
     {
-        header('Content-Type: application/json; charset=utf-8');
-        
-        // Anti-spam honeypot
-        if (!empty($_POST['_gotcha'])) {
-            echo json_encode(['success' => true, 'message' => 'Message envoyé']);
-            exit;
+        $this->page = new Page();
+        $pages = $this->page->getItems();
+        $normalizedSlug = strtolower(trim($slug, '/'));
+
+        if ($normalizedSlug === '') {
+            return null;
         }
 
-        $name = trim(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
-        $contact = trim(filter_input(INPUT_POST, 'contact', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
-        $message = trim(filter_input(INPUT_POST, 'message', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
-
-        if (empty($name) || empty($message)) {
-            echo json_encode(['success' => false, 'error' => 'Veuillez renseigner votre nom / établissement et votre message.']);
-            exit;
-        }
-
-        // Configuration
-        $chatConfig = [
-            'discord_webhook' => '',
-            'whatsapp_phone' => '33600000000',
-        ];
-        $chatConfigFile = ROOT . 'data/config_pro_chat.json';
-        if (file_exists($chatConfigFile)) {
-            $parsed = json_decode(file_get_contents($chatConfigFile), true);
-            if (is_array($parsed)) {
-                $chatConfig = array_merge($chatConfig, $parsed);
+        // 1. Recherche par alias personnalisé stocké dans data/core/page/aliases.json s'il existe
+        $aliasesFile = (defined('DATA_CORE_PAGE') ? DATA_CORE_PAGE : (ROOT . 'data/core/page/')) . 'aliases.json';
+        if (file_exists($aliasesFile)) {
+            $aliases = json_decode((string) file_get_contents($aliasesFile), true);
+            if (is_array($aliases) && isset($aliases[$normalizedSlug])) {
+                $target = $aliases[$normalizedSlug];
+                if (is_int($target) || is_numeric($target)) {
+                    return $this->read($normalizedSlug, (int) $target);
+                }
+                if (is_string($target)) {
+                    header('Location: /' . ltrim($target, '/'), true, 301);
+                    exit;
+                }
             }
         }
 
-        // Sauvegarde locale dans les logs
-        $logDir = ROOT . 'data/logs';
-        if (!is_dir($logDir)) {
-            @mkdir($logDir, 0755, true);
-        }
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'inconnue';
-        $logEntry = date('Y-m-d H:i:s') . " | IP: {$ip} | Pro: {$name} | Contact: {$contact} | Msg: {$message}\n";
-        @file_put_contents($logDir . '/pro_chat.log', $logEntry, FILE_APPEND);
+        // 2. Recherche par correspondance de titre / nom de page converti en slug
+        foreach ($pages as $item) {
+            if ($item->targetIs() !== 'page') {
+                continue;
+            }
+            $cleanName = preg_replace("#\<i.+\<\/i\>#i", '', (string) $item->getName());
+            $itemSlug = strtolower(Util::strToUrl($cleanName));
 
-        // Envoi vers Discord si Webhook configuré
-        $webhookUrl = trim($chatConfig['discord_webhook'] ?? '');
-        if (!empty($webhookUrl) && filter_var($webhookUrl, FILTER_VALIDATE_URL)) {
-            $embed = [
-                'title' => '💬 Nouveau message Pro reçu !',
-                'color' => 16747586, // Orange #ff8c42
-                'description' => "Un artisan / commerçant a posé une question depuis la page **/pro** :",
-                'fields' => [
-                    [
-                        'name' => '👤 Établissement / Nom',
-                        'value' => substr($name, 0, 250),
-                        'inline' => true,
-                    ],
-                    [
-                        'name' => '📞 Contact (Tél / Email)',
-                        'value' => !empty($contact) ? substr($contact, 0, 250) : '_Non renseigné_',
-                        'inline' => true,
-                    ],
-                    [
-                        'name' => '✉️ Message',
-                        'value' => substr($message, 0, 1000),
-                        'inline' => false,
-                    ]
-                ],
-                'footer' => [
-                    'text' => ($this->core->getConfigVal('siteName') ?: '299Ko CMS') . ' • Espace Pro',
-                ],
-                'timestamp' => date('c'),
-            ];
-
-            $payload = json_encode([
-                'username' => ($this->core->getConfigVal('siteName') ?: '299Ko') . ' Pro',
-                'embeds' => [$embed],
-            ]);
-
-            $ch = curl_init($webhookUrl);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 4);
-            curl_exec($ch);
+            if ($itemSlug === $normalizedSlug) {
+                return $this->read($itemSlug, $item->getId());
+            }
         }
 
-        echo json_encode([
-            'success' => true, 
-            'message' => 'Merci ! Votre message a été transmis directement à l\'équipe. Nous vous répondrons très rapidement.'
-        ]);
-        exit;
+        return null;
     }
 
     public function read($name, $id)
