@@ -298,9 +298,7 @@ class UpdaterManager
     {
         $obsoleteDirs = [
             ROOT . 'plugin_back',
-            ROOT . 'scripts',
             ROOT . 'docs',
-            ROOT . 'tests',
         ];
         foreach ($obsoleteDirs as $dir) {
             if (is_dir($dir)) {
@@ -321,6 +319,7 @@ class UpdaterManager
         $protectedPaths = [
             'data',
             'config',
+            'scripts',
             '.git',
             '.github',
             '.env',
