@@ -268,11 +268,12 @@ class MarketPlaceManager
                 ($existingDirName !== null && strpos($firstEntry, $existingDirName . '/') === 0)
             );
             
+            $extractSuccess = false;
             if ($hasParentDir) {
                 // Si le ZIP a un sous-dossier, l'extraire dans un dossier temporaire pour normaliser le nom cible
                 $tempExtract = CACHE_PATH . 'ext_' . uniqid() . DS;
                 @mkdir($tempExtract, 0755, true);
-                $zip->extractTo($tempExtract);
+                $extractSuccess = $zip->extractTo($tempExtract);
                 $zip->close();
                 
                 // Détecter le sous-dossier extrait
@@ -291,8 +292,14 @@ class MarketPlaceManager
                 if (!is_dir($pluginDir)) {
                     mkdir($pluginDir, 0755, true);
                 }
-                $zip->extractTo($pluginDir);
+                $extractSuccess = $zip->extractTo($pluginDir);
                 $zip->close();
+            }
+
+            if (!$extractSuccess) {
+                @unlink($zipPath);
+                $this->logger->error('Unable to extract ZIP archive for ' . $ressource->slug);
+                return false;
             }
 
             $extractedDir = rtrim($pluginDir, DS);
