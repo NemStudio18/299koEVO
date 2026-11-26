@@ -178,6 +178,9 @@ foreach ($pluginsManager->getPlugins() as $plugin) {
 	}
 }
 
+// Fallback ultime pour les pages CMS à la racine (après toutes les routes plugins)
+$router->map('GET|POST', '/[*:slug][/?]', 'Core\Page\Controllers\PageController#resolveSlug', 'page-slug-fallback');
+
 // Initialiser la navigation maintenant que tous les plugins (et leurs hooks) sont chargés
 \Core\Page\Page::addToNavigation();
 
