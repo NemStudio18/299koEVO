@@ -129,13 +129,16 @@ class PageController extends PublicController
      * Résolution dynamique d'une page par son slug ou son alias
      * Permet les URLs propres à la racine (ex: /a-propos, /marches-de-noel) sans routes hardcodées.
      */
-    public function resolveSlug(string $slug): ?PublicResponse
+    public function resolveSlug(string $slug, bool $trigger404 = true): ?PublicResponse
     {
         $this->page = new Page();
         $pages = $this->page->getItems();
         $normalizedSlug = strtolower(trim($slug, '/'));
 
         if ($normalizedSlug === '') {
+            if ($trigger404) {
+                $this->core->error404();
+            }
             return null;
         }
 
@@ -168,6 +171,9 @@ class PageController extends PublicController
             }
         }
 
+        if ($trigger404) {
+            $this->core->error404();
+        }
         return null;
     }
 

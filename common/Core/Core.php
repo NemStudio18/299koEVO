@@ -326,6 +326,9 @@ class Core
         if (class_exists('\Core\Api\ApiManager')) {
             \Core\Api\ApiManager::getInstance()->registerRouterRoutes(Router::getInstance());
         }
+
+        // Résolution dynamique des pages à la racine (fallback ultime après toutes les extensions)
+        Router::getInstance()->map('GET|POST', '/[*:slug][/?]', 'Core\Page\Controllers\PageController#resolveSlug', 'page-slug-fallback');
         
         // Exposer l'URI courante nettoyée dans le template globalement
         \Template\Template::addGlobal('CURRENT_URI', Router::getInstance()->getCleanURI());
