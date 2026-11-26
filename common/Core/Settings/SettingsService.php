@@ -364,6 +364,7 @@ class SettingsService
             '/.*backup-.*\.zip/i',
             '/.*\.git.*/i',
             '/.*\.cache.*/i',
+            '/data\/cache(\/.*)?$/i',
         ];
 
         $targetFolder = ROOT;
@@ -394,7 +395,8 @@ class SettingsService
         $router->map('GET', '/admin/configmanager/delete-install/[a:token]', 'Core\Settings\Controllers\ConfigManagerAdminController#deleteInstall', 'configmanager-delete-install');
         $router->map('GET', '/admin/configmanager/backup[/?]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#home', 'configmanager-backup');
         $router->map('GET', '/admin/backups[/?]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#home', 'configmanager-backups-alias');
-        $router->map('GET', '/admin/configmanager/create-backup/[a:token]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#create', 'configmanager-create-backup');
+        $router->map('GET', '/admin/configmanager/create-backup/[a:token]?', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#create', 'configmanager-create-backup');
+        $router->map('GET', '/admin/configmanager/create-backup', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#create', 'configmanager-create-backup-direct');
         $router->map('GET|POST', '/admin/configmanager/restore-backup/[a:token]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#restore', 'configmanager-restore-backup');
         $router->map('GET', '/admin/configmanager/dl-backup/[a:token]/[i:timestamp]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#download', 'configmanager-dl-backup');
         $router->map('POST', '/admin/configmanager/delete-backup', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#delete', 'configmanager-delete-backup');

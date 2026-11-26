@@ -264,10 +264,10 @@
               <a href="{ ROUTER.generate('configmanager-backup') }" class="button primary">
                   <i class="fa-solid fa-box-archive"></i> Gérer les Sauvegardes & Restauration
               </a>
-              <a href="{ ROUTER.generate('configmanager-create-backup', ['token': SHOW.token, 'scope': 'all']) }" class="button success">
+              <a href="{ ROUTER.generate('configmanager-create-backup') }?scope=all" class="button success">
                   <i class="fa-solid fa-camera"></i> Snapshot Instantané (Complet)
               </a>
-              <a href="{ ROUTER.generate('configmanager-create-backup', ['token': SHOW.token, 'scope': 'data']) }" class="button">
+              <a href="{ ROUTER.generate('configmanager-create-backup') }?scope=data" class="button">
                   <i class="fa-solid fa-database"></i> Sauvegarder Contenus (data/)
               </a>
           </div>

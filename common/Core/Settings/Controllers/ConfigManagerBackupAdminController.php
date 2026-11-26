@@ -31,7 +31,7 @@ class ConfigManagerBackupAdminController extends AdminController
         return $response;
     }
 
-    public function create($token)
+    public function create($token = '')
     {
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
@@ -51,6 +51,7 @@ class ConfigManagerBackupAdminController extends AdminController
             '/.*backup-.*\.zip/i',
             '/.*\.git.*/i',
             '/.*\.cache.*/i',
+            '/data\/cache(\/.*)?$/i',
         ];
 
         $targetFolder = ROOT;
