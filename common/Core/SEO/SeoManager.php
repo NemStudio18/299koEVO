@@ -21,7 +21,7 @@ class SeoManager
     /**
      * Point d'entrée principal hook endFrontHead
      */
-    public static function renderHeadMetas(): void
+    public static function renderHeadMetas($param = ''): string
     {
         $core = Core::getInstance();
         $siteUrl = rtrim((string)$core->getConfigVal('siteUrl'), '/');
@@ -181,9 +181,16 @@ class SeoManager
             }
         }
 
+        $buffer = (string)$param;
         if (!empty($output)) {
-            echo "\n\t" . implode("\n\t", $output) . "\n";
+            if ($buffer !== '') {
+                $buffer .= "\n\t";
+            } else {
+                $buffer .= "\t";
+            }
+            $buffer .= implode("\n\t", $output) . "\n";
         }
+        return $buffer;
     }
 
     /**

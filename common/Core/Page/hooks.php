@@ -43,7 +43,8 @@ function pageInstall() {
 
 ## Hooks
 
-function pageEndFrontHead() {
+function pageEndFrontHead($param = ''): string {
+    $output = (string)$param;
     global $runPlugin, $pageItem;
     $core = Core::getInstance();
     $pluginToCall = $core->getPluginToCall();
@@ -62,10 +63,11 @@ function pageEndFrontHead() {
                 return $siteUrl . $locPath;
             });
             if ($hreflangHtml !== '') {
-                echo "\n" . $hreflangHtml;
+                $output .= "\n" . $hreflangHtml;
             }
         }
     }
+    return $output;
 }
 
 /**
