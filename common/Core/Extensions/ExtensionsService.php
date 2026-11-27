@@ -20,9 +20,11 @@ class ExtensionsService
     private bool $routesRegistered = false;
     private array $adminCss = [
         'templates/marketplace/admin.css',
+        'templates/pluginsmanager/admin.css',
     ];
     private array $adminJs = [
         'templates/marketplace/admin.js',
+        'templates/pluginsmanager/admin.js',
     ];
     private array $adminModules = [
         [

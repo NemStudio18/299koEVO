@@ -42,6 +42,7 @@ class PluginsManagerController extends AdminController
             'active' => 0,
             'inactive' => 0,
             'maintenance' => 0,
+            'configurable' => 0,
         ];
         foreach ($plugins as $plugin) {
             if ($plugin->isRequired()) {
@@ -55,10 +56,18 @@ class PluginsManagerController extends AdminController
                 if (!$plugin->isInstalled()) {
                     $stats['maintenance']++;
                 }
+                if ($plugin->getIsCallableOnAdmin()) {
+                    $stats['configurable']++;
+                }
             } else {
                 $stats['inactive']++;
             }
         }
+
+        // Tri alphabétique systématique par défaut selon le nom affiché
+        usort($pluginsToDisplay, function ($a, $b) {
+            return strcasecmp($a->getTranslatedName(), $b->getTranslatedName());
+        });
         $legacyPending = $this->core->extensions()->getPendingLegacyPlugins();
         $tpl->set('plugins', $pluginsToDisplay);
         $tpl->set('pluginStats', $stats);
