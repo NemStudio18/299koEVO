@@ -1202,15 +1202,15 @@ class Show
         $memoryMb = round(memory_get_peak_usage(true) / (1024 * 1024), 2);
         $sqlCount = $core->queryCount ?? 0;
 
-        return '<span class="evo-perf-badge" title="Mesure en direct générée par le Core 299koEVO">'
+        return '<span class="evo-perf-badge" title="Mesure en direct 299koEVO">'
             . '<span class="evo-perf-icon">⚡</span> '
-            . '<span class="evo-perf-time">Généré en ' . $durationMs . ' ms</span> '
-            . '<span class="evo-perf-sep">•</span> '
+            . '<span class="evo-perf-time">' . $durationMs . ' ms</span> '
+            . '<span class="evo-perf-sep">·</span> '
             . '<span class="evo-perf-ram">' . $memoryMb . ' Mo RAM</span> '
-            . '<span class="evo-perf-sep">•</span> '
+            . '<span class="evo-perf-sep">·</span> '
             . '<span class="evo-perf-db">' . $sqlCount . ' SQL</span> '
-            . '<span class="evo-perf-sep">•</span> '
-            . '<span class="evo-perf-eco">Flat-File Éco-conçu</span>'
+            . '<span class="evo-perf-sep">·</span> '
+            . '<span class="evo-perf-eco">Flat-File</span>'
             . '</span>';
     }
 
