@@ -1199,7 +1199,7 @@ class Show
 
         $startTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? ($core->startTime ?? microtime(true));
         $durationMs = round((microtime(true) - $startTime) * 1000, 1);
-        $memoryMb = round(memory_get_peak_usage(true) / (1024 * 1024));
+        $memoryMb = round(memory_get_peak_usage(true) / (1024 * 1024), 1);
         $sqlCount = method_exists($core, 'getQueryCount') ? $core->getQueryCount() : ($core->queryCount ?? 0);
         $sqlText = $sqlCount . ' requete' . ($sqlCount > 1 ? 's' : ($sqlCount === 0 ? 's' : '')) . ' sql';
 
