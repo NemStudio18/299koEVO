@@ -1199,18 +1199,12 @@ class Show
 
         $startTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? ($core->startTime ?? microtime(true));
         $durationMs = round((microtime(true) - $startTime) * 1000, 1);
-        $memoryMb = round(memory_get_peak_usage(true) / (1024 * 1024), 2);
-        $sqlCount = $core->queryCount ?? 0;
+        $memoryMb = round(memory_get_peak_usage(true) / (1024 * 1024));
+        $sqlCount = method_exists($core, 'getQueryCount') ? $core->getQueryCount() : ($core->queryCount ?? 0);
+        $sqlText = $sqlCount . ' requete' . ($sqlCount > 1 ? 's' : ($sqlCount === 0 ? 's' : '')) . ' sql';
 
         return '<span class="evo-perf-badge" title="Mesure en direct 299koEVO">'
-            . '<span class="evo-perf-icon">⚡</span> '
-            . '<span class="evo-perf-time">' . $durationMs . ' ms</span> '
-            . '<span class="evo-perf-sep">·</span> '
-            . '<span class="evo-perf-ram">' . $memoryMb . ' Mo RAM</span> '
-            . '<span class="evo-perf-sep">·</span> '
-            . '<span class="evo-perf-db">' . $sqlCount . ' SQL</span> '
-            . '<span class="evo-perf-sep">·</span> '
-            . '<span class="evo-perf-eco">Flat-File</span>'
+            . '[page générée en : ' . $durationMs . ' ms | ' . $memoryMb . 'Mo Ram | ' . $sqlText . ']'
             . '</span>';
     }
 

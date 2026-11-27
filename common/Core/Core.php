@@ -1561,6 +1561,11 @@ class Core
         \Core\Monitor\SystemMonitor::incrementIo('sql_query');
     }
 
+    public function getQueryCount(): int
+    {
+        return $this->queryCount;
+    }
+
     public function systemMonitor(): \Core\Monitor\SystemMonitor
     {
         return \Core\Monitor\SystemMonitor::getInstance();
