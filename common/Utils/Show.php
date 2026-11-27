@@ -228,23 +228,41 @@ class Show
         echo \Core\Security\Csrf::hiddenField();
     }
 
+    ## Affiche le code langue BCP 47 (ex: fr-FR)
+
+    public static function htmlLang()
+    {
+        echo htmlspecialchars(\Core\Lang::getBcp47Locale(), ENT_QUOTES, 'UTF-8');
+    }
+
     ## Affiche le contenu de la meta title (theme)
 
     public static function titleTag()
     {
-        if (function_exists('titleTag'))
+        if (function_exists('titleTag')) {
             call_user_func('titleTag');
-        else {
+        } else {
             $core = Core::getInstance();
-            global $runPlugin;
+            global $runPlugin, $pageItem;
+            $siteName = (string)$core->getConfigVal('siteName');
             $title = $core->getTitleTag();
             if ($title === null && $runPlugin) {
                 $title = $runPlugin->getTitleTag();
             }
+            if (($title === null || $title === '') && isset($pageItem) && $pageItem instanceof \Core\Page\PageItem) {
+                $title = $pageItem->getMetaTitle() ?: $pageItem->getName();
+            }
             if ($title === null || $title === '') {
                 $title = \Core\Lang::get('core-404-title');
             }
-            echo $title . ' - ' . $core->getConfigVal('siteName');
+            // Si la page d'accueil possède un metaTitle spécifique travaillé, ou si le nom du site est déjà dans le titre
+            if (isset($pageItem) && $pageItem instanceof \Core\Page\PageItem && ($pageItem->getIsHomepage() || $pageItem->getPosition() == 1) && !empty($pageItem->getMetaTitle())) {
+                echo htmlspecialchars($pageItem->getMetaTitle(), ENT_QUOTES, 'UTF-8');
+            } elseif (stripos((string)$title, $siteName) !== false) {
+                echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+            } else {
+                echo htmlspecialchars($title . ' - ' . $siteName, ENT_QUOTES, 'UTF-8');
+            }
         }
     }
 
@@ -256,10 +274,13 @@ class Show
             call_user_func('metaDescriptionTag');
         } else {
             $core = Core::getInstance();
-            global $runPlugin;
+            global $runPlugin, $pageItem;
             $description = $core->getMetaDescription();
             if (($description === null || trim((string)$description) === '') && $runPlugin) {
                 $description = $runPlugin->getMetaDescriptionTag();
+            }
+            if (($description === null || trim((string)$description) === '') && isset($pageItem) && $pageItem instanceof \Core\Page\PageItem) {
+                $description = $pageItem->getMetaDescription();
             }
             if ($description === null || trim((string)$description) === '') {
                 $description = (string)$core->getConfigVal('siteDesc');

@@ -55,6 +55,24 @@ class Lang {
     }
 
     /**
+     * Get the BCP 47 formatted locale (e.g. 'fr-FR', 'en-US')
+     * @return string
+     */
+    public static function getBcp47Locale(): string {
+        $loc = strtolower((string)self::$locale);
+        $map = [
+            'fr' => 'fr-FR',
+            'en' => 'en-US',
+            'es' => 'es-ES',
+            'de' => 'de-DE',
+            'it' => 'it-IT',
+            'ru' => 'ru-RU',
+            'pt' => 'pt-PT',
+        ];
+        return $map[$loc] ?? ($loc ?: 'fr-FR');
+    }
+
+    /**
      * Get the available locales and their names
      *
      * @return array An array of available locales as keys and locale names as values

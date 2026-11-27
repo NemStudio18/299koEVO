@@ -44,35 +44,14 @@ function pageInstall() {
 ## Hooks
 
 function pageEndFrontHead() {
-    global $runPlugin;
+    global $runPlugin, $pageItem;
     $core = Core::getInstance();
-    // Check if current page is a page module (core or legacy plugin)
     $pluginToCall = $core->getPluginToCall();
     if ($pluginToCall === 'page') {
-        global $pageItem;
-        if (isset($pageItem) && $pageItem && $pageItem->getNoIndex()) {
-            echo '<meta name="robots" content="noindex"><meta name="googlebot" content="noindex">';
-        }
-        // Hook pour permettre aux plugins d'injecter une image OG (ex: galerie)
-        $ogImageData = [
-            'pageItem' => $pageItem,
-            'url' => null
-        ];
-        $ogImageData = $core->callHook('page:og-image', $ogImageData);
-        if (!empty($ogImageData['url'])) {
-            echo '<meta property="og:image" content="' . htmlspecialchars($ogImageData['url']) . '" />';
-        }
         if ($pageItem instanceof PageItem && class_exists('\Core\Translation\TranslationManager')) {
             $tm = \Core\Translation\TranslationManager::getInstance();
             $pageService = new Page();
             $siteUrl = rtrim((string) $core->getConfigVal('siteUrl'), '/');
-            $activeLoc = method_exists($core, 'getLocale') ? (string) $core->getLocale() : ($pageItem->getLocale() ?: $tm->getDefaultLocale());
-            $currentRelPath = str_replace($siteUrl, '', $pageService->makeUrl($pageItem));
-            $canonicalUrl = $siteUrl . $tm->buildLocalizedUrl($currentRelPath ?: '/', $pageItem->getLocale() ?: $activeLoc);
-            $canonicalTag = $tm->renderCanonicalTag($canonicalUrl);
-            if ($canonicalTag !== '') {
-                echo "\n" . $canonicalTag;
-            }
             $hreflangHtml = $tm->renderHreflangTags('page', (string) $pageItem->getId(), static function (string $loc, string $targetId) use ($pageService, $tm, $siteUrl): string {
                 $targetPage = $pageService->create($targetId);
                 if (!$targetPage instanceof PageItem) {

@@ -301,6 +301,10 @@ class Core
         $this->addHook('endFrontHead', '\Core\Page\pageEndFrontHead');
         $this->addHook('search:get-results', '\Core\Page\pageSearchResultsHook');
 
+        // Moteur SEO natif zero-config (Canonical, Robots, OpenGraph, Twitter, Schema.org)
+        require_once COMMON . 'Core/SEO/SeoManager.php';
+        $this->addHook('endFrontHead', '\Core\SEO\SeoManager::renderHeadMetas');
+
         // Hooks d'URL d'authentification gérés par le core (login, register, logout, profil, admin)
         require_once COMMON . 'Core/Auth/hooks.php';
         $this->addHook('user:login-url', '\Core\Auth\authCoreLoginUrl');
