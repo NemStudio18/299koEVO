@@ -287,9 +287,10 @@ class SeoManager
             }
         }
 
-        // 1. Organization
+        // 1. Organization / ProfessionalService / LocalBusiness
+        $schemaType = (string)$core->getConfigVal('seo_schema_type') ?: 'ProfessionalService';
         $organization = [
-            '@type' => 'Organization',
+            '@type' => $schemaType,
             '@id' => $siteUrl . '/#organization',
             'name' => $siteName,
             'url' => $siteUrl . '/',
@@ -297,6 +298,34 @@ class SeoManager
         if (!empty($socialLinks)) {
             $organization['sameAs'] = $socialLinks;
         }
+
+        // Contact téléphonique et email
+        $sitePhone = (string)$core->getConfigVal('sitePhone');
+        if (!empty($sitePhone)) {
+            $organization['telephone'] = $sitePhone;
+        }
+        $siteEmail = (string)$core->getConfigVal('siteEmail');
+        if (!empty($siteEmail)) {
+            $organization['email'] = $siteEmail;
+        }
+
+        // Localisation et zone géographique
+        $city = (string)$core->getConfigVal('siteCity');
+        $postalCode = (string)$core->getConfigVal('sitePostalCode');
+        $country = (string)$core->getConfigVal('siteCountry') ?: 'FR';
+        if (!empty($city) || !empty($postalCode)) {
+            $organization['address'] = [
+                '@type' => 'PostalAddress',
+                'addressLocality' => $city ?: 'Bourges',
+                'postalCode' => $postalCode ?: '18000',
+                'addressCountry' => $country,
+            ];
+        }
+        $areaServed = (string)$core->getConfigVal('siteAreaServed');
+        if (!empty($areaServed)) {
+            $organization['areaServed'] = $areaServed;
+        }
+
         if (!empty($logoUrl)) {
             $organization['logo'] = [
                 '@type' => 'ImageObject',
