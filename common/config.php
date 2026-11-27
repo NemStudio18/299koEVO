@@ -11,7 +11,7 @@
  * @package 299Ko https://github.com/299Ko/299ko
  */
 
-defined('VERSION') or define('VERSION', '0.4.2');
+defined('VERSION') or define('VERSION', '0.4.3');
 defined('COMMON') or define('COMMON', ROOT . 'common' . DS);
 defined('DATA') or define('DATA', ROOT . 'data' . DS);
 defined('DATA_CORE') or define('DATA_CORE', DATA . 'core' . DS);

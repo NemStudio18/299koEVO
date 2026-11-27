@@ -198,9 +198,17 @@ abstract class CategoriesManager {
             $byParent[$category->parentId][] = $category;
         }
 
-        $buildTree = function(int $parentId) use (&$buildTree, &$byParent) {
+        $visited = [];
+        $buildTree = function(int $parentId) use (&$buildTree, &$byParent, &$visited) {
+            if (isset($visited[$parentId])) {
+                return [];
+            }
+            $visited[$parentId] = true;
             $nodes = $byParent[$parentId] ?? [];
             foreach ($nodes as $node) {
+                if ($node->id === $parentId) {
+                    continue;
+                }
                 $children = $buildTree($node->id);
                 if (!empty($children)) {
                     $node->hasChildren = true;
