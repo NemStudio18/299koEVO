@@ -312,6 +312,9 @@ class Core
         // Télémétrie : vérifier la synchronisation avant chaque exécution
         require_once COMMON . 'Core/Telemetry/hooks.php';
         $this->addHook('beforeRunPlugin', '\Core\Telemetry\telemetryCheckSync');
+        $this->addHook('endFooter', function () {
+            return \Utils\Show::performanceBadge();
+        });
         $this->media();
         $this->media()->registerRoutes(Router::getInstance());
         $this->settings();

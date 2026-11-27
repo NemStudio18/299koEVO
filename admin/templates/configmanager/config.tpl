@@ -162,6 +162,11 @@
 					<label for="enable_theme_toggle">Activer le basculeur de thème (Sombre/Clair)</label>
                     <br><small>Affiche un bouton permettant aux utilisateurs de basculer entre le mode clair et sombre.</small>
 				</p>
+                <p>
+					<input {% if CORE.getConfigVal("show_performance_badge") %} checked {% endif %} type="checkbox" name="show_performance_badge" id="show_performance_badge"/>
+					<label for="show_performance_badge">Afficher le badge de performance et d'éco-conception en direct</label>
+                    <br><small>Affiche en pied de page le temps de génération (ms), la RAM consommée et les requêtes SQL (0 en Flat-File) calculés en temps réel.</small>
+				</p>
 			<p>
 					<label id='delCacheDesc'>{{Lang.configmanager-delete-cache-desc}}</label><br>
 					<a aria-describedby="delCacheDesc" class="button" href="{{cacheClearLink}}">{{Lang.configmanager-delete-cache}}</a>

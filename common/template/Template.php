@@ -186,7 +186,7 @@ class Template
                 $strName = (string)$name;
                 $isRaw = preg_match('/\|\s*raw\b/i', $strName) === 1;
                 $trimmed = trim($strName);
-                $isTrustedContainer = in_array($trimmed, ['CONTENT', 'show.scriptTags', 'SHOW.scriptTags', 'show.linkTags', 'SHOW.linkTags', 'antispamField', 'antispam_field'], true)
+                $isTrustedContainer = in_array($trimmed, ['CONTENT', 'show.scriptTags', 'SHOW.scriptTags', 'show.linkTags', 'SHOW.linkTags', 'show.performanceBadge', 'SHOW.performanceBadge', 'antispamField', 'antispam_field'], true)
                     || str_ends_with($trimmed, '_TPL')
                     || (stripos($trimmed, 'antispam') !== false)
                     || (stripos($trimmed, 'callhook(') !== false);

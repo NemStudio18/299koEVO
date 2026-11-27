@@ -1178,4 +1178,40 @@ class Show
         return '';
     }
 
+    private static bool $performanceBadgeRendered = false;
+
+    /**
+     * Badge de performance et d'éco-conception calculé en direct
+     * Affiche le temps de génération (ms), la RAM consommée et les requêtes SQL (0 en Flat-File)
+     */
+    public static function performanceBadge(): string
+    {
+        if (self::$performanceBadgeRendered) {
+            return '';
+        }
+
+        $core = \Core\Core::getInstance();
+        if (!$core->getConfigVal('show_performance_badge')) {
+            return '';
+        }
+
+        self::$performanceBadgeRendered = true;
+
+        $startTime = $_SERVER['REQUEST_TIME_FLOAT'] ?? ($core->startTime ?? microtime(true));
+        $durationMs = round((microtime(true) - $startTime) * 1000, 1);
+        $memoryMb = round(memory_get_peak_usage(true) / (1024 * 1024), 2);
+        $sqlCount = $core->queryCount ?? 0;
+
+        return '<span class="evo-perf-badge" title="Mesure en direct générée par le Core 299koEVO">'
+            . '<span class="evo-perf-icon">⚡</span> '
+            . '<span class="evo-perf-time">Généré en ' . $durationMs . ' ms</span> '
+            . '<span class="evo-perf-sep">•</span> '
+            . '<span class="evo-perf-ram">' . $memoryMb . ' Mo RAM</span> '
+            . '<span class="evo-perf-sep">•</span> '
+            . '<span class="evo-perf-db">' . $sqlCount . ' SQL</span> '
+            . '<span class="evo-perf-sep">•</span> '
+            . '<span class="evo-perf-eco">Flat-File Éco-conçu</span>'
+            . '</span>';
+    }
+
 }

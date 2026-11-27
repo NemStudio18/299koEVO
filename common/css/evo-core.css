@@ -1483,4 +1483,51 @@
     min-width: 24px;
 }
 
+/* ==========================================================================
+   Badge de performance et d'éco-conception en direct (299koEVO Core)
+   ========================================================================== */
+.evo-perf-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-family: var(--evo-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+    color: var(--evo-text-muted, #64748b);
+    background: var(--evo-surface-alt, rgba(0, 0, 0, 0.04));
+    border: 1px solid var(--evo-border, rgba(0, 0, 0, 0.08));
+    border-radius: var(--evo-radius-pill, 9999px);
+    padding: 3px 10px;
+    margin: 4px 0;
+    line-height: 1.4;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+:root[data-theme="dark"] .evo-perf-badge,
+html[data-theme="dark"] .evo-perf-badge,
+body.theme-dark .evo-perf-badge {
+    color: var(--evo-text-muted, #94a3b8);
+    background: var(--evo-surface-alt, rgba(255, 255, 255, 0.06));
+    border-color: var(--evo-border, rgba(255, 255, 255, 0.12));
+}
+
+.evo-perf-badge .evo-perf-icon {
+    font-size: 0.85rem;
+    color: #eab308;
+}
+
+.evo-perf-badge .evo-perf-time {
+    font-weight: 600;
+    color: var(--evo-text-primary, inherit);
+}
+
+.evo-perf-badge .evo-perf-sep {
+    opacity: 0.5;
+}
+
+.evo-perf-badge .evo-perf-eco {
+    font-weight: 500;
+    color: #10b981;
+}
+
+
 

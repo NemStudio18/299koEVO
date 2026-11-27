@@ -224,6 +224,7 @@ class ConfigManagerAdminController extends AdminController {
             'maintenance_message' => trim($_POST['maintenance_message'] ?? ''),
             'maintenance_template' => trim($_POST['maintenance_template'] ?? ''),
             'enable_theme_toggle' => (isset($_POST['enable_theme_toggle'])) ? true : false,
+            'show_performance_badge' => (isset($_POST['show_performance_badge'])) ? true : false,
             'marketplaceLicenseKey' => trim($_POST['marketplaceLicenseKey'] ?? ''),
             'update_channel' => (isset($_POST['update_channel']) && $_POST['update_channel'] === 'nightly') ? 'nightly' : 'stable',
         ];
