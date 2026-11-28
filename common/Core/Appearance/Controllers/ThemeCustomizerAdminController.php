@@ -23,10 +23,22 @@ class ThemeCustomizerAdminController extends AdminController
         $themeInfos = Util::readJsonFile(THEMES . $themeSlug . '/infos.json', true) ?: [];
         $themeName = $themeInfos['name'] ?? $themeSlug;
 
-        $fields = [];
+        $groupDefinitions = [
+            'identity' => ['id' => 'identity', 'title' => 'Identité & Boutons', 'icon' => 'fa-solid fa-droplet', 'fields' => []],
+            'light'    => ['id' => 'light', 'title' => 'Fonds & Textes (Clair)', 'icon' => 'fa-regular fa-sun', 'fields' => []],
+            'dark'     => ['id' => 'dark', 'title' => 'Fonds & Textes (Sombre)', 'icon' => 'fa-solid fa-moon', 'fields' => []],
+            'layout'   => ['id' => 'layout', 'title' => 'Typographie & Mise en page', 'icon' => 'fa-solid fa-sliders', 'fields' => []],
+            'theme'    => ['id' => 'theme', 'title' => 'Options propres au thème', 'icon' => 'fa-solid fa-wand-magic-sparkles', 'fields' => []],
+        ];
+
         foreach ($schema as $key => $def) {
-            $fields[] = [
+            $gKey = $def['group'] ?? 'identity';
+            if (!isset($groupDefinitions[$gKey])) {
+                $gKey = 'theme';
+            }
+            $groupDefinitions[$gKey]['fields'][] = [
                 'key' => $key,
+                'group' => $gKey,
                 'type' => $def['type'] ?? 'text',
                 'label' => $def['label'] ?? $key,
                 'description' => $def['description'] ?? '',
@@ -39,12 +51,14 @@ class ThemeCustomizerAdminController extends AdminController
             ];
         }
 
+        $groups = array_values(array_filter($groupDefinitions, static fn($g) => !empty($g['fields'])));
+
         $response = new AdminResponse();
         $response->setTitle('Apparence & Personnalisation du Thème');
         $tpl = $response->createPluginTemplate('customizer', 'index');
         $tpl->set('themeSlug', $themeSlug);
         $tpl->set('themeName', $themeName);
-        $tpl->set('fields', $fields);
+        $tpl->set('groups', $groups);
         $tpl->set('values', $values);
         $tpl->set('saveUrl', $this->router->generate('customizer-admin-save'));
         $tpl->set('resetUrl', $this->router->generate('customizer-admin-reset'));
@@ -84,7 +98,7 @@ class ThemeCustomizerAdminController extends AdminController
         $customizer = ThemeCustomizer::getInstance();
         $customizer->resetValues();
         (new Cache())->clear();
-        Show::msg('Les couleurs et typographies par défaut du thème ont été restaurées.', 'success');
+        Show::msg('Les couleurs, fonds et typographies par défaut du thème ont été restaurés.', 'success');
         $this->core->redirect($this->router->generate('customizer-admin'));
     }
 }
