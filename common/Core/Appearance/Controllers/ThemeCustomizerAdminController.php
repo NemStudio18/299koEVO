@@ -27,6 +27,7 @@ class ThemeCustomizerAdminController extends AdminController
             'identity' => ['id' => 'identity', 'title' => 'Identité & Boutons', 'icon' => 'fa-solid fa-droplet', 'fields' => []],
             'light'    => ['id' => 'light', 'title' => 'Fonds & Textes (Clair)', 'icon' => 'fa-regular fa-sun', 'fields' => []],
             'dark'     => ['id' => 'dark', 'title' => 'Fonds & Textes (Sombre)', 'icon' => 'fa-solid fa-moon', 'fields' => []],
+            'buttons'  => ['id' => 'buttons', 'title' => 'Boutons & Liens', 'icon' => 'fa-solid fa-computer-mouse', 'fields' => []],
             'layout'   => ['id' => 'layout', 'title' => 'Typographie & Mise en page', 'icon' => 'fa-solid fa-sliders', 'fields' => []],
             'theme'    => ['id' => 'theme', 'title' => 'Options propres au thème', 'icon' => 'fa-solid fa-wand-magic-sparkles', 'fields' => []],
         ];

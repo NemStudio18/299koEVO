@@ -180,6 +180,123 @@ class ThemeCustomizer
                 'default' => '',
             ],
 
+            // --- Groupe : Boutons & Liens (indépendants des cartes et du fond de page) ---
+            'btn_radius' => [
+                'group' => 'buttons',
+                'type' => 'range',
+                'label' => 'Forme des boutons (arrondi en px)',
+                'description' => 'Indépendant de l\'arrondi des cartes. 0 = carré, 40 = pilule. -1 = Auto (thème).',
+                'min' => -1,
+                'max' => 40,
+                'step' => 1,
+                'default' => -1,
+            ],
+            'btn_primary_text_color' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Texte des boutons principaux',
+                'description' => 'Par défaut calculé automatiquement pour rester lisible sur la couleur principale.',
+                'default' => '',
+            ],
+            'btn_secondary_bg' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Boutons secondaires : fond',
+                'description' => 'Fond des boutons « secondaire / contour » (mode clair, et sombre si non redéfini).',
+                'default' => '',
+            ],
+            'btn_secondary_text' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Boutons secondaires : texte',
+                'description' => 'Couleur du texte des boutons secondaires.',
+                'default' => '',
+            ],
+            'btn_secondary_border' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Boutons secondaires : bordure',
+                'description' => 'Couleur du contour des boutons secondaires.',
+                'default' => '',
+            ],
+            'btn_secondary_hover_bg' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Boutons secondaires : fond au survol',
+                'description' => 'Fond du bouton secondaire quand on le survole.',
+                'default' => '',
+            ],
+            'btn_secondary_hover_text' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Boutons secondaires : texte au survol',
+                'description' => 'Couleur du texte du bouton secondaire au survol.',
+                'default' => '',
+            ],
+            'dark_btn_secondary_bg' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Boutons secondaires : fond (Sombre)',
+                'description' => 'Remplace le fond uniquement en mode sombre.',
+                'default' => '',
+            ],
+            'dark_btn_secondary_text' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Boutons secondaires : texte (Sombre)',
+                'description' => 'Remplace le texte uniquement en mode sombre.',
+                'default' => '',
+            ],
+            'dark_btn_secondary_border' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Boutons secondaires : bordure (Sombre)',
+                'description' => 'Remplace la bordure uniquement en mode sombre.',
+                'default' => '',
+            ],
+            'dark_btn_secondary_hover_bg' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Boutons secondaires : fond au survol (Sombre)',
+                'description' => 'Remplace le fond au survol uniquement en mode sombre.',
+                'default' => '',
+            ],
+            'dark_btn_secondary_hover_text' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Boutons secondaires : texte au survol (Sombre)',
+                'description' => 'Remplace le texte au survol uniquement en mode sombre.',
+                'default' => '',
+            ],
+            'link_color' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Liens de texte : couleur',
+                'description' => 'Couleur des liens dans les contenus (hors boutons).',
+                'default' => '',
+            ],
+            'link_hover_color' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Liens de texte : couleur au survol',
+                'description' => 'Couleur au survol des liens de texte, indépendante des boutons.',
+                'default' => '',
+            ],
+            'dark_link_color' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Liens de texte : couleur (Sombre)',
+                'description' => 'Remplace la couleur des liens en mode sombre.',
+                'default' => '',
+            ],
+            'dark_link_hover_color' => [
+                'group' => 'buttons',
+                'type' => 'color',
+                'label' => 'Liens de texte : survol (Sombre)',
+                'description' => 'Remplace la couleur au survol des liens en mode sombre.',
+                'default' => '',
+            ],
+
             // --- Groupe 4 : Typographie & Mise en page ---
             'font_family' => [
                 'group' => 'layout',
@@ -490,6 +607,52 @@ class ThemeCustomizer
             $globalVars[] = "--ag-container: {$maxWidth}";
             $extraRules[] = ".declic-main, .declic-header-inner, .declic-banner-inner, .declic-footer-inner, .standard-page-container, .header-container, .homepage-container, #body-page, #header_content { max-width: {$maxWidth}; }";
         }
+
+
+        // 5. Boutons secondaires, forme des boutons et liens (indépendants des cartes / du fond)
+        $btnRadius = isset($values['btn_radius']) ? (int) $values['btn_radius'] : -1;
+        $allBtn = ['.button', '.btn', '.evo-btn', '.evo-btn-primary', '.evo-btn-secondary', '.btn-primary', '.btn-secondary',
+            '.evo-pb-btn-primary', '.evo-pb-btn-secondary', '.read-more-btn', '.blog-read-more',
+            'button[type="submit"]', 'input[type="submit"]', 'input[type="button"]', 'input[type="reset"]'];
+        $secBtn = ['.button.secondary', '.button.outline', '.btn-secondary', '.evo-btn-secondary', '.evo-pb-btn-secondary',
+            'button.secondary', '.btn-outline', 'input[type="reset"]'];
+        $primBtn = ['.button.primary', '.btn-primary', '.evo-btn-primary', '.evo-pb-btn-primary', '.read-more-btn', '.blog-read-more',
+            'button[type="submit"]', 'input[type="submit"]'];
+        $linkSel = 'main a:not(.button):not(.btn):not([class*="btn"]):not([class*="button"]):not([class*="read-more"]):not([class*="pill"])';
+
+        $scoped = static function (array $sels, string $prefix, string $suffix = ''): string {
+            return implode(', ', array_map(static fn($x) => $prefix . ' ' . $x . $suffix, $sels));
+        };
+
+        if ($btnRadius >= 0 && $btnRadius <= 40) {
+            $extraRules[] = $scoped($allBtn, 'html body') . ' { border-radius: ' . $btnRadius . 'px; }';
+        }
+
+        $primText = (string) ($values['btn_primary_text_color'] ?? '');
+        if ($isHex($primText)) {
+            $extraRules[] = $scoped($primBtn, 'html body') . ', ' . $scoped($primBtn, 'html body', ':hover') . ' { color: ' . $primText . '; }';
+        }
+
+        $emitSecondary = function (string $pfx, string $prefix) use (&$extraRules, $values, $isHex, $scoped, $secBtn, $linkSel) {
+            $g = static fn(string $k) => (string) ($values[$pfx . $k] ?? '');
+            $bg = $g('btn_secondary_bg'); $tx = $g('btn_secondary_text'); $bd = $g('btn_secondary_border');
+            $hbg = $g('btn_secondary_hover_bg'); $htx = $g('btn_secondary_hover_text');
+            $rest = [];
+            if ($isHex($bg)) { $rest[] = 'background: ' . $bg; }
+            if ($isHex($tx)) { $rest[] = 'color: ' . $tx; }
+            if ($isHex($bd)) { $rest[] = 'border-color: ' . $bd; }
+            if ($rest) { $extraRules[] = $scoped($secBtn, $prefix) . ' { ' . implode('; ', $rest) . '; }'; }
+            $hov = [];
+            if ($isHex($hbg)) { $hov[] = 'background: ' . $hbg; $hov[] = 'border-color: ' . $hbg; }
+            if ($isHex($htx)) { $hov[] = 'color: ' . $htx; }
+            if ($hov) { $extraRules[] = $scoped($secBtn, $prefix, ':hover') . ' { ' . implode('; ', $hov) . '; }'; }
+
+            $lc = $g('link_color'); $lh = $g('link_hover_color');
+            if ($isHex($lc)) { $extraRules[] = $prefix . ' ' . $linkSel . ' { color: ' . $lc . '; }'; }
+            if ($isHex($lh)) { $extraRules[] = $prefix . ' ' . $linkSel . ':hover { color: ' . $lh . '; }'; }
+        };
+        $emitSecondary('', 'html body');
+        $emitSecondary('dark_', 'html[data-theme="dark"] body');
 
         // Variables personnalisées additionnelles déclarées par un thème tiers
         foreach ($schema as $key => $field) {

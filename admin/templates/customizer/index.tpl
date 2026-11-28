@@ -44,7 +44,7 @@
                             {% if f.type == 'color' %}
                                 <div class="customizer-color-row">
                                     <input type="color" id="picker_{{ f.key }}" value="{{ f.value ? f.value : '#1d4ed8' }}" class="customizer-color-picker" data-target="cust_{{ f.key }}" data-mode-hint="{{ f.group }}" />
-                                    <input type="text" id="cust_{{ f.key }}" name="customizer[{{ f.key }}]" value="{{ f.value }}" placeholder="Auto (défaut du thème)" pattern="^$|^#[0-9a-fA-F]{6}$" class="customizer-color-hex" data-preview-key="{{ f.key }}" data-mode-hint="{{ f.group }}" />
+                                    <input type="text" id="cust_{{ f.key }}" name="customizer[{{ f.key }}]" value="{{ f.value }}" placeholder="Auto (défaut du thème)" pattern="^$|^#[0-9a-fA-F]{6}$" class="customizer-color-hex" data-preview-key="{{ f.key }}" data-mode-hint="{{ f.group }}" data-field-key="{{ f.key }}" />
                                     <button type="button" class="button small secondary js-clear-color" data-target="cust_{{ f.key }}" title="Revenir à la valeur native du thème">Auto</button>
                                 </div>
                             {% elseif f.type == 'select' %}
@@ -140,7 +140,14 @@
                             <a href="#preview" onclick="return false;" class="lp-btn-secondary" id="lpBtnSecondary">
                                 Bouton secondaire
                             </a>
+                            <span class="lp-btn-secondary lp-sec-hover-demo" title="Témoin permanent du survol secondaire">
+                                <i class="fa-solid fa-hand-pointer"></i> Secondaire survolé
+                            </span>
                         </div>
+                        <p class="lp-link-line">
+                            Exemple de <a href="#preview" onclick="return false;" class="lp-link">lien de texte</a>
+                            et de <span class="lp-link lp-link-hover-demo">lien au survol</span> dans un paragraphe.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -258,7 +265,13 @@
 .lp-btn-primary { background: var(--lp-accent); color: var(--lp-accent-fg); border: 1px solid var(--lp-accent); }
 .lp-btn-primary:hover { background: var(--lp-accent-hover); color: var(--lp-accent-hover-fg); border-color: var(--lp-accent-hover); text-decoration: none; }
 .lp-btn-hover-demo { background: var(--lp-accent-hover); color: var(--lp-accent-hover-fg); border: 1px dashed rgba(255,255,255,0.45); cursor: default; }
-.lp-btn-secondary { background: var(--lp-bg); color: var(--lp-text); border: 1px solid var(--lp-border); }
+.lp-btn-primary, .lp-btn-hover-demo, .lp-btn-secondary { border-radius: var(--lp-btn-radius, var(--lp-radius)); }
+.lp-btn-secondary { background: var(--lp-sec-bg, var(--lp-bg)); color: var(--lp-sec-text, var(--lp-text)); border: 1px solid var(--lp-sec-border, var(--lp-border)); }
+.lp-btn-secondary:hover { background: var(--lp-sec-hover-bg, var(--lp-sec-bg, var(--lp-bg))); color: var(--lp-sec-hover-text, var(--lp-sec-text, var(--lp-text))); text-decoration: none; }
+.lp-sec-hover-demo { background: var(--lp-sec-hover-bg, var(--lp-sec-bg, var(--lp-bg))); color: var(--lp-sec-hover-text, var(--lp-sec-text, var(--lp-text))); cursor: default; }
+.lp-link-line { margin: 1rem 0 0; font-size: 0.86rem; color: var(--lp-text); }
+.lp-link { color: var(--lp-link, var(--lp-accent)); text-decoration: underline; cursor: pointer; }
+.lp-link:hover, .lp-link-hover-demo { color: var(--lp-link-hover, var(--lp-link, var(--lp-accent))); }
 
 :root[data-theme="dark"] .customizer-controls-card, :root[data-theme="dark"] .customizer-preview-panel, html[data-theme="dark"] .customizer-controls-card, html[data-theme="dark"] .customizer-preview-panel { background: #1e293b; border-color: #334155; }
 :root[data-theme="dark"] .customizer-field, :root[data-theme="dark"] .cust-tabs-nav, :root[data-theme="dark"] .customizer-submit-bar, html[data-theme="dark"] .customizer-field, html[data-theme="dark"] .cust-tabs-nav, html[data-theme="dark"] .customizer-submit-bar { border-color: #334155; }
@@ -379,6 +392,29 @@
         stage.style.setProperty('--lp-muted', valOf(prefix + 'muted_color', d.muted));
         stage.style.setProperty('--lp-border', valOf(prefix + 'border_color', d.border));
 
+
+        // Boutons secondaires, forme des boutons et liens (indépendants des cartes)
+        const optColor = (id) => { const el = document.getElementById('cust_' + id); return (el && isHex(el.value.trim())) ? el.value.trim() : ''; };
+        const setOrUnset = (name, v) => { if (v) stage.style.setProperty(name, v); else stage.style.removeProperty(name); };
+        const dk = previewMode === 'dark';
+        const pick = (key) => (dk && optColor('dark_' + key)) ? optColor('dark_' + key) : optColor(key);
+        setOrUnset('--lp-sec-bg', pick('btn_secondary_bg'));
+        setOrUnset('--lp-sec-text', pick('btn_secondary_text'));
+        setOrUnset('--lp-sec-border', pick('btn_secondary_border'));
+        setOrUnset('--lp-sec-hover-bg', pick('btn_secondary_hover_bg'));
+        setOrUnset('--lp-sec-hover-text', pick('btn_secondary_hover_text'));
+        setOrUnset('--lp-link', pick('link_color'));
+        setOrUnset('--lp-link-hover', pick('link_hover_color'));
+        const btnTxt = optColor('btn_primary_text_color');
+        if (btnTxt) { stage.style.setProperty('--lp-accent-fg', btnTxt); stage.style.setProperty('--lp-accent-hover-fg', btnTxt); }
+        const btnRadEl = document.getElementById('cust_btn_radius');
+        if (btnRadEl) {
+            const bv = parseInt(btnRadEl.value, 10);
+            const bb = document.getElementById('badge_btn_radius');
+            if (bb) bb.textContent = bv < 0 ? 'Auto' : (bv + ' px');
+            if (bv < 0) stage.style.removeProperty('--lp-btn-radius'); else stage.style.setProperty('--lp-btn-radius', bv + 'px');
+        }
+
         const radiusEl = document.getElementById('cust_border_radius');
         if (radiusEl) {
             const v = parseInt(radiusEl.value, 10);
@@ -433,7 +469,8 @@
 
     document.querySelectorAll('[data-preview-key]').forEach((el) => {
         const handler = () => {
-            if (el.dataset.modeHint === 'dark' && previewMode !== 'dark') setPreviewMode('dark');
+            const isDarkKey = (el.dataset.fieldKey || '').indexOf('dark_') === 0;
+            if ((el.dataset.modeHint === 'dark' || isDarkKey) && previewMode !== 'dark') setPreviewMode('dark');
             if (el.dataset.modeHint === 'light' && previewMode !== 'light') setPreviewMode('light');
             const picker = document.getElementById('picker_' + el.dataset.previewKey);
             if (picker && isHex(el.value)) picker.value = el.value.trim();
