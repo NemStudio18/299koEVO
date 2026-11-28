@@ -160,8 +160,8 @@
                                     </div>
                                 {% endif %}
                             {% elseif ressource.getMissingRequiredPlugins() %}
-                                <button type="button" disabled class="button market-btn-disabled market-btn-block" style="background:#f59e0b;color:#1e293b;border-color:#d97706;cursor:not-allowed;font-weight:600;" title="Nécessite l'installation préalable de : {{ressource.getMissingRequiredPlugins()|join(', ')}}">
-                                    <i class="fa-solid fa-lock"></i> Requis : {{ressource.getMissingRequiredPlugins()|join(', ')}}
+                                <button type="button" disabled class="button market-btn-disabled market-btn-block" style="background:#f59e0b;color:#1e293b;border-color:#d97706;cursor:not-allowed;font-weight:600;" title="Nécessite l'installation préalable de : {{ressource.getMissingRequiredPluginsString()}}">
+                                    <i class="fa-solid fa-lock"></i> Requis : {{ressource.getMissingRequiredPluginsString()}}
                                 </button>
                             {% else %}
                                 {% if ressource.isCommunity() %}

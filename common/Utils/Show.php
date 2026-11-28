@@ -1010,7 +1010,9 @@ class Show
             }
         }
 
-        $html .= '</ul></li>';
+        $html .= '</ul>';
+        $html .= '<script>!function(){function t(){var e=document.querySelector(".nav-user-avatar-menu");if(e&&!e.dataset.touchInit){e.dataset.touchInit="1";var n=e.querySelector(".nav-avatar-link");n&&n.addEventListener("click",function(t){window.innerWidth<=1024&&(e.classList.contains("is-open")||(t.preventDefault(),e.classList.add("is-open")))}),document.addEventListener("click",function(n){e.contains(n.target)||e.classList.remove("is-open")})}}"loading"===document.readyState?document.addEventListener("DOMContentLoaded",t):t()}();</script>';
+        $html .= '</li>';
         echo $html;
     }
 

@@ -794,7 +794,8 @@
 
     /* Avatar menu sur Mobile */
     @media (max-width: 1024px) {
-        .nav-user-avatar-menu {
+        .nav-user-avatar-menu,
+        #navigation > li.nav-user-avatar-menu {
             display: flex;
             flex-direction: column;
             align-items: stretch;
@@ -805,7 +806,8 @@
             padding: 12px 0 0;
         }
 
-        .nav-user-avatar-menu .nav-avatar-link {
+        .nav-user-avatar-menu .nav-avatar-link,
+        #navigation > li.nav-user-avatar-menu > a.nav-avatar-link {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -813,17 +815,21 @@
             margin-bottom: 6px;
             border-radius: var(--evo-radius-sm);
             background: var(--evo-surface-alt);
+            cursor: pointer;
         }
 
-        .nav-user-avatar-menu .nav-avatar-username {
+        .nav-user-avatar-menu .nav-avatar-username,
+        #navigation > li.nav-user-avatar-menu .nav-avatar-username {
             display: inline-block;
             font-weight: 700;
             font-size: 0.98rem;
             color: var(--evo-text);
         }
 
-        .nav-user-avatar-menu > ul {
-            display: flex;
+        /* Masqué par défaut sur mobile, révélé au tap/clic (.is-open) */
+        .nav-user-avatar-menu > ul,
+        #navigation > li.nav-user-avatar-menu > ul {
+            display: none;
             flex-direction: column;
             position: static;
             box-shadow: none;
@@ -836,7 +842,13 @@
             min-width: 100%;
         }
 
-        .nav-user-avatar-menu > ul > li > a {
+        .nav-user-avatar-menu.is-open > ul,
+        #navigation > li.nav-user-avatar-menu.is-open > ul {
+            display: flex;
+        }
+
+        .nav-user-avatar-menu > ul > li > a,
+        #navigation > li.nav-user-avatar-menu > ul > li > a {
             padding: 10px 14px;
             font-size: 0.95rem;
         }

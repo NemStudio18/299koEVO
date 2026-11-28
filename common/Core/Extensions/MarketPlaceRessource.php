@@ -134,6 +134,11 @@ class MarketPlaceRessource
         return $missing;
     }
 
+    public function getMissingRequiredPluginsString(?PluginsManager $pluginsManager = null): string
+    {
+        return implode(', ', $this->getMissingRequiredPlugins($pluginsManager));
+    }
+
     public function isCommunity(): bool
     {
         return $this->isCommunity;

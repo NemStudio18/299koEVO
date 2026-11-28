@@ -575,6 +575,16 @@ class Template
                             $val = mb_substr($val, -1);
                         }
                         break;
+                    case 'join':
+                    case 'implode':
+                        if (is_array($val)) {
+                            $glue = ', ';
+                            if ($filterArgs) {
+                                $glue = trim($filterArgs, "() '\"");
+                            }
+                            $val = implode($glue, $val);
+                        }
+                        break;
                     case 'json_encode':
                     case 'json':
                         $val = json_encode($val, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
