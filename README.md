@@ -5,13 +5,13 @@
 ### *Your website. Your data. Your freedom.*
 **A CMS that truly belongs to you. Lightweight, modular, and independent.**
 
-[![Version](https://img.shields.io/badge/version-v0.4.1-blue.svg?style=flat-square)](https://github.com/NemStudio18/299koEVO/releases)
+[![Version](https://img.shields.io/badge/version-v0.4.3-blue.svg?style=flat-square)](https://github.com/NemStudio18/299koEVO/releases)
 [![PHP Version](https://img.shields.io/badge/PHP-8.1%20%7C%208.2%20%7C%208.3%20%7C%208.4-777bb4.svg?style=flat-square&logo=php)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-GPLv3-green.svg?style=flat-square)](LICENSE)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Sovereign-0284c7.svg?style=flat-square)](https://299ko.flexcb.fr)
 [![Storage](https://img.shields.io/badge/Storage-JSON%20%7C%20SQLite%20%7C%20MySQL-orange.svg?style=flat-square)](#05--storage--architecture)
 
-[🇫🇷 Lire en français](README.fr.md) • [🌐 Live Demo](https://299ko.flexcb.fr/) • [💬 GitHub Discussions](https://github.com/NemStudio18/299koEVO/discussions) • [📦 Download (v0.4.1)](https://github.com/NemStudio18/299koEVO/releases)
+[🇫🇷 Lire en français](README.fr.md) • [🌐 Live Demo](https://299ko.flexcb.fr/) • [💬 GitHub Discussions](https://github.com/NemStudio18/299koEVO/discussions) • [📦 Download (v0.4.3)](https://github.com/NemStudio18/299koEVO/releases)
 
 ---
 
@@ -112,20 +112,19 @@ flowchart TD
 </div>
 
 ### 1. [Core CMS (`NemStudio18/299koEVO`)](https://github.com/NemStudio18/299koEVO)
-The execution runtime, AltoRouter routing engine, modern administration UI, user and role management, and caching system.
+The execution runtime, AltoRouter routing engine, modern administration UI (`PluginsManager 2.0`), centralized media library (`FileManager`), live telemetry (`SystemMonitor`), background job runner (`TaskScheduler`), cross-storage auditor (`DataInspector`), ABAC role management, and caching system.
 
 ### 2. [Official Plugins (`NemStudio18/Plugins_299koEVO`)](https://github.com/NemStudio18/Plugins_299koEVO)
-A modular library of ready-to-use extensions:
+Over 40 modular, ready-to-use extensions installable in 1 click:
 - **🏷️ Classified Ads (`annonces` - C2C)**: Community classifieds platform with public submission, admin moderation, multi-photo WebP uploads, and direct buyer/seller contact.
 - **🛒 E-commerce (`ecommerce` - B2C)**: Online store with cart, real-time inventory tracking, payment gateway (Stripe Checkout, bank transfer, check), and parcel tracking.
-- **💬 LiveChat**: Real-time customer support chat module to engage directly with visitors.
-- **📝 Blog & Articles**: Full-featured publishing with categories, tags, pagination, RSS feeds, and visitor comments.
+- **📝 Blog & Articles**: Minute-accurate scheduled publishing, categories, pagination, RSS feeds, and visitor comments.
+- **⚡ Workflow (No-Code)**: Automated event orchestrator (triggers, logical conditions, HTTP webhooks, emails, and deferred background jobs).
 - **📊 LightStats**: Privacy-first, sovereign analytics without tracking cookies (CNIL / GDPR compliant).
-- **🌦️ Weather & WeatherHeader**: Live meteorological forecast widgets with dynamic SVG sky animations.
-- **💌 Contact Forms, Newsletter, Forum, Polls, Photo Gallery...**
+- **💬 LiveChat, Agenda, FAQ, Forum, Polls, Photo Gallery, Retro Arcade (`game`)...**
 
 ### 3. [Themes & Skins (`NemStudio18/Skins_299koEVO`)](https://github.com/NemStudio18/Skins_299koEVO)
-Modern, responsive, and customizable skins (`Declic`, `default`, etc.) to transform your visual style in seconds.
+Modern, responsive skins powered by universal `--evo-*` CSS design tokens (`Declic`, `default`, `Noel`, `CyberDark`, etc.) to transform your visual identity in seconds.
 
 ---
 
@@ -162,7 +161,7 @@ You do not need to be an expert developer to take part. Everyone has a place in 
 
 ## 07 — Project Status & Roadmap
 
-The project is actively maintained on the **v0.4.x** release branch.  
+The project is actively maintained on the **v0.4.3** release branch.  
 Check out our detailed milestones in **[ROADMAP.md](ROADMAP.md)** (TaskScheduler, SystemMonitor, DataInspector, Safety Rollback Snapshots, No-Code Workflow Engine, Universal CSS Tokens).
 
 ---

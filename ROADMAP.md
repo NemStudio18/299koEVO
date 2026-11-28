@@ -117,5 +117,5 @@ flowchart TD
 - **`MediaManager`**: Centralized asset library with orphan detection and WebP processing.
 - [x] **`Workflow`**: Sovereign no-code event orchestrator (triggers, conditions, HTTP webhooks, emails, and TaskScheduler async jobs).
 - **`TranslationManager`**: Graphical dictionary diff and missing keys detector.
-- [ ] **`Universal CSS Tokens (--evo-*)`**: Modernize all plugin stylesheets to use standardized CSS custom properties (`--evo-bg`, `--evo-card-bg`, `--evo-text`, `--evo-border`, `--evo-accent`) ensuring native chameleon adaptation on 100% of dark and light themes without requiring theme-specific CSS.
-- **`Blog` (Advanced Editorial Scheduling & Timestamps)**: Distinct creation date (`created_at`), scheduled publication date (`published_at`), and revision date (`updated_at`) with full hour/minute precision (`Y-m-d H:i:s`), plus conditional "Updated on..." display.
+- [x] **`Universal CSS Tokens (--evo-*)`**: Modernize all plugin stylesheets to use standardized CSS custom properties (`--evo-bg`, `--evo-card-bg`, `--evo-text`, `--evo-border`, `--evo-accent`) ensuring native chameleon adaptation on 100% of dark and light themes without requiring theme-specific CSS.
+- [x] **`Blog` (Advanced Editorial Scheduling & Timestamps)**: Distinct creation date (`created_at`), scheduled publication date (`published_at`), and revision date (`updated_at`) with full hour/minute precision (`Y-m-d H:i:s`), plus conditional "Updated on..." display.

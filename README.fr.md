@@ -5,13 +5,13 @@
 ### *Your website. Your data. Your freedom.*
 **Un CMS qui vous appartient vraiment. Léger, modulaire et indépendant.**
 
-[![Version](https://img.shields.io/badge/version-v0.4.1-blue.svg?style=flat-square)](https://github.com/NemStudio18/299koEVO/releases)
+[![Version](https://img.shields.io/badge/version-v0.4.3-blue.svg?style=flat-square)](https://github.com/NemStudio18/299koEVO/releases)
 [![PHP Version](https://img.shields.io/badge/PHP-8.1%20%7C%208.2%20%7C%208.3%20%7C%208.4-777bb4.svg?style=flat-square&logo=php)](https://www.php.net/)
 [![Licence](https://img.shields.io/badge/licence-GPLv3-green.svg?style=flat-square)](LICENSE)
 [![Vie Privée](https://img.shields.io/badge/Vie%20Priv%C3%A9e-100%25%20Souverain-0284c7.svg?style=flat-square)](https://299ko.flexcb.fr)
 [![Stockage](https://img.shields.io/badge/Stockage-JSON%20%7C%20SQLite%20%7C%20MySQL-orange.svg?style=flat-square)](#05--stockage--architecture)
 
-[🇬🇧 Read in English](README.md) • [🌐 Démo en direct](https://299ko.flexcb.fr/) • [💬 GitHub Discussions](https://github.com/NemStudio18/299koEVO/discussions) • [📦 Télécharger (v0.4.1)](https://github.com/NemStudio18/299koEVO/releases)
+[🇬🇧 Read in English](README.md) • [🌐 Démo en direct](https://299ko.flexcb.fr/) • [💬 GitHub Discussions](https://github.com/NemStudio18/299koEVO/discussions) • [📦 Télécharger (v0.4.3)](https://github.com/NemStudio18/299koEVO/releases)
 
 ---
 
@@ -112,20 +112,19 @@ flowchart TD
 </div>
 
 ### 1. [Le Cœur CMS (`NemStudio18/299koEVO`)](https://github.com/NemStudio18/299koEVO)
-Le moteur d'exécution, le routeur AltoRouter, l'administration moderne, la gestion des utilisateurs et le système de cache.
+Le moteur d'exécution, le routeur AltoRouter, l'administration moderne (`PluginsManager 2.0`), la médiathèque centralisée (`FileManager`), la supervision temps réel (`SystemMonitor`), l'ordonnanceur de tâches (`TaskScheduler`), l'audit d'intégrité (`DataInspector`), la gestion des utilisateurs ABAC et le système de cache.
 
 ### 2. [Le Catalogue des Plugins (`NemStudio18/Plugins_299koEVO`)](https://github.com/NemStudio18/Plugins_299koEVO)
-Des modules prêts à l'emploi installables en 1 clic :
+Plus de 40 modules prêts à l'emploi installables en 1 clic :
 - **🏷️ Petites Annonces (`annonces` - C2C)** : Dépôt public, modération admin, multi-photos WebP et messagerie acheteur/vendeur.
 - **🛒 E-commerce (`ecommerce` - B2C)** : Boutique en ligne, gestion des stocks, passerelle Stripe Checkout et suivi colis.
-- **💬 LiveChat** : Module de discussions en direct temps réel pour échanger avec vos visiteurs.
-- **📝 Blog & Articles** : Catégories, pagination fluide, flux RSS et commentaires.
+- **📝 Blog & Articles** : Publication programmée à la minute, catégories, pagination fluide, flux RSS et commentaires.
+- **⚡ Workflow (No-Code)** : Orchestrateur d'événements automatisés (déclencheurs, conditions, Webhooks HTTP, e-mails et tâches différées).
 - **📊 LightStats** : Statistiques souveraines auto-hébergées, sans cookies tiers, 100% conformes CNIL / RGPD.
-- **🌦️ Météo & WeatherHeader** : Prévisions météo en temps réel avec animations SVG.
-- **💌 Contact, Newsletter, Forum, Sondages, Galerie photos...**
+- **💬 LiveChat, Agenda, FAQ, Forum, Sondages, Galerie photos, Arcade Rétro (`game`)...**
 
 ### 3. [Le Catalogue des Thèmes (`NemStudio18/Skins_299koEVO`)](https://github.com/NemStudio18/Skins_299koEVO)
-Des thèmes modernes, responsives et entièrement personnalisables (`Declic`, `default`, etc.).
+Des thèmes modernes, responsives et compatibles avec les Design Tokens universels `--evo-*` (`Declic`, `default`, `Noel`, `CyberDark`, etc.).
 
 ---
 
@@ -162,7 +161,7 @@ Vous n'avez pas besoin d'être un développeur chevronné pour participer. Chacu
 
 ## 07 — Statut du projet & Feuille de route
 
-Le projet est activement maintenu en version **v0.4.x**.  
+Le projet est activement maintenu en version **v0.4.3**.  
 Consultez notre feuille de route détaillée dans **[ROADMAP.md](ROADMAP.md)** pour découvrir les jalons réalisés et à venir (TaskScheduler, SystemMonitor, DataInspector, Snapshots de sécurité, Moteur de Workflows No-Code, Tokens CSS universels).
 
 ---

@@ -14,8 +14,8 @@ Seules les versions les plus récentes de la branche principale bénéficient ac
 
 | Version | Supportée | Statut |
 | :--- | :---: | :--- |
-| **0.3.x (actuelle)** | ✅ | Correctifs prioritaires & mises à jour actives |
-| < 0.3.0 | ❌ | Obsolète (mise à niveau vivement recommandée) |
+| **0.4.x (actuelle)** | ✅ | Correctifs prioritaires & mises à jour actives |
+| < 0.4.0 | ❌ | Obsolète (mise à niveau vivement recommandée) |
 
 ---
 
@@ -54,8 +54,8 @@ Only the latest active minor releases receive official security patches:
 
 | Version | Supported | Status |
 | :--- | :---: | :--- |
-| **0.3.x (latest)** | ✅ | Priority patches & active support |
-| < 0.3.0 | ❌ | Deprecated (upgrade strongly recommended) |
+| **0.4.x (latest)** | ✅ | Priority patches & active support |
+| < 0.4.0 | ❌ | Deprecated (upgrade strongly recommended) |
 
 ---
 
