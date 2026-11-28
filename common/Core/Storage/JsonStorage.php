@@ -12,6 +12,7 @@ class JsonStorage implements StorageInterface
 {
     private string $filePath;
     private string $primaryKey;
+    private static array $readCache = [];
     private ?array $transactionBuffer = null;
     private $lockHandle = null;
 
@@ -280,17 +281,23 @@ class JsonStorage implements StorageInterface
         if (!file_exists($this->filePath))
             return [];
 
-        // Si on a déjà un verrou exclusif (transaction), on peut lire sans risque
+        // Si on a déjà un verrou exclusif (transaction), on lit directement depuis le disque sans cache
         if ($this->lockHandle) {
             $content = file_get_contents($this->filePath);
-        } else {
-            // Sinon on utilise withLock pour un read safe (simplifié ici par file_get_contents car atomic write assure la cohérence, 
-            // mais un lock partagé serait mieux pour éviter les lectures pendant un rename partiel sur certains OS bizarre)
-            $content = @file_get_contents($this->filePath);
+            $data = json_decode($content, true);
+            return is_array($data) ? $data : [];
         }
 
-        $data = json_decode($content, true);
-        return is_array($data) ? $data : [];
+        $mtime = (int) @filemtime($this->filePath);
+        if (isset(self::$readCache[$this->filePath]) && self::$readCache[$this->filePath]['mtime'] === $mtime) {
+            return self::$readCache[$this->filePath]['data'];
+        }
+
+        $content = @file_get_contents($this->filePath);
+        $data = json_decode((string) $content, true);
+        $rows = is_array($data) ? $data : [];
+        self::$readCache[$this->filePath] = ['mtime' => $mtime, 'data' => $rows];
+        return $rows;
     }
 
     private const MAX_BACKUPS = 5;
@@ -357,6 +364,12 @@ class JsonStorage implements StorageInterface
             EmergencyLogger::log("CRITICAL: JsonStorage::saveAll failed to rename $tmpFile to {$this->filePath} after $maxRetries attempts.");
             @unlink($tmpFile);
             return false;
+        }
+
+        clearstatcache(true, $this->filePath);
+        unset(self::$readCache[$this->filePath]);
+        if (class_exists('\Utils\Util', false)) {
+            \Utils\Util::clearJsonCache($this->filePath);
         }
 
         return true;

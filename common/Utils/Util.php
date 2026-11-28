@@ -19,6 +19,24 @@ defined('ROOT') or exit('Access denied!');
 
 class Util
 {
+    /**
+     * Request-scoped in-memory cache for decoded JSON files to avoid redundant disk I/O.
+     * Keyed by "<filePath>:<assoc>" => ['mtime' => int, 'data' => mixed].
+     */
+    private static array $jsonCache = [];
+
+    /**
+     * Clears the in-memory JSON read cache for a specific file or globally.
+     */
+    public static function clearJsonCache(?string $file = null): void
+    {
+        if ($file === null) {
+            self::$jsonCache = [];
+            return;
+        }
+        unset(self::$jsonCache[$file . ':1'], self::$jsonCache[$file . ':0']);
+    }
+
     ## Tri un tableau à 2 dimenssions
     ## $data => tableau
     ## $key => index du tableau sur lequel doit se faire le tri
@@ -237,14 +255,19 @@ class Util
             \Core\Monitor\SystemMonitor::incrementIo('json_write');
         }
 
+        self::clearJsonCache((string) $file);
+
         $testMode = \Core\Auth\AdminTestMode::getInstance();
         if ($testMode->isActive()) {
             $testMode->setVolatileJson($file, $data);
             return true;
         }
 
-        if (@file_put_contents($file, json_encode($data), LOCK_EX))
+        if (@file_put_contents($file, json_encode($data), LOCK_EX) !== false) {
+            clearstatcache(true, (string) $file);
+            self::clearJsonCache((string) $file);
             return true;
+        }
         return false;
     }
 
@@ -257,10 +280,6 @@ class Util
      */
     public static function readJsonFile($file, $assoc = true)
     {
-        if (class_exists('\Core\Monitor\SystemMonitor', false)) {
-            \Core\Monitor\SystemMonitor::incrementIo('json_read');
-        }
-
         $testMode = \Core\Auth\AdminTestMode::getInstance();
         if ($testMode->isActive()) {
             $volatile = $testMode->getVolatileJson($file);
@@ -269,10 +288,27 @@ class Util
             }
         }
 
-        if (!file_exists($file)) {
+        $filePath = (string) $file;
+        $cacheKey = $filePath . ($assoc ? ':1' : ':0');
+        $exists = is_file($filePath);
+        $mtime = $exists ? (int) @filemtime($filePath) : -1;
+
+        if (isset(self::$jsonCache[$cacheKey]) && self::$jsonCache[$cacheKey]['mtime'] === $mtime) {
+            return self::$jsonCache[$cacheKey]['data'];
+        }
+
+        if (class_exists('\Core\Monitor\SystemMonitor', false)) {
+            \Core\Monitor\SystemMonitor::incrementIo('json_read');
+        }
+
+        if (!$exists) {
+            self::$jsonCache[$cacheKey] = ['mtime' => -1, 'data' => false];
             return false;
         }
-        return json_decode(@file_get_contents($file), $assoc);
+
+        $decoded = json_decode((string) @file_get_contents($filePath), $assoc);
+        self::$jsonCache[$cacheKey] = ['mtime' => $mtime, 'data' => $decoded];
+        return $decoded;
     }
 
     ## Upload

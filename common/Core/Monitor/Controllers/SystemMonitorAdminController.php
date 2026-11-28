@@ -47,12 +47,13 @@ class SystemMonitorAdminController extends AdminController
         $this->core->redirect($this->router->generate('monitor-admin'));
     }
 
-    public function apiMetrics()
+    public function apiMetrics(): \Core\Responses\ApiResponse
     {
-        header('Content-Type: application/json; charset=utf-8');
-        $monitor = SystemMonitor::getInstance();
-        echo json_encode($monitor->getMetrics(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        exit;
+        $resp = new \Core\Responses\ApiResponse();
+        $resp->httpCode = 200;
+        $resp->status = \Core\Responses\ApiResponse::STATUS_SUCCESS;
+        $resp->body = SystemMonitor::getInstance()->getMetrics();
+        return $resp;
     }
 }
 

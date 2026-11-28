@@ -405,7 +405,7 @@ class SettingsService
         $router->map('GET', '/admin/configmanager/update/[a:token]', 'Core\Settings\Controllers\ConfigManagerUpdateController#process', 'configmanager-update');
         $router->map('GET', '/admin/configmanager/update-manual/[a:token]', 'Core\Settings\Controllers\ConfigManagerUpdateController#processManual', 'configmanager-manual-update');
         $router->map('GET', '/admin/configmanager/check-update/[a:token]', 'Core\Settings\Controllers\ConfigManagerUpdateController#checkNow', 'configmanager-check-update');
-        $router->map('GET', '/admin/api/check-updates', 'Core\Settings\Controllers\ConfigManagerUpdateController#checkUpdatesAsync', 'configmanager-api-check-updates');
+        $router->map('GET|HEAD', '/admin/api/check-updates', 'Core\Settings\Controllers\ConfigManagerUpdateController#checkUpdatesAsync', 'configmanager-api-check-updates');
         $router->map('GET', '/admin/configmanager/delete-install/[a:token]', 'Core\Settings\Controllers\ConfigManagerAdminController#deleteInstall', 'configmanager-delete-install');
         $router->map('GET', '/admin/configmanager/backup[/?]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#home', 'configmanager-backup');
         $router->map('GET', '/admin/backups[/?]', 'Core\Settings\Controllers\ConfigManagerBackupAdminController#home', 'configmanager-backups-alias');

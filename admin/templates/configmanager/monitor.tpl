@@ -128,16 +128,16 @@
                                             <td style="text-align: center;">
                                                 <span class="badge badge-subtle">{{ h.count }}</span>
                                             </td>
-                                            <td style="text-align: right; font-weight: 600;">
-                                                <span class="{% if h.total_ms > 100 %}text-danger{% elseif h.total_ms > 30 %}text-warning{% else %}text-success{% endif %}">
-                                                    {{ h.total_ms }} ms
+                                            <td style="text-align: right; color: var(--cb-text-muted, #64748b); font-variant-numeric: tabular-nums;">
+                                                {{ h.total_ms }} ms
+                                            </td>
+                                            <td style="text-align: right; font-weight: 600; font-variant-numeric: tabular-nums;">
+                                                <span class="{% if h.avg_ms > 20 %}text-danger{% elseif h.avg_ms > 5 %}text-warning{% else %}text-success{% endif %}">
+                                                    {{ h.avg_ms }} ms
                                                 </span>
                                             </td>
-                                            <td style="text-align: right;">
-                                                {{ h.avg_ms }} ms
-                                            </td>
-                                            <td style="text-align: right; font-weight: 600;">
-                                                <span class="{% if h.max_ms > 50 %}text-danger{% elseif h.max_ms > 15 %}text-warning{% else %}text-success{% endif %}">
+                                            <td style="text-align: right; font-weight: 600; font-variant-numeric: tabular-nums;">
+                                                <span class="{% if h.max_ms > 80 %}text-danger{% elseif h.max_ms > 25 %}text-warning{% else %}text-success{% endif %}">
                                                     {{ h.max_ms }} ms
                                                 </span>
                                             </td>
@@ -198,8 +198,8 @@
                                                     {{ req.status }}
                                                 </span>
                                             </td>
-                                            <td style="text-align: right; font-weight: 600;">
-                                                <span class="{% if req.duration_ms > 150 %}text-danger{% elseif req.duration_ms > 60 %}text-warning{% else %}text-success{% endif %}">
+                                            <td style="text-align: right; font-weight: 600; font-variant-numeric: tabular-nums;">
+                                                <span class="{% if req.duration_ms > 300 %}text-danger{% elseif req.duration_ms > 100 %}text-warning{% else %}text-success{% endif %}">
                                                     {{ req.duration_ms }} ms
                                                 </span>
                                             </td>
@@ -347,6 +347,47 @@ html[data-theme="dark"] .badge-subtle { background: #334155; color: #cbd5e1; }
         const ioDet = document.getElementById('kpiIoDetails');
         if (ioDet) {
             ioDet.innerHTML = `JSON : <strong>${data.summary.total_json_reads || 0}</strong> lus / <strong>${data.summary.total_json_writes || 0}</strong> écrits | SQL : <strong>${data.summary.total_sql_queries || 0}</strong> req.`;
+        }
+
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+        const hooksTbody = document.querySelector('#hooksTable tbody');
+        if (hooksTbody && data.hooks_profiler) {
+            const entries = Object.entries(data.hooks_profiler);
+            hooksTbody.innerHTML = entries.map(([hookName, h]) => {
+                const avgCls = h.avg_ms > 20 ? 'text-danger' : (h.avg_ms > 5 ? 'text-warning' : 'text-success');
+                const maxCls = h.max_ms > 80 ? 'text-danger' : (h.max_ms > 25 ? 'text-warning' : 'text-success');
+                return `<tr>
+                    <td><code style="font-weight: 600; color: var(--primary-color, #1f62a9);">${esc(hookName)}</code></td>
+                    <td style="text-align: center;"><span class="badge badge-subtle">${Number(h.count || 0)}</span></td>
+                    <td style="text-align: right; color: var(--cb-text-muted, #64748b); font-variant-numeric: tabular-nums;">${Number(h.total_ms || 0)} ms</td>
+                    <td style="text-align: right; font-weight: 600; font-variant-numeric: tabular-nums;"><span class="${avgCls}">${Number(h.avg_ms || 0)} ms</span></td>
+                    <td style="text-align: right; font-weight: 600; font-variant-numeric: tabular-nums;"><span class="${maxCls}">${Number(h.max_ms || 0)} ms</span></td>
+                    <td style="font-size: 0.82rem; color: var(--cb-text-muted, #64748b);"><code>${esc(h.slowest_handler || 'Fonction interne / Closure')}</code></td>
+                </tr>`;
+            }).join('');
+        }
+
+        const reqTbody = document.querySelector('#requestsTable tbody');
+        if (reqTbody && Array.isArray(data.requests)) {
+            reqTbody.innerHTML = data.requests.map((req) => {
+                const methodCls = req.method === 'POST' ? 'badge-post' : 'badge-get';
+                const st = Number(req.status || 200);
+                const statusCls = st >= 400 ? 'badge-error' : (st >= 300 ? 'badge-redirect' : 'badge-ok');
+                const dur = Number(req.duration_ms || 0);
+                const durCls = dur > 300 ? 'text-danger' : (dur > 100 ? 'text-warning' : 'text-success');
+                const io = req.io || {};
+                return `<tr>
+                    <td style="font-size: 0.82rem; white-space: nowrap; color: var(--cb-text-muted, #64748b);">${esc(req.timestamp)}</td>
+                    <td><span class="badge ${methodCls}">${esc(req.method)}</span></td>
+                    <td style="font-family: monospace; font-size: 0.86rem; word-break: break-all;">${esc(req.uri)}</td>
+                    <td style="text-align: center;"><span class="badge ${statusCls}">${st}</span></td>
+                    <td style="text-align: right; font-weight: 600; font-variant-numeric: tabular-nums;"><span class="${durCls}">${dur} ms</span></td>
+                    <td style="text-align: right; font-size: 0.86rem;">${Number(req.peak_memory_mb || 0)} Mo</td>
+                    <td style="text-align: center;"><span class="badge badge-subtle">${Number(req.hooks_count || 0)}</span></td>
+                    <td style="text-align: right; font-size: 0.82rem; color: var(--cb-text-muted, #64748b);">${Number(io.json_read || 0)}R / ${Number(io.json_write || 0)}W | ${Number(io.sql_query || 0)} SQL</td>
+                </tr>`;
+            }).join('');
         }
     }
 

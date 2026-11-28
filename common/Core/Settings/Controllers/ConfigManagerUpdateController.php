@@ -128,14 +128,17 @@ class ConfigManagerUpdateController extends AdminController {
         $this->core->redirect($this->router->generate('configmanager-admin'));
     }
 
-    public function checkUpdatesAsync(): void
+    public function checkUpdatesAsync(): \Core\Responses\ApiResponse
     {
-        header('Content-Type: application/json; charset=utf-8');
+        $resp = new \Core\Responses\ApiResponse();
+        $resp->httpCode = 200;
+        $resp->status = \Core\Responses\ApiResponse::STATUS_SUCCESS;
+
         $evaluator = \Core\Navigation\AccessPolicyEvaluator::getInstance();
         $ctx = new \Core\Navigation\ConditionContext($this->user);
         if (!$evaluator->isAdmin($ctx)) {
-            echo json_encode(['hasUpdate' => false, 'error' => 'unauthorized']);
-            exit;
+            $resp->body = ['hasUpdate' => false, 'error' => 'unauthorized'];
+            return $resp;
         }
 
         $settings = \Core\Core::getInstance()->settings();
@@ -146,8 +149,8 @@ class ConfigManagerUpdateController extends AdminController {
         }
         $lastCheck = (int)($cachedInfos['lastCheckUpdate'] ?? 0);
 
-        // Si le cache a plus de 60 secondes, on interroge le Hub (mode nightly / patch rapide)
-        if (time() - $lastCheck > 60) {
+        // Si le cache a plus de 300 secondes (5 min), on interroge le Hub en arrière-plan
+        if (time() - $lastCheck > 300) {
             $nextVersion = $settings->getNewVersion();
             $cachedInfos = \Utils\Util::readJsonFile($cacheFile);
         } else {
@@ -155,8 +158,8 @@ class ConfigManagerUpdateController extends AdminController {
         }
 
         if (!$nextVersion) {
-            echo json_encode(['hasUpdate' => false]);
-            exit;
+            $resp->body = ['hasUpdate' => false];
+            return $resp;
         }
 
         $isPatch = !empty($cachedInfos['isPatch']) || (bool) preg_match('/^[a-f0-9]{7,40}$/i', (string) $nextVersion);
@@ -181,15 +184,15 @@ class ConfigManagerUpdateController extends AdminController {
             . '<span>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</span>'
             . '</a>';
 
-        echo json_encode([
+        $resp->body = [
             'hasUpdate' => true,
             'nextVersion' => (string) $nextVersion,
             'isPatch' => $isPatch,
             'label' => $label,
             'updateUrl' => $updateUrl,
             'badgeHtml' => $badgeHtml
-        ]);
-        exit;
+        ];
+        return $resp;
     }
 
 }

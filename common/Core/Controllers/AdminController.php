@@ -43,6 +43,16 @@ class AdminController extends Controller {
         $isAdmin = $evaluator->isAdmin($ctx);
         
         if (!$isAdmin) {
+            $reqUri = $_SERVER['REQUEST_URI'] ?? '';
+            if (str_contains($reqUri, '/admin/api/')) {
+                if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                    http_response_code(200);
+                    header('Content-Type: application/json; charset=UTF-8');
+                    header('Cache-Control: no-cache');
+                }
+                echo json_encode(['hasUpdate' => false, 'authorized' => false], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
             $this->core->error404();
         }
         $pluginName = $this->core->getPluginToCall();
@@ -84,6 +94,7 @@ class AdminController extends Controller {
             }
         } elseif (
             !empty($pluginName)
+            && !str_starts_with(get_class($this), 'Core\\')
             && !$this->core->isCoreModule($pluginName)
             && !$this->core->extensions()->isCoreAdminModule($pluginName)
             && !$this->core->settings()->isCoreAdminModule($pluginName)

@@ -496,8 +496,12 @@ class Core
      */
     public function isCoreModule(string $moduleName): bool
     {
-        $coreModules = ['dashboard', 'page', 'content', 'menus', 'users', 'configmanager', 'filemanager', 'marketplace', 'pluginsmanager'];
-    return in_array(strtolower($moduleName), $coreModules, true);
+        $coreModules = [
+            'dashboard', 'page', 'content', 'menus', 'users',
+            'configmanager', 'filemanager', 'marketplace', 'pluginsmanager',
+            'api', 'monitor', 'storage', 'backups', 'logs', 'tasks', 'datainspector',
+        ];
+        return in_array(strtolower($moduleName), $coreModules, true);
     }
 
     protected function determineLocale(): string

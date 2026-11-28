@@ -94,8 +94,8 @@ class SystemMonitor
         try {
             $uri = $_SERVER['REQUEST_URI'] ?? '';
 
-            // Ignorer les requêtes CLI, assets statiques ou l'endpoint d'API de monitoring lui-même
-            if (empty($uri) || str_contains($uri, '/admin/api/monitor') || str_contains($uri, '/pwa/')) {
+            // Ignorer les requêtes CLI, assets statiques ou les endpoints internes de polling (monitor / check-updates)
+            if (empty($uri) || str_contains($uri, '/admin/api/monitor') || str_contains($uri, '/admin/api/check-updates') || str_contains($uri, '/pwa/')) {
                 return;
             }
 
