@@ -204,16 +204,32 @@ class SeoManager
             return self::makeAbsoluteUrl($ogImageData['url'], $siteUrl);
         }
 
-        // 2. Recherche d'une balise <img> dans le contenu de la page
+        // 2. Image à la une explicite de la page (champ img)
+        if ($pageItem instanceof PageItem && method_exists($pageItem, 'getImg') && !empty($pageItem->getImg())) {
+            return self::makeAbsoluteUrl((string) $pageItem->getImg(), $siteUrl);
+        }
+
+        // 3. Recherche intelligente d'une photo éditoriale dans le contenu de la page (en ignorant icônes/logos SVG)
         if ($pageItem instanceof PageItem && method_exists($pageItem, 'getContent')) {
-            $content = (string)$pageItem->getContent();
-            if (preg_match('/<img[^>]+src=["\']([^"\']+)["\']/i', $content, $matches)) {
-                $imgSrc = trim($matches[1]);
-                if (!empty($imgSrc) && !str_starts_with($imgSrc, 'data:')) {
-                    return self::makeAbsoluteUrl($imgSrc, $siteUrl);
+            $content = html_entity_decode((string) $pageItem->getContent(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $content, $allImgs)) {
+                $fallbackImg = '';
+                foreach ($allImgs[1] as $candidate) {
+                    $imgSrc = trim($candidate);
+                    if ($imgSrc === '' || str_starts_with($imgSrc, 'data:')) {
+                        continue;
+                    }
+                    if ($fallbackImg === '') {
+                        $fallbackImg = $imgSrc;
+                    }
+                    if (!preg_match('/(logo|icon|favicon|\.svg(\?|$))/i', $imgSrc)) {
+                        return self::makeAbsoluteUrl($imgSrc, $siteUrl);
+                    }
+                }
+                if ($fallbackImg !== '') {
+                    return self::makeAbsoluteUrl($fallbackImg, $siteUrl);
                 }
             }
-            // 3. Recherche d'une image d'arrière-plan CSS dans le contenu
             if (preg_match('/background(?:-image)?\s*:\s*url\([\'"]?([^\'"\)]+)[\'"]?\)/i', $content, $matches)) {
                 $bgSrc = trim($matches[1]);
                 if (!empty($bgSrc) && !str_starts_with($bgSrc, 'data:')) {
@@ -222,24 +238,30 @@ class SeoManager
             }
         }
 
-        // 4. Logo du site configuré
+        // 4. Image OpenGraph globale éventuelle configurée
+        $defaultOg = (string) $core->getConfigVal('seo_og_image');
+        if (!empty($defaultOg)) {
+            return self::makeAbsoluteUrl($defaultOg, $siteUrl);
+        }
+
+        // 5. Logo du site configuré (dernier recours)
         $siteLogo = (string)$core->getConfigVal('siteLogo');
         if (!empty($siteLogo)) {
             return self::makeAbsoluteUrl($siteLogo, $siteUrl);
         }
 
-        // 5. Recherche dans les dossiers du thème
+        // 6. Recherche générique dans le dossier du thème actif
         $theme = (string)$core->getConfigVal('theme');
         if (defined('THEMES') && !empty($theme)) {
             $themeDir = THEMES . $theme . '/';
             $candidates = [
-                'assets/images/Audrey-21.jpg',
+                'preview.png',
+                'header.webp',
+                'header.jpg',
                 'assets/images/logoheader.png',
                 'assets/images/logo.png',
                 'logo.png',
-                'header.webp',
-                'img/default.jpg',
-                'screenshot.jpg'
+                'icon.png',
             ];
             foreach ($candidates as $cand) {
                 if (file_exists($themeDir . $cand)) {

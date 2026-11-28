@@ -207,6 +207,7 @@ class PageController extends PublicController
         if (!$this->pageItem instanceof PageItem || $this->pageItem->targetIs() !== 'page') {
             $this->core->error404();
         }
+        $GLOBALS['pageItem'] = $this->pageItem;
         $action = (isset($_POST['unlock'])) ? 'unlock' : '';
         $url = $this->page->makeUrl($this->pageItem);
         if ($action === 'unlock') {
@@ -282,6 +283,10 @@ class PageController extends PublicController
             $response->setTitle($icon . $this->pageItem->getName());
             $tpl = $response->createPluginTemplate('page', 'read');
         }
+
+        // Réappliquer les métas SEO spécifiques de la page (metaTitleTag, mainTitle, metaDescriptionTag)
+        // après setTitle() afin que le nom court du menu ("Accueil") n'écrase jamais le metaTitle SEO.
+        $this->setPageMetas();
 
         $tpl->set('page', $this->page);
         $tpl->set('pageItem', $this->pageItem);

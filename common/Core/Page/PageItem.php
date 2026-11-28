@@ -491,12 +491,22 @@ class PageItem extends \Core\Storage\JsonActiveRecord implements ResourceInterfa
 
     public function getMetaDescriptionTag()
     {
-        return $this->attributes['metaDescriptionTag'] ?? $this->attributes['meta_description_tag'] ?? '';
+        return $this->attributes['metaDescriptionTag'] ?? $this->attributes['meta_description_tag'] ?? $this->attributes['metaDescription'] ?? '';
+    }
+
+    public function getMetaDescription(): string
+    {
+        return (string) $this->getMetaDescriptionTag();
     }
 
     public function getMetaTitleTag()
     {
-        return $this->attributes['metaTitleTag'] ?? $this->attributes['meta_title_tag'] ?? '';
+        return $this->attributes['metaTitleTag'] ?? $this->attributes['meta_title_tag'] ?? $this->attributes['metaTitle'] ?? '';
+    }
+
+    public function getMetaTitle(): string
+    {
+        return (string) $this->getMetaTitleTag();
     }
 
     public function getTarget()

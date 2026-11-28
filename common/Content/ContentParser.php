@@ -155,6 +155,16 @@ class ContentParser
                 return htmlspecialchars((string) VERSION, ENT_QUOTES, 'UTF-8');
             }
 
+            // Shortcode natif [github-releases] : notes de version dynamiques synchronisées en direct depuis GitHub Releases
+            if ($shortcode === 'github-releases' || $shortcode === 'evo-releases') {
+                if (!class_exists('\Core\Settings\ReleaseNotesRenderer', false) && defined('COMMON') && file_exists(COMMON . 'Core/Settings/ReleaseNotesRenderer.php')) {
+                    require_once COMMON . 'Core/Settings/ReleaseNotesRenderer.php';
+                }
+                if (class_exists('\Core\Settings\ReleaseNotesRenderer')) {
+                    return \Core\Settings\ReleaseNotesRenderer::renderShortcode($attributes);
+                }
+            }
+
             // If the shortcode doesn't exist, return the original content
             return $matches[0];
         }, $content);
