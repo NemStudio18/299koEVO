@@ -305,6 +305,12 @@ class Core
         require_once COMMON . 'Core/SEO/SeoManager.php';
         $this->addHook('endFrontHead', '\Core\SEO\SeoManager::renderHeadMetas');
 
+        // Personnalisation universelle sans code des thèmes (Theme Customizer --evo-*)
+        if (file_exists(COMMON . 'Core/Appearance/ThemeCustomizer.php')) {
+            require_once COMMON . 'Core/Appearance/ThemeCustomizer.php';
+            $this->addHook('endFrontHead', '\Core\Appearance\ThemeCustomizer::renderHeadStyleTag');
+        }
+
         // Hooks d'URL d'authentification gérés par le core (login, register, logout, profil, admin)
         require_once COMMON . 'Core/Auth/hooks.php';
         $this->addHook('user:login-url', '\Core\Auth\authCoreLoginUrl');
@@ -499,7 +505,7 @@ class Core
         $coreModules = [
             'dashboard', 'page', 'content', 'menus', 'users',
             'configmanager', 'filemanager', 'marketplace', 'pluginsmanager',
-            'api', 'monitor', 'storage', 'backups', 'logs', 'tasks', 'datainspector',
+            'api', 'monitor', 'storage', 'backups', 'logs', 'tasks', 'datainspector', 'customizer',
         ];
         return in_array(strtolower($moduleName), $coreModules, true);
     }

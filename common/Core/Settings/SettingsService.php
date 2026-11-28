@@ -39,6 +39,11 @@ class SettingsService
             'icon' => 'fa-solid fa-gear',
         ],
         [
+            'name' => 'customizer',
+            'label' => 'Personnaliser le thème',
+            'icon' => 'fa-solid fa-palette',
+        ],
+        [
             'name' => 'storage',
             'label' => 'storage.name',
             'icon' => 'fa-solid fa-database',
@@ -430,6 +435,11 @@ class SettingsService
         $router->map('POST', '/admin/monitor/reset', 'Core\Monitor\Controllers\SystemMonitorAdminController#reset', 'monitor-admin-reset');
         $router->map('GET', '/admin/api/monitor/metrics', 'Core\Monitor\Controllers\SystemMonitorAdminController#apiMetrics', 'monitor-admin-api');
 
+        // Theme Customizer (No-Code Design Tokens)
+        $router->map('GET', '/admin/customizer[/?]', 'Core\Appearance\Controllers\ThemeCustomizerAdminController#index', 'customizer-admin');
+        $router->map('POST', '/admin/customizer/save', 'Core\Appearance\Controllers\ThemeCustomizerAdminController#save', 'customizer-admin-save');
+        $router->map('POST', '/admin/customizer/reset', 'Core\Appearance\Controllers\ThemeCustomizerAdminController#reset', 'customizer-admin-reset');
+
         // Sovereign Workflow Automation Engine (No-Code)
         $router->map('GET', '/admin/workflows[/?]', 'Core\Workflow\Controllers\WorkflowAdminController#home', 'workflow-admin');
         $router->map('GET', '/admin/workflows/create[/?]', 'Core\Workflow\Controllers\WorkflowAdminController#edit', 'workflow-admin-create');
@@ -505,10 +515,11 @@ class SettingsService
 
         $entries = [];
         foreach ($this->adminModules as $module) {
+            $translated = Lang::get($module['label']);
             $entry = [
                 'name' => $module['name'],
                 'icon' => $module['icon'],
-                'label' => Lang::get($module['label']),
+                'label' => ($translated !== '' && $translated !== $module['label']) ? $translated : $module['label'],
             ];
             if ($module['name'] === 'configmanager' && $hasUpdate) {
                 $entry['hasUpdate'] = true;

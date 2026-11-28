@@ -2,6 +2,7 @@
 	{% if page.isUnlocked(pageItem) %}
 		{% HOOK.page:content-header(pageItem) %}
 		{{pageItem.getParsedContent()|raw}}
+		{% HOOK.page:content-footer(pageItem) %}
 	{% else %}
 		<header>
 			<div class="item-head">
