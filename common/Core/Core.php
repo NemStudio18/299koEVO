@@ -783,6 +783,8 @@ class Core
             str_ends_with($name, ':actions') ||
             str_ends_with($name, ':settings') ||
             str_ends_with($name, ':preferences') ||
+            str_ends_with($name, ':content-footer') ||
+            str_ends_with($name, ':content-header') ||
             str_ends_with($name, '-actions') ||
             str_ends_with($name, '-settings') ||
             str_ends_with($name, '-preferences') ||

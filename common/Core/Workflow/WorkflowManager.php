@@ -95,7 +95,7 @@ class WorkflowManager
             'annonces:created' => [
                 'label' => 'Petites Annonces : Nouvelle annonce',
                 'description' => 'Déclenché lors de la création d\'une annonce.',
-                'sample' => ['title' => 'Vélo de course', 'price' => 120, 'category' => 'Sport', 'city' => 'Bourges']
+                'sample' => ['title' => 'Vélo de course', 'price' => 120, 'category' => 'Sport', 'city' => 'Paris']
             ],
             'system:cron_hourly' => [
                 'label' => 'Planificateur : Toutes les heures',

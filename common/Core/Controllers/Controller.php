@@ -65,22 +65,37 @@ abstract class Controller {
         $this->pluginsManager = PluginsManager::getInstance();
         $this->request = new Request();
         $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
-        if ($contentType === "application/json") {
+        if ($contentType !== '' && stripos($contentType, "application/json") !== false) {
             $content = trim(file_get_contents("php://input"));
             $decoded = json_decode($content, true);
             $this->jsonData = is_array($decoded) ? $decoded : [];
         }
         $this->logger = $this->core->getLogger();
         if ($this->enforceCsrf) {
-            $this->validateCsrfToken();
+            if (!$this->validateCsrfToken()) {
+                $token = $_POST['_csrf'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($this->jsonData['_csrf'] ?? null));
+                $sessionToken = $_SESSION['_csrf_token'] ?? 'NONE';
+                $this->logger->warning('CSRF validation failed on ' . ($_SERVER['REQUEST_URI'] ?? '') . ' | POST=' . substr((string)($token ?? ''), 0, 12) . '... | SESSION=' . substr((string)$sessionToken, 0, 12) . '... | SID=' . session_id());
+
+                if ($this->request->isAjax() || stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false) {
+                    header('Content-Type: application/json', true, 400);
+                    echo json_encode(['success' => 0, 'error' => 'Invalid CSRF token']);
+                    die();
+                }
+
+                Show::msg('Une erreur de sécurité est survenue, veuillez réessayer.', 'error');
+                $redirect = $_SERVER['HTTP_REFERER'] ?? $this->router->generate('home');
+                $this->core->redirect($redirect);
+                exit;
+            }
         }
     }
 
-    protected function validateCsrfToken(): void
+    protected function validateCsrfToken(): bool
     {
         $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
         if ($method !== 'POST') {
-            return;
+            return true;
         }
 
         $token = $_POST['_csrf'] ?? null;
@@ -93,7 +108,7 @@ abstract class Controller {
 
         if ($token !== null && $token !== '') {
             if (Csrf::validate((string)$token, false)) {
-                return;
+                return true;
             }
         } else {
             // Vérification compatibilité jeton utilisateur legacy (champ 'token')
@@ -102,7 +117,7 @@ abstract class Controller {
                 $currentUser = \Core\Auth\UsersManager::getCurrentUser();
                 $userToken = $currentUser ? (string)($currentUser->token ?? '') : '';
                 if (($userToken !== '' && hash_equals($userToken, $legacyToken)) || Csrf::validate($legacyToken, false)) {
-                    return;
+                    return true;
                 }
             } else {
                 // Sans jeton explicite : bloquer tout POST cross-site et tout AdminController sans Origin/Referer même hôte
@@ -117,22 +132,11 @@ abstract class Controller {
                     && ($originHost === '' || $currentHost === '' || !hash_equals($currentHost, $originHost));
 
                 if (!$isCrossOriginHeader && !$missingSameOriginForAdmin) {
-                    return;
+                    return true;
                 }
             }
         }
 
-        $sessionToken = $_SESSION['_csrf_token'] ?? 'NONE';
-        $this->logger->warning('CSRF validation failed on ' . ($_SERVER['REQUEST_URI'] ?? '') . ' | POST=' . substr((string)($token ?? ''), 0, 12) . '... | SESSION=' . substr((string)$sessionToken, 0, 12) . '... | SID=' . session_id());
-
-        if ($this->request->isAjax() || stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false) {
-            header('Content-Type: application/json', true, 400);
-            echo json_encode(['success' => 0, 'error' => 'Invalid CSRF token']);
-            die();
-        }
-
-        Show::msg('Une erreur de sécurité est survenue, veuillez réessayer.', 'error');
-        $redirect = $_SERVER['HTTP_REFERER'] ?? $this->router->generate('home');
-        $this->core->redirect($redirect);
+        return false;
     }
 }

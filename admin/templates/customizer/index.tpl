@@ -273,11 +273,6 @@
 .lp-link { color: var(--lp-link, var(--lp-accent)); text-decoration: underline; cursor: pointer; }
 .lp-link:hover, .lp-link-hover-demo { color: var(--lp-link-hover, var(--lp-link, var(--lp-accent))); }
 
-:root[data-theme="dark"] .customizer-controls-card, :root[data-theme="dark"] .customizer-preview-panel, html[data-theme="dark"] .customizer-controls-card, html[data-theme="dark"] .customizer-preview-panel { background: #1e293b; border-color: #334155; }
-:root[data-theme="dark"] .customizer-field, :root[data-theme="dark"] .cust-tabs-nav, :root[data-theme="dark"] .customizer-submit-bar, html[data-theme="dark"] .customizer-field, html[data-theme="dark"] .cust-tabs-nav, html[data-theme="dark"] .customizer-submit-bar { border-color: #334155; }
-:root[data-theme="dark"] .cust-tab-btn:not(.is-active), html[data-theme="dark"] .cust-tab-btn:not(.is-active) { background: #0f172a; border-color: #334155; color: #cbd5e1; }
-:root[data-theme="dark"] .customizer-label, html[data-theme="dark"] .customizer-label { color: #f8fafc; }
-:root[data-theme="dark"] .customizer-range-badge, :root[data-theme="dark"] .lp-width-indicator, html[data-theme="dark"] .customizer-range-badge, html[data-theme="dark"] .lp-width-indicator { background: #0f172a; color: #e2e8f0; }
 
 @media (max-width: 980px) {
     .customizer-grid { grid-template-columns: 1fr; }

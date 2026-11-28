@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="{{lang.getLocale}}">
+<html lang="{{lang.getLocale}}" data-theme="light">
 	<head>
+		<script>document.documentElement.setAttribute('data-theme', 'light');</script>
 		{% HOOK.adminHead %}
 		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>

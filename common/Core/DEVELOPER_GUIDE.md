@@ -114,7 +114,7 @@ BlockManager::register([
     'label' => 'Carte Météo',
     'icon' => 'fa-solid fa-cloud-sun',
     'category' => 'dynamic',
-    'default_data' => ['city' => 'Bourges'],
+    'default_data' => ['city' => 'Paris'],
     'validator' => static function (array $data): array {
         $city = trim(strip_tags((string) ($data['city'] ?? '')));
         if ($city === '') {

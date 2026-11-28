@@ -330,12 +330,11 @@ class SeoManager
         $postalCode = (string)$core->getConfigVal('sitePostalCode');
         $country = (string)$core->getConfigVal('siteCountry') ?: 'FR';
         if (!empty($city) || !empty($postalCode)) {
-            $organization['address'] = [
-                '@type' => 'PostalAddress',
-                'addressLocality' => $city ?: 'Bourges',
-                'postalCode' => $postalCode ?: '18000',
-                'addressCountry' => $country,
-            ];
+            $addr = ['@type' => 'PostalAddress'];
+            if (!empty($city)) $addr['addressLocality'] = $city;
+            if (!empty($postalCode)) $addr['postalCode'] = $postalCode;
+            if (!empty($country)) $addr['addressCountry'] = $country;
+            $organization['address'] = $addr;
         }
         $areaServed = (string)$core->getConfigVal('siteAreaServed');
         if (!empty($areaServed)) {
