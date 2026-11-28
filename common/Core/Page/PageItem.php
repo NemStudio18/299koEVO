@@ -368,6 +368,14 @@ class PageItem extends \Core\Storage\JsonActiveRecord implements ResourceInterfa
         return $this->attributes['name'] ?? '';
     }
 
+    public function getSlug(): string
+    {
+        if (!empty($this->attributes['slug'])) {
+            return (string) $this->attributes['slug'];
+        }
+        return $this->getIsHomepage() ? '' : Util::strToUrl((string) $this->getName());
+    }
+
     public function getPosition()
     {
         return $this->attributes['position'] ?? 0;

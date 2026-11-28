@@ -209,13 +209,13 @@ class SeoManager
             return self::makeAbsoluteUrl((string) $pageItem->getImg(), $siteUrl);
         }
 
-        // 3. Recherche intelligente d'une photo éditoriale dans le contenu de la page (en ignorant icônes/logos SVG)
+        // 3. Recherche intelligente d'une photo éditoriale dans l'ordre d'apparition du document (Hero CSS ou <img>, hors icônes/logos SVG)
         if ($pageItem instanceof PageItem && method_exists($pageItem, 'getContent')) {
             $content = html_entity_decode((string) $pageItem->getContent(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $content, $allImgs)) {
+            if (preg_match_all('/(?:<img[^>]+src=["\']([^"\']+)["\']|background(?:-image)?\s*:\s*url\([\'"]?([^\'"\)]+)[\'"]?\))/i', $content, $matches, PREG_SET_ORDER)) {
                 $fallbackImg = '';
-                foreach ($allImgs[1] as $candidate) {
-                    $imgSrc = trim($candidate);
+                foreach ($matches as $m) {
+                    $imgSrc = trim((string) (!empty($m[1]) ? $m[1] : ($m[2] ?? '')));
                     if ($imgSrc === '' || str_starts_with($imgSrc, 'data:')) {
                         continue;
                     }
@@ -228,12 +228,6 @@ class SeoManager
                 }
                 if ($fallbackImg !== '') {
                     return self::makeAbsoluteUrl($fallbackImg, $siteUrl);
-                }
-            }
-            if (preg_match('/background(?:-image)?\s*:\s*url\([\'"]?([^\'"\)]+)[\'"]?\)/i', $content, $matches)) {
-                $bgSrc = trim($matches[1]);
-                if (!empty($bgSrc) && !str_starts_with($bgSrc, 'data:')) {
-                    return self::makeAbsoluteUrl($bgSrc, $siteUrl);
                 }
             }
         }
